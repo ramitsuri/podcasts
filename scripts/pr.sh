@@ -3,6 +3,8 @@
 # Constants                                                #
 ############################################################
 REMOTE="origin"
+MAIN="main"
+RESTRICTED_BRANCHES=("main" "develop")
 
 CREATE="Create"
 UPDATE="Update"
@@ -12,6 +14,7 @@ UPDATE="Update"
 ############################################################
 MainBranch="main"
 PRMode=$UPDATE
+KeepCurrentBranchAfterPR=false
 
 ############################################################
 # SquashCommits                                            #
@@ -74,6 +77,79 @@ CreatePR()
      exit $?
    fi
    echo "CreatePR End"
+}
+
+############################################################
+# Checkout MainBranch and delete current branch after PR   #
+############################################################
+CheckoutMainBranchDeleteCurrent()
+{
+   current=$(git branch --show-current)
+
+   if [ "$current" == $MAIN ]
+      then
+        return
+   elif [ "$current" == $MainBranch ]
+      then
+        return
+   elif [ $KeepCurrentBranchAfterPR = true ]
+      then
+        return
+   fi
+
+   echo "CheckoutMainBranchDeleteCurrent Start"
+
+   if ! git checkout $MainBranch;
+      then
+        exit $?
+   fi
+
+   if ! git branch -D "$current";
+      then
+        exit $?
+   fi
+
+   echo "CheckoutMainBranchDeleteCurrent End"
+}
+
+############################################################
+# Checkout branch for PR number                            #
+############################################################
+CheckoutBranchForPr()
+{
+   if [ "$#" -ne 1 ]
+      then
+        echo "PR number not supplied"
+        exit
+   fi
+   prNumber=$1
+
+   branch=$(gh pr view "$prNumber" --json headRefName --template '{{ .headRefName }}')
+   if ! git checkout -b "$branch" "${REMOTE}/${branch}";
+      then
+        exit $?
+   fi
+
+   if ! git pull;
+      then
+        exit $?
+   fi
+}
+
+############################################################
+# Check if current branch is restricted                    #
+############################################################
+CheckCurrentBranchRestricted()
+{
+   current=$(git branch --show-current)
+
+   for restricted_branch in "${RESTRICTED_BRANCHES[@]}"
+   do
+      if [ "$current" == "$restricted_branch" ] ; then
+         echo "${current} is a restricted branch. Submit changes on a different branch"
+         exit 1
+      fi
+   done
 }
 
 ############################################################
