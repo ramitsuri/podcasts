@@ -1,6 +1,11 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
+    alias(libs.plugins.build.konfig)
     alias(libs.plugins.detekt)
     alias(libs.plugins.ktlint)
 }
@@ -59,5 +64,48 @@ ktlint {
     filter {
         exclude("**/generated/**")
         exclude("**/build/**")
+    }
+}
+
+buildkonfig {
+    packageName = "com.ramitsuri.podcasts.build"
+
+    defaultConfigs {
+        buildConfigField(
+            type = STRING,
+            name = "PODCAST_INDEX_KEY",
+            value = getSecretProperty("PODCAST_INDEX_KEY"),
+            nullable = false,
+            const = true,
+        )
+        buildConfigField(
+            type = STRING,
+            name = "PODCAST_INDEX_SECRET",
+            value = getSecretProperty("PODCAST_INDEX_SECRET"),
+            nullable = false,
+            const = true,
+        )
+    }
+}
+
+fun getSecretProperty(
+    key: String,
+    defaultValue: String? = null,
+): String? {
+    val file = "secret.properties"
+    return getProperty(file, key, defaultValue)
+}
+
+fun getProperty(
+    fileName: String,
+    key: String,
+    defaultValue: String? = null,
+): String? {
+    return if (file(rootProject.file(fileName)).exists()) {
+        val properties = Properties()
+        properties.load(FileInputStream(file(rootProject.file(fileName))))
+        properties.getProperty(key, defaultValue)
+    } else {
+        defaultValue
     }
 }

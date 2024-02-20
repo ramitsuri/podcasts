@@ -6,6 +6,7 @@ compose-bom = "2024.02.00"
 compose-compiler = "1.5.9"
 
 androidx-activityCompose = "1.8.2"
+build-konfig = "0.15.1"
 detekt = "1.23.3"
 ktlint = "12.1.0"
 
@@ -24,6 +25,7 @@ compose-material3 = { module = "androidx.compose.material3:material3" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 
+build-konfig = { id = "com.codingfeline.buildkonfig", version.ref = "build-konfig" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 
