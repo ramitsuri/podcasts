@@ -18,38 +18,50 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
-    val colors = if (darkTheme) {
-        darkColorScheme(
-            primary = Color(0xFFBB86FC),
-            secondary = Color(0xFF03DAC5),
-            tertiary = Color(0xFF3700B3)
+    val colors =
+        if (darkTheme) {
+            darkColorScheme(
+                primary = primaryDark,
+                secondary = secondaryDark,
+                tertiary = tertiaryDark,
+            )
+        } else {
+            lightColorScheme(
+                primary = primaryLight,
+                secondary = secondaryLight,
+                tertiary = tertiaryLight,
+            )
+        }
+    val typography =
+        Typography(
+            bodyMedium =
+                TextStyle(
+                    fontFamily = FontFamily.Default,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp,
+                ),
         )
-    } else {
-        lightColorScheme(
-            primary = Color(0xFF6200EE),
-            secondary = Color(0xFF03DAC5),
-            tertiary = Color(0xFF3700B3)
+    val shapes =
+        Shapes(
+            small = RoundedCornerShape(4.dp),
+            medium = RoundedCornerShape(4.dp),
+            large = RoundedCornerShape(0.dp),
         )
-    }
-    val typography = Typography(
-        bodyMedium = TextStyle(
-            fontFamily = FontFamily.Default,
-            fontWeight = FontWeight.Normal,
-            fontSize = 16.sp
-        )
-    )
-    val shapes = Shapes(
-        small = RoundedCornerShape(4.dp),
-        medium = RoundedCornerShape(4.dp),
-        large = RoundedCornerShape(0.dp)
-    )
 
     MaterialTheme(
         colorScheme = colors,
         typography = typography,
         shapes = shapes,
-        content = content
+        content = content,
     )
 }
+
+private val primaryDark = Color(0xFFBB86FC)
+private val secondaryDark = Color(0xFF03DAC5)
+private val tertiaryDark = Color(0xFF3700B3)
+
+private val primaryLight = Color(0xFF6200EE)
+private val secondaryLight = Color(0xFF03DAC5)
+private val tertiaryLight = Color(0xFF3700B3)
