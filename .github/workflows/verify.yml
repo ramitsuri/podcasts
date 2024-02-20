@@ -18,6 +18,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: 'Write secret properties'
+        run: ./scripts/write-secret-properties.sh
+        env:
+          PODCAST_INDEX_KEY: ${{ secrets.PODCAST_INDEX_KEY }}
+          PODCAST_INDEX_SECRET: ${{ secrets.PODCAST_INDEX_SECRET }}
+
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:

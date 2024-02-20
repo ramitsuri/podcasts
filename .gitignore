@@ -17,3 +17,5 @@ xcuserdata
 *.xcbkptlist
 !/.idea/codeStyles/*
 !/.idea/inspectionProfiles/*
+
+secret.properties
