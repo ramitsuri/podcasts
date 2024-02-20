@@ -157,6 +157,8 @@ CheckCurrentBranchRestricted()
 ############################################################
 Run()
 {
+   CheckCurrentBranchRestricted
+
    if [ $PRMode == $CREATE ]
    then
      SquashCommits $MainBranch
@@ -172,6 +174,8 @@ Run()
    then
      CreatePR
    fi
+
+   CheckoutMainBranchDeleteCurrent
 }
 
 ############################################################
