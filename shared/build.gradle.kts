@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.build.konfig)
     alias(libs.plugins.detekt)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -31,8 +32,19 @@ kotlin {
     }
 
     sourceSets {
+        androidMain.dependencies {
+            implementation(libs.ktor.okhttp)
+            implementation(libs.ktor.client.android)
+        }
+
         commonMain.dependencies {
-            // put your multiplatform dependencies here
+            implementation(libs.ktor.core)
+            implementation(libs.ktor.content.negotation)
+            implementation(libs.ktor.serialization)
+            implementation(libs.ktor.logging)
+            implementation(libs.kotlin.serialization)
+            implementation(libs.kotlin.datetime)
+            implementation(libs.touchlab.log)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
