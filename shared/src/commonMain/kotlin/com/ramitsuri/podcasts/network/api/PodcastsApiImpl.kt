@@ -20,9 +20,10 @@ internal class PodcastsApiImpl(
     override suspend fun getTrending(request: TrendingPodcastsRequest): PodcastResult<TrendingPodcastsResponseDto> {
         return apiRequest(ioDispatcher) {
             httpClient.get(
-                urlString = "$baseUrl/podcasts/trending" +
-                    "?max=$MAX_COUNT" +
-                    "&since=${request.since.epochSeconds}",
+                urlString =
+                    "$baseUrl/podcasts/trending" +
+                        "?max=$MAX_COUNT" +
+                        "&since=${request.since.epochSeconds}",
             )
         }
     }
@@ -30,12 +31,13 @@ internal class PodcastsApiImpl(
     override suspend fun search(request: SearchPodcastsRequest): PodcastResult<PodcastsResponseDto> {
         return apiRequest(ioDispatcher) {
             httpClient.get(
-                urlString = "$baseUrl/search/byterm" +
-                    "?q=${request.term}" +
-                    "&max=$MAX_COUNT" +
-                    "&fulltext=$GET_FULL_DESCRIPTION" +
-                    "&similar=$SIMILAR" +
-                    "&clean=$NON_EXPLICIT",
+                urlString =
+                    "$baseUrl/search/byterm" +
+                        "?q=${request.term}" +
+                        "&max=$MAX_COUNT" +
+                        "&fulltext=$GET_FULL_DESCRIPTION" +
+                        "&similar=$SIMILAR" +
+                        "&clean=$NON_EXPLICIT",
             )
         }
     }
@@ -43,8 +45,9 @@ internal class PodcastsApiImpl(
     override suspend fun getById(id: Int): PodcastResult<PodcastResponseDto> {
         return apiRequest(ioDispatcher) {
             httpClient.get(
-                urlString = "$baseUrl/podcasts/byfeedid" +
-                    "?id=$id",
+                urlString =
+                    "$baseUrl/podcasts/byfeedid" +
+                        "?id=$id",
             )
         }
     }

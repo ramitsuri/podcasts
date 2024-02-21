@@ -17,11 +17,12 @@ internal class EpisodesApiImpl(
     override suspend fun getByPodcastId(request: GetEpisodesRequest): PodcastResult<EpisodesResponseDto> {
         return apiRequest(ioDispatcher) {
             httpClient.get(
-                urlString = "$baseUrl/episodes/byfeedid" +
-                    "?id=${request.id}" +
-                    "&since=${request.sinceTime.epochSeconds}" +
-                    "&max=$MAX_COUNT" +
-                    "&fulltext=$GET_FULL_DESCRIPTION",
+                urlString =
+                    "$baseUrl/episodes/byfeedid" +
+                        "?id=${request.id}" +
+                        "&since=${request.sinceTime.epochSeconds}" +
+                        "&max=$MAX_COUNT" +
+                        "&fulltext=$GET_FULL_DESCRIPTION",
             )
         }
     }

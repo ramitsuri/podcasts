@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class EpisodesResponseDto(
     @SerialName("items")
-    val items: List<EpisodeDto>
+    val items: List<EpisodeDto>,
 )

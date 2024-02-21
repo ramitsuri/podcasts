@@ -11,16 +11,17 @@ import kotlinx.coroutines.withContext
 
 internal suspend inline fun <reified T> apiRequest(
     ioDispatcher: CoroutineDispatcher,
-    crossinline call: suspend () -> HttpResponse
+    crossinline call: suspend () -> HttpResponse,
 ): PodcastResult<T> {
     return withContext(ioDispatcher) {
         var exception: Throwable? = null
-        val response: HttpResponse? = try {
-            call()
-        } catch (e: Exception) {
-            exception = e
-            null
-        }
+        val response: HttpResponse? =
+            try {
+                call()
+            } catch (e: Exception) {
+                exception = e
+                null
+            }
         return@withContext when {
             response?.status == HttpStatusCode.OK -> {
                 val data: T = response.body()

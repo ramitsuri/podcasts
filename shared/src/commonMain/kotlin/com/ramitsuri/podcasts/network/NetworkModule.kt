@@ -30,10 +30,11 @@ internal fun provideHttpClient(
     clientEngine: HttpClientEngine,
 ): HttpClient {
     return HttpClient(clientEngine) {
-        val log = KermitLogger(
-            loggerConfigInit(platformLogWriter()),
-            "Http",
-        )
+        val log =
+            KermitLogger(
+                loggerConfigInit(platformLogWriter()),
+                "Http",
+            )
         install(ContentNegotiation) {
             json(
                 Json {
@@ -45,11 +46,12 @@ internal fun provideHttpClient(
         }
 
         install(Logging) {
-            logger = object : KtorLogger {
-                override fun log(message: String) {
-                    log.v { message }
+            logger =
+                object : KtorLogger {
+                    override fun log(message: String) {
+                        log.v { message }
+                    }
                 }
-            }
             level = if (isDebug) LogLevel.ALL else LogLevel.NONE
         }
 
@@ -83,7 +85,11 @@ internal fun provideHttpClient(
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-private fun authHash(apiKey: String, apiSecret: String, secondsSinceEpoch: Long): String {
+private fun authHash(
+    apiKey: String,
+    apiSecret: String,
+    secondsSinceEpoch: Long,
+): String {
     // A SHA-1 hash of the X-Auth-Key, the corresponding secret and the X-Auth-Date value concatenated as a string.
     // The resulting hash should be encoded as a hexadecimal value, two digits per byte, using lower case letters
     // for the hex digits "a" through "f".

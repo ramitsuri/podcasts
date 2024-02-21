@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class TrendingPodcastsResponseDto(
     @SerialName("feeds")
-    val podcasts: List<TrendingPodcastDto>
+    val podcasts: List<TrendingPodcastDto>,
 )

@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 internal data class CategoryDto(
     @SerialName("id")
     val id: Int,
-
     @SerialName("name")
     val name: String,
 )
