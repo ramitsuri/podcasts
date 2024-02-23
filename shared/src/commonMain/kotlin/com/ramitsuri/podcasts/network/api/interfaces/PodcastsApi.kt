@@ -12,5 +12,5 @@ internal interface PodcastsApi {
 
     suspend fun search(request: SearchPodcastsRequest): PodcastResult<PodcastsResponseDto>
 
-    suspend fun getById(id: Int): PodcastResult<PodcastResponseDto>
+    suspend fun getById(id: Long): PodcastResult<PodcastResponseDto>
 }

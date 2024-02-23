@@ -64,5 +64,7 @@ ktlint {
     filter {
         exclude("**/generated/**")
         exclude("**/build/**")
+        exclude { element -> element.file.toString().contains("generated/") }
+        exclude { element -> element.file.toString().contains("build/") }
     }
 }

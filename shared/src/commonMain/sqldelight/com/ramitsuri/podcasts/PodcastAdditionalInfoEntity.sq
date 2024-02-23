@@ -1,0 +1,41 @@
+import kotlin.Boolean;
+import kotlinx.datetime.Instant;
+
+CREATE TABLE IF NOT EXISTS PodcastAdditionalInfoEntity (
+    id INTEGER NOT NULL PRIMARY KEY,
+    subscribed INTEGER AS Boolean NOT NULL,
+    autoDownloadEpisodes INTEGER AS Boolean NOT NULL,
+    newEpisodeNotification INTEGER AS Boolean NOT NULL,
+    subscribedDate INTEGER AS Instant,
+    lastRefreshDate INTEGER AS Instant
+);
+
+insertOrIgnore:
+INSERT OR IGNORE INTO
+PodcastAdditionalInfoEntity(id, subscribed, autoDownloadEpisodes, newEpisodeNotification, subscribedDate, lastRefreshDate)
+VALUES ?;
+
+updateSubscribed:
+UPDATE PodcastAdditionalInfoEntity
+SET subscribed = :subscribed
+WHERE id = :id;
+
+updateAutoDownloadEpisodes:
+UPDATE PodcastAdditionalInfoEntity
+SET autoDownloadEpisodes = :autoDownloadEpisodes
+WHERE id = :id;
+
+updateNewEpisodeNotification:
+UPDATE PodcastAdditionalInfoEntity
+SET newEpisodeNotification = :newEpisodeNotification
+WHERE id = :id;
+
+updateSubscribedDate:
+UPDATE PodcastAdditionalInfoEntity
+SET subscribedDate = :subscribedDate
+WHERE id = :id;
+
+updateLastRefreshDate:
+UPDATE PodcastAdditionalInfoEntity
+SET lastRefreshDate = :lastRefreshDate
+WHERE id = :id;

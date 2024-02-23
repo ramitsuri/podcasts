@@ -1,0 +1,57 @@
+import kotlin.Boolean;
+import kotlin.Int;
+
+CREATE TABLE IF NOT EXISTS EpisodeEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    podcastId INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    link TEXT NOT NULL,
+    enclosureUrl TEXT NOT NULL,
+    datePublished INTEGER NOT NULL,
+    duration INTEGER,
+    explicit INTEGER AS Boolean NOT NULL,
+    episode INTEGER AS Int,
+    season INTEGER AS Int
+);
+
+getEpisode:
+SELECT
+ee.*,
+eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt,
+pe.title AS podcastTitle, pe.author AS podcastAuthor
+FROM EpisodeEntity AS ee
+INNER JOIN PodcastEntity AS pe
+    ON ee.podcastId == pe.id
+INNER JOIN EpisodeAdditionalInfoEntity AS eaie
+    ON ee.id == eaie.id
+WHERE ee.id == :id;
+
+getEpisodesForPodcast:
+SELECT ee.*,
+eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt,
+pe.title AS podcastTitle, pe.author AS podcastAuthor
+FROM EpisodeEntity AS ee
+INNER JOIN PodcastEntity AS pe
+    ON ee.podcastId == pe.id
+INNER JOIN EpisodeAdditionalInfoEntity AS eaie
+    ON ee.id == eaie.id
+WHERE ee.podcastId == :podcastId
+ORDER BY ee.datePublished DESC;
+
+getEpisodesForPodcasts:
+SELECT ee.*,
+eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt,
+pe.title AS podcastTitle, pe.author AS podcastAuthor
+FROM EpisodeEntity AS ee
+INNER JOIN PodcastEntity AS pe
+    ON ee.podcastId == pe.id
+INNER JOIN EpisodeAdditionalInfoEntity AS eaie
+    ON ee.id == eaie.id
+WHERE ee.podcastId IN :podcastIds
+ORDER BY ee.datePublished DESC;
+
+insertOrReplace:
+INSERT OR REPLACE INTO
+EpisodeEntity(id, podcastId, title, description, link, enclosureUrl, datePublished, duration, explicit, episode, season)
+VALUES ?;

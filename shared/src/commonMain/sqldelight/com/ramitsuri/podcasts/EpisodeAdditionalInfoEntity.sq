@@ -1,0 +1,50 @@
+import com.ramitsuri.podcasts.model.DownloadStatus;
+import kotlin.Boolean;
+import kotlin.Double;
+import kotlin.Int;
+import kotlinx.datetime.Instant;
+
+CREATE TABLE IF NOT EXISTS EpisodeAdditionalInfoEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    playProgress INTEGER AS Int DEFAULT 0 NOT NULL,
+    downloadStatus TEXT AS DownloadStatus DEFAULT "not_downloaded" NOT NULL,
+    downloadProgress REAL AS Double DEFAULT 0.0 NOT NULL,
+    downloadBlocked INTEGER AS Boolean NOT NULL,
+    queuePosition INTEGER AS Int NOT NULL,
+    completedAt INTEGER AS Instant
+);
+
+insertOrIgnore:
+INSERT OR IGNORE INTO
+EpisodeAdditionalInfoEntity(id, playProgress, downloadStatus, downloadProgress, downloadBlocked, queuePosition, completedAt)
+VALUES ?;
+
+updatePlayProgress:
+UPDATE EpisodeAdditionalInfoEntity
+SET playProgress = :playProgress
+WHERE id = :id;
+
+updateDownloadStatus:
+UPDATE EpisodeAdditionalInfoEntity
+SET downloadStatus = :downloadStatus
+WHERE id = :id;
+
+updateDownloadProgress:
+UPDATE EpisodeAdditionalInfoEntity
+SET downloadProgress = :downloadProgress
+WHERE id = :id;
+
+updateDownloadBlocked:
+UPDATE EpisodeAdditionalInfoEntity
+SET downloadBlocked = :downloadBlocked
+WHERE id = :id;
+
+updateQueuePosition:
+UPDATE EpisodeAdditionalInfoEntity
+SET queuePosition = :queuePosition
+WHERE id = :id;
+
+updateCompletedAt:
+UPDATE EpisodeAdditionalInfoEntity
+SET completedAt = :completedAt
+WHERE id = :id;

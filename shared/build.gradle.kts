@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -35,6 +36,8 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.ktor.okhttp)
             implementation(libs.ktor.client.android)
+            implementation(libs.sqldelight.android)
+            implementation(libs.viewmodel)
         }
 
         commonMain.dependencies {
@@ -44,6 +47,7 @@ kotlin {
             implementation(libs.ktor.logging)
             implementation(libs.kotlin.serialization)
             implementation(libs.kotlin.datetime)
+            implementation(libs.sqldelight.common)
             implementation(libs.touchlab.log)
         }
         commonTest.dependencies {
@@ -62,6 +66,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 detekt {
@@ -76,6 +84,8 @@ ktlint {
     filter {
         exclude("**/generated/**")
         exclude("**/build/**")
+        exclude { element -> element.file.toString().contains("generated/") }
+        exclude { element -> element.file.toString().contains("build/") }
     }
 }
 
@@ -97,6 +107,16 @@ buildkonfig {
             nullable = false,
             const = true,
         )
+    }
+}
+
+sqldelight {
+    databases {
+        create("PodcastsDatabase") {
+            packageName.set("com.ramitsuri.podcasts")
+            schemaOutputDirectory.set(file("src/commonMain/sqldelight/databases"))
+            verifyMigrations.set(true)
+        }
     }
 }
 
