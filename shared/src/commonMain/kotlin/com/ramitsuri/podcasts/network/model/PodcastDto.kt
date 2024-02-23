@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class PodcastDto(
     @SerialName("id")
-    val id: Int,
+    val id: Long,
     @SerialName("podcastGuid")
     val guid: String,
     @SerialName("title")

@@ -1,0 +1,20 @@
+import kotlin.Int;
+
+CREATE TABLE IF NOT EXISTS CategoryEntity (
+    id INTEGER AS Int NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
+getCategories:
+SELECT * FROM CategoryEntity;
+
+getCategoriesForIds:
+SELECT * FROM CategoryEntity
+WHERE id IN :ids;
+
+deleteCategories:
+DELETE FROM CategoryEntity;
+
+insertCategory:
+INSERT INTO CategoryEntity(id, name)
+VALUES ?;

@@ -1,0 +1,50 @@
+import kotlin.Boolean;
+import kotlin.Int;
+import kotlin.collections.List;
+
+CREATE TABLE IF NOT EXISTS PodcastEntity (
+    id INTEGER NOT NULL PRIMARY KEY,
+    guid TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    author TEXT NOT NULL,
+    owner TEXT NOT NULL,
+    url TEXT NOT NULL,
+    link TEXT NOT NULL,
+    image TEXT NOT NULL,
+    artwork TEXT NOT NULL,
+    explicit INTEGER AS Boolean NOT NULL,
+    episodeCount INTEGER AS Int NOT NULL,
+    categories TEXT AS List<Int> NOT NULL
+);
+
+getAllPodcasts:
+SELECT
+pe.*,
+paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.subscribedDate, paie.lastRefreshDate
+FROM PodcastEntity AS pe
+INNER JOIN PodcastAdditionalInfoEntity AS paie
+    ON pe.id == paie.id;
+
+getAllSubscribedPodcasts:
+SELECT
+pe.*,
+paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.subscribedDate, paie.lastRefreshDate
+FROM PodcastEntity AS pe
+INNER JOIN PodcastAdditionalInfoEntity AS paie
+    ON pe.id == paie.id
+WHERE paie.subscribed = 1;
+
+getPodcast:
+SELECT
+pe.*,
+paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.subscribedDate, paie.lastRefreshDate
+FROM PodcastEntity AS pe
+INNER JOIN PodcastAdditionalInfoEntity AS paie
+    ON pe.id == paie.id
+WHERE pe.id == :id;
+
+insertOrReplace:
+INSERT OR REPLACE INTO
+PodcastEntity(id, guid, title, description, author, owner, url, link, image, artwork, explicit, episodeCount, categories)
+VALUES ?;

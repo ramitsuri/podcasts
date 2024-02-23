@@ -19,12 +19,9 @@ GIT_USER_EMAIL="github-actions@github.com"
 ############################################################
 Run()
 {
-  if ! ./gradlew ktlintFormat;
-  then
-    exit 1
-  fi
+  ./gradlew --continue --no-build-cache ktlintFormat;
 
-  if ! ./gradlew ktlintCheck;
+  if ! ./gradlew --no-build-cache ktlintCheck;
   then
     exit 1
   fi

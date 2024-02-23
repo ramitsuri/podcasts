@@ -42,7 +42,7 @@ internal class PodcastsApiImpl(
         }
     }
 
-    override suspend fun getById(id: Int): PodcastResult<PodcastResponseDto> {
+    override suspend fun getById(id: Long): PodcastResult<PodcastResponseDto> {
         return apiRequest(ioDispatcher) {
             httpClient.get(
                 urlString =
