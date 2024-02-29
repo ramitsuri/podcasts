@@ -7,6 +7,7 @@ compose-compiler = "1.5.9"
 
 androidx-activityCompose = "1.8.2"
 build-konfig = "0.15.1"
+compose-navigation = "2.7.7"
 detekt = "1.23.3"
 kotlin-datetime = "0.5.0"
 kotlin-serialization = "1.6.3"
@@ -26,6 +27,10 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-icons = { module = "androidx.compose.material:material-icons-extended" }
+compose-icons-extended = { module = "androidx.compose.material:material-icons-core" }
+
+compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
 
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
