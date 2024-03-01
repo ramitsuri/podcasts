@@ -41,6 +41,7 @@ kotlin {
         }
 
         commonMain.dependencies {
+            implementation(libs.koin.core)
             implementation(libs.ktor.core)
             implementation(libs.ktor.content.negotation)
             implementation(libs.ktor.serialization)

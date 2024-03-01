@@ -9,6 +9,7 @@ androidx-activityCompose = "1.8.2"
 build-konfig = "0.15.1"
 compose-navigation = "2.7.7"
 detekt = "1.23.3"
+koin = "3.5.3"
 kotlin-datetime = "0.5.0"
 kotlin-serialization = "1.6.3"
 ktlint = "12.1.0"
@@ -31,6 +32,10 @@ compose-icons = { module = "androidx.compose.material:material-icons-extended" }
 compose-icons-extended = { module = "androidx.compose.material:material-icons-core" }
 
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
+
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-android-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
 
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }

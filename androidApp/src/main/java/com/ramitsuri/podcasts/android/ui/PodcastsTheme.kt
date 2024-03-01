@@ -1,4 +1,4 @@
-package com.ramitsuri.podcasts.android
+package com.ramitsuri.podcasts.android.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
