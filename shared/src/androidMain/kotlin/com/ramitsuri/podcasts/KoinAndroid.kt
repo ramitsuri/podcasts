@@ -8,20 +8,21 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.android.Android
 import org.koin.dsl.module
 
-actual val platformModule = module {
-    single<HttpClientEngine> {
-        Android.create()
-    }
+actual val platformModule =
+    module {
+        single<HttpClientEngine> {
+            Android.create()
+        }
 
-    single<SqlDriver> {
-        AndroidSqliteDriver(
-            schema = PodcastsDatabase.Schema,
-            context = get<Context>(),
-            name = "podcasts.db",
-        )
-    }
+        single<SqlDriver> {
+            AndroidSqliteDriver(
+                schema = PodcastsDatabase.Schema,
+                context = get<Context>(),
+                name = "podcasts.db",
+            )
+        }
 
-    single<DispatcherProvider> {
-        DispatcherProvider()
+        single<DispatcherProvider> {
+            DispatcherProvider()
+        }
     }
-}

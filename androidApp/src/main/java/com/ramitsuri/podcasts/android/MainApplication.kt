@@ -14,15 +14,16 @@ class MainApplication : Application() {
 
     private fun initDependencyInjection() {
         initKoin(
-            appModule = module {
-                single<Context> {
-                    this@MainApplication
-                }
+            appModule =
+                module {
+                    single<Context> {
+                        this@MainApplication
+                    }
 
-                factory<AppInfo> {
-                    AndroidAppInfo()
-                }
-            },
+                    factory<AppInfo> {
+                        AndroidAppInfo()
+                    }
+                },
         )
     }
 }
