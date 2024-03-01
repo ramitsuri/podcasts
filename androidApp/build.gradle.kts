@@ -17,6 +17,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
@@ -28,7 +29,15 @@ android {
     }
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+        }
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            isDebuggable = true
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
@@ -52,6 +61,8 @@ dependencies {
     implementation(libs.compose.icons)
     implementation(libs.compose.icons.extended)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.koin.android)
+    implementation(libs.koin.android.compose)
     debugImplementation(libs.compose.ui.tooling)
 }
 
