@@ -7,6 +7,7 @@ import com.ramitsuri.podcasts.network.model.GetEpisodesRequest
 import com.ramitsuri.podcasts.network.utils.apiRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import io.ktor.http.parameters
 import kotlinx.coroutines.CoroutineDispatcher
 
 internal class EpisodesApiImpl(
@@ -16,19 +17,20 @@ internal class EpisodesApiImpl(
 ) : EpisodesApi {
     override suspend fun getByPodcastId(request: GetEpisodesRequest): PodcastResult<EpisodesResponseDto> {
         return apiRequest(ioDispatcher) {
-            httpClient.get(
-                urlString =
-                    "$baseUrl/episodes/byfeedid" +
-                        "?id=${request.id}" +
-                        "&since=${request.sinceTime.epochSeconds}" +
-                        "&max=$MAX_COUNT" +
-                        "&fulltext=$GET_FULL_DESCRIPTION",
-            )
+            httpClient.get(urlString = "$baseUrl/episodes/byfeedid") {
+                url {
+                    parameters {
+                        append("id", request.id.toString())
+                        append("since", request.sinceEpochSeconds.toString())
+                        append("max", MAX_COUNT.toString())
+                        append("fulltext", "true")
+                    }
+                }
+            }
         }
     }
 
     companion object {
         private const val MAX_COUNT = 10
-        private const val GET_FULL_DESCRIPTION = true
     }
 }
