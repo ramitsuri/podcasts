@@ -40,7 +40,7 @@ private val coreModule =
 
         single<HttpClient> {
             provideHttpClient(
-                isDebug = get(),
+                isDebug = get<AppInfo>().isDebug,
                 clock = get(),
                 clientEngine = get(),
             )
@@ -79,14 +79,6 @@ private val coreModule =
             EpisodesDaoImpl(
                 episodeEntityQueries = get<PodcastsDatabase>().episodeEntityQueries,
                 episodeAdditionalInfoEntityQueries = get<PodcastsDatabase>().episodeAdditionalInfoEntityQueries,
-                ioDispatcher = get<DispatcherProvider>().io,
-            )
-        }
-
-        single<PodcastsDao> {
-            PodcastsDaoImpl(
-                podcastEntityQueries = get<PodcastsDatabase>().podcastEntityQueries,
-                podcastAdditionalInfoEntityQueries = get<PodcastsDatabase>().podcastAdditionalInfoEntityQueries,
                 ioDispatcher = get<DispatcherProvider>().io,
             )
         }

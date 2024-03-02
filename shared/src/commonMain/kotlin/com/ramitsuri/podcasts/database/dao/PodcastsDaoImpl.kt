@@ -22,7 +22,7 @@ internal class PodcastsDaoImpl(
     private val podcastAdditionalInfoEntityQueries: PodcastAdditionalInfoEntityQueries,
     private val ioDispatcher: CoroutineDispatcher,
 ) : PodcastsDao {
-    override suspend fun getAll(): Flow<List<GetAllPodcasts>> {
+    override fun getAll(): Flow<List<GetAllPodcasts>> {
         return podcastEntityQueries
             .getAllPodcasts()
             .asFlow()

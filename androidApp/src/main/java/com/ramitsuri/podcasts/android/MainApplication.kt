@@ -1,7 +1,6 @@
 package com.ramitsuri.podcasts.android
 
 import android.app.Application
-import android.content.Context
 import com.ramitsuri.podcasts.AppInfo
 import com.ramitsuri.podcasts.initKoin
 import org.koin.dsl.module
@@ -14,16 +13,15 @@ class MainApplication : Application() {
 
     private fun initDependencyInjection() {
         initKoin(
-            appModule =
-                module {
-                    single<Context> {
-                        this@MainApplication
-                    }
+            module {
+                single<Application> {
+                    this@MainApplication
+                }
 
-                    factory<AppInfo> {
-                        AndroidAppInfo()
-                    }
-                },
+                factory<AppInfo> {
+                    AndroidAppInfo()
+                }
+            },
         )
     }
 }

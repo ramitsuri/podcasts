@@ -1,6 +1,6 @@
 package com.ramitsuri.podcasts
 
-import android.content.Context
+import android.app.Application
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.ramitsuri.podcasts.utils.DispatcherProvider
@@ -17,7 +17,7 @@ actual val platformModule =
         single<SqlDriver> {
             AndroidSqliteDriver(
                 schema = PodcastsDatabase.Schema,
-                context = get<Context>(),
+                context = get<Application>(),
                 name = "podcasts.db",
             )
         }

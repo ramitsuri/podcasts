@@ -2,16 +2,32 @@ package com.ramitsuri.podcasts.repositories
 
 import com.ramitsuri.podcasts.database.dao.interfaces.CategoryDao
 import com.ramitsuri.podcasts.database.dao.interfaces.PodcastsDao
+import com.ramitsuri.podcasts.model.Category
 import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.network.api.interfaces.PodcastsApi
+import com.ramitsuri.podcasts.network.model.PodcastResponseDto
 import com.ramitsuri.podcasts.network.model.SearchPodcastsRequest
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class PodcastsRepository internal constructor(
     private val podcastsApi: PodcastsApi,
     private val podcastsDao: PodcastsDao,
     private val categoryDao: CategoryDao,
 ) {
+
+    suspend fun getAll(): Flow<List<Podcast>> {
+        return podcastsDao
+            .getAll()
+            .map { list ->
+                list.map { getAllPodcasts ->
+                    val categories = categoryDao.get(getAllPodcasts.categories).map { Category(it.id, it.name) }
+                    Podcast(getAllPodcasts, categories)
+                }
+            }
+    }
+
     suspend fun search(request: SearchPodcastsRequest): PodcastResult<List<Podcast>> {
         return when (val apiResult = podcastsApi.search(request)) {
             is PodcastResult.Failure -> {
@@ -30,9 +46,16 @@ class PodcastsRepository internal constructor(
     }
 
     suspend fun refreshPodcast(id: Long): Boolean {
-        val result = podcastsApi.getById(id)
-        return if (result is PodcastResult.Success) {
-            podcastsDao.insert(listOf(Podcast(result.data.podcast)))
+        return podcastsApi.getById(id).saveToDb()
+    }
+
+    suspend fun getPodcastByUrl(url: String): Boolean {
+        return podcastsApi.getByUrl(url).saveToDb()
+    }
+
+    private suspend fun PodcastResult<PodcastResponseDto>.saveToDb(): Boolean {
+        return if (this is PodcastResult.Success) {
+            podcastsDao.insert(listOf(Podcast(data.podcast)))
             true
         } else {
             false

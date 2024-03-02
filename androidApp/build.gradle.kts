@@ -60,6 +60,8 @@ dependencies {
     implementation(libs.compose.navigation)
     implementation(libs.compose.icons)
     implementation(libs.compose.icons.extended)
+    implementation(libs.compose.lifecycle.viewmodel)
+    implementation(libs.compose.lifecycle.runtime)
     implementation(libs.androidx.activity.compose)
     implementation(libs.koin.android)
     implementation(libs.koin.android.compose)

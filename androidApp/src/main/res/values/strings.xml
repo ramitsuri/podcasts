@@ -3,4 +3,10 @@
     <string name="nav_home">Home</string>
     <string name="nav_explore">Explore</string>
     <string name="nav_library">Library</string>
+
+    <!-- Home Screen -->
+    <string name="home_import_subscriptions">Import subscriptions</string>
+
+    <!-- Import Subscriptions Screen -->
+    <string name="import_subscriptions_subscribe_all">Subscribe</string>
 </resources>

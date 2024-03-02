@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.network.api
 
+import com.ramitsuri.podcasts.model.PodcastError
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.network.api.interfaces.PodcastsApi
 import com.ramitsuri.podcasts.network.model.PodcastResponseDto
@@ -20,10 +21,9 @@ internal class PodcastsApiImpl(
     override suspend fun getTrending(request: TrendingPodcastsRequest): PodcastResult<TrendingPodcastsResponseDto> {
         return apiRequest(ioDispatcher) {
             httpClient.get(
-                urlString =
-                    "$baseUrl/podcasts/trending" +
-                        "?max=$MAX_COUNT" +
-                        "&since=${request.since.epochSeconds}",
+                "$baseUrl/podcasts/trending" +
+                    "?max=$MAX_COUNT" +
+                    "&since=${request.since.epochSeconds}",
             )
         }
     }
@@ -31,13 +31,12 @@ internal class PodcastsApiImpl(
     override suspend fun search(request: SearchPodcastsRequest): PodcastResult<PodcastsResponseDto> {
         return apiRequest(ioDispatcher) {
             httpClient.get(
-                urlString =
-                    "$baseUrl/search/byterm" +
-                        "?q=${request.term}" +
-                        "&max=$MAX_COUNT" +
-                        "&fulltext=$GET_FULL_DESCRIPTION" +
-                        "&similar=$SIMILAR" +
-                        "&clean=$NON_EXPLICIT",
+                "$baseUrl/search/byterm" +
+                    "?q=${request.term}" +
+                    "&max=$MAX_COUNT" +
+                    "&fulltext=$GET_FULL_DESCRIPTION" +
+                    "&similar=$SIMILAR" +
+                    "&clean=$NON_EXPLICIT",
             )
         }
     }
@@ -45,10 +44,22 @@ internal class PodcastsApiImpl(
     override suspend fun getById(id: Long): PodcastResult<PodcastResponseDto> {
         return apiRequest(ioDispatcher) {
             httpClient.get(
-                urlString =
-                    "$baseUrl/podcasts/byfeedid" +
-                        "?id=$id",
+                "$baseUrl/podcasts/byfeedid" +
+                    "?id=$id",
             )
+        }
+    }
+
+    override suspend fun getByUrl(url: String): PodcastResult<PodcastResponseDto> {
+        return try {
+            apiRequest(ioDispatcher) {
+                httpClient.get(
+                    "$baseUrl/podcasts/byfeedurl" +
+                        "?url=$url",
+                )
+            }
+        } catch (e: Exception) {
+            PodcastResult.Failure(PodcastError.Unknown(null))
         }
     }
 
