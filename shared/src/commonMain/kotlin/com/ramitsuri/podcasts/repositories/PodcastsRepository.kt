@@ -16,7 +16,6 @@ class PodcastsRepository internal constructor(
     private val podcastsDao: PodcastsDao,
     private val categoryDao: CategoryDao,
 ) {
-
     suspend fun getAll(): Flow<List<Podcast>> {
         return podcastsDao
             .getAll()

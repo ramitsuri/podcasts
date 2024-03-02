@@ -5,5 +5,4 @@ enum class Route(val value: String) {
     IMPORT_SUBSCRIPTIONS("import_subscriptions"),
     EXPLORE("explore"),
     LIBRARY("library"),
-    ;
 }

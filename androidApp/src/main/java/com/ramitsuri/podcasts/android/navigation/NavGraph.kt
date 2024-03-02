@@ -68,9 +68,10 @@ fun NavGraph(
             }
 
             composable(route = Route.IMPORT_SUBSCRIPTIONS.value) {
-                val viewModel = viewModel<ImportSubscriptionsViewModel>(
-                    factory = ImportSubscriptionsViewModel.factory(),
-                )
+                val viewModel =
+                    viewModel<ImportSubscriptionsViewModel>(
+                        factory = ImportSubscriptionsViewModel.factory(),
+                    )
                 val state by viewModel.state.collectAsStateWithLifecycle()
 
                 ImportSubscriptionsScreen(

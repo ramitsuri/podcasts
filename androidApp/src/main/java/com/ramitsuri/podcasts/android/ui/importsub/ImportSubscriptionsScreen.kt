@@ -31,16 +31,17 @@ fun ImportSubscriptionsScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val filePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri ->
-            if (uri == null) {
-                onBack()
-                return@rememberLauncherForActivityResult
-            }
-            onSubscriptionsDataFilePicked(uri)
-        },
-    )
+    val filePicker =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent(),
+            onResult = { uri ->
+                if (uri == null) {
+                    onBack()
+                    return@rememberLauncherForActivityResult
+                }
+                onSubscriptionsDataFilePicked(uri)
+            },
+        )
     LaunchedEffect(Unit) {
         filePicker.launch("text/xml")
     }
@@ -50,8 +51,9 @@ fun ImportSubscriptionsScreen(
         }
     }
     Column(
-        modifier = modifier
-            .fillMaxSize(),
+        modifier =
+            modifier
+                .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (viewState.isLoading) {

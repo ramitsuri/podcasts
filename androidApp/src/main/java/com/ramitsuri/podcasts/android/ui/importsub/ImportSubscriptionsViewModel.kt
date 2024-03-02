@@ -20,9 +20,8 @@ import java.io.InputStream
 
 class ImportSubscriptionsViewModel(
     application: Application,
-    private val podcastsRepository: PodcastsRepository
+    private val podcastsRepository: PodcastsRepository,
 ) : AndroidViewModel(application) {
-
     private val _state = MutableStateFlow(ImportSubscriptionsViewState())
     val state: StateFlow<ImportSubscriptionsViewState> = _state
 
@@ -100,14 +99,15 @@ class ImportSubscriptionsViewModel(
     private data class SubscriptionData(val text: String, val xmlUrl: String)
 
     companion object {
-        fun factory(): ViewModelProvider.Factory = object : ViewModelProvider.Factory, KoinComponent {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ImportSubscriptionsViewModel(
-                    application = get(),
-                    podcastsRepository = get(),
-                ) as T
+        fun factory(): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory, KoinComponent {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return ImportSubscriptionsViewModel(
+                        application = get(),
+                        podcastsRepository = get(),
+                    ) as T
+                }
             }
-        }
     }
 }
