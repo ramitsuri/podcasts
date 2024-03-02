@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlin.time.Duration.Companion.days
 
 internal class PodcastsAndEpisodesRepository internal constructor(
@@ -31,14 +30,14 @@ internal class PodcastsAndEpisodesRepository internal constructor(
     private val episodesRepository: EpisodesRepository,
     private val clock: Clock,
 ) {
-    suspend fun refreshPodcasts(sinceTimeIfPodcastNeverRefreshed: Instant) {
+    suspend fun refreshPodcasts(sinceEpochSecondsIfNeverRefreshed: Long) {
         withContext(ioDispatcher) {
             val subscribed = podcastsDao.getAllSubscribed()
             subscribed.forEach {
                 launch {
                     episodesRepository.refreshForPodcastId(
                         podcastId = it.id,
-                        since = it.lastRefreshDate ?: sinceTimeIfPodcastNeverRefreshed,
+                        sinceEpochSeconds = it.lastRefreshDate?.epochSeconds ?: sinceEpochSecondsIfNeverRefreshed,
                     )
                 }
             }
@@ -62,7 +61,7 @@ internal class PodcastsAndEpisodesRepository internal constructor(
                 Pair(podcastFromDb.categories, podcastFromDb.lastRefreshDate)
             }
 
-        episodesRepository.refreshForPodcastId(podcastId, refreshSinceTime ?: clock.now().minus(1.days))
+        episodesRepository.refreshForPodcastId(podcastId, (refreshSinceTime ?: clock.now().minus(1.days)).epochSeconds)
 
         val categories = categoryDao.get(categoryIds).map { Category(it.id, it.name) }
 

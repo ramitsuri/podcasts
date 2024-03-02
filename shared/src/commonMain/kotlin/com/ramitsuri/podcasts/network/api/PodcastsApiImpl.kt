@@ -11,6 +11,7 @@ import com.ramitsuri.podcasts.network.model.TrendingPodcastsResponseDto
 import com.ramitsuri.podcasts.network.utils.apiRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import io.ktor.http.parameters
 import kotlinx.coroutines.CoroutineDispatcher
 
 internal class PodcastsApiImpl(
@@ -20,43 +21,49 @@ internal class PodcastsApiImpl(
 ) : PodcastsApi {
     override suspend fun getTrending(request: TrendingPodcastsRequest): PodcastResult<TrendingPodcastsResponseDto> {
         return apiRequest(ioDispatcher) {
-            httpClient.get(
-                "$baseUrl/podcasts/trending" +
-                    "?max=$MAX_COUNT" +
-                    "&since=${request.since.epochSeconds}",
-            )
+            httpClient.get(urlString = "$baseUrl/podcasts/trending") {
+                url {
+                    parameters.append("max", MAX_COUNT.toString())
+                    parameters.append("since", request.sinceEpochSeconds.toString())
+                }
+            }
         }
     }
 
     override suspend fun search(request: SearchPodcastsRequest): PodcastResult<PodcastsResponseDto> {
         return apiRequest(ioDispatcher) {
-            httpClient.get(
-                "$baseUrl/search/byterm" +
-                    "?q=${request.term}" +
-                    "&max=$MAX_COUNT" +
-                    "&fulltext=$GET_FULL_DESCRIPTION" +
-                    "&similar=$SIMILAR" +
-                    "&clean=$NON_EXPLICIT",
-            )
+            httpClient.get(urlString = "$baseUrl/search/byterm") {
+                url {
+                    parameters {
+                        append("q", request.term)
+                        append("max", MAX_COUNT.toString())
+                        append("fulltext", "true")
+                        append("similar", "true")
+                        append("clean", "true")
+                    }
+                }
+            }
         }
     }
 
     override suspend fun getById(id: Long): PodcastResult<PodcastResponseDto> {
         return apiRequest(ioDispatcher) {
-            httpClient.get(
-                "$baseUrl/podcasts/byfeedid" +
-                    "?id=$id",
-            )
+            httpClient.get(urlString = "$baseUrl/podcasts/byfeedid") {
+                url {
+                    parameters.append("id", id.toString())
+                }
+            }
         }
     }
 
     override suspend fun getByUrl(url: String): PodcastResult<PodcastResponseDto> {
         return try {
             apiRequest(ioDispatcher) {
-                httpClient.get(
-                    "$baseUrl/podcasts/byfeedurl" +
-                        "?url=$url",
-                )
+                httpClient.get(urlString = "$baseUrl/podcasts/byfeedurl") {
+                    url {
+                        parameters.append("url", url)
+                    }
+                }
             }
         } catch (e: Exception) {
             PodcastResult.Failure(PodcastError.Unknown(null))
@@ -65,8 +72,5 @@ internal class PodcastsApiImpl(
 
     companion object {
         private const val MAX_COUNT = 50
-        private const val GET_FULL_DESCRIPTION = true
-        private const val NON_EXPLICIT = true
-        private const val SIMILAR = true
     }
 }

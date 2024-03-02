@@ -16,9 +16,9 @@ class EpisodesRepository internal constructor(
 ) {
     suspend fun refreshForPodcastId(
         podcastId: Long,
-        since: Instant,
+        sinceEpochSeconds: Long,
     ): Boolean {
-        val result = episodesApi.getByPodcastId(GetEpisodesRequest(podcastId, since))
+        val result = episodesApi.getByPodcastId(GetEpisodesRequest(podcastId, sinceEpochSeconds))
         return if (result is PodcastResult.Success) {
             episodesDao.insert(result.data.items.map { Episode(it) })
             true
