@@ -9,7 +9,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
 internal interface PodcastsDao {
-    suspend fun getAll(): Flow<List<GetAllPodcasts>>
+    fun getAll(): Flow<List<GetAllPodcasts>>
 
     suspend fun getAllSubscribed(): List<GetAllSubscribedPodcasts>
 

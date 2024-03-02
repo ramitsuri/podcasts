@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.model
 
+import com.ramitsuri.podcasts.GetAllPodcasts
 import com.ramitsuri.podcasts.GetPodcast
 import com.ramitsuri.podcasts.network.model.PodcastDto
 import kotlinx.datetime.Instant
@@ -64,5 +65,26 @@ data class Podcast(
         newEpisodeNotifications = getPodcast.newEpisodeNotification,
         subscribedDate = getPodcast.subscribedDate,
         lastRefreshDate = getPodcast.lastRefreshDate,
+    )
+
+    internal constructor(getAllPodcasts: GetAllPodcasts, categories: List<Category>) : this(
+        id = getAllPodcasts.id,
+        guid = getAllPodcasts.guid,
+        title = getAllPodcasts.title,
+        description = getAllPodcasts.description,
+        author = getAllPodcasts.author,
+        owner = getAllPodcasts.owner,
+        url = getAllPodcasts.url,
+        link = getAllPodcasts.link,
+        image = getAllPodcasts.image,
+        artwork = getAllPodcasts.artwork,
+        explicit = getAllPodcasts.explicit,
+        episodeCount = getAllPodcasts.episodeCount,
+        categories = categories,
+        subscribed = getAllPodcasts.subscribed,
+        autoDownloadEpisodes = getAllPodcasts.autoDownloadEpisodes,
+        newEpisodeNotifications = getAllPodcasts.newEpisodeNotification,
+        subscribedDate = getAllPodcasts.subscribedDate,
+        lastRefreshDate = getAllPodcasts.lastRefreshDate,
     )
 }

@@ -13,4 +13,6 @@ internal interface PodcastsApi {
     suspend fun search(request: SearchPodcastsRequest): PodcastResult<PodcastsResponseDto>
 
     suspend fun getById(id: Long): PodcastResult<PodcastResponseDto>
+
+    suspend fun getByUrl(url: String): PodcastResult<PodcastResponseDto>
 }

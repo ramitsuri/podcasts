@@ -7,14 +7,20 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ramitsuri.podcasts.android.ui.home.HomeScreen
+import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsScreen
+import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsViewModel
 
 @Composable
 fun NavGraph(
@@ -24,7 +30,7 @@ fun NavGraph(
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
     Scaffold(
         bottomBar = {
-            if (BottomNavItem.entries.map { it.route }.contains(currentDestination)) {
+            if (BottomNavItem.entries.map { it.route.value }.contains(currentDestination)) {
                 BottomNavBar(
                     selectedTabRoute = currentDestination,
                     onHomeTabClicked = {
@@ -42,17 +48,38 @@ fun NavGraph(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = BottomNavItem.HOME.route,
+            startDestination = BottomNavItem.HOME.route.value,
             modifier = modifier.padding(innerPadding),
         ) {
-            composable(route = BottomNavItem.HOME.route) {
-                Text(text = "Home")
+            composable(route = BottomNavItem.HOME.route.value) {
+                HomeScreen(
+                    onImportSubscriptionsClicked = {
+                        navController.navigate(Route.IMPORT_SUBSCRIPTIONS.value)
+                    },
+                )
             }
-            composable(route = BottomNavItem.EXPLORE.route) {
+
+            composable(route = BottomNavItem.EXPLORE.route.value) {
                 Text(text = "Explore")
             }
-            composable(route = BottomNavItem.LIBRARY.route) {
+
+            composable(route = BottomNavItem.LIBRARY.route.value) {
                 Text(text = "Library")
+            }
+
+            composable(route = Route.IMPORT_SUBSCRIPTIONS.value) {
+                val viewModel =
+                    viewModel<ImportSubscriptionsViewModel>(
+                        factory = ImportSubscriptionsViewModel.factory(),
+                    )
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                ImportSubscriptionsScreen(
+                    viewState = state,
+                    onSubscriptionsDataFilePicked = viewModel::onSubscriptionDataFilePicked,
+                    onSubscribeAllPodcasts = viewModel::subscribeAllPodcasts,
+                    onBack = { navController.popBackStack() },
+                )
             }
         }
     }
@@ -70,7 +97,7 @@ private fun BottomNavBar(
         modifier = modifier,
     ) {
         BottomNavItem.entries.forEach { item ->
-            val selected = item.route == selectedTabRoute
+            val selected = item.route.value == selectedTabRoute
             NavBarItem(
                 icon = {
                     Icon(
@@ -99,12 +126,12 @@ private fun BottomNavBar(
 
 private fun NavHostController.navigateToMainDestination(to: BottomNavItem) {
     val currentDestination = currentBackStackEntry?.destination?.route
-    if (currentDestination == to.route) {
+    if (currentDestination == to.route.value) {
         return
     }
-    navigate(to.route) {
+    navigate(to.route.value) {
         // So that pressing back from any main bottom tab item leads user to home tab first
-        popUpTo(BottomNavItem.HOME.route)
+        popUpTo(BottomNavItem.HOME.route.value)
         launchSingleTop = true
     }
 }

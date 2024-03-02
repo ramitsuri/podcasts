@@ -12,26 +12,26 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.ramitsuri.podcasts.android.R
 
 enum class BottomNavItem(
-    val route: String,
+    val route: Route,
     val icon: ImageVector,
     val selectedIcon: ImageVector,
     @StringRes
     val labelRes: Int,
 ) {
     HOME(
-        route = "home",
+        route = Route.HOME,
         icon = Icons.Outlined.Home,
         selectedIcon = Icons.Filled.Home,
         labelRes = R.string.nav_home,
     ),
     EXPLORE(
-        route = "explore",
+        route = Route.EXPLORE,
         icon = Icons.Outlined.Search,
         selectedIcon = Icons.Filled.Search,
         labelRes = R.string.nav_explore,
     ),
     LIBRARY(
-        route = "library",
+        route = Route.LIBRARY,
         icon = Icons.Outlined.VideoLibrary,
         selectedIcon = Icons.Filled.VideoLibrary,
         labelRes = R.string.nav_library,
