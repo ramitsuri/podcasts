@@ -13,6 +13,8 @@ plugins {
 }
 
 kotlin {
+    jvm()
+
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -38,6 +40,12 @@ kotlin {
             implementation(libs.ktor.client.android)
             implementation(libs.sqldelight.android)
             implementation(libs.viewmodel)
+        }
+
+        jvmMain.dependencies {
+            implementation(libs.koin.test)
+            implementation(libs.ktor.test)
+            implementation(libs.sqldelight.test)
         }
 
         commonMain.dependencies {
