@@ -20,34 +20,42 @@ import kotlin.test.Test
  */
 internal class LocalRunner : KoinTest {
     @Test
-    fun podcastsApiTest(): Unit = runBlocking {
-        (get<PodcastsApi>().search(SearchPodcastsRequest("Joe Rogan"))
-            as? PodcastResult.Success)?.data?.podcasts?.forEach {
-            println(it.id.toString() + " | " + it.title)
+    fun podcastsApiTest(): Unit =
+        runBlocking {
+            (
+                get<PodcastsApi>().search(SearchPodcastsRequest("Joe Rogan"))
+                    as? PodcastResult.Success
+            )?.data?.podcasts?.forEach {
+                println(it.id.toString() + " | " + it.title)
+            }
         }
-    }
 
     @Test
-    fun episodesApiTest(): Unit = runBlocking {
-        val items = (get<EpisodesApi>().getByPodcastId(
-            GetEpisodesRequest(
-                id = 1153200,
-                sinceEpochSeconds = 1614709499,
-            ),
-        ) as? PodcastResult.Success)?.data?.items
-        println(Instant.ofEpochSecond(items?.minBy { it.datePublished }?.datePublished ?: 0))
-    }
+    fun episodesApiTest(): Unit =
+        runBlocking {
+            val items =
+                (
+                    get<EpisodesApi>().getByPodcastId(
+                        GetEpisodesRequest(
+                            id = 1153200,
+                            sinceEpochSeconds = 1614709499,
+                        ),
+                    ) as? PodcastResult.Success
+                )?.data?.items
+            println(Instant.ofEpochSecond(items?.minBy { it.datePublished }?.datePublished ?: 0))
+        }
 
     @BeforeTest
     fun before() {
         initKoin(
-            appModule = module {
-                single<AppInfo> {
-                    object : AppInfo {
-                        override val isDebug = false
+            appModule =
+                module {
+                    single<AppInfo> {
+                        object : AppInfo {
+                            override val isDebug = false
+                        }
                     }
-                }
-            },
+                },
         )
     }
 
