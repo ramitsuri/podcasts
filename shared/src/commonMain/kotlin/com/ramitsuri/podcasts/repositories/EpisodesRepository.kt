@@ -14,18 +14,18 @@ class EpisodesRepository internal constructor(
     private val episodesDao: EpisodesDao,
     private val episodesApi: EpisodesApi,
 ) {
-    suspend fun refreshForPodcastId(
-        podcastId: Long,
-    ): Boolean {
+    suspend fun refreshForPodcastId(podcastId: Long): Boolean {
         val episodes = episodesDao.getEpisodesForPodcast(podcastId)
-        val fetchSinceTime = episodes
-            .maxByOrNull { it.datePublished }
-            ?.datePublished
-        val request = GetEpisodesRequest(
-            id = podcastId,
-            sinceEpochSeconds = fetchSinceTime,
-            max = 100,
-        )
+        val fetchSinceTime =
+            episodes
+                .maxByOrNull { it.datePublished }
+                ?.datePublished
+        val request =
+            GetEpisodesRequest(
+                id = podcastId,
+                sinceEpochSeconds = fetchSinceTime,
+                max = 100,
+            )
         val result = episodesApi.getByPodcastId(request)
         return if (result is PodcastResult.Success) {
             episodesDao.insert(result.data.items.map { Episode(it) })

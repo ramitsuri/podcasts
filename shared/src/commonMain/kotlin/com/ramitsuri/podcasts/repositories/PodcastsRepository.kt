@@ -103,7 +103,7 @@ class PodcastsRepository internal constructor(
         subscribed: Boolean,
     ) {
         if (subscribed) {
-            withContext(ioDispatcher){
+            withContext(ioDispatcher) {
                 launch {
                     refreshPodcast(id)
                 }
