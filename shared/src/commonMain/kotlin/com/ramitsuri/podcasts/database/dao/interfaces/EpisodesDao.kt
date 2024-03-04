@@ -11,11 +11,13 @@ import kotlinx.datetime.Instant
 internal interface EpisodesDao {
     suspend fun insert(episodes: List<Episode>)
 
-    fun getEpisodesForPodcasts(podcastIds: List<Long>): Flow<List<GetEpisodesForPodcasts>>
+    fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<GetEpisodesForPodcasts>>
 
-    fun getEpisodesForPodcast(podcastId: Long): Flow<List<GetEpisodesForPodcast>>
+    fun getEpisodesForPodcastFlow(podcastId: Long): Flow<List<GetEpisodesForPodcast>>
 
-    suspend fun getEpisode(id: String): Flow<GetEpisode?>
+    suspend fun getEpisodesForPodcast(podcastId: Long): List<GetEpisodesForPodcast>
+
+    fun getEpisode(id: String): Flow<GetEpisode?>
 
     suspend fun updatePlayProgress(
         id: String,

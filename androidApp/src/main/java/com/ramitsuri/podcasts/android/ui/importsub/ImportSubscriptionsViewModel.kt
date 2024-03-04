@@ -27,7 +27,7 @@ class ImportSubscriptionsViewModel(
 
     init {
         viewModelScope.launch {
-            podcastsRepository.getAll().collect { podcasts ->
+            podcastsRepository.getAllFlow().collect { podcasts ->
                 _state.update { previousState ->
                     previousState.copy(podcasts = podcasts)
                 }

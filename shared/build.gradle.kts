@@ -36,6 +36,7 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            implementation(libs.koin.android)
             implementation(libs.ktor.okhttp)
             implementation(libs.ktor.client.android)
             implementation(libs.sqldelight.android)
