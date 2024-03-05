@@ -11,7 +11,6 @@ import com.ramitsuri.podcasts.network.model.TrendingPodcastsResponseDto
 import com.ramitsuri.podcasts.network.utils.apiRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
-import io.ktor.http.parameters
 import kotlinx.coroutines.CoroutineDispatcher
 
 internal class PodcastsApiImpl(
@@ -23,8 +22,10 @@ internal class PodcastsApiImpl(
         return apiRequest(ioDispatcher) {
             httpClient.get(urlString = "$baseUrl/podcasts/trending") {
                 url {
-                    parameters.append("max", MAX_COUNT.toString())
-                    parameters.append("since", request.sinceEpochSeconds.toString())
+                    parameters.apply {
+                        append("max", MAX_COUNT.toString())
+                        append("since", request.sinceEpochSeconds.toString())
+                    }
                 }
             }
         }
@@ -34,7 +35,7 @@ internal class PodcastsApiImpl(
         return apiRequest(ioDispatcher) {
             httpClient.get(urlString = "$baseUrl/search/byterm") {
                 url {
-                    parameters {
+                    parameters.apply {
                         append("q", request.term)
                         append("max", MAX_COUNT.toString())
                         append("fulltext", "true")

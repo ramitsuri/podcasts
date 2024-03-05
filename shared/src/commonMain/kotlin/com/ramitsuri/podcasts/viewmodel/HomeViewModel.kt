@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class HomeViewModel internal constructor(
-    private val repository: PodcastsAndEpisodesRepository,
+    repository: PodcastsAndEpisodesRepository,
 ) : ViewModel() {
     val state: StateFlow<HomeViewState> =
-        repository.getSubscribed()
+        repository.getSubscribedFlow()
             .map { HomeViewState(it) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeViewState(listOf()))
 }

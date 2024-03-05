@@ -14,6 +14,8 @@ import com.ramitsuri.podcasts.network.api.interfaces.CategoriesApi
 import com.ramitsuri.podcasts.network.api.interfaces.EpisodesApi
 import com.ramitsuri.podcasts.network.api.interfaces.PodcastsApi
 import com.ramitsuri.podcasts.network.provideHttpClient
+import com.ramitsuri.podcasts.repositories.EpisodesRepository
+import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
 import com.ramitsuri.podcasts.utils.DispatcherProvider
 import io.ktor.client.HttpClient
@@ -57,6 +59,22 @@ private val coreModule =
                 podcastsApi = get(),
                 podcastsDao = get(),
                 categoryDao = get(),
+                ioDispatcher = get<DispatcherProvider>().io,
+            )
+        }
+
+        single<EpisodesRepository> {
+            EpisodesRepository(
+                episodesDao = get(),
+                episodesApi = get(),
+            )
+        }
+
+        single<PodcastsAndEpisodesRepository> {
+            PodcastsAndEpisodesRepository(
+                podcastsRepository = get(),
+                episodesRepository = get(),
+                ioDispatcher = get<DispatcherProvider>().io,
             )
         }
 

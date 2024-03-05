@@ -8,21 +8,58 @@ import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.network.api.interfaces.PodcastsApi
 import com.ramitsuri.podcasts.network.model.PodcastResponseDto
 import com.ramitsuri.podcasts.network.model.SearchPodcastsRequest
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PodcastsRepository internal constructor(
     private val podcastsApi: PodcastsApi,
     private val podcastsDao: PodcastsDao,
     private val categoryDao: CategoryDao,
+    private val ioDispatcher: CoroutineDispatcher,
 ) {
-    suspend fun getAll(): Flow<List<Podcast>> {
+    suspend fun getAllFlow(): Flow<List<Podcast>> {
         return podcastsDao
             .getAll()
             .map { list ->
                 list.map { getAllPodcasts ->
                     val categories = categoryDao.get(getAllPodcasts.categories).map { Category(it.id, it.name) }
                     Podcast(getAllPodcasts, categories)
+                }
+            }
+    }
+
+    suspend fun getFlow(id: Long): Flow<Podcast?> {
+        return podcastsDao
+            .getFlow(id)
+            .map { getPodcast ->
+                if (getPodcast == null) {
+                    null
+                } else {
+                    val categories = categoryDao.get(getPodcast.categories).map { Category(it.id, it.name) }
+                    Podcast(getPodcast, categories)
+                }
+            }
+    }
+
+    suspend fun getAllSubscribed(): List<Podcast> {
+        return podcastsDao.getAllSubscribed()
+            .map { getAllSubscribedPodcasts ->
+                val categories =
+                    categoryDao.get(getAllSubscribedPodcasts.categories).map { Category(it.id, it.name) }
+                Podcast(getAllSubscribedPodcasts, categories)
+            }
+    }
+
+    fun getAllSubscribedFlow(): Flow<List<Podcast>> {
+        return podcastsDao.getAllSubscribedFlow()
+            .map { list ->
+                list.map { getAllSubscribedPodcasts ->
+                    val categories =
+                        categoryDao.get(getAllSubscribedPodcasts.categories).map { Category(it.id, it.name) }
+                    Podcast(getAllSubscribedPodcasts, categories)
                 }
             }
     }
@@ -65,6 +102,13 @@ class PodcastsRepository internal constructor(
         id: Long,
         subscribed: Boolean,
     ) {
+        if (subscribed) {
+            withContext(ioDispatcher) {
+                launch {
+                    refreshPodcast(id)
+                }
+            }
+        }
         podcastsDao.updateSubscribed(id, subscribed)
     }
 

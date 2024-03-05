@@ -14,11 +14,19 @@ class EpisodesRepository internal constructor(
     private val episodesDao: EpisodesDao,
     private val episodesApi: EpisodesApi,
 ) {
-    suspend fun refreshForPodcastId(
-        podcastId: Long,
-        sinceEpochSeconds: Long,
-    ): Boolean {
-        val result = episodesApi.getByPodcastId(GetEpisodesRequest(podcastId, sinceEpochSeconds))
+    suspend fun refreshForPodcastId(podcastId: Long): Boolean {
+        val episodes = episodesDao.getEpisodesForPodcast(podcastId)
+        val fetchSinceTime =
+            episodes
+                .maxByOrNull { it.datePublished }
+                ?.datePublished
+        val request =
+            GetEpisodesRequest(
+                id = podcastId,
+                sinceEpochSeconds = fetchSinceTime,
+                max = 100,
+            )
+        val result = episodesApi.getByPodcastId(request)
         return if (result is PodcastResult.Success) {
             episodesDao.insert(result.data.items.map { Episode(it) })
             true
@@ -27,17 +35,27 @@ class EpisodesRepository internal constructor(
         }
     }
 
-    suspend fun getEpisodesForPodcast(podcastId: Long): Flow<List<Episode>> {
+    fun getEpisodesForPodcastFlow(podcastId: Long): Flow<List<Episode>> {
         return episodesDao
-            .getEpisodesForPodcast(podcastId)
+            .getEpisodesForPodcastFlow(podcastId)
             .map { list ->
-                list.mapNotNull { getEpisodesForPodcast ->
+                list.map { getEpisodesForPodcast ->
                     Episode(getEpisodesForPodcast)
                 }
             }
     }
 
-    suspend fun getEpisode(id: String): Flow<Episode?> {
+    fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<Episode>> {
+        return episodesDao
+            .getEpisodesForPodcastsFlow(podcastIds)
+            .map { list ->
+                list.map { getEpisodesForPodcast ->
+                    Episode(getEpisodesForPodcast)
+                }
+            }
+    }
+
+    fun getEpisodeFlow(id: String): Flow<Episode?> {
         return episodesDao
             .getEpisode(id)
             .map { getEpisode ->

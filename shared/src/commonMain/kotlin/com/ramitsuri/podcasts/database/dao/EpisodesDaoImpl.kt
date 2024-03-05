@@ -31,21 +31,29 @@ internal class EpisodesDaoImpl(
         }
     }
 
-    override fun getEpisodesForPodcasts(podcastIds: List<Long>): Flow<List<GetEpisodesForPodcasts>> {
+    override fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<GetEpisodesForPodcasts>> {
         return episodeEntityQueries
             .getEpisodesForPodcasts(podcastIds)
             .asFlow()
             .mapToList(ioDispatcher)
     }
 
-    override fun getEpisodesForPodcast(podcastId: Long): Flow<List<GetEpisodesForPodcast>> {
+    override fun getEpisodesForPodcastFlow(podcastId: Long): Flow<List<GetEpisodesForPodcast>> {
         return episodeEntityQueries
             .getEpisodesForPodcast(podcastId)
             .asFlow()
             .mapToList(ioDispatcher)
     }
 
-    override suspend fun getEpisode(id: String): Flow<GetEpisode?> {
+    override suspend fun getEpisodesForPodcast(podcastId: Long): List<GetEpisodesForPodcast> {
+        return withContext(ioDispatcher) {
+            episodeEntityQueries
+                .getEpisodesForPodcast(podcastId)
+                .executeAsList()
+        }
+    }
+
+    override fun getEpisode(id: String): Flow<GetEpisode?> {
         return episodeEntityQueries
             .getEpisode(id)
             .asFlow()

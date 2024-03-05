@@ -21,6 +21,8 @@ import androidx.navigation.compose.rememberNavController
 import com.ramitsuri.podcasts.android.ui.home.HomeScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsViewModel
+import com.ramitsuri.podcasts.viewmodel.HomeViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun NavGraph(
@@ -52,7 +54,11 @@ fun NavGraph(
             modifier = modifier.padding(innerPadding),
         ) {
             composable(route = BottomNavItem.HOME.route.value) {
+                val viewModel = koinViewModel<HomeViewModel>()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
                 HomeScreen(
+                    state = state,
                     onImportSubscriptionsClicked = {
                         navController.navigate(Route.IMPORT_SUBSCRIPTIONS.value)
                     },
