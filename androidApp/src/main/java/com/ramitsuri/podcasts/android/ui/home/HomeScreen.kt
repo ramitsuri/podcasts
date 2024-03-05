@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.android.ui.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,18 +25,19 @@ import com.ramitsuri.podcasts.model.ui.HomeViewState
 fun HomeScreen(
     state: HomeViewState,
     onImportSubscriptionsClicked: () -> Unit,
+    onEpisodeClicked: (episodeId: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier =
-            modifier
-                .fillMaxSize(),
+        modifier
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         LazyColumn {
             items(state.episodes) {
-                EpisodeItem(it)
+                EpisodeItem(episode = it, onEpisodeClicked = onEpisodeClicked)
             }
         }
         if (state.episodes.isEmpty()) {
@@ -47,8 +49,14 @@ fun HomeScreen(
 }
 
 @Composable
-private fun EpisodeItem(episode: Episode) {
-    Column(modifier = Modifier.padding(16.dp)) {
+private fun EpisodeItem(episode: Episode, onEpisodeClicked: (episodeId: String) -> Unit) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .clickable {
+                onEpisodeClicked(episode.id)
+            },
+    ) {
         Text(style = MaterialTheme.typography.labelSmall, text = episode.podcastName)
         Spacer(modifier = Modifier.height(8.dp))
         Text(style = MaterialTheme.typography.bodyMedium, text = episode.title)
