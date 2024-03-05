@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.android.navigation
 
+import android.net.Uri
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -18,11 +19,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ramitsuri.podcasts.android.ui.episode.EpisodeDetailsScreen
 import com.ramitsuri.podcasts.android.ui.home.HomeScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsViewModel
+import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun NavGraph(
@@ -62,6 +66,10 @@ fun NavGraph(
                     onImportSubscriptionsClicked = {
                         navController.navigate(Route.IMPORT_SUBSCRIPTIONS.value)
                     },
+                    onEpisodeClicked = {
+                        val encoded = Uri.encode(it)
+                        navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
+                    },
                 )
             }
 
@@ -86,6 +94,23 @@ fun NavGraph(
                     onSubscribeAllPodcasts = viewModel::subscribeAllPodcasts,
                     onBack = { navController.popBackStack() },
                 )
+            }
+
+            composable(
+                route = Route.EPISODE_DETAILS.routeWithArgName(),
+                arguments = Route.EPISODE_DETAILS.navArgs(),
+            ) { backStackEntry ->
+                val episodeId = backStackEntry.arguments?.getString(RouteArgs.EPISODE_ID.value)
+                val decoded =
+                    if (episodeId == null) {
+                        null
+                    } else {
+                        Uri.decode(episodeId)
+                    }
+                val viewModel = koinViewModel<EpisodeDetailsViewModel>(parameters = { parametersOf(decoded) })
+
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                EpisodeDetailsScreen(state = state, onBack = { navController.navigateUp() })
             }
         }
     }
