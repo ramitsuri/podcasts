@@ -10,16 +10,16 @@ import kotlinx.coroutines.flow.stateIn
 
 class EpisodeDetailsViewModel internal constructor(
     episodeId: String?,
-    repository: EpisodesRepository
+    repository: EpisodesRepository,
 ) : ViewModel() {
-
-    val state: StateFlow<EpisodeDetailsViewState> = if (episodeId == null) {
-        MutableStateFlow(EpisodeDetailsViewState())
-    } else {
-        repository.getEpisodeFlow(episodeId)
-            .map { EpisodeDetailsViewState(it) }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), EpisodeDetailsViewState())
-    }
+    val state: StateFlow<EpisodeDetailsViewState> =
+        if (episodeId == null) {
+            MutableStateFlow(EpisodeDetailsViewState())
+        } else {
+            repository.getEpisodeFlow(episodeId)
+                .map { EpisodeDetailsViewState(it) }
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), EpisodeDetailsViewState())
+        }
 
     companion object
 }

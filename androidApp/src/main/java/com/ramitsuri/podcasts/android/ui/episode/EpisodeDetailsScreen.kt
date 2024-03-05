@@ -12,7 +12,11 @@ import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.ui.EpisodeDetailsViewState
 
 @Composable
-fun EpisodeDetailsScreen(state: EpisodeDetailsViewState, onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun EpisodeDetailsScreen(
+    state: EpisodeDetailsViewState,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier = modifier) {
         TopAppBar(onBack = onBack)
         val episode = state.episode
@@ -25,8 +29,9 @@ fun EpisodeDetailsScreen(state: EpisodeDetailsViewState, onBack: () -> Unit, mod
 @Composable
 private fun EpisodeDetails(episode: Episode) {
     Column(
-        modifier = Modifier
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .padding(16.dp),
     ) {
         Text(style = MaterialTheme.typography.labelSmall, text = episode.podcastName)
         Text(style = MaterialTheme.typography.labelSmall, text = episode.podcastAuthor)

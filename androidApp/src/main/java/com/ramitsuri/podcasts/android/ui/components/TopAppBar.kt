@@ -13,7 +13,10 @@ import androidx.compose.ui.res.stringResource
 import com.ramitsuri.podcasts.android.R
 
 @Composable
-fun TopAppBar(onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun TopAppBar(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,

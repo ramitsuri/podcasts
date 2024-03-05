@@ -30,8 +30,8 @@ fun HomeScreen(
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -49,13 +49,17 @@ fun HomeScreen(
 }
 
 @Composable
-private fun EpisodeItem(episode: Episode, onEpisodeClicked: (episodeId: String) -> Unit) {
+private fun EpisodeItem(
+    episode: Episode,
+    onEpisodeClicked: (episodeId: String) -> Unit,
+) {
     Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .clickable {
-                onEpisodeClicked(episode.id)
-            },
+        modifier =
+            Modifier
+                .padding(16.dp)
+                .clickable {
+                    onEpisodeClicked(episode.id)
+                },
     ) {
         Text(style = MaterialTheme.typography.labelSmall, text = episode.podcastName)
         Spacer(modifier = Modifier.height(8.dp))

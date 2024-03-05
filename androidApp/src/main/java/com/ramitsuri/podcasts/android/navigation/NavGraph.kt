@@ -101,11 +101,12 @@ fun NavGraph(
                 arguments = Route.EPISODE_DETAILS.navArgs(),
             ) { backStackEntry ->
                 val episodeId = backStackEntry.arguments?.getString(RouteArgs.EPISODE_ID.value)
-                val decoded = if (episodeId == null) {
-                    null
-                } else {
-                    Uri.decode(episodeId)
-                }
+                val decoded =
+                    if (episodeId == null) {
+                        null
+                    } else {
+                        Uri.decode(episodeId)
+                    }
                 val viewModel = koinViewModel<EpisodeDetailsViewModel>(parameters = { parametersOf(decoded) })
 
                 val state by viewModel.state.collectAsStateWithLifecycle()
