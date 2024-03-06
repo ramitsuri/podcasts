@@ -9,14 +9,20 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 internal class DataStoreKeyValueStore(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
 ) : KeyValueStore {
-    override suspend fun getString(key: Key, defaultValue: String?): String? {
+    override suspend fun getString(
+        key: Key,
+        defaultValue: String?,
+    ): String? {
         return getStringFlow(key, defaultValue)
             .first()
     }
 
-    override fun getStringFlow(key: Key, defaultValue: String?): Flow<String?> {
+    override fun getStringFlow(
+        key: Key,
+        defaultValue: String?,
+    ): Flow<String?> {
         return dataStore
             .data
             .map {
@@ -24,7 +30,10 @@ internal class DataStoreKeyValueStore(
             }
     }
 
-    override suspend fun putString(key: Key, value: String?) {
+    override suspend fun putString(
+        key: Key,
+        value: String?,
+    ) {
         if (value == null) {
             remove(stringPreferencesKey(key.value))
         } else {
