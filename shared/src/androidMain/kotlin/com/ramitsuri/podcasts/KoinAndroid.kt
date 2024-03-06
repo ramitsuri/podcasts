@@ -11,6 +11,8 @@ import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.android.Android
 import kotlinx.datetime.Clock
+import okio.Path
+import okio.Path.Companion.toPath
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -45,5 +47,10 @@ actual val platformModule =
                 episodeId = parameters.get(),
                 repository = get<EpisodesRepository>(),
             )
+        }
+
+        factory<Path> {
+            val dataStoreFileName = get<String>(qualifier = KoinQualifier.DATA_STORE_FILE_NAME)
+            get<Application>().filesDir.resolve(dataStoreFileName).absolutePath.toPath()
         }
     }
