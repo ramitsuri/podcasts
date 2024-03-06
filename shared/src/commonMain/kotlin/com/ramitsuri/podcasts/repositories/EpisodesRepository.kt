@@ -57,7 +57,7 @@ class EpisodesRepository internal constructor(
 
     fun getEpisodeFlow(id: String): Flow<Episode?> {
         return episodesDao
-            .getEpisode(id)
+            .getEpisodeFlow(id)
             .map { getEpisode ->
                 getEpisode?.let { Episode(it) }
             }
@@ -98,10 +98,49 @@ class EpisodesRepository internal constructor(
         episodesDao.updateQueuePosition(id, position)
     }
 
+    suspend fun addToQueue(id: String) {
+        episodesDao.addToQueue(id)
+    }
+
+    suspend fun removeFromQueue(id: String) {
+        updateQueuePosition(id, Episode.NOT_IN_QUEUE)
+    }
+
     suspend fun updateCompletedAt(
         id: String,
         completedAt: Instant,
     ) {
         episodesDao.updateCompletedAt(id, completedAt)
+    }
+
+    fun download(id: String) {
+        // TODO trigger download
+    }
+
+    suspend fun cancelDownload(id: String) {
+        // TODO cancel download and maybe remove downloaded file
+        episodesDao.updateDownloadStatus(id, DownloadStatus.NOT_DOWNLOADED)
+        episodesDao.updateDownloadProgress(id, 0.0)
+    }
+
+    suspend fun removeDownload(id: String) {
+        // TODO remove downloaded file
+        episodesDao.updateDownloadStatus(id, DownloadStatus.NOT_DOWNLOADED)
+        episodesDao.updateDownloadProgress(id, 0.0)
+        episodesDao.updateDownloadBlocked(id, true)
+    }
+
+    suspend fun markPlayed(
+        id: String,
+        time: Instant,
+    ) {
+        episodesDao.updateCompletedAt(id, time)
+        episodesDao.updatePlayProgress(id, Episode.PLAY_PROGRESS_MAX)
+        episodesDao.updateQueuePosition(id, Episode.NOT_IN_QUEUE)
+    }
+
+    suspend fun markNotPlayed(id: String) {
+        episodesDao.updateCompletedAt(id, null)
+        episodesDao.updatePlayProgress(id, 0)
     }
 }

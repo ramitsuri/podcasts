@@ -44,6 +44,10 @@ UPDATE EpisodeAdditionalInfoEntity
 SET queuePosition = :queuePosition
 WHERE id = :id;
 
+selectMaxQueuePosition:
+SELECT MAX(queuePosition) AS currentMaxQueuePosition
+FROM EpisodeAdditionalInfoEntity;
+
 updateCompletedAt:
 UPDATE EpisodeAdditionalInfoEntity
 SET completedAt = :completedAt
