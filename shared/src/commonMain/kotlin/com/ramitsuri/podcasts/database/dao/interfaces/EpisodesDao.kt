@@ -17,7 +17,9 @@ internal interface EpisodesDao {
 
     suspend fun getEpisodesForPodcast(podcastId: Long): List<GetEpisodesForPodcast>
 
-    fun getEpisode(id: String): Flow<GetEpisode?>
+    fun getEpisodeFlow(id: String): Flow<GetEpisode?>
+
+    suspend fun getEpisode(id: String): GetEpisode?
 
     suspend fun updatePlayProgress(
         id: String,
@@ -44,8 +46,12 @@ internal interface EpisodesDao {
         position: Int,
     )
 
+    suspend fun addToQueue(
+        id: String,
+    )
+
     suspend fun updateCompletedAt(
         id: String,
-        completedAt: Instant,
+        completedAt: Instant?,
     )
 }

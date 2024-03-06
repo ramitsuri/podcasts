@@ -41,7 +41,7 @@ data class Episode(
         explicit = dto.explicit == 1,
         episode = dto.episode,
         season = dto.season,
-        progressInSeconds = 0,
+        progressInSeconds = PLAY_PROGRESS_MIN,
         downloadStatus = DownloadStatus.NOT_DOWNLOADED,
         downloadProgress = 0.0,
         downloadBlocked = false,
@@ -117,5 +117,7 @@ data class Episode(
 
     companion object {
         const val NOT_IN_QUEUE = -1
+        const val PLAY_PROGRESS_MIN = 0
+        const val PLAY_PROGRESS_MAX = Int.MAX_VALUE
     }
 }

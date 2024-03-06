@@ -53,11 +53,19 @@ internal class EpisodesDaoImpl(
         }
     }
 
-    override fun getEpisode(id: String): Flow<GetEpisode?> {
+    override fun getEpisodeFlow(id: String): Flow<GetEpisode?> {
         return episodeEntityQueries
             .getEpisode(id)
             .asFlow()
             .mapToOneOrNull(ioDispatcher)
+    }
+
+    override suspend fun getEpisode(id: String): GetEpisode? {
+        return withContext(ioDispatcher) {
+            episodeEntityQueries
+                .getEpisode(id)
+                .executeAsOneOrNull()
+        }
     }
 
     override suspend fun updatePlayProgress(
@@ -105,9 +113,20 @@ internal class EpisodesDaoImpl(
         }
     }
 
+    override suspend fun addToQueue(id: String) {
+        withContext(ioDispatcher) {
+            val queuePosition = (episodeAdditionalInfoEntityQueries
+                .selectMaxQueuePosition()
+                .executeAsOneOrNull()
+                ?.currentMaxQueuePosition
+                ?: Episode.NOT_IN_QUEUE) + 1
+            updateQueuePosition(id, queuePosition)
+        }
+    }
+
     override suspend fun updateCompletedAt(
         id: String,
-        completedAt: Instant,
+        completedAt: Instant?,
     ) {
         withContext(ioDispatcher) {
             episodeAdditionalInfoEntityQueries.updateCompletedAt(id = id, completedAt = completedAt)

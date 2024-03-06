@@ -70,6 +70,14 @@ fun NavGraph(
                         val encoded = Uri.encode(it)
                         navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
                     },
+                    onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
+                    onEpisodeAddToQueueClicked = viewModel::onEpisodeAddToQueueClicked,
+                    onEpisodeRemoveFromQueueClicked = viewModel::onEpisodeRemoveFromQueueClicked,
+                    onEpisodeDownloadClicked = viewModel::onEpisodeDownloadClicked,
+                    onEpisodeRemoveDownloadClicked = viewModel::onEpisodeRemoveDownloadClicked,
+                    onEpisodeCancelDownloadClicked = viewModel::onEpisodeCancelDownloadClicked,
+                    onEpisodePlayedClicked = viewModel::onEpisodePlayedClicked,
+                    onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                 )
             }
 
