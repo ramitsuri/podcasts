@@ -47,8 +47,8 @@ fun HomeScreen(
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -91,9 +91,9 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-        Modifier
-            .padding(16.dp)
-            .clickable(onClick = onClicked),
+            Modifier
+                .padding(16.dp)
+                .clickable(onClick = onClicked),
     ) {
         Text(style = MaterialTheme.typography.labelSmall, text = episode.podcastName)
         Spacer(modifier = Modifier.height(8.dp))

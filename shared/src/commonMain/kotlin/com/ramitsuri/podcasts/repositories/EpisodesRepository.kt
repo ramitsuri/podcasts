@@ -130,7 +130,10 @@ class EpisodesRepository internal constructor(
         episodesDao.updateDownloadBlocked(id, true)
     }
 
-    suspend fun markPlayed(id: String, time: Instant) {
+    suspend fun markPlayed(
+        id: String,
+        time: Instant,
+    ) {
         episodesDao.updateCompletedAt(id, time)
         episodesDao.updatePlayProgress(id, Episode.PLAY_PROGRESS_MAX)
         episodesDao.updateQueuePosition(id, Episode.NOT_IN_QUEUE)

@@ -20,9 +20,7 @@ class HomeViewModel internal constructor(
             .map { HomeViewState(it) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeViewState(listOf()))
 
-
     fun onEpisodePlayClicked(episodeId: String) {
-
     }
 
     fun onEpisodeAddToQueueClicked(episodeId: String) {

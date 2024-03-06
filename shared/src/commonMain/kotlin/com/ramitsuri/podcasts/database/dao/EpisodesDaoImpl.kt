@@ -115,11 +115,14 @@ internal class EpisodesDaoImpl(
 
     override suspend fun addToQueue(id: String) {
         withContext(ioDispatcher) {
-            val queuePosition = (episodeAdditionalInfoEntityQueries
-                .selectMaxQueuePosition()
-                .executeAsOneOrNull()
-                ?.currentMaxQueuePosition
-                ?: Episode.NOT_IN_QUEUE) + 1
+            val queuePosition =
+                (
+                    episodeAdditionalInfoEntityQueries
+                        .selectMaxQueuePosition()
+                        .executeAsOneOrNull()
+                        ?.currentMaxQueuePosition
+                        ?: Episode.NOT_IN_QUEUE
+                ) + 1
             updateQueuePosition(id, queuePosition)
         }
     }

@@ -46,9 +46,7 @@ internal interface EpisodesDao {
         position: Int,
     )
 
-    suspend fun addToQueue(
-        id: String,
-    )
+    suspend fun addToQueue(id: String)
 
     suspend fun updateCompletedAt(
         id: String,
