@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts
 
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import com.ramitsuri.podcasts.database.dao.CategoryDaoImpl
 import com.ramitsuri.podcasts.database.dao.EpisodesDaoImpl
 import com.ramitsuri.podcasts.database.dao.PodcastsDaoImpl
@@ -17,12 +18,16 @@ import com.ramitsuri.podcasts.network.provideHttpClient
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
+import com.ramitsuri.podcasts.settings.DataStoreKeyValueStore
+import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.DispatcherProvider
 import io.ktor.client.HttpClient
 import kotlinx.datetime.Clock
+import okio.Path
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 fun initKoin(appModule: Module): KoinApplication {
@@ -105,9 +110,15 @@ private val coreModule =
             Clock.System
         }
 
+        single<Settings> {
+            val dataStore = PreferenceDataStoreFactory.createWithPath(produceFile = { get<Path>() })
+            val keyValueStore = DataStoreKeyValueStore(dataStore)
+            Settings(keyValueStore)
+        }
+
         factory<PodcastsApi> {
             PodcastsApiImpl(
-                baseUrl = get(),
+                baseUrl = get(qualifier = KoinQualifier.BASE_API_URL),
                 httpClient = get(),
                 ioDispatcher = get<DispatcherProvider>().io,
             )
@@ -115,7 +126,7 @@ private val coreModule =
 
         factory<CategoriesApi> {
             CategoriesApiImpl(
-                baseUrl = get(),
+                baseUrl = get(qualifier = KoinQualifier.BASE_API_URL),
                 httpClient = get(),
                 ioDispatcher = get<DispatcherProvider>().io,
             )
@@ -123,15 +134,24 @@ private val coreModule =
 
         factory<EpisodesApi> {
             EpisodesApiImpl(
-                baseUrl = get(),
+                baseUrl = get(qualifier = KoinQualifier.BASE_API_URL),
                 httpClient = get(),
                 ioDispatcher = get<DispatcherProvider>().io,
             )
         }
 
-        factory<String> {
+        factory<String>(qualifier = KoinQualifier.BASE_API_URL) {
             "https://api.podcastindex.org/api/1.0"
+        }
+
+        factory<String>(qualifier = KoinQualifier.DATA_STORE_FILE_NAME) {
+            "podcasts.preferences_pb"
         }
     }
 
 expect val platformModule: Module
+
+internal object KoinQualifier {
+    val BASE_API_URL = named("base_api_url")
+    val DATA_STORE_FILE_NAME = named("data_store_file_name")
+}

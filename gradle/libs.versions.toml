@@ -9,6 +9,7 @@ androidx-activityCompose = "1.8.2"
 build-konfig = "0.15.1"
 compose-navigation = "2.7.7"
 compose-lifecycle = "2.7.0"
+datastore-preferences = "1.1.0-beta01"
 detekt = "1.23.3"
 koin = "3.5.3"
 kotlin-datetime = "0.5.0"
@@ -35,6 +36,8 @@ compose-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel
 compose-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "compose-lifecycle" }
 
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
+
+datastore-preferences = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore-preferences" }
 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
