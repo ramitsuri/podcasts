@@ -36,7 +36,7 @@ actual val platformModule =
             HomeViewModel(
                 podcastsAndEpisodesRepository = get<PodcastsAndEpisodesRepository>(),
                 episodesRepository = get<EpisodesRepository>(),
-                clock = get<Clock>()
+                clock = get<Clock>(),
             )
         }
 
