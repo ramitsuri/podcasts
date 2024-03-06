@@ -10,6 +10,7 @@ import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.android.Android
+import kotlinx.datetime.Clock
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -33,7 +34,9 @@ actual val platformModule =
 
         viewModel<HomeViewModel> {
             HomeViewModel(
-                repository = get<PodcastsAndEpisodesRepository>(),
+                podcastsAndEpisodesRepository = get<PodcastsAndEpisodesRepository>(),
+                episodesRepository = get<EpisodesRepository>(),
+                clock = get<Clock>()
             )
         }
 
