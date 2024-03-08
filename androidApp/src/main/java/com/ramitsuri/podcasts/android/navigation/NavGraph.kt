@@ -1,16 +1,26 @@
 package com.ramitsuri.podcasts.android.navigation
 
 import android.net.Uri
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,12 +38,21 @@ import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
+    val scaffoldSheetState = rememberBottomSheetScaffoldState()
+    // TODO use this to hide/show the bottom tabs
+    val offsetBottomSheet by remember(scaffoldSheetState.bottomSheetState) {
+        derivedStateOf {
+            runCatching { scaffoldSheetState.bottomSheetState.requireOffset() }.getOrDefault(0F)
+        }
+    }
+    val scope = rememberCoroutineScope()
     Scaffold(
         bottomBar = {
             if (BottomNavItem.entries.map { it.route.value }.contains(currentDestination)) {
@@ -52,73 +71,90 @@ fun NavGraph(
             }
         },
     ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = BottomNavItem.HOME.route.value,
-            modifier = modifier.padding(innerPadding),
+        val bottomPadding = innerPadding.calculateBottomPadding() + 40.dp
+        BottomSheetScaffold(
+            scaffoldState = scaffoldSheetState,
+            sheetPeekHeight = bottomPadding,
+            modifier = Modifier.padding(innerPadding),
+            sheetContent = {
+                Column(
+                    Modifier
+                        .padding(bottom = bottomPadding)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    // TODO add player content here
+                }
+            },
         ) {
-            composable(route = BottomNavItem.HOME.route.value) {
-                val viewModel = koinViewModel<HomeViewModel>()
-                val state by viewModel.state.collectAsStateWithLifecycle()
+            NavHost(
+                navController = navController,
+                startDestination = BottomNavItem.HOME.route.value,
+                modifier = modifier.padding(innerPadding),
+            ) {
+                composable(route = BottomNavItem.HOME.route.value) {
+                    val viewModel = koinViewModel<HomeViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
 
-                HomeScreen(
-                    state = state,
-                    onImportSubscriptionsClicked = {
-                        navController.navigate(Route.IMPORT_SUBSCRIPTIONS.value)
-                    },
-                    onEpisodeClicked = {
-                        val encoded = Uri.encode(it)
-                        navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
-                    },
-                    onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
-                    onEpisodeAddToQueueClicked = viewModel::onEpisodeAddToQueueClicked,
-                    onEpisodeRemoveFromQueueClicked = viewModel::onEpisodeRemoveFromQueueClicked,
-                    onEpisodeDownloadClicked = viewModel::onEpisodeDownloadClicked,
-                    onEpisodeRemoveDownloadClicked = viewModel::onEpisodeRemoveDownloadClicked,
-                    onEpisodeCancelDownloadClicked = viewModel::onEpisodeCancelDownloadClicked,
-                    onEpisodePlayedClicked = viewModel::onEpisodePlayedClicked,
-                    onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
-                )
-            }
-
-            composable(route = BottomNavItem.EXPLORE.route.value) {
-                Text(text = "Explore")
-            }
-
-            composable(route = BottomNavItem.LIBRARY.route.value) {
-                Text(text = "Library")
-            }
-
-            composable(route = Route.IMPORT_SUBSCRIPTIONS.value) {
-                val viewModel =
-                    viewModel<ImportSubscriptionsViewModel>(
-                        factory = ImportSubscriptionsViewModel.factory(),
+                    HomeScreen(
+                        state = state,
+                        onImportSubscriptionsClicked = {
+                            navController.navigate(Route.IMPORT_SUBSCRIPTIONS.value)
+                        },
+                        onEpisodeClicked = {
+                            val encoded = Uri.encode(it)
+                            navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
+                        },
+                        onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
+                        onEpisodeAddToQueueClicked = viewModel::onEpisodeAddToQueueClicked,
+                        onEpisodeRemoveFromQueueClicked = viewModel::onEpisodeRemoveFromQueueClicked,
+                        onEpisodeDownloadClicked = viewModel::onEpisodeDownloadClicked,
+                        onEpisodeRemoveDownloadClicked = viewModel::onEpisodeRemoveDownloadClicked,
+                        onEpisodeCancelDownloadClicked = viewModel::onEpisodeCancelDownloadClicked,
+                        onEpisodePlayedClicked = viewModel::onEpisodePlayedClicked,
+                        onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                     )
-                val state by viewModel.state.collectAsStateWithLifecycle()
+                }
 
-                ImportSubscriptionsScreen(
-                    viewState = state,
-                    onSubscriptionsDataFilePicked = viewModel::onSubscriptionDataFilePicked,
-                    onSubscribeAllPodcasts = viewModel::subscribeAllPodcasts,
-                    onBack = { navController.popBackStack() },
-                )
-            }
+                composable(route = BottomNavItem.EXPLORE.route.value) {
+                    Text(text = "Explore")
+                }
 
-            composable(
-                route = Route.EPISODE_DETAILS.routeWithArgName(),
-                arguments = Route.EPISODE_DETAILS.navArgs(),
-            ) { backStackEntry ->
-                val episodeId = backStackEntry.arguments?.getString(RouteArgs.EPISODE_ID.value)
-                val decoded =
-                    if (episodeId == null) {
-                        null
-                    } else {
-                        Uri.decode(episodeId)
-                    }
-                val viewModel = koinViewModel<EpisodeDetailsViewModel>(parameters = { parametersOf(decoded) })
+                composable(route = BottomNavItem.LIBRARY.route.value) {
+                    Text(text = "Library")
+                }
 
-                val state by viewModel.state.collectAsStateWithLifecycle()
-                EpisodeDetailsScreen(state = state, onBack = { navController.navigateUp() })
+                composable(route = Route.IMPORT_SUBSCRIPTIONS.value) {
+                    val viewModel =
+                        viewModel<ImportSubscriptionsViewModel>(
+                            factory = ImportSubscriptionsViewModel.factory(),
+                        )
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    ImportSubscriptionsScreen(
+                        viewState = state,
+                        onSubscriptionsDataFilePicked = viewModel::onSubscriptionDataFilePicked,
+                        onSubscribeAllPodcasts = viewModel::subscribeAllPodcasts,
+                        onBack = { navController.popBackStack() },
+                    )
+                }
+
+                composable(
+                    route = Route.EPISODE_DETAILS.routeWithArgName(),
+                    arguments = Route.EPISODE_DETAILS.navArgs(),
+                ) { backStackEntry ->
+                    val episodeId = backStackEntry.arguments?.getString(RouteArgs.EPISODE_ID.value)
+                    val decoded =
+                        if (episodeId == null) {
+                            null
+                        } else {
+                            Uri.decode(episodeId)
+                        }
+                    val viewModel = koinViewModel<EpisodeDetailsViewModel>(parameters = { parametersOf(decoded) })
+
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+                    EpisodeDetailsScreen(state = state, onBack = { navController.navigateUp() })
+                }
             }
         }
     }
