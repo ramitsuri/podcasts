@@ -62,7 +62,8 @@ fun EpisodeControls(
 
             DownloadStatus.PAUSED,
             DownloadStatus.DOWNLOADING,
-            DownloadStatus.QUEUED -> {
+            DownloadStatus.QUEUED,
+            -> {
                 IconButton(onClick = onCancelDownloadClicked) {
                     Icon(imageVector = Icons.Outlined.Downloading, contentDescription = "")
                 }
@@ -75,11 +76,12 @@ fun EpisodeControls(
             }
         }
         IconButton(
-            onClick = if (episode.completedAt == null) {
-                onPlayedClicked
-            } else {
-                onNotPlayedClicked
-            },
+            onClick =
+                if (episode.completedAt == null) {
+                    onPlayedClicked
+                } else {
+                    onNotPlayedClicked
+                },
         ) {
             Icon(imageVector = Icons.Outlined.CheckCircleOutline, contentDescription = "")
         }

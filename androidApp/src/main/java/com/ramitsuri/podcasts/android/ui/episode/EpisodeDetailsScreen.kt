@@ -69,8 +69,8 @@ private fun EpisodeDetails(
 ) {
     Column(
         modifier =
-        Modifier
-            .padding(16.dp),
+            Modifier
+                .padding(16.dp),
     ) {
         Text(style = MaterialTheme.typography.labelSmall, text = episode.podcastName)
         Text(style = MaterialTheme.typography.labelSmall, text = episode.podcastAuthor)

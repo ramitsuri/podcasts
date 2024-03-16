@@ -34,13 +34,14 @@ data class Episode(
 ) {
     val friendlyDatePublished: String
         get() {
-            val format = LocalDateTime.Format {
-                year()
-                char('-')
-                monthNumber()
-                char('-')
-                dayOfMonth()
-            }
+            val format =
+                LocalDateTime.Format {
+                    year()
+                    char('-')
+                    monthNumber()
+                    char('-')
+                    dayOfMonth()
+                }
             return Instant
                 .fromEpochSeconds(datePublished)
                 .toLocalDateTime(TimeZone.currentSystemDefault())
