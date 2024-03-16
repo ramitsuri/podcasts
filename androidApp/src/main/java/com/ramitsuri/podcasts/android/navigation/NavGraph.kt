@@ -106,6 +106,7 @@ fun NavGraph(
                             navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
+                        onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
                         onEpisodeAddToQueueClicked = viewModel::onEpisodeAddToQueueClicked,
                         onEpisodeRemoveFromQueueClicked = viewModel::onEpisodeRemoveFromQueueClicked,
                         onEpisodeDownloadClicked = viewModel::onEpisodeDownloadClicked,
@@ -153,7 +154,19 @@ fun NavGraph(
                     val viewModel = koinViewModel<EpisodeDetailsViewModel>(parameters = { parametersOf(decoded) })
 
                     val state by viewModel.state.collectAsStateWithLifecycle()
-                    EpisodeDetailsScreen(state = state, onBack = { navController.navigateUp() })
+                    EpisodeDetailsScreen(
+                        state = state,
+                        onBack = { navController.navigateUp() },
+                        onEpisodePlayClicked = {},
+                        onEpisodePauseClicked = {},
+                        onEpisodeAddToQueueClicked = {},
+                        onEpisodeRemoveFromQueueClicked = {},
+                        onEpisodeDownloadClicked = {},
+                        onEpisodeRemoveDownloadClicked = {},
+                        onEpisodeCancelDownloadClicked = {},
+                        onEpisodePlayedClicked = {},
+                        onEpisodeNotPlayedClicked = {},
+                    )
                 }
             }
         }

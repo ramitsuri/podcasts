@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.koin.android)
     implementation(libs.koin.android.compose)
+    implementation(libs.kotlin.datetime)
     debugImplementation(libs.compose.ui.tooling)
 }
 
