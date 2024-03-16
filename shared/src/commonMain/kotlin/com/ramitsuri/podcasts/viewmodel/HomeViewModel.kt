@@ -15,12 +15,16 @@ class HomeViewModel internal constructor(
     private val episodesRepository: EpisodesRepository,
     private val clock: Clock,
 ) : ViewModel() {
+    // TODO populate currently playing episode id
     val state: StateFlow<HomeViewState> =
         podcastsAndEpisodesRepository.getSubscribedFlow()
             .map { HomeViewState(it) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeViewState(listOf()))
 
     fun onEpisodePlayClicked(episodeId: String) {
+    }
+
+    fun onEpisodePauseClicked(episodeId: String) {
     }
 
     fun onEpisodeAddToQueueClicked(episodeId: String) {
