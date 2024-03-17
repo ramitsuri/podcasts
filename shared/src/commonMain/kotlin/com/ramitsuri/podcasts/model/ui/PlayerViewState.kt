@@ -4,7 +4,7 @@ import kotlin.time.Duration
 
 data class PlayerViewState(
     val isExpanded: Boolean,
-    val isPlaying:Boolean,
+    val isPlaying: Boolean,
     val episodeTitle: String,
     val episodeArtworkUrl: String,
     val podcastName: String,

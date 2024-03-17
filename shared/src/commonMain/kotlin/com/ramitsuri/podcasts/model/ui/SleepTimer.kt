@@ -10,9 +10,10 @@ sealed interface SleepTimer {
     data class Custom(val duration: Duration) : SleepTimer
 
     val timerDuration: Duration
-        get() = when (this) {
-            is Custom -> duration
-            is EndOfEpisode -> duration
-            is None -> Duration.ZERO
-        }
+        get() =
+            when (this) {
+                is Custom -> duration
+                is EndOfEpisode -> duration
+                is None -> Duration.ZERO
+            }
 }

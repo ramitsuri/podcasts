@@ -65,8 +65,9 @@ fun NavGraph(
         bottomBar = {
             if (BottomNavItem.entries.map { it.route.value }.contains(currentDestination)) {
                 BottomNavBar(
-                    modifier = Modifier
-                        .offset { IntOffset(x = 0, y = 0) },
+                    modifier =
+                        Modifier
+                            .offset { IntOffset(x = 0, y = 0) },
                     selectedTabRoute = currentDestination,
                     onHomeTabClicked = {
                         navController.navigateToMainDestination(BottomNavItem.HOME)
@@ -91,21 +92,23 @@ fun NavGraph(
             sheetDragHandle = { },
             sheetContent = {
                 PlayerScreen(
-                    modifier = Modifier
-                        .padding(bottom = bottomPadding),
-                    state = PlayerViewState(
-                        isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
-                        isPlaying = true,
-                        episodeTitle = episode().title,
-                        episodeArtworkUrl = episode().link,
-                        podcastName = episode().podcastName,
-                        sleepTimer = SleepTimer.None,
-                        playbackSpeed = 1f,
-                        isCasting = false,
-                        progress = 0.4f,
-                        playedDuration = 5.seconds,
-                        remainingDuration = 55.minutes + 32.seconds,
-                    ),
+                    modifier =
+                        Modifier
+                            .padding(bottom = bottomPadding),
+                    state =
+                        PlayerViewState(
+                            isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
+                            isPlaying = true,
+                            episodeTitle = episode().title,
+                            episodeArtworkUrl = episode().link,
+                            podcastName = episode().podcastName,
+                            sleepTimer = SleepTimer.None,
+                            playbackSpeed = 1f,
+                            isCasting = false,
+                            progress = 0.4f,
+                            playedDuration = 5.seconds,
+                            remainingDuration = 55.minutes + 32.seconds,
+                        ),
                     onNotExpandedHeightKnown = {
                         peekHeightPx = it
                     },
