@@ -1,8 +1,7 @@
 package com.ramitsuri.podcasts.android.navigation
 
 import android.net.Uri
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -10,16 +9,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,14 +31,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ramitsuri.podcasts.android.ui.PlayerScreen
+import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.android.ui.episode.EpisodeDetailsScreen
 import com.ramitsuri.podcasts.android.ui.home.HomeScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsViewModel
+import com.ramitsuri.podcasts.model.ui.PlayerViewState
+import com.ramitsuri.podcasts.model.ui.SleepTimer
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +65,8 @@ fun NavGraph(
         bottomBar = {
             if (BottomNavItem.entries.map { it.route.value }.contains(currentDestination)) {
                 BottomNavBar(
+                    modifier = Modifier
+                        .offset { IntOffset(x = 0, y = 0) },
                     selectedTabRoute = currentDestination,
                     onHomeTabClicked = {
                         navController.navigateToMainDestination(BottomNavItem.HOME)
@@ -71,20 +81,42 @@ fun NavGraph(
             }
         },
     ) { innerPadding ->
-        val bottomPadding = innerPadding.calculateBottomPadding() + 40.dp
+        val bottomPadding = innerPadding.calculateBottomPadding() + 80.dp
+        // TODO fix to use peekHeightPx for sheetPeekHeight
+        var peekHeightPx by remember { mutableIntStateOf(0) }
         BottomSheetScaffold(
             scaffoldState = scaffoldSheetState,
             sheetPeekHeight = bottomPadding,
             modifier = Modifier.padding(innerPadding),
+            sheetDragHandle = { },
             sheetContent = {
-                Column(
-                    Modifier
-                        .padding(bottom = bottomPadding)
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    // TODO add player content here
-                }
+                PlayerScreen(
+                    modifier = Modifier
+                        .padding(bottom = bottomPadding),
+                    state = PlayerViewState(
+                        isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
+                        isPlaying = true,
+                        episodeTitle = episode().title,
+                        episodeArtworkUrl = episode().link,
+                        podcastName = episode().podcastName,
+                        sleepTimer = SleepTimer.None,
+                        playbackSpeed = 1f,
+                        isCasting = false,
+                        progress = 0.4f,
+                        playedDuration = 5.seconds,
+                        remainingDuration = 55.minutes + 32.seconds,
+                    ),
+                    onNotExpandedHeightKnown = {
+                        peekHeightPx = it
+                    },
+                    onGoToQueueClicked = { },
+                    onReplayClicked = { },
+                    onPauseClicked = { },
+                    onPlayClicked = { },
+                    onForwardClicked = { },
+                    onSeekValueChange = { },
+                    onPlaybackSpeedSet = { },
+                )
             },
         ) {
             NavHost(

@@ -7,6 +7,7 @@ compose-compiler = "1.5.9"
 
 androidx-activityCompose = "1.8.2"
 build-konfig = "0.15.1"
+coil = "2.6.0"
 compose-navigation = "2.7.7"
 compose-lifecycle = "2.7.0"
 datastore-preferences = "1.1.0-beta01"
@@ -23,6 +24,8 @@ viewmodel = "2.7.0"
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+
+coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-ui = { module = "androidx.compose.ui:ui" }
