@@ -8,9 +8,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.ramitsuri.podcasts.android.ui.AppTheme
+import com.ramitsuri.podcasts.android.ui.PreviewTheme
+import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
 import com.ramitsuri.podcasts.android.ui.components.TopAppBar
 import com.ramitsuri.podcasts.android.ui.components.episode
@@ -95,10 +95,10 @@ private fun EpisodeDetails(
     }
 }
 
-@Preview
+@ThemePreview
 @Composable
 private fun EpisodeDetailsPreview() {
-    AppTheme {
+    PreviewTheme {
         EpisodeDetailsScreen(
             state = EpisodeDetailsViewState(episode()),
             onBack = { },

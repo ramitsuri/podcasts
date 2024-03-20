@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS EpisodeEntity (
     link TEXT NOT NULL,
     enclosureUrl TEXT NOT NULL,
     datePublished INTEGER NOT NULL,
-    duration INTEGER,
+    duration INTEGER AS Int,
     explicit INTEGER AS Boolean NOT NULL,
     episode INTEGER AS Int,
     season INTEGER AS Int
@@ -19,7 +19,7 @@ getEpisode:
 SELECT
 ee.*,
 eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt,
-pe.title AS podcastTitle, pe.author AS podcastAuthor
+pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl
 FROM EpisodeEntity AS ee
 INNER JOIN PodcastEntity AS pe
     ON ee.podcastId == pe.id
@@ -30,7 +30,7 @@ WHERE ee.id == :id;
 getEpisodesForPodcast:
 SELECT ee.*,
 eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt,
-pe.title AS podcastTitle, pe.author AS podcastAuthor
+pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl
 FROM EpisodeEntity AS ee
 INNER JOIN PodcastEntity AS pe
     ON ee.podcastId == pe.id
@@ -42,7 +42,7 @@ ORDER BY ee.datePublished DESC;
 getEpisodesForPodcasts:
 SELECT ee.*,
 eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt,
-pe.title AS podcastTitle, pe.author AS podcastAuthor
+pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl
 FROM EpisodeEntity AS ee
 INNER JOIN PodcastEntity AS pe
     ON ee.podcastId == pe.id
@@ -51,7 +51,24 @@ INNER JOIN EpisodeAdditionalInfoEntity AS eaie
 WHERE ee.podcastId IN :podcastIds
 ORDER BY ee.datePublished DESC;
 
+getEpisodesInQueue:
+SELECT ee.*,
+eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt,
+pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl
+FROM EpisodeEntity AS ee
+INNER JOIN PodcastEntity AS pe
+    ON ee.podcastId == pe.id
+INNER JOIN EpisodeAdditionalInfoEntity AS eaie
+    ON ee.id == eaie.id
+WHERE eaie.queuePosition != -1
+ORDER BY eaie.queuePosition ASC;
+
 insertOrReplace:
 INSERT OR REPLACE INTO
 EpisodeEntity(id, podcastId, title, description, link, enclosureUrl, datePublished, duration, explicit, episode, season)
 VALUES ?;
+
+updateDuration:
+UPDATE EpisodeEntity
+SET duration = :duration
+WHERE id = :id;

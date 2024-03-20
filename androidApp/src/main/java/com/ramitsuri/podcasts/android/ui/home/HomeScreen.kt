@@ -16,10 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
-import com.ramitsuri.podcasts.android.ui.AppTheme
+import com.ramitsuri.podcasts.android.ui.PreviewTheme
+import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
 import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.model.Episode
@@ -30,10 +30,10 @@ fun HomeScreen(
     state: HomeViewState,
     onImportSubscriptionsClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
-    onEpisodePlayClicked: (episodeId: String) -> Unit,
-    onEpisodePauseClicked: (episodeId: String) -> Unit,
-    onEpisodeAddToQueueClicked: (episodeId: String) -> Unit,
-    onEpisodeRemoveFromQueueClicked: (episodeId: String) -> Unit,
+    onEpisodePlayClicked: (episode: Episode) -> Unit,
+    onEpisodePauseClicked: () -> Unit,
+    onEpisodeAddToQueueClicked: (episode: Episode) -> Unit,
+    onEpisodeRemoveFromQueueClicked: (episode: Episode) -> Unit,
     onEpisodeDownloadClicked: (episodeId: String) -> Unit,
     onEpisodeRemoveDownloadClicked: (episodeId: String) -> Unit,
     onEpisodeCancelDownloadClicked: (episodeId: String) -> Unit,
@@ -43,8 +43,8 @@ fun HomeScreen(
 ) {
     Column(
         modifier =
-            modifier
-                .fillMaxSize(),
+        modifier
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -54,10 +54,10 @@ fun HomeScreen(
                     episode = it,
                     isPlaying = state.currentlyPlayingEpisodeId == it.id,
                     onClicked = { onEpisodeClicked(it.id) },
-                    onPlayClicked = { onEpisodePlayClicked(it.id) },
-                    onPauseClicked = { onEpisodePauseClicked(it.id) },
-                    onAddToQueueClicked = { onEpisodeAddToQueueClicked(it.id) },
-                    onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(it.id) },
+                    onPlayClicked = { onEpisodePlayClicked(it) },
+                    onPauseClicked = onEpisodePauseClicked ,
+                    onAddToQueueClicked = { onEpisodeAddToQueueClicked(it) },
+                    onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(it) },
                     onDownloadClicked = { onEpisodeDownloadClicked(it.id) },
                     onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(it.id) },
                     onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(it.id) },
@@ -91,9 +91,9 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-            Modifier
-                .padding(16.dp)
-                .clickable(onClick = onClicked),
+        Modifier
+            .padding(16.dp)
+            .clickable(onClick = onClicked),
     ) {
         Text(style = MaterialTheme.typography.labelSmall, text = episode.podcastName)
         Spacer(modifier = Modifier.height(8.dp))
@@ -116,10 +116,10 @@ private fun EpisodeItem(
     }
 }
 
-@Preview
+@ThemePreview
 @Composable
 private fun EpisodeItemPreview() {
-    AppTheme {
+    PreviewTheme {
         EpisodeItem(
             episode = episode(),
             isPlaying = false,

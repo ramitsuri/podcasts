@@ -20,7 +20,7 @@ internal data class EpisodeDto(
     @SerialName("datePublished")
     val datePublished: Long,
     @SerialName("duration")
-    val duration: Long?,
+    val duration: Int?,
     @SerialName("explicit")
     val explicit: Int,
     @SerialName("episode")

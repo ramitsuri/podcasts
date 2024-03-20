@@ -3,11 +3,6 @@ package com.ramitsuri.podcasts.settings
 import kotlinx.coroutines.flow.Flow
 
 internal interface KeyValueStore {
-    suspend fun getString(
-        key: Key,
-        defaultValue: String?,
-    ): String?
-
     fun getStringFlow(
         key: Key,
         defaultValue: String?,
@@ -16,5 +11,24 @@ internal interface KeyValueStore {
     suspend fun putString(
         key: Key,
         value: String?,
+    )
+    fun getFloatFlow(
+        key: Key,
+        defaultValue: Float?,
+    ): Flow<Float?>
+
+    suspend fun putFloat(
+        key: Key,
+        value: Float?,
+    )
+
+    fun getBooleanFlow(
+        key: Key,
+        defaultValue: Boolean,
+    ): Flow<Boolean>
+
+    suspend fun putBoolean(
+        key: Key,
+        value: Boolean,
     )
 }

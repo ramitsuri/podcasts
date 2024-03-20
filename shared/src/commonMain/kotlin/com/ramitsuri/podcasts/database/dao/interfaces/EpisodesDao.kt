@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.database.dao.interfaces
 import com.ramitsuri.podcasts.GetEpisode
 import com.ramitsuri.podcasts.GetEpisodesForPodcast
 import com.ramitsuri.podcasts.GetEpisodesForPodcasts
+import com.ramitsuri.podcasts.GetEpisodesInQueue
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +21,10 @@ internal interface EpisodesDao {
     fun getEpisodeFlow(id: String): Flow<GetEpisode?>
 
     suspend fun getEpisode(id: String): GetEpisode?
+
+    fun getQueueFlow(): Flow<List<GetEpisodesInQueue>>
+
+    suspend fun getQueue(): List<GetEpisodesInQueue>
 
     suspend fun updatePlayProgress(
         id: String,
@@ -51,5 +56,10 @@ internal interface EpisodesDao {
     suspend fun updateCompletedAt(
         id: String,
         completedAt: Instant?,
+    )
+
+    suspend fun updateDuration(
+        id: String,
+        duration: Int,
     )
 }

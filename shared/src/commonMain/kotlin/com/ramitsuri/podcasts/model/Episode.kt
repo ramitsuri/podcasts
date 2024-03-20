@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.model
 import com.ramitsuri.podcasts.GetEpisode
 import com.ramitsuri.podcasts.GetEpisodesForPodcast
 import com.ramitsuri.podcasts.GetEpisodesForPodcasts
+import com.ramitsuri.podcasts.GetEpisodesInQueue
 import com.ramitsuri.podcasts.network.model.EpisodeDto
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
@@ -16,12 +17,13 @@ data class Episode(
     val podcastId: Long,
     val podcastName: String,
     val podcastAuthor: String,
+    val podcastImageUrl: String,
     val title: String,
     val description: String,
     val link: String,
     val enclosureUrl: String,
     val datePublished: Long,
-    val duration: Long?,
+    val duration: Int?,
     val explicit: Boolean,
     val episode: Int?,
     val season: Int?,
@@ -32,6 +34,9 @@ data class Episode(
     val queuePosition: Int,
     val completedAt: Instant?,
 ) {
+
+    val isCompleted = completedAt != null
+
     val friendlyDatePublished: String
         get() {
             val format =
@@ -53,6 +58,7 @@ data class Episode(
         podcastId = dto.podcastId,
         podcastName = "",
         podcastAuthor = "",
+        podcastImageUrl = "",
         title = dto.title,
         description = dto.description,
         link = dto.link,
@@ -75,6 +81,7 @@ data class Episode(
         podcastId = getEpisode.podcastId,
         podcastName = getEpisode.podcastTitle,
         podcastAuthor = getEpisode.podcastAuthor,
+        podcastImageUrl = getEpisode.podcastImageUrl,
         title = getEpisode.title,
         description = getEpisode.description,
         link = getEpisode.link,
@@ -97,6 +104,7 @@ data class Episode(
         podcastId = getEpisodesForPodcast.podcastId,
         podcastName = getEpisodesForPodcast.podcastTitle,
         podcastAuthor = getEpisodesForPodcast.podcastAuthor,
+        podcastImageUrl = getEpisodesForPodcast.podcastImageUrl,
         title = getEpisodesForPodcast.title,
         description = getEpisodesForPodcast.description,
         link = getEpisodesForPodcast.link,
@@ -119,6 +127,7 @@ data class Episode(
         podcastId = getEpisodesForPodcasts.podcastId,
         podcastName = getEpisodesForPodcasts.podcastTitle,
         podcastAuthor = getEpisodesForPodcasts.podcastAuthor,
+        podcastImageUrl = getEpisodesForPodcasts.podcastImageUrl,
         title = getEpisodesForPodcasts.title,
         description = getEpisodesForPodcasts.description,
         link = getEpisodesForPodcasts.link,
@@ -134,6 +143,29 @@ data class Episode(
         downloadBlocked = getEpisodesForPodcasts.downloadBlocked,
         queuePosition = getEpisodesForPodcasts.queuePosition,
         completedAt = getEpisodesForPodcasts.completedAt,
+    )
+
+    internal constructor(getEpisodesInQueue: GetEpisodesInQueue) : this(
+        id = getEpisodesInQueue.id,
+        podcastId = getEpisodesInQueue.podcastId,
+        podcastName = getEpisodesInQueue.podcastTitle,
+        podcastAuthor = getEpisodesInQueue.podcastAuthor,
+        podcastImageUrl = getEpisodesInQueue.podcastImageUrl,
+        title = getEpisodesInQueue.title,
+        description = getEpisodesInQueue.description,
+        link = getEpisodesInQueue.link,
+        enclosureUrl = getEpisodesInQueue.enclosureUrl,
+        datePublished = getEpisodesInQueue.datePublished,
+        duration = getEpisodesInQueue.duration,
+        explicit = getEpisodesInQueue.explicit,
+        episode = getEpisodesInQueue.episode,
+        season = getEpisodesInQueue.season,
+        progressInSeconds = getEpisodesInQueue.playProgress,
+        downloadStatus = getEpisodesInQueue.downloadStatus,
+        downloadProgress = getEpisodesInQueue.downloadProgress,
+        downloadBlocked = getEpisodesInQueue.downloadBlocked,
+        queuePosition = getEpisodesInQueue.queuePosition,
+        completedAt = getEpisodesInQueue.completedAt,
     )
 
     companion object {

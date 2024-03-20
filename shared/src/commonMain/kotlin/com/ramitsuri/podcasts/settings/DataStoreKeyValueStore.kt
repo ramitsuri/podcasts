@@ -2,22 +2,16 @@ package com.ramitsuri.podcasts.settings
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 internal class DataStoreKeyValueStore(
     private val dataStore: DataStore<Preferences>,
 ) : KeyValueStore {
-    override suspend fun getString(
-        key: Key,
-        defaultValue: String?,
-    ): String? {
-        return getStringFlow(key, defaultValue)
-            .first()
-    }
 
     override fun getStringFlow(
         key: Key,
@@ -40,6 +34,50 @@ internal class DataStoreKeyValueStore(
             dataStore.edit {
                 it[stringPreferencesKey(key.value)] = value
             }
+        }
+    }
+
+    override fun getFloatFlow(
+        key: Key,
+        defaultValue: Float?,
+    ): Flow<Float?> {
+        return dataStore
+            .data
+            .map {
+                it[floatPreferencesKey(key.value)] ?: defaultValue
+            }
+    }
+
+    override suspend fun putFloat(
+        key: Key,
+        value: Float?,
+    ) {
+        if (value == null) {
+            remove(floatPreferencesKey(key.value))
+        } else {
+            dataStore.edit {
+                it[floatPreferencesKey(key.value)] = value
+            }
+        }
+    }
+
+    override fun getBooleanFlow(
+        key: Key,
+        defaultValue: Boolean,
+    ): Flow<Boolean> {
+        return dataStore
+            .data
+            .map {
+                it[booleanPreferencesKey(key.value)] ?: defaultValue
+            }
+    }
+
+    override suspend fun putBoolean(
+        key: Key,
+        value: Boolean,
+    ) {
+        dataStore.edit {
+            it[booleanPreferencesKey(key.value)] = value
         }
     }
 

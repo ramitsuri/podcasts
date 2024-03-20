@@ -15,8 +15,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.ramitsuri.podcasts.android.ui.AppTheme
+import com.ramitsuri.podcasts.android.ui.PreviewTheme
+import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 
@@ -36,12 +36,12 @@ fun EpisodeControls(
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
         if (isPlaying) {
-            IconButton(onClick = onPlayClicked) {
-                Icon(imageVector = Icons.Filled.PlayCircleOutline, contentDescription = "")
-            }
-        } else {
             IconButton(onClick = onPauseClicked) {
                 Icon(imageVector = Icons.Filled.PauseCircleOutline, contentDescription = "")
+            }
+        } else {
+            IconButton(onClick = onPlayClicked) {
+                Icon(imageVector = Icons.Filled.PlayCircleOutline, contentDescription = "")
             }
         }
         if (episode.queuePosition == Episode.NOT_IN_QUEUE) {
@@ -88,10 +88,10 @@ fun EpisodeControls(
     }
 }
 
-@Preview
+@ThemePreview
 @Composable
 private fun EpisodeControlsPreview_IsPlaying() {
-    AppTheme {
+    PreviewTheme {
         EpisodeControls(
             episode(),
             isPlaying = true,
@@ -108,10 +108,10 @@ private fun EpisodeControlsPreview_IsPlaying() {
     }
 }
 
-@Preview
+@ThemePreview
 @Composable
 private fun EpisodeControlsPreview_IsNotPlaying() {
-    AppTheme {
+    PreviewTheme {
         EpisodeControls(
             episode(),
             isPlaying = false,
@@ -128,10 +128,10 @@ private fun EpisodeControlsPreview_IsNotPlaying() {
     }
 }
 
-@Preview
+@ThemePreview
 @Composable
 private fun EpisodeControlsPreview_IsInQueue() {
-    AppTheme {
+    PreviewTheme {
         EpisodeControls(
             episode(queuePosition = 1),
             isPlaying = false,
@@ -148,10 +148,10 @@ private fun EpisodeControlsPreview_IsInQueue() {
     }
 }
 
-@Preview
+@ThemePreview
 @Composable
 private fun EpisodeControlsPreview_IsNotInQueue() {
-    AppTheme {
+    PreviewTheme {
         EpisodeControls(
             episode(queuePosition = Episode.NOT_IN_QUEUE),
             isPlaying = false,
@@ -168,10 +168,10 @@ private fun EpisodeControlsPreview_IsNotInQueue() {
     }
 }
 
-@Preview
+@ThemePreview
 @Composable
 private fun EpisodeControlsPreview_IsDownloaded() {
-    AppTheme {
+    PreviewTheme {
         EpisodeControls(
             episode(downloadStatus = DownloadStatus.DOWNLOADED),
             isPlaying = false,
@@ -188,10 +188,10 @@ private fun EpisodeControlsPreview_IsDownloaded() {
     }
 }
 
-@Preview
+@ThemePreview
 @Composable
 private fun EpisodeControlsPreview_IsNotNotDownloaded() {
-    AppTheme {
+    PreviewTheme {
         EpisodeControls(
             episode(downloadStatus = DownloadStatus.NOT_DOWNLOADED),
             isPlaying = false,
@@ -208,10 +208,10 @@ private fun EpisodeControlsPreview_IsNotNotDownloaded() {
     }
 }
 
-@Preview
+@ThemePreview
 @Composable
 private fun EpisodeControlsPreview_IsDownloading() {
-    AppTheme {
+    PreviewTheme {
         EpisodeControls(
             episode(downloadStatus = DownloadStatus.DOWNLOADING, downloadProgress = 0.5),
             isPlaying = false,

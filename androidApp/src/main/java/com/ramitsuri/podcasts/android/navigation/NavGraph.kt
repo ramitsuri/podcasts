@@ -31,20 +31,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.ramitsuri.podcasts.android.ui.PlayerScreen
-import com.ramitsuri.podcasts.android.ui.components.episode
+import com.ramitsuri.podcasts.android.ui.player.PlayerScreen
 import com.ramitsuri.podcasts.android.ui.episode.EpisodeDetailsScreen
 import com.ramitsuri.podcasts.android.ui.home.HomeScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsViewModel
-import com.ramitsuri.podcasts.model.ui.PlayerViewState
-import com.ramitsuri.podcasts.model.ui.SleepTimer
+import com.ramitsuri.podcasts.android.ui.player.PlayerViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,11 +59,11 @@ fun NavGraph(
     val scope = rememberCoroutineScope()
     Scaffold(
         bottomBar = {
-            if (BottomNavItem.entries.map { it.route.value }.contains(currentDestination)) {
+            if (scaffoldSheetState.bottomSheetState.currentValue != SheetValue.Expanded) {
                 BottomNavBar(
                     modifier =
-                        Modifier
-                            .offset { IntOffset(x = 0, y = 0) },
+                    Modifier
+                        .offset { IntOffset(x = 0, y = 0) },
                     selectedTabRoute = currentDestination,
                     onHomeTabClicked = {
                         navController.navigateToMainDestination(BottomNavItem.HOME)
@@ -91,34 +87,24 @@ fun NavGraph(
             modifier = Modifier.padding(innerPadding),
             sheetDragHandle = { },
             sheetContent = {
+                val viewModel = viewModel<PlayerViewModel>(
+                    factory = PlayerViewModel.factory(),
+                )
+                val state by viewModel.state.collectAsStateWithLifecycle()
                 PlayerScreen(
-                    modifier =
-                        Modifier
-                            .padding(bottom = bottomPadding),
-                    state =
-                        PlayerViewState(
-                            isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
-                            isPlaying = true,
-                            episodeTitle = episode().title,
-                            episodeArtworkUrl = episode().link,
-                            podcastName = episode().podcastName,
-                            sleepTimer = SleepTimer.None,
-                            playbackSpeed = 1f,
-                            isCasting = false,
-                            progress = 0.4f,
-                            playedDuration = 5.seconds,
-                            remainingDuration = 55.minutes + 32.seconds,
-                        ),
+                    modifier = Modifier.padding(bottom = bottomPadding),
+                    isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
+                    state = state,
                     onNotExpandedHeightKnown = {
                         peekHeightPx = it
                     },
                     onGoToQueueClicked = { },
-                    onReplayClicked = { },
-                    onPauseClicked = { },
-                    onPlayClicked = { },
-                    onForwardClicked = { },
-                    onSeekValueChange = { },
-                    onPlaybackSpeedSet = { },
+                    onReplayClicked = viewModel::onReplayRequested,
+                    onPauseClicked = viewModel::onPauseClicked,
+                    onPlayClicked = viewModel::onPlayClicked,
+                    onSkipClicked = viewModel::onSkipRequested,
+                    onSeekValueChange = viewModel::onSeekRequested,
+                    onPlaybackSpeedSet = viewModel::onSpeedChangeRequested,
                 )
             },
         ) {
