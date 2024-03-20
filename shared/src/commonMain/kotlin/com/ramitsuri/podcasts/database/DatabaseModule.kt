@@ -12,34 +12,41 @@ import com.ramitsuri.podcasts.model.DownloadStatus
 import kotlinx.datetime.Instant
 
 internal fun provideDatabase(driver: SqlDriver): PodcastsDatabase {
+    val intToLongAdapter = IntToLongAdapter()
+    val instantToLongAdapter = InstantToLongAdapter()
+    val doubleToDoubleAdapter = DoubleToDoubleAdapter()
+    val downloadStatusToStringAdapter = DownloadStatusToStringAdapter()
+    val intListToStringAdapter = IntListToStringAdapter()
+
     return PodcastsDatabase(
         driver = driver,
         CategoryEntityAdapter =
             CategoryEntity.Adapter(
-                idAdapter = IntToLongAdapter(),
+                idAdapter = intToLongAdapter,
             ),
         EpisodeAdditionalInfoEntityAdapter =
             EpisodeAdditionalInfoEntity.Adapter(
-                playProgressAdapter = IntToLongAdapter(),
-                downloadStatusAdapter = DownloadStatusToString(),
-                queuePositionAdapter = IntToLongAdapter(),
-                completedAtAdapter = InstantToLongAdapter(),
-                downloadProgressAdapter = DoubleToDoubleAdapter(),
+                playProgressAdapter = intToLongAdapter,
+                downloadStatusAdapter = downloadStatusToStringAdapter,
+                queuePositionAdapter = intToLongAdapter,
+                completedAtAdapter = instantToLongAdapter,
+                downloadProgressAdapter = doubleToDoubleAdapter,
             ),
         EpisodeEntityAdapter =
             EpisodeEntity.Adapter(
-                episodeAdapter = IntToLongAdapter(),
-                seasonAdapter = IntToLongAdapter(),
+                episodeAdapter = intToLongAdapter,
+                seasonAdapter = intToLongAdapter,
+                durationAdapter = intToLongAdapter,
             ),
         PodcastAdditionalInfoEntityAdapter =
             PodcastAdditionalInfoEntity.Adapter(
-                subscribedDateAdapter = InstantToLongAdapter(),
-                lastRefreshDateAdapter = InstantToLongAdapter(),
+                subscribedDateAdapter = instantToLongAdapter,
+                lastRefreshDateAdapter = instantToLongAdapter,
             ),
         PodcastEntityAdapter =
             PodcastEntity.Adapter(
-                episodeCountAdapter = IntToLongAdapter(),
-                categoriesAdapter = IntListToString(),
+                episodeCountAdapter = intToLongAdapter,
+                categoriesAdapter = intListToStringAdapter,
             ),
     )
 }
@@ -74,7 +81,7 @@ private class DoubleToDoubleAdapter : ColumnAdapter<Double, Double> {
     }
 }
 
-private class DownloadStatusToString : ColumnAdapter<DownloadStatus, String> {
+private class DownloadStatusToStringAdapter : ColumnAdapter<DownloadStatus, String> {
     override fun decode(databaseValue: String): DownloadStatus {
         return DownloadStatus.fromValue(databaseValue)
     }
@@ -84,7 +91,7 @@ private class DownloadStatusToString : ColumnAdapter<DownloadStatus, String> {
     }
 }
 
-private class IntListToString : ColumnAdapter<List<Int>, String> {
+private class IntListToStringAdapter : ColumnAdapter<List<Int>, String> {
     override fun decode(databaseValue: String): List<Int> {
         if (databaseValue.isEmpty()) {
             return emptyList()

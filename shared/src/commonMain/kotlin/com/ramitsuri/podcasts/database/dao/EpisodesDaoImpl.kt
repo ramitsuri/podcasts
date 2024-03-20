@@ -10,6 +10,7 @@ import com.ramitsuri.podcasts.EpisodeEntityQueries
 import com.ramitsuri.podcasts.GetEpisode
 import com.ramitsuri.podcasts.GetEpisodesForPodcast
 import com.ramitsuri.podcasts.GetEpisodesForPodcasts
+import com.ramitsuri.podcasts.GetEpisodesInQueue
 import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
@@ -65,6 +66,21 @@ internal class EpisodesDaoImpl(
             episodeEntityQueries
                 .getEpisode(id)
                 .executeAsOneOrNull()
+        }
+    }
+
+    override fun getQueueFlow(): Flow<List<GetEpisodesInQueue>> {
+        return episodeEntityQueries
+            .getEpisodesInQueue()
+            .asFlow()
+            .mapToList(ioDispatcher)
+    }
+
+    override suspend fun getQueue(): List<GetEpisodesInQueue> {
+        return withContext(ioDispatcher) {
+            episodeEntityQueries
+                .getEpisodesInQueue()
+                .executeAsList()
         }
     }
 
@@ -133,6 +149,15 @@ internal class EpisodesDaoImpl(
     ) {
         withContext(ioDispatcher) {
             episodeAdditionalInfoEntityQueries.updateCompletedAt(id = id, completedAt = completedAt)
+        }
+    }
+
+    override suspend fun updateDuration(
+        id: String,
+        duration: Int,
+    ) {
+        withContext(ioDispatcher) {
+            episodeEntityQueries.updateDuration(id = id, duration = duration)
         }
     }
 

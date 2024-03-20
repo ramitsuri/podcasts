@@ -1,4 +1,4 @@
-package com.ramitsuri.podcasts.android.ui
+package com.ramitsuri.podcasts.android.ui.player
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Replay10
 import androidx.compose.material.icons.outlined.Nightlight
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -39,12 +40,14 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.R
+import com.ramitsuri.podcasts.android.ui.PreviewTheme
+import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.episode
+import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.PlayerViewState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
 import kotlin.time.Duration
@@ -53,6 +56,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun PlayerScreen(
+    isExpanded: Boolean,
     state: PlayerViewState,
     modifier: Modifier = Modifier,
     onNotExpandedHeightKnown: (Int) -> Unit,
@@ -60,7 +64,7 @@ fun PlayerScreen(
     onReplayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
     onPlayClicked: () -> Unit,
-    onForwardClicked: () -> Unit,
+    onSkipClicked: () -> Unit,
     onSeekValueChange: (Float) -> Unit,
     onPlaybackSpeedSet: (Float) -> Unit,
 ) {
@@ -68,43 +72,63 @@ fun PlayerScreen(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(if (state.isExpanded) 16.dp else 0.dp),
+                .padding(if (isExpanded) 16.dp else 0.dp),
         contentAlignment = Alignment.TopCenter,
     ) {
-        if (!state.isExpanded) {
-            PlayerScreenNotExpanded(
-                modifier =
-                    Modifier.onGloballyPositioned {
-                        onNotExpandedHeightKnown(it.size.height)
-                    },
+        if (!isExpanded) {
+            if (state.hasEverBeenPlayed) {
+                PlayerScreenNotExpanded(
+                    modifier =
+                        Modifier.onGloballyPositioned {
+                            onNotExpandedHeightKnown(it.size.height)
+                        },
+                    episodeTitle = state.episodeTitle,
+                    episodeArtwork = state.episodeArtworkUrl,
+                    playingState = state.playingState,
+                    playProgress = state.progress,
+                    onPlayClicked = onPlayClicked,
+                    onPauseClicked = onPauseClicked,
+                )
+            } else {
+                NeverPlayedNotExpanded(
+                    modifier =
+                        Modifier.onGloballyPositioned {
+                            onNotExpandedHeightKnown(it.size.height)
+                        },
+                )
+            }
+        }
+        if (state.hasEverBeenPlayed) {
+            PlayerScreenExpanded(
+                modifier = Modifier.alpha(if (isExpanded) 1f else 0f),
                 episodeTitle = state.episodeTitle,
                 episodeArtwork = state.episodeArtworkUrl,
-                isPlaying = state.isPlaying,
+                podcastName = state.podcastName,
+                playingState = state.playingState,
+                playedDuration = state.playedDuration,
+                remainingDuration = state.remainingDuration,
                 playProgress = state.progress,
-                onPlayClicked = onPlayClicked,
+                sleepTimer = state.sleepTimer,
+                playbackSpeed = state.playbackSpeed,
+                isCasting = state.isCasting,
+                onGoToQueueClicked = onGoToQueueClicked,
+                onReplayClicked = onReplayClicked,
                 onPauseClicked = onPauseClicked,
+                onPlayClicked = onPlayClicked,
+                onSkipClicked = onSkipClicked,
+                onSeekValueChange = onSeekValueChange,
+                onPlaybackSpeedSet = onPlaybackSpeedSet,
             )
+        } else {
+            NeverPlayedNotExpanded()
         }
-        PlayerScreenExpanded(
-            modifier = Modifier.alpha(if (state.isExpanded) 1f else 0f),
-            episodeTitle = state.episodeTitle,
-            episodeArtwork = state.episodeArtworkUrl,
-            podcastName = state.podcastName,
-            isPlaying = state.isPlaying,
-            playedDuration = state.playedDuration,
-            remainingDuration = state.remainingDuration,
-            playProgress = state.progress,
-            sleepTimer = state.sleepTimer,
-            playbackSpeed = state.playbackSpeed,
-            isCasting = state.isCasting,
-            onGoToQueueClicked = onGoToQueueClicked,
-            onReplayClicked = onReplayClicked,
-            onPauseClicked = onPauseClicked,
-            onPlayClicked = onPlayClicked,
-            onForwardClicked = onForwardClicked,
-            onSeekValueChange = onSeekValueChange,
-            onPlaybackSpeedSet = onPlaybackSpeedSet,
-        )
+    }
+}
+
+@Composable
+private fun NeverPlayedNotExpanded(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(text = stringResource(id = R.string.player_never_played))
     }
 }
 
@@ -114,9 +138,9 @@ private fun PlayerScreenExpanded(
     episodeTitle: String,
     episodeArtwork: String,
     podcastName: String,
-    isPlaying: Boolean,
+    playingState: PlayingState,
     playedDuration: Duration,
-    remainingDuration: Duration,
+    remainingDuration: Duration?,
     playProgress: Float,
     sleepTimer: SleepTimer,
     playbackSpeed: Float,
@@ -125,7 +149,7 @@ private fun PlayerScreenExpanded(
     onReplayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
     onPlayClicked: () -> Unit,
-    onForwardClicked: () -> Unit,
+    onSkipClicked: () -> Unit,
     onSeekValueChange: (Float) -> Unit,
     onPlaybackSpeedSet: (Float) -> Unit,
 ) {
@@ -159,12 +183,12 @@ private fun PlayerScreenExpanded(
         )
         Spacer(modifier = Modifier.height(16.dp))
         MainControls(
-            isPlaying = isPlaying,
+            playingState = playingState,
             onGoToQueueClicked = onGoToQueueClicked,
             onReplayClicked = onReplayClicked,
             onPauseClicked = onPauseClicked,
             onPlayClicked = onPlayClicked,
-            onForwardClicked = onForwardClicked,
+            onSkipClicked = onSkipClicked,
         )
         Spacer(modifier = Modifier.height(16.dp))
         SecondaryControls(
@@ -178,12 +202,12 @@ private fun PlayerScreenExpanded(
 
 @Composable
 private fun MainControls(
-    isPlaying: Boolean,
+    playingState: PlayingState,
     onGoToQueueClicked: () -> Unit,
     onReplayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
     onPlayClicked: () -> Unit,
-    onForwardClicked: () -> Unit,
+    onSkipClicked: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -204,24 +228,32 @@ private fun MainControls(
                 contentDescription = stringResource(id = R.string.pause),
             )
         }
-        if (isPlaying) {
-            FilledIconButton(onClick = onPauseClicked, modifier = Modifier.size(56.dp)) {
-                Icon(
-                    imageVector = Icons.Filled.Pause,
-                    modifier = Modifier.size(32.dp),
-                    contentDescription = stringResource(id = R.string.pause),
-                )
+        when (playingState) {
+            PlayingState.PLAYING -> {
+                FilledIconButton(onClick = onPauseClicked, modifier = Modifier.size(56.dp)) {
+                    Icon(
+                        imageVector = Icons.Filled.Pause,
+                        modifier = Modifier.size(32.dp),
+                        contentDescription = stringResource(id = R.string.pause),
+                    )
+                }
             }
-        } else {
-            FilledIconButton(onClick = onPlayClicked, modifier = Modifier.size(56.dp)) {
-                Icon(
-                    imageVector = Icons.Filled.PlayArrow,
-                    modifier = Modifier.size(32.dp),
-                    contentDescription = stringResource(id = R.string.pause),
-                )
+
+            PlayingState.NOT_PLAYING -> {
+                FilledIconButton(onClick = onPlayClicked, modifier = Modifier.size(56.dp)) {
+                    Icon(
+                        imageVector = Icons.Filled.PlayArrow,
+                        modifier = Modifier.size(32.dp),
+                        contentDescription = stringResource(id = R.string.pause),
+                    )
+                }
+            }
+
+            PlayingState.LOADING -> {
+                CircularProgressIndicator(modifier = Modifier.size(56.dp))
             }
         }
-        IconButton(onClick = onForwardClicked) {
+        IconButton(onClick = onSkipClicked) {
             Icon(
                 imageVector = Icons.Filled.Forward30,
                 modifier = Modifier.size(32.dp),
@@ -293,7 +325,7 @@ private fun SecondaryControls(
 @Composable
 private fun Seekbar(
     playedDuration: Duration,
-    remainingDuration: Duration,
+    remainingDuration: Duration?,
     playProgress: Float,
     onSeekValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
@@ -309,7 +341,9 @@ private fun Seekbar(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = playedDuration.formatted())
-            Text(text = remainingDuration.formatted())
+            if (remainingDuration != null) {
+                Text(text = remainingDuration.formatted())
+            }
         }
     }
 }
@@ -337,12 +371,12 @@ private fun PlayerScreenNotExpanded(
     modifier: Modifier = Modifier,
     episodeTitle: String,
     episodeArtwork: String,
-    isPlaying: Boolean,
+    playingState: PlayingState,
     playProgress: Float,
     onPlayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier =
                 Modifier
@@ -364,15 +398,34 @@ private fun PlayerScreenNotExpanded(
                         .size(64.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = episodeTitle, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+            Text(
+                text = episodeTitle,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+            )
             Spacer(modifier = Modifier.width(8.dp))
-            if (isPlaying) {
-                IconButton(onClick = onPauseClicked) {
-                    Icon(imageVector = Icons.Filled.Pause, contentDescription = stringResource(id = R.string.pause))
+            when (playingState) {
+                PlayingState.PLAYING -> {
+                    IconButton(onClick = onPauseClicked) {
+                        Icon(
+                            imageVector = Icons.Filled.Pause,
+                            contentDescription = stringResource(id = R.string.pause),
+                        )
+                    }
                 }
-            } else {
-                IconButton(onClick = onPlayClicked) {
-                    Icon(imageVector = Icons.Filled.PlayArrow, contentDescription = stringResource(id = R.string.play))
+
+                PlayingState.NOT_PLAYING -> {
+                    IconButton(onClick = onPlayClicked) {
+                        Icon(
+                            imageVector = Icons.Filled.PlayArrow,
+                            contentDescription = stringResource(id = R.string.play),
+                        )
+                    }
+                }
+
+                PlayingState.LOADING -> {
+                    CircularProgressIndicator()
                 }
             }
         }
@@ -381,17 +434,17 @@ private fun PlayerScreenNotExpanded(
     }
 }
 
-@Preview
+@ThemePreview
 @Composable
 private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
-    AppTheme {
+    PreviewTheme {
         PlayerScreen(
+            isExpanded = false,
             state =
                 PlayerViewState(
-                    isExpanded = false,
-                    isPlaying = true,
+                    playingState = PlayingState.PLAYING,
                     episodeTitle = episode().title,
-                    episodeArtworkUrl = episode().link,
+                    episodeArtworkUrl = episode().podcastImageUrl,
                     podcastName = episode().podcastName,
                     sleepTimer = SleepTimer.None,
                     playbackSpeed = 1f,
@@ -405,24 +458,24 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
             onReplayClicked = { },
             onPauseClicked = { },
             onPlayClicked = { },
-            onForwardClicked = { },
+            onSkipClicked = { },
             onSeekValueChange = { },
             onPlaybackSpeedSet = { },
         )
     }
 }
 
-@Preview
+@ThemePreview
 @Composable
 private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
-    AppTheme {
+    PreviewTheme {
         PlayerScreen(
+            isExpanded = false,
             state =
                 PlayerViewState(
-                    isExpanded = false,
-                    isPlaying = false,
+                    playingState = PlayingState.NOT_PLAYING,
                     episodeTitle = episode().title,
-                    episodeArtworkUrl = episode().link,
+                    episodeArtworkUrl = episode().podcastImageUrl,
                     podcastName = episode().podcastName,
                     sleepTimer = SleepTimer.None,
                     playbackSpeed = 1f,
@@ -436,24 +489,24 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
             onReplayClicked = { },
             onPauseClicked = { },
             onPlayClicked = { },
-            onForwardClicked = { },
+            onSkipClicked = { },
             onSeekValueChange = { },
             onPlaybackSpeedSet = { },
         )
     }
 }
 
-@Preview
+@ThemePreview
 @Composable
 private fun PlayerScreenPreview_IsPlaying_Expanded() {
-    AppTheme {
+    PreviewTheme {
         PlayerScreen(
+            isExpanded = true,
             state =
                 PlayerViewState(
-                    isExpanded = true,
-                    isPlaying = true,
+                    playingState = PlayingState.PLAYING,
                     episodeTitle = episode().title,
-                    episodeArtworkUrl = episode().link,
+                    episodeArtworkUrl = episode().podcastImageUrl,
                     podcastName = episode().podcastName,
                     sleepTimer = SleepTimer.None,
                     playbackSpeed = 1f,
@@ -467,24 +520,24 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
             onReplayClicked = { },
             onPauseClicked = { },
             onPlayClicked = { },
-            onForwardClicked = { },
+            onSkipClicked = { },
             onSeekValueChange = { },
             onPlaybackSpeedSet = { },
         )
     }
 }
 
-@Preview
+@ThemePreview
 @Composable
 private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
-    AppTheme {
+    PreviewTheme {
         PlayerScreen(
+            isExpanded = true,
             state =
                 PlayerViewState(
-                    isExpanded = true,
-                    isPlaying = false,
+                    playingState = PlayingState.NOT_PLAYING,
                     episodeTitle = episode().title,
-                    episodeArtworkUrl = episode().link,
+                    episodeArtworkUrl = episode().podcastImageUrl,
                     podcastName = episode().podcastName,
                     sleepTimer = SleepTimer.None,
                     playbackSpeed = 1f,
@@ -498,7 +551,7 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
             onReplayClicked = { },
             onPauseClicked = { },
             onPlayClicked = { },
-            onForwardClicked = { },
+            onSkipClicked = { },
             onSeekValueChange = { },
             onPlaybackSpeedSet = { },
         )

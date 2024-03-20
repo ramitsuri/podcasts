@@ -1,46 +1,71 @@
 package com.ramitsuri.podcasts.viewmodel
 
+import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.ui.HomeViewState
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import com.ramitsuri.podcasts.settings.Settings
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 class HomeViewModel internal constructor(
     podcastsAndEpisodesRepository: PodcastsAndEpisodesRepository,
     private val episodesRepository: EpisodesRepository,
-    private val clock: Clock,
+    private val settings: Settings,
+    private val longLivingScope: CoroutineScope,
 ) : ViewModel() {
-    // TODO populate currently playing episode id
-    val state: StateFlow<HomeViewState> =
-        podcastsAndEpisodesRepository.getSubscribedFlow()
-            .map { HomeViewState(it) }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeViewState(listOf()))
+    private val _state = MutableStateFlow(HomeViewState())
+    val state = _state.asStateFlow()
 
-    fun onEpisodePlayClicked(episodeId: String) {
-    }
-
-    fun onEpisodePauseClicked(episodeId: String) {
-    }
-
-    fun onEpisodeAddToQueueClicked(episodeId: String) {
+    init {
         viewModelScope.launch {
-            episodesRepository.addToQueue(episodeId)
+            combine(
+                podcastsAndEpisodesRepository.getSubscribedFlow(),
+                episodesRepository.getCurrentEpisode(),
+                settings.isPlayingFlow(),
+            ) { subscribedEpisodes, currentlyPlayingEpisode, isPlaying ->
+                val currentlyPlaying =
+                    if (isPlaying) {
+                        currentlyPlayingEpisode
+                    } else {
+                        null
+                    }
+                Pair(subscribedEpisodes, currentlyPlaying)
+            }.collect { (subscribedEpisodes, currentlyPlayingEpisode) ->
+                _state.update {
+                    it.copy(episodes = subscribedEpisodes, currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id)
+                }
+            }
         }
     }
 
-    fun onEpisodeRemoveFromQueueClicked(episodeId: String) {
-        viewModelScope.launch {
-            episodesRepository.removeFromQueue(episodeId)
+    fun onEpisodePlayClicked(episode: Episode) {
+        longLivingScope.launch {
+            episodesRepository.setCurrentlyPlayingEpisodeId(episode.id)
+        }
+    }
+
+    fun onEpisodePauseClicked() {
+    }
+
+    fun onEpisodeAddToQueueClicked(episode: Episode) {
+        longLivingScope.launch {
+            episodesRepository.addToQueue(episode.id)
+        }
+    }
+
+    fun onEpisodeRemoveFromQueueClicked(episode: Episode) {
+        longLivingScope.launch {
+            episodesRepository.removeFromQueue(episode.id)
         }
     }
 
     fun onEpisodeDownloadClicked(episodeId: String) {
-        viewModelScope.launch {
+        longLivingScope.launch {
             episodesRepository.download(episodeId)
         }
     }
@@ -59,7 +84,7 @@ class HomeViewModel internal constructor(
 
     fun onEpisodePlayedClicked(episodeId: String) {
         viewModelScope.launch {
-            episodesRepository.markPlayed(episodeId, clock.now())
+            episodesRepository.markPlayed(episodeId)
         }
     }
 

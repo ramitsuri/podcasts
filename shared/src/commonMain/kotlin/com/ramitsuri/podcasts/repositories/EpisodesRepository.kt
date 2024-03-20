@@ -6,13 +6,16 @@ import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.network.api.interfaces.EpisodesApi
 import com.ramitsuri.podcasts.network.model.GetEpisodesRequest
+import com.ramitsuri.podcasts.settings.Settings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
 class EpisodesRepository internal constructor(
     private val episodesDao: EpisodesDao,
     private val episodesApi: EpisodesApi,
+    private val settings: Settings,
 ) {
     suspend fun refreshForPodcastId(podcastId: Long): Boolean {
         val episodes = episodesDao.getEpisodesForPodcast(podcastId)
@@ -63,6 +66,32 @@ class EpisodesRepository internal constructor(
             }
     }
 
+    suspend fun getEpisode(id: String): Episode? {
+        return episodesDao
+            .getEpisode(id)
+            ?.let {
+                Episode(it)
+            }
+    }
+
+    fun getQueueFlow(): Flow<List<Episode>> {
+        return episodesDao
+            .getQueueFlow()
+            .map { list ->
+                list.map { getEpisodesInQueue ->
+                    Episode(getEpisodesInQueue)
+                }
+            }
+    }
+
+    suspend fun getQueue(): List<Episode> {
+        return episodesDao
+            .getQueue()
+            .map { getEpisodesInQueue ->
+                Episode(getEpisodesInQueue)
+            }
+    }
+
     suspend fun updatePlayProgress(
         id: String,
         playProgressInSeconds: Int,
@@ -106,11 +135,18 @@ class EpisodesRepository internal constructor(
         updateQueuePosition(id, Episode.NOT_IN_QUEUE)
     }
 
-    suspend fun updateCompletedAt(
+    private suspend fun updateCompletedAt(
         id: String,
-        completedAt: Instant,
+        completedAt: Instant? = Clock.System.now(),
     ) {
         episodesDao.updateCompletedAt(id, completedAt)
+    }
+
+    suspend fun updateDuration(
+        id: String,
+        durationInSeconds: Int,
+    ) {
+        episodesDao.updateDuration(id, durationInSeconds)
     }
 
     fun download(id: String) {
@@ -130,17 +166,24 @@ class EpisodesRepository internal constructor(
         episodesDao.updateDownloadBlocked(id, true)
     }
 
-    suspend fun markPlayed(
-        id: String,
-        time: Instant,
-    ) {
-        episodesDao.updateCompletedAt(id, time)
-        episodesDao.updatePlayProgress(id, Episode.PLAY_PROGRESS_MAX)
-        episodesDao.updateQueuePosition(id, Episode.NOT_IN_QUEUE)
+    suspend fun markPlayed(id: String) {
+        updateCompletedAt(id)
+        updatePlayProgress(id, Episode.PLAY_PROGRESS_MAX)
+        updateQueuePosition(id, Episode.NOT_IN_QUEUE)
     }
 
     suspend fun markNotPlayed(id: String) {
-        episodesDao.updateCompletedAt(id, null)
-        episodesDao.updatePlayProgress(id, 0)
+        updateCompletedAt(id, null)
+        updatePlayProgress(id, 0)
+    }
+
+    suspend fun getCurrentEpisode(): Flow<Episode?> {
+        return settings.getCurrentEpisodeId().map { episodeId ->
+            episodeId?.let { getEpisode(it) }
+        }
+    }
+
+    suspend fun setCurrentlyPlayingEpisodeId(episodeId: String?) {
+        settings.setCurrentlyPlayingEpisodeId(episodeId)
     }
 }

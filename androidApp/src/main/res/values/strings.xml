@@ -7,10 +7,16 @@
     <string name="nav_home">Home</string>
     <string name="nav_explore">Explore</string>
     <string name="nav_library">Library</string>
+    <string name="skip_30">Skip 30 seconds</string>
+    <string name="replay_10">Replay 10 seconds</string>
+    <string name="save_to_favorites">Save to favorites</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>
 
     <!-- Import Subscriptions Screen -->
     <string name="import_subscriptions_subscribe_all">Subscribe</string>
+
+    <!-- Player screen -->
+    <string name="player_never_played">Select episode to play</string>
 </resources>

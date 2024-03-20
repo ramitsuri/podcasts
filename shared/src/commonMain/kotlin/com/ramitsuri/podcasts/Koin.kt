@@ -22,6 +22,9 @@ import com.ramitsuri.podcasts.settings.DataStoreKeyValueStore
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.DispatcherProvider
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.datetime.Clock
 import okio.Path
 import org.koin.core.KoinApplication
@@ -72,6 +75,7 @@ private val coreModule =
             EpisodesRepository(
                 episodesDao = get(),
                 episodesApi = get(),
+                settings = get(),
             )
         }
 
@@ -114,6 +118,10 @@ private val coreModule =
             val dataStore = PreferenceDataStoreFactory.createWithPath(produceFile = { get<Path>() })
             val keyValueStore = DataStoreKeyValueStore(dataStore)
             Settings(keyValueStore)
+        }
+
+        single<CoroutineScope> {
+            CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         }
 
         factory<PodcastsApi> {
