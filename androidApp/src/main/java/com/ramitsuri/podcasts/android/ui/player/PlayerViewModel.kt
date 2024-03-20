@@ -47,35 +47,37 @@ class PlayerViewModel(
 
     private fun updateEpisodeState(episodeId: String) {
         updateEpisodeStateJob?.cancel()
-        updateEpisodeStateJob = viewModelScope.launch {
-            episodesRepository.getEpisodeFlow(episodeId).collect { episode ->
-                if (episode != null) {
-                    _state.update {
-                        val duration = episode.duration
-                        val durationForProgress = (duration?.toFloat() ?: 1f).coerceAtLeast(1f)
-                        val progressPercent = episode
-                            .progressInSeconds
-                            .toFloat()
-                            .div(durationForProgress)
-                            .coerceIn(0f, 1f)
-                        val remainingDuration = duration?.minus(episode.progressInSeconds)
-                        PlayerViewState(
-                            hasEverBeenPlayed = true,
-                            episodeTitle = episode.title,
-                            episodeArtworkUrl = episode.podcastImageUrl,
-                            podcastName = episode.podcastName,
-                            sleepTimer = SleepTimer.None,
-                            playbackSpeed = settings.getPlaybackSpeed(),
-                            isCasting = false,
-                            progress = progressPercent,
-                            playedDuration = episode.progressInSeconds.seconds,
-                            remainingDuration = remainingDuration?.seconds,
-                            totalDuration = duration?.seconds,
-                        )
+        updateEpisodeStateJob =
+            viewModelScope.launch {
+                episodesRepository.getEpisodeFlow(episodeId).collect { episode ->
+                    if (episode != null) {
+                        _state.update {
+                            val duration = episode.duration
+                            val durationForProgress = (duration?.toFloat() ?: 1f).coerceAtLeast(1f)
+                            val progressPercent =
+                                episode
+                                    .progressInSeconds
+                                    .toFloat()
+                                    .div(durationForProgress)
+                                    .coerceIn(0f, 1f)
+                            val remainingDuration = duration?.minus(episode.progressInSeconds)
+                            PlayerViewState(
+                                hasEverBeenPlayed = true,
+                                episodeTitle = episode.title,
+                                episodeArtworkUrl = episode.podcastImageUrl,
+                                podcastName = episode.podcastName,
+                                sleepTimer = SleepTimer.None,
+                                playbackSpeed = settings.getPlaybackSpeed(),
+                                isCasting = false,
+                                progress = progressPercent,
+                                playedDuration = episode.progressInSeconds.seconds,
+                                remainingDuration = remainingDuration?.seconds,
+                                totalDuration = duration?.seconds,
+                            )
+                        }
                     }
                 }
             }
-        }
     }
 
     fun onPlayClicked() {

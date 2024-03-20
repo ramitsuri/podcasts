@@ -138,7 +138,7 @@ internal class EpisodesDaoImpl(
                         .executeAsOneOrNull()
                         ?.currentMaxQueuePosition
                         ?: Episode.NOT_IN_QUEUE
-                    ) + 1
+                ) + 1
             updateQueuePosition(id, queuePosition)
         }
     }
@@ -152,7 +152,10 @@ internal class EpisodesDaoImpl(
         }
     }
 
-    override suspend fun updateDuration(id: String, duration: Int) {
+    override suspend fun updateDuration(
+        id: String,
+        duration: Int,
+    ) {
         withContext(ioDispatcher) {
             episodeEntityQueries.updateDuration(id = id, duration = duration)
         }

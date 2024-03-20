@@ -142,7 +142,10 @@ class EpisodesRepository internal constructor(
         episodesDao.updateCompletedAt(id, completedAt)
     }
 
-    suspend fun updateDuration(id: String, durationInSeconds: Int) {
+    suspend fun updateDuration(
+        id: String,
+        durationInSeconds: Int,
+    ) {
         episodesDao.updateDuration(id, durationInSeconds)
     }
 

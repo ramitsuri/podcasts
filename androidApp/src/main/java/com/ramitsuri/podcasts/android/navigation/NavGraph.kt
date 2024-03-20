@@ -31,11 +31,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.ramitsuri.podcasts.android.ui.player.PlayerScreen
 import com.ramitsuri.podcasts.android.ui.episode.EpisodeDetailsScreen
 import com.ramitsuri.podcasts.android.ui.home.HomeScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsViewModel
+import com.ramitsuri.podcasts.android.ui.player.PlayerScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
@@ -62,8 +62,8 @@ fun NavGraph(
             if (scaffoldSheetState.bottomSheetState.currentValue != SheetValue.Expanded) {
                 BottomNavBar(
                     modifier =
-                    Modifier
-                        .offset { IntOffset(x = 0, y = 0) },
+                        Modifier
+                            .offset { IntOffset(x = 0, y = 0) },
                     selectedTabRoute = currentDestination,
                     onHomeTabClicked = {
                         navController.navigateToMainDestination(BottomNavItem.HOME)
@@ -87,9 +87,10 @@ fun NavGraph(
             modifier = Modifier.padding(innerPadding),
             sheetDragHandle = { },
             sheetContent = {
-                val viewModel = viewModel<PlayerViewModel>(
-                    factory = PlayerViewModel.factory(),
-                )
+                val viewModel =
+                    viewModel<PlayerViewModel>(
+                        factory = PlayerViewModel.factory(),
+                    )
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 PlayerScreen(
                     modifier = Modifier.padding(bottom = bottomPadding),

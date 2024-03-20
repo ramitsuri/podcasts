@@ -5,5 +5,4 @@ internal enum class Key(val value: String) {
     PLAYBACK_SPEED("playback_speed"),
     IS_PLAYING("is_playing"),
     PLAYING_STATE("playing_state"),
-    ;
 }

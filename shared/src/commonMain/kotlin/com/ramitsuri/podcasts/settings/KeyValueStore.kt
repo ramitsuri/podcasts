@@ -12,6 +12,7 @@ internal interface KeyValueStore {
         key: Key,
         value: String?,
     )
+
     fun getFloatFlow(
         key: Key,
         defaultValue: Float?,

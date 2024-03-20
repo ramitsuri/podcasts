@@ -36,7 +36,7 @@ internal fun provideDatabase(driver: SqlDriver): PodcastsDatabase {
             EpisodeEntity.Adapter(
                 episodeAdapter = intToLongAdapter,
                 seasonAdapter = intToLongAdapter,
-                durationAdapter =intToLongAdapter,
+                durationAdapter = intToLongAdapter,
             ),
         PodcastAdditionalInfoEntityAdapter =
             PodcastAdditionalInfoEntity.Adapter(

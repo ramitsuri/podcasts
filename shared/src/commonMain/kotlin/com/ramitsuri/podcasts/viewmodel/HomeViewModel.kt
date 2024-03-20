@@ -18,7 +18,6 @@ class HomeViewModel internal constructor(
     private val settings: Settings,
     private val longLivingScope: CoroutineScope,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(HomeViewState())
     val state = _state.asStateFlow()
 
@@ -29,11 +28,12 @@ class HomeViewModel internal constructor(
                 episodesRepository.getCurrentEpisode(),
                 settings.isPlayingFlow(),
             ) { subscribedEpisodes, currentlyPlayingEpisode, isPlaying ->
-                val currentlyPlaying = if (isPlaying) {
-                    currentlyPlayingEpisode
-                } else {
-                    null
-                }
+                val currentlyPlaying =
+                    if (isPlaying) {
+                        currentlyPlayingEpisode
+                    } else {
+                        null
+                    }
                 Pair(subscribedEpisodes, currentlyPlaying)
             }.collect { (subscribedEpisodes, currentlyPlayingEpisode) ->
                 _state.update {
