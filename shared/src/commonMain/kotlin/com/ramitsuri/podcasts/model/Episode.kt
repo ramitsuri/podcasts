@@ -34,6 +34,7 @@ data class Episode(
     val queuePosition: Int,
     val completedAt: Instant?,
 ) {
+
     val isCompleted = completedAt != null
 
     val friendlyDatePublished: String

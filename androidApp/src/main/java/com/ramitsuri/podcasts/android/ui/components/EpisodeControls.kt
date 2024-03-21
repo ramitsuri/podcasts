@@ -2,6 +2,8 @@ package com.ramitsuri.podcasts.android.ui.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.PlaylistAddCheck
@@ -11,19 +13,22 @@ import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.DownloadDone
 import androidx.compose.material.icons.outlined.DownloadForOffline
 import androidx.compose.material.icons.outlined.Downloading
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.PlayingState
 
 @Composable
 fun EpisodeControls(
     episode: Episode,
-    isPlaying: Boolean,
+    playingState: PlayingState,
     onPlayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
     onAddToQueueClicked: () -> Unit,
@@ -35,13 +40,23 @@ fun EpisodeControls(
     onNotPlayedClicked: () -> Unit,
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
-        if (isPlaying) {
-            IconButton(onClick = onPauseClicked) {
-                Icon(imageVector = Icons.Filled.PauseCircleOutline, contentDescription = "")
+        when (playingState) {
+            PlayingState.PLAYING -> {
+                IconButton(onClick = onPauseClicked) {
+                    Icon(imageVector = Icons.Filled.PauseCircleOutline, contentDescription = "")
+                }
             }
-        } else {
-            IconButton(onClick = onPlayClicked) {
-                Icon(imageVector = Icons.Filled.PlayCircleOutline, contentDescription = "")
+
+            PlayingState.NOT_PLAYING -> {
+                IconButton(onClick = onPlayClicked) {
+                    Icon(imageVector = Icons.Filled.PlayCircleOutline, contentDescription = "")
+                }
+            }
+
+            PlayingState.LOADING -> {
+                IconButton(onClick = { }) {
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                }
             }
         }
         if (episode.queuePosition == Episode.NOT_IN_QUEUE) {
@@ -77,11 +92,11 @@ fun EpisodeControls(
         }
         IconButton(
             onClick =
-                if (episode.completedAt == null) {
-                    onPlayedClicked
-                } else {
-                    onNotPlayedClicked
-                },
+            if (episode.completedAt == null) {
+                onPlayedClicked
+            } else {
+                onNotPlayedClicked
+            },
         ) {
             Icon(imageVector = Icons.Outlined.CheckCircleOutline, contentDescription = "")
         }
@@ -94,7 +109,7 @@ private fun EpisodeControlsPreview_IsPlaying() {
     PreviewTheme {
         EpisodeControls(
             episode(),
-            isPlaying = true,
+            playingState = PlayingState.PLAYING,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -114,7 +129,27 @@ private fun EpisodeControlsPreview_IsNotPlaying() {
     PreviewTheme {
         EpisodeControls(
             episode(),
-            isPlaying = false,
+            playingState = PlayingState.NOT_PLAYING,
+            onPlayClicked = { },
+            onPauseClicked = { },
+            onAddToQueueClicked = { },
+            onRemoveFromQueueClicked = { },
+            onDownloadClicked = { },
+            onRemoveDownloadClicked = { },
+            onCancelDownloadClicked = { },
+            onPlayedClicked = { },
+            onNotPlayedClicked = { },
+        )
+    }
+}
+
+@ThemePreview
+@Composable
+private fun EpisodeControlsPreview_IsLoading() {
+    PreviewTheme {
+        EpisodeControls(
+            episode(),
+            playingState = PlayingState.LOADING,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -134,7 +169,7 @@ private fun EpisodeControlsPreview_IsInQueue() {
     PreviewTheme {
         EpisodeControls(
             episode(queuePosition = 1),
-            isPlaying = false,
+            playingState = PlayingState.NOT_PLAYING,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -154,7 +189,7 @@ private fun EpisodeControlsPreview_IsNotInQueue() {
     PreviewTheme {
         EpisodeControls(
             episode(queuePosition = Episode.NOT_IN_QUEUE),
-            isPlaying = false,
+            playingState = PlayingState.NOT_PLAYING,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -174,7 +209,7 @@ private fun EpisodeControlsPreview_IsDownloaded() {
     PreviewTheme {
         EpisodeControls(
             episode(downloadStatus = DownloadStatus.DOWNLOADED),
-            isPlaying = false,
+            playingState = PlayingState.NOT_PLAYING,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -194,7 +229,7 @@ private fun EpisodeControlsPreview_IsNotNotDownloaded() {
     PreviewTheme {
         EpisodeControls(
             episode(downloadStatus = DownloadStatus.NOT_DOWNLOADED),
-            isPlaying = false,
+            playingState = PlayingState.NOT_PLAYING,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -214,7 +249,7 @@ private fun EpisodeControlsPreview_IsDownloading() {
     PreviewTheme {
         EpisodeControls(
             episode(downloadStatus = DownloadStatus.DOWNLOADING, downloadProgress = 0.5),
-            isPlaying = false,
+            playingState = PlayingState.NOT_PLAYING,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },

@@ -23,6 +23,7 @@ import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
 import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.HomeViewState
 
 @Composable
@@ -43,8 +44,8 @@ fun HomeScreen(
 ) {
     Column(
         modifier =
-            modifier
-                .fillMaxSize(),
+        modifier
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -52,7 +53,11 @@ fun HomeScreen(
             items(state.episodes) {
                 EpisodeItem(
                     episode = it,
-                    isPlaying = state.currentlyPlayingEpisodeId == it.id,
+                    playingState = if (state.currentlyPlayingEpisodeId == it.id) {
+                        state.currentlyPlayingEpisodeState
+                    } else {
+                        PlayingState.NOT_PLAYING
+                    },
                     onClicked = { onEpisodeClicked(it.id) },
                     onPlayClicked = { onEpisodePlayClicked(it) },
                     onPauseClicked = onEpisodePauseClicked,
@@ -77,7 +82,7 @@ fun HomeScreen(
 @Composable
 private fun EpisodeItem(
     episode: Episode,
-    isPlaying: Boolean,
+    playingState: PlayingState,
     onClicked: () -> Unit,
     onPlayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
@@ -91,9 +96,9 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-            Modifier
-                .padding(16.dp)
-                .clickable(onClick = onClicked),
+        Modifier
+            .padding(16.dp)
+            .clickable(onClick = onClicked),
     ) {
         Text(style = MaterialTheme.typography.labelSmall, text = episode.podcastName)
         Spacer(modifier = Modifier.height(8.dp))
@@ -102,7 +107,7 @@ private fun EpisodeItem(
         Text(style = MaterialTheme.typography.bodySmall, text = episode.description, maxLines = 2)
         EpisodeControls(
             episode = episode,
-            isPlaying = isPlaying,
+            playingState = playingState,
             onPlayClicked = onPlayClicked,
             onPauseClicked = onPauseClicked,
             onAddToQueueClicked = onAddToQueueClicked,
@@ -122,7 +127,7 @@ private fun EpisodeItemPreview() {
     PreviewTheme {
         EpisodeItem(
             episode = episode(),
-            isPlaying = false,
+            playingState = PlayingState.NOT_PLAYING,
             onClicked = { },
             onPlayClicked = { },
             onPauseClicked = { },

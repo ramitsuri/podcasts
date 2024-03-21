@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.map
 internal class DataStoreKeyValueStore(
     private val dataStore: DataStore<Preferences>,
 ) : KeyValueStore {
+
     override fun getStringFlow(
         key: Key,
         defaultValue: String?,
