@@ -17,6 +17,7 @@ class EpisodeDetailsViewModel internal constructor(
             MutableStateFlow(EpisodeDetailsViewState())
         } else {
             repository.getEpisodeFlow(episodeId)
+                // TODO Provide playing state
                 .map { EpisodeDetailsViewState(it) }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), EpisodeDetailsViewState())
         }

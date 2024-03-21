@@ -15,6 +15,7 @@ import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
 import com.ramitsuri.podcasts.android.ui.components.TopAppBar
 import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.EpisodeDetailsViewState
 
 @Composable
@@ -38,7 +39,7 @@ fun EpisodeDetailsScreen(
         if (episode != null) {
             EpisodeDetails(
                 episode,
-                isPlaying = state.isPlaying,
+                playingState = state.playingState,
                 onPlayClicked = { onEpisodePlayClicked(episode.id) },
                 onPauseClicked = { onEpisodePauseClicked(episode.id) },
                 onAddToQueueClicked = { onEpisodeAddToQueueClicked(episode.id) },
@@ -56,7 +57,7 @@ fun EpisodeDetailsScreen(
 @Composable
 private fun EpisodeDetails(
     episode: Episode,
-    isPlaying: Boolean,
+    playingState: PlayingState,
     onPlayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
     onAddToQueueClicked: () -> Unit,
@@ -80,7 +81,7 @@ private fun EpisodeDetails(
         Text(style = MaterialTheme.typography.labelSmall, text = episode.title)
         EpisodeControls(
             episode = episode,
-            isPlaying = isPlaying,
+            playingState = playingState,
             onPlayClicked = onPlayClicked,
             onPauseClicked = onPauseClicked,
             onAddToQueueClicked = onAddToQueueClicked,

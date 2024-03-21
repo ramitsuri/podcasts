@@ -17,6 +17,11 @@
     <!-- Import Subscriptions Screen -->
     <string name="import_subscriptions_subscribe_all">Subscribe</string>
 
+    <!-- Download service -->
+    <string name="download_notification_channel_name">Downloads</string>
+    <string name="download_notification_channel_description">Download service tasks</string>
+    <string name="download_notification_text">Downloading episodes</string>
+
     <!-- Player screen -->
     <string name="player_never_played">Select episode to play</string>
 </resources>

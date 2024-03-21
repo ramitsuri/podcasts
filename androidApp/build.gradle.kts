@@ -63,10 +63,16 @@ dependencies {
     implementation(libs.compose.lifecycle.viewmodel)
     implementation(libs.compose.lifecycle.runtime)
     implementation(libs.coil)
+    implementation(libs.coroutines.guava)
+    implementation(libs.kotlin.datetime)
     implementation(libs.androidx.activity.compose)
     implementation(libs.koin.android)
     implementation(libs.koin.android.compose)
     implementation(libs.kotlin.datetime)
+    implementation(libs.media3.common)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.exoplayer.workmanager)
+    implementation(libs.media3.session)
     debugImplementation(libs.compose.ui.tooling)
 }
 

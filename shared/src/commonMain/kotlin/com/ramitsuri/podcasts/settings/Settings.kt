@@ -28,10 +28,6 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
         keyValueStore.putFloat(Key.PLAYBACK_SPEED, speed)
     }
 
-    fun isPlayingFlow(): Flow<Boolean> {
-        return keyValueStore.getBooleanFlow(Key.IS_PLAYING, false)
-    }
-
     fun getPlayingStateFlow(): Flow<PlayingState> {
         return keyValueStore
             .getStringFlow(Key.PLAYING_STATE, null)

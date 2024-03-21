@@ -1,7 +1,9 @@
 package com.ramitsuri.podcasts.viewmodel
 
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.HomeViewState
+import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
@@ -15,6 +17,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel internal constructor(
     podcastsAndEpisodesRepository: PodcastsAndEpisodesRepository,
     private val episodesRepository: EpisodesRepository,
+    private val playerController: PlayerController,
     private val settings: Settings,
     private val longLivingScope: CoroutineScope,
 ) : ViewModel() {
@@ -26,18 +29,22 @@ class HomeViewModel internal constructor(
             combine(
                 podcastsAndEpisodesRepository.getSubscribedFlow(),
                 episodesRepository.getCurrentEpisode(),
-                settings.isPlayingFlow(),
-            ) { subscribedEpisodes, currentlyPlayingEpisode, isPlaying ->
+                settings.getPlayingStateFlow(),
+            ) { subscribedEpisodes, currentlyPlayingEpisode, playingState ->
                 val currentlyPlaying =
-                    if (isPlaying) {
+                    if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
                         currentlyPlayingEpisode
                     } else {
                         null
                     }
-                Pair(subscribedEpisodes, currentlyPlaying)
-            }.collect { (subscribedEpisodes, currentlyPlayingEpisode) ->
+                Triple(subscribedEpisodes, currentlyPlaying, playingState)
+            }.collect { (subscribedEpisodes, currentlyPlayingEpisode, playingState) ->
                 _state.update {
-                    it.copy(episodes = subscribedEpisodes, currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id)
+                    it.copy(
+                        episodes = subscribedEpisodes,
+                        currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
+                        currentlyPlayingEpisodeState = playingState,
+                    )
                 }
             }
         }
@@ -46,10 +53,12 @@ class HomeViewModel internal constructor(
     fun onEpisodePlayClicked(episode: Episode) {
         longLivingScope.launch {
             episodesRepository.setCurrentlyPlayingEpisodeId(episode.id)
+            playerController.play(episode)
         }
     }
 
     fun onEpisodePauseClicked() {
+        playerController.pause()
     }
 
     fun onEpisodeAddToQueueClicked(episode: Episode) {

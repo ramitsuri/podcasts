@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ramitsuri.podcasts.model.ui.PlayerViewState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
+import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +21,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class PlayerViewModel(
+    private val playerController: PlayerController,
     private val longLivingScope: CoroutineScope,
     private val settings: Settings,
     private val episodesRepository: EpisodesRepository,
@@ -61,7 +63,7 @@ class PlayerViewModel(
                                     .div(durationForProgress)
                                     .coerceIn(0f, 1f)
                             val remainingDuration = duration?.minus(episode.progressInSeconds)
-                            PlayerViewState(
+                            it.copy(
                                 hasEverBeenPlayed = true,
                                 episodeTitle = episode.title,
                                 episodeArtworkUrl = episode.podcastImageUrl,
@@ -84,27 +86,33 @@ class PlayerViewModel(
         longLivingScope.launch {
             val episode = episodesRepository.getCurrentEpisode().firstOrNull()
             if (episode != null) {
+                playerController.play(episode)
             }
         }
     }
 
     fun onPauseClicked() {
+        playerController.pause()
     }
 
     fun onSkipRequested(by: Duration = 30.seconds) {
+        playerController.skip(by)
     }
 
     fun onReplayRequested(by: Duration = 10.seconds) {
+        playerController.replay(by)
     }
 
     fun onSeekRequested(toPercentOfDuration: Float) {
         val duration = _state.value.totalDuration
         if (duration != null) {
+            playerController.seek(duration.times(toPercentOfDuration.toDouble()))
         }
     }
 
     fun onSpeedChangeRequested(speed: Float) {
         longLivingScope.launch {
+            playerController.setPlaybackSpeed(speed)
             settings.setPlaybackSpeed(speed)
         }
     }
@@ -115,6 +123,7 @@ class PlayerViewModel(
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return PlayerViewModel(
+                        playerController = get<PlayerController>(),
                         longLivingScope = get<CoroutineScope>(),
                         settings = get<Settings>(),
                         episodesRepository = get<EpisodesRepository>(),
