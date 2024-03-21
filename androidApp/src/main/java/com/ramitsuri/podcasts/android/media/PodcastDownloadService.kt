@@ -21,14 +21,15 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 @UnstableApi
-class PodcastDownloadService : DownloadService(
-    Constants.DOWNLOADER_FOREGROUND_NOTIFICATION_ID,
-    DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
-    NotificationChannel.Download.id,
-    NotificationChannel.Download.nameRes,
-    NotificationChannel.Download.descriptionRes,
-), KoinComponent {
-
+class PodcastDownloadService :
+    DownloadService(
+        Constants.DOWNLOADER_FOREGROUND_NOTIFICATION_ID,
+        DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
+        NotificationChannel.Download.id,
+        NotificationChannel.Download.nameRes,
+        NotificationChannel.Download.descriptionRes,
+    ),
+    KoinComponent {
     private val downloadMgr by inject<DownloadManager>()
     private val downloadManagerListener by inject<DownloadManagerListener>()
 
@@ -40,7 +41,10 @@ class PodcastDownloadService : DownloadService(
         return WorkManagerScheduler(this, DOWNLOAD_WORK_NAME)
     }
 
-    override fun getForegroundNotification(downloads: MutableList<Download>, notMetRequirements: Int): Notification {
+    override fun getForegroundNotification(
+        downloads: MutableList<Download>,
+        notMetRequirements: Int,
+    ): Notification {
         return DownloadNotificationHelper(this, NotificationChannel.Download.id)
             .buildProgressNotification(
                 this,
@@ -52,7 +56,11 @@ class PodcastDownloadService : DownloadService(
             )
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         downloadMgr.addListener(downloadManagerListener)
         return super.onStartCommand(intent, flags, startId)
     }
@@ -62,13 +70,17 @@ class PodcastDownloadService : DownloadService(
         private const val DOWNLOAD_PAUSED = 1
 
         @OptIn(UnstableApi::class)
-        fun downloadEpisode(context: Context, episode: Episode) {
-            val downloadRequest = DownloadRequest.Builder(
-                episode.id,
-                Uri.Builder()
-                    .encodedPath(episode.enclosureUrl)
-                    .build(),
-            ).build()
+        fun downloadEpisode(
+            context: Context,
+            episode: Episode,
+        ) {
+            val downloadRequest =
+                DownloadRequest.Builder(
+                    episode.id,
+                    Uri.Builder()
+                        .encodedPath(episode.enclosureUrl)
+                        .build(),
+                ).build()
             sendAddDownload(
                 context,
                 DownloadService::class.java,
@@ -78,7 +90,10 @@ class PodcastDownloadService : DownloadService(
         }
 
         @OptIn(UnstableApi::class)
-        fun pauseDownload(context: Context, episodeId: Long) {
+        fun pauseDownload(
+            context: Context,
+            episodeId: Long,
+        ) {
             sendSetStopReason(
                 context,
                 PodcastDownloadService::class.java,

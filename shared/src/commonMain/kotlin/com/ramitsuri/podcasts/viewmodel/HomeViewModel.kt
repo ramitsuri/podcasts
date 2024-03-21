@@ -21,7 +21,6 @@ class HomeViewModel internal constructor(
     private val settings: Settings,
     private val longLivingScope: CoroutineScope,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(HomeViewState())
     val state = _state.asStateFlow()
 

@@ -27,8 +27,7 @@ import java.io.File
 
 @UnstableApi
 class MainApplication : Application(), KoinComponent {
-
-     private val playerController by inject<PlayerController>()
+    private val playerController by inject<PlayerController>()
 
     override fun onCreate() {
         super.onCreate()

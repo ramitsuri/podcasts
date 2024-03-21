@@ -44,8 +44,8 @@ fun HomeScreen(
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -53,11 +53,12 @@ fun HomeScreen(
             items(state.episodes) {
                 EpisodeItem(
                     episode = it,
-                    playingState = if (state.currentlyPlayingEpisodeId == it.id) {
-                        state.currentlyPlayingEpisodeState
-                    } else {
-                        PlayingState.NOT_PLAYING
-                    },
+                    playingState =
+                        if (state.currentlyPlayingEpisodeId == it.id) {
+                            state.currentlyPlayingEpisodeState
+                        } else {
+                            PlayingState.NOT_PLAYING
+                        },
                     onClicked = { onEpisodeClicked(it.id) },
                     onPlayClicked = { onEpisodePlayClicked(it) },
                     onPauseClicked = onEpisodePauseClicked,
@@ -96,9 +97,9 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-        Modifier
-            .padding(16.dp)
-            .clickable(onClick = onClicked),
+            Modifier
+                .padding(16.dp)
+                .clickable(onClick = onClicked),
     ) {
         Text(style = MaterialTheme.typography.labelSmall, text = episode.podcastName)
         Spacer(modifier = Modifier.height(8.dp))

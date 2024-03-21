@@ -2,7 +2,6 @@ package com.ramitsuri.podcasts.android.ui.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
@@ -92,11 +91,11 @@ fun EpisodeControls(
         }
         IconButton(
             onClick =
-            if (episode.completedAt == null) {
-                onPlayedClicked
-            } else {
-                onNotPlayedClicked
-            },
+                if (episode.completedAt == null) {
+                    onPlayedClicked
+                } else {
+                    onNotPlayedClicked
+                },
         ) {
             Icon(imageVector = Icons.Outlined.CheckCircleOutline, contentDescription = "")
         }

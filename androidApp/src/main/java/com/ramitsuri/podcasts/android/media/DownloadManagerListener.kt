@@ -30,18 +30,19 @@ class DownloadManagerListener(
         download: Download,
         finalException: Exception?,
     ) {
-        val state = when (download.state) {
-            Download.STATE_QUEUED -> DownloadStatus.QUEUED
-            Download.STATE_DOWNLOADING -> DownloadStatus.DOWNLOADING
-            Download.STATE_COMPLETED -> DownloadStatus.DOWNLOADED
-            Download.STATE_STOPPED -> DownloadStatus.PAUSED
-            Download.STATE_FAILED -> {
-                // TODO log the final exception
-                DownloadStatus.NOT_DOWNLOADED
-            }
+        val state =
+            when (download.state) {
+                Download.STATE_QUEUED -> DownloadStatus.QUEUED
+                Download.STATE_DOWNLOADING -> DownloadStatus.DOWNLOADING
+                Download.STATE_COMPLETED -> DownloadStatus.DOWNLOADED
+                Download.STATE_STOPPED -> DownloadStatus.PAUSED
+                Download.STATE_FAILED -> {
+                    // TODO log the final exception
+                    DownloadStatus.NOT_DOWNLOADED
+                }
 
-            else -> null
-        }
+                else -> null
+            }
 
         longLivingScope.launch {
             if (state != null) {

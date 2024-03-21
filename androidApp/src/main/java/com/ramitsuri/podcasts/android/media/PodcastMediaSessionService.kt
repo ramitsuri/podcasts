@@ -48,7 +48,6 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(UnstableApi::class)
 class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
-
     private val cache by inject<Cache>()
     private val episodesRepository by inject<EpisodesRepository>()
     private val longLivingScope by inject<CoroutineScope>()
@@ -60,51 +59,63 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     override fun onCreate() {
         super.onCreate()
 
-        val replay10Button = CommandButton.Builder()
-            .setDisplayName(getString(R.string.replay_10))
-            .setIconResId(R.drawable.ic_replay_10)
-            .setSessionCommand(SessionCommand(ACTION_REPLAY_10, Bundle.EMPTY))
-            .build()
-        val skip30Button = CommandButton.Builder()
-            .setDisplayName(getString(R.string.skip_30))
-            .setIconResId(R.drawable.ic_skip_30)
-            .setSessionCommand(SessionCommand(ACTION_SKIP_30, Bundle.EMPTY))
-            .build()
-        val saveToFavoritesButton = CommandButton.Builder()
-            .setDisplayName(getString(R.string.save_to_favorites))
-            .setIconResId(R.drawable.ic_favorite)
-            .setSessionCommand(SessionCommand(ACTION_SAVE_TO_FAVORITES, Bundle.EMPTY))
-            .build()
+        val replay10Button =
+            CommandButton.Builder()
+                .setDisplayName(getString(R.string.replay_10))
+                .setIconResId(R.drawable.ic_replay_10)
+                .setSessionCommand(SessionCommand(ACTION_REPLAY_10, Bundle.EMPTY))
+                .build()
+        val skip30Button =
+            CommandButton.Builder()
+                .setDisplayName(getString(R.string.skip_30))
+                .setIconResId(R.drawable.ic_skip_30)
+                .setSessionCommand(SessionCommand(ACTION_SKIP_30, Bundle.EMPTY))
+                .build()
+        val saveToFavoritesButton =
+            CommandButton.Builder()
+                .setDisplayName(getString(R.string.save_to_favorites))
+                .setIconResId(R.drawable.ic_favorite)
+                .setSessionCommand(SessionCommand(ACTION_SAVE_TO_FAVORITES, Bundle.EMPTY))
+                .build()
         val customLayout = listOf(replay10Button, skip30Button, saveToFavoritesButton)
 
-        val audioAttributes = AudioAttributes.Builder()
-            .setContentType(C.AUDIO_CONTENT_TYPE_SPEECH)
-            .setUsage(C.USAGE_MEDIA)
-            .build()
-        val cacheFactory = CacheDataSource.Factory()
-            .setCache(cache)
-            .setUpstreamDataSourceFactory(DefaultHttpDataSource.Factory())
-            .setCacheWriteDataSinkFactory(null)
+        val audioAttributes =
+            AudioAttributes.Builder()
+                .setContentType(C.AUDIO_CONTENT_TYPE_SPEECH)
+                .setUsage(C.USAGE_MEDIA)
+                .build()
+        val cacheFactory =
+            CacheDataSource.Factory()
+                .setCache(cache)
+                .setUpstreamDataSourceFactory(DefaultHttpDataSource.Factory())
+                .setCacheWriteDataSinkFactory(null)
         val mediaSourceFactory = ProgressiveMediaSource.Factory(cacheFactory)
-        val audioOnlyRenderersFactory = RenderersFactory { handler, _, audioListener, _, _ ->
-            arrayOf(MediaCodecAudioRenderer(this, MediaCodecSelector.DEFAULT, handler, audioListener))
-        }
-        val player = ExoPlayer.Builder(this, audioOnlyRenderersFactory, mediaSourceFactory)
-            .setAudioAttributes(audioAttributes, true)
-            .setHandleAudioBecomingNoisy(true)
-            .build()
+        val audioOnlyRenderersFactory =
+            RenderersFactory { handler, _, audioListener, _, _ ->
+                arrayOf(MediaCodecAudioRenderer(this, MediaCodecSelector.DEFAULT, handler, audioListener))
+            }
+        val player =
+            ExoPlayer.Builder(this, audioOnlyRenderersFactory, mediaSourceFactory)
+                .setAudioAttributes(audioAttributes, true)
+                .setHandleAudioBecomingNoisy(true)
+                .build()
 
-        mediaSession = MediaSession.Builder(this, player)
-            .setCallback(MediaSessionCallback())
-            .setCustomLayout(customLayout)
-            .build()
+        mediaSession =
+            MediaSession.Builder(this, player)
+                .setCallback(MediaSessionCallback())
+                .setCustomLayout(customLayout)
+                .build()
 
         launchSuspend {
             settings.setPlayingState(PlayingState.NOT_PLAYING)
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         attachPlayerListener()
         startListeningForUpdates()
         return super.onStartCommand(intent, flags, startId)
@@ -164,15 +175,17 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             session: MediaSession,
             controller: MediaSession.ControllerInfo,
         ): ConnectionResult {
-            val sessionCommands = SessionCommands.Builder()
-                .add(SessionCommand(ACTION_REPLAY_10, Bundle.EMPTY))
-                .add(SessionCommand(ACTION_SKIP_30, Bundle.EMPTY))
-                .add(SessionCommand(ACTION_SAVE_TO_FAVORITES, Bundle.EMPTY))
-                .build()
-            val playerCommands = ConnectionResult.DEFAULT_PLAYER_COMMANDS.buildUpon()
-                .remove(Player.COMMAND_SEEK_TO_PREVIOUS)
-                .remove(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
-                .build()
+            val sessionCommands =
+                SessionCommands.Builder()
+                    .add(SessionCommand(ACTION_REPLAY_10, Bundle.EMPTY))
+                    .add(SessionCommand(ACTION_SKIP_30, Bundle.EMPTY))
+                    .add(SessionCommand(ACTION_SAVE_TO_FAVORITES, Bundle.EMPTY))
+                    .build()
+            val playerCommands =
+                ConnectionResult.DEFAULT_PLAYER_COMMANDS.buildUpon()
+                    .remove(Player.COMMAND_SEEK_TO_PREVIOUS)
+                    .remove(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
+                    .build()
 
             return ConnectionResult.AcceptedResultBuilder(session)
                 .setAvailableSessionCommands(sessionCommands)
@@ -203,7 +216,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             session: MediaSession,
             controller: MediaSession.ControllerInfo,
             customCommand: SessionCommand,
-            args: Bundle
+            args: Bundle,
         ): ListenableFuture<SessionResult> {
             if (customCommand.customAction == ACTION_SKIP_30) {
                 val currentPosition = mediaSession?.player?.currentPosition
@@ -223,27 +236,29 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             }
             return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
         }
-
     }
 
     private inner class PlayerListener(private val player: Player) : Player.Listener {
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             super.onIsPlayingChanged(isPlaying)
-            val state = if (isPlaying) {
-                PlayingState.PLAYING
-            } else {
-                if (player.playbackState == STATE_BUFFERING) {
-                    PlayingState.LOADING
+            val state =
+                if (isPlaying) {
+                    PlayingState.PLAYING
                 } else {
-                    PlayingState.NOT_PLAYING
+                    if (player.playbackState == STATE_BUFFERING) {
+                        PlayingState.LOADING
+                    } else {
+                        PlayingState.NOT_PLAYING
+                    }
                 }
-            }
             launchSuspend {
                 settings.setPlayingState(state)
             }
         }
 
-        override fun onPlaybackStateChanged(@State playbackState: Int) {
+        override fun onPlaybackStateChanged(
+            @State playbackState: Int,
+        ) {
             super.onPlaybackStateChanged(playbackState)
             if (playbackState == Player.STATE_ENDED) {
                 playNextFromQueueOnMediaEnded(player)
@@ -278,8 +293,10 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             }
         }
 
-
-        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        override fun onMediaItemTransition(
+            mediaItem: MediaItem?,
+            reason: Int,
+        ) {
             if (mediaItem != null) {
                 longLivingScope.launch {
                     val nextEpisode = episodesRepository.getEpisode(mediaItem.mediaId) ?: return@launch

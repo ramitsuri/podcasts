@@ -12,5 +12,5 @@ enum class NotificationChannel(
         id = "download-service",
         nameRes = R.string.download_notification_channel_name,
         descriptionRes = R.string.download_notification_channel_description,
-    )
+    ),
 }
