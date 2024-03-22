@@ -8,12 +8,14 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.player.PlayerController
+import com.ramitsuri.podcasts.settings.Settings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
 class PlayerControllerImpl(
     private val longLivingScope: CoroutineScope,
+    private val settings: Settings,
     context: Context,
 ) : PlayerController {
     private val appContext = context.applicationContext
@@ -27,6 +29,9 @@ class PlayerControllerImpl(
             ?.addListener(
                 {
                     controller = controllerFuture?.get()
+                    launchSuspend {
+                        setPlaybackSpeed(settings.getPlaybackSpeed())
+                    }
                 },
                 MoreExecutors.directExecutor(),
             )
@@ -46,9 +51,7 @@ class PlayerControllerImpl(
     }
 
     override fun setPlaybackSpeed(speed: Float) {
-        launchSuspend {
-            controller?.setPlaybackSpeed(speed)
-        }
+        controller?.setPlaybackSpeed(speed)
     }
 
     override fun replay(by: Duration) {

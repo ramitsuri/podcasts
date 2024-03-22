@@ -198,6 +198,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             controller: MediaSession.ControllerInfo,
         ): ListenableFuture<MediaSession.MediaItemsWithStartPosition> {
             return longLivingScope.future {
+                mediaSession.player.setPlaybackSpeed(settings.getPlaybackSpeed())
                 val currentEpisode = currentlyPlayingEpisode.value
                 if (currentEpisode != null) {
                     val startingPosition = currentEpisode.progressInSeconds.times(1000).toLong()
