@@ -84,7 +84,14 @@ fun NavGraph(
         var peekHeightPx by remember { mutableIntStateOf(0) }
         BottomSheetScaffold(
             scaffoldState = scaffoldSheetState,
-            sheetPeekHeight = if (peekHeightPx == 0) bottomPadding else with(LocalDensity.current) { innerPadding.calculateBottomPadding() + peekHeightPx.toDp() },
+            sheetPeekHeight =
+                if (peekHeightPx == 0) {
+                    bottomPadding
+                } else {
+                    with(LocalDensity.current) {
+                        innerPadding.calculateBottomPadding() + peekHeightPx.toDp()
+                    }
+                },
             modifier = Modifier.padding(innerPadding),
             sheetDragHandle = { },
             sheetContent = {

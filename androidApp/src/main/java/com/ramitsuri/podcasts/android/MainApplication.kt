@@ -77,7 +77,7 @@ class MainApplication : Application(), KoinComponent {
                     PlayerControllerImpl(
                         longLivingScope = get<CoroutineScope>(),
                         context = get<Application>(),
-                        settings = get<Settings>()
+                        settings = get<Settings>(),
                     )
                 }
 

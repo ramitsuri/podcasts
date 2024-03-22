@@ -119,11 +119,12 @@ class PlayerViewModel(
 
     fun onSpeedChangeRequested(speed: Float) {
         longLivingScope.launch {
-            val rounded = speed
-                .times(1000)
-                .roundToInt()
-                .div(1000f)
-                .coerceIn(0.1f, 3.0f)
+            val rounded =
+                speed
+                    .times(1000)
+                    .roundToInt()
+                    .div(1000f)
+                    .coerceIn(0.1f, 3.0f)
             playerController.setPlaybackSpeed(rounded)
             settings.setPlaybackSpeed(rounded)
             _state.update { it.copy(playbackSpeed = rounded) }
