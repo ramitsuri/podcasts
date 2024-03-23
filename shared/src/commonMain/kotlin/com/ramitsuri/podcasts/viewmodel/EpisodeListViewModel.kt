@@ -2,8 +2,9 @@ package com.ramitsuri.podcasts.viewmodel
 
 import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.EpisodeListType
 import com.ramitsuri.podcasts.model.PlayingState
-import com.ramitsuri.podcasts.model.ui.HomeViewState
+import com.ramitsuri.podcasts.model.ui.EpisodeListViewState
 import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
@@ -15,7 +16,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class HomeViewModel internal constructor(
+class EpisodeListViewModel internal constructor(
+    episodeListType: EpisodeListType,
     podcastsAndEpisodesRepository: PodcastsAndEpisodesRepository,
     private val episodesRepository: EpisodesRepository,
     private val playerController: PlayerController,
@@ -23,13 +25,17 @@ class HomeViewModel internal constructor(
     private val settings: Settings,
     private val longLivingScope: CoroutineScope,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(HomeViewState())
+    private val _state = MutableStateFlow(EpisodeListViewState())
     val state = _state.asStateFlow()
 
     init {
+        val episodeList = when (episodeListType) {
+            EpisodeListType.SUBSCRIBED -> podcastsAndEpisodesRepository.getSubscribedFlow()
+            EpisodeListType.QUEUE -> episodesRepository.getQueueFlow()
+        }
         viewModelScope.launch {
             combine(
-                podcastsAndEpisodesRepository.getSubscribedFlow(),
+                episodeList,
                 episodesRepository.getCurrentEpisode(),
                 settings.getPlayingStateFlow(),
             ) { subscribedEpisodes, currentlyPlayingEpisode, playingState ->
@@ -96,6 +102,21 @@ class HomeViewModel internal constructor(
     fun onEpisodeNotPlayedClicked(episodeId: String) {
         viewModelScope.launch {
             episodesRepository.markNotPlayed(episodeId)
+        }
+    }
+
+    fun test(from: Int, to: Int) {
+        viewModelScope.launch {
+            val currentlyAtFrom = _state.value.episodes.getOrNull(from)
+            val currentlyAtTo = _state.value.episodes.getOrNull(to)
+            if (currentlyAtFrom != null && currentlyAtTo != null) {
+                episodesRepository.updateQueuePositions(
+                    mapOf(
+                        currentlyAtFrom.id to to,
+                        currentlyAtTo.id to from,
+                    ),
+                )
+            }
         }
     }
 }

@@ -31,4 +31,14 @@
     <string name="player_playback_speed_decrease">-0.1x</string>
     <string name="player_trim_silence_enable">Trim silence</string>
     <string name="player_trim_silence_disable">Don\'t trim silence</string>
+
+    <!-- Library screen -->
+    <string name="library_subscriptions">Subscriptions</string>
+    <string name="library_queue">Queue</string>
+    <string name="library_downloads">Downloads</string>
+    <string name="library_history">History</string>
+
+    <!-- Queue screen -->
+    <string name="queue_empty_title">Your queue is empty</string>
+    <string name="queue_empty_info">Tap this button on any episode to add yo your queue</string>
 </resources>

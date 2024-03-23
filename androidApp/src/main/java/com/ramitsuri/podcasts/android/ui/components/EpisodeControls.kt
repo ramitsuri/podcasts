@@ -8,9 +8,9 @@ import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.PlaylistAddCheck
 import androidx.compose.material.icons.filled.PauseCircleOutline
 import androidx.compose.material.icons.filled.PlayCircleOutline
+import androidx.compose.material.icons.outlined.ArrowCircleDown
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.DownloadDone
-import androidx.compose.material.icons.outlined.DownloadForOffline
 import androidx.compose.material.icons.outlined.Downloading
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -70,7 +70,7 @@ fun EpisodeControls(
         when (episode.downloadStatus) {
             DownloadStatus.NOT_DOWNLOADED -> {
                 IconButton(onClick = onDownloadClicked) {
-                    Icon(imageVector = Icons.Outlined.DownloadForOffline, contentDescription = "")
+                    Icon(imageVector = Icons.Outlined.ArrowCircleDown, contentDescription = "")
                 }
             }
 

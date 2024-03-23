@@ -10,6 +10,7 @@ enum class Route(val value: String) {
     EXPLORE("explore"),
     LIBRARY("library"),
     EPISODE_DETAILS("episode_details"),
+    QUEUE("queue"),
     ;
 
     fun routeWithArgValue(argValue: String?): String {

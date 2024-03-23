@@ -46,9 +46,8 @@ internal interface EpisodesDao {
         blocked: Boolean,
     )
 
-    suspend fun updateQueuePosition(
-        id: String,
-        position: Int,
+    suspend fun updateQueuePositions(
+        idToQueuePosition: Map<String, Int>,
     )
 
     suspend fun addToQueue(id: String)
