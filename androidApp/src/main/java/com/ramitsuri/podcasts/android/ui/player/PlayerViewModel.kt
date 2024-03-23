@@ -56,9 +56,10 @@ class PlayerViewModel(
                 combine(
                     episodesRepository.getEpisodeFlow(episodeId),
                     settings.getPlaybackSpeedFlow(),
-                ) { episode, speed ->
-                    Pair(episode, speed)
-                }.collect { (episode, speed) ->
+                    settings.getTrimSilenceFlow(),
+                ) { episode, speed, trimSilence ->
+                    Triple(episode, speed, trimSilence)
+                }.collect { (episode, speed, trimSilence) ->
                     if (episode != null) {
                         _state.update {
                             val duration = episode.duration
@@ -82,6 +83,7 @@ class PlayerViewModel(
                                 playedDuration = episode.progressInSeconds.seconds,
                                 remainingDuration = remainingDuration?.seconds,
                                 totalDuration = duration?.seconds,
+                                trimSilence = trimSilence,
                             )
                         }
                     }
@@ -141,6 +143,16 @@ class PlayerViewModel(
         val currentSpeed = _state.value.playbackSpeed
         val newSpeed = currentSpeed.minus(0.1f)
         onSpeedChangeRequested(newSpeed)
+    }
+
+    fun toggleTrimSilence() {
+        longLivingScope.launch {
+            val currentTrimSilence = _state.value.trimSilence
+            val newTrimSilence = !currentTrimSilence
+            settings.setTrimSilence(newTrimSilence)
+            _state.update { it.copy(trimSilence = newTrimSilence) }
+            // Updated on the player via MediaSessionService
+        }
     }
 
     companion object {

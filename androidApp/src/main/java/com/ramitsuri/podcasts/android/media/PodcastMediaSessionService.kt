@@ -143,6 +143,12 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 }
             }
         }
+        launchSuspend {
+            settings.getTrimSilenceFlow().collectLatest { trimSilence ->
+                val player = mediaSession?.player as? ExoPlayer
+                player?.skipSilenceEnabled = trimSilence
+            }
+        }
     }
 
     private fun attachPlayerListener() {

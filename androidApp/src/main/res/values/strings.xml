@@ -24,4 +24,11 @@
 
     <!-- Player screen -->
     <string name="player_never_played">Select episode to play</string>
+    <string name="player_playback_speed_1x">1.0x</string>
+    <string name="player_playback_speed_1_5x">1.5x</string>
+    <string name="player_playback_speed_2x">2.0x</string>
+    <string name="player_playback_speed_increase">+0.1x</string>
+    <string name="player_playback_speed_decrease">-0.1x</string>
+    <string name="player_trim_silence_enable">Trim silence</string>
+    <string name="player_trim_silence_disable">Don\'t trim silence</string>
 </resources>

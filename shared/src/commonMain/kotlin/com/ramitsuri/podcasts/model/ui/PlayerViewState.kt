@@ -16,4 +16,5 @@ data class PlayerViewState(
     val playedDuration: Duration = Duration.ZERO,
     val remainingDuration: Duration? = Duration.ZERO,
     val totalDuration: Duration? = Duration.ZERO,
+    val trimSilence: Boolean = false,
 )

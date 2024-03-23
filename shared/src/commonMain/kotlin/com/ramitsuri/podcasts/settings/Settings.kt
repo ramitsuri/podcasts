@@ -39,4 +39,13 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
     suspend fun setPlayingState(playingState: PlayingState) {
         keyValueStore.putString(Key.PLAYING_STATE, playingState.value)
     }
+
+    fun getTrimSilenceFlow(): Flow<Boolean> {
+        return keyValueStore
+            .getBooleanFlow(Key.TRIM_SILENCE, false)
+    }
+
+    suspend fun setTrimSilence(trim: Boolean) {
+        keyValueStore.putBoolean(Key.TRIM_SILENCE, trim)
+    }
 }
