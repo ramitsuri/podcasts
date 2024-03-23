@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.android.media
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
+import com.ramitsuri.podcasts.android.utils.Constants
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import kotlinx.coroutines.CoroutineScope
@@ -35,7 +36,14 @@ class DownloadManagerListener(
                 Download.STATE_QUEUED -> DownloadStatus.QUEUED
                 Download.STATE_DOWNLOADING -> DownloadStatus.DOWNLOADING
                 Download.STATE_COMPLETED -> DownloadStatus.DOWNLOADED
-                Download.STATE_STOPPED -> DownloadStatus.PAUSED
+                Download.STATE_STOPPED -> {
+                    if (download.stopReason == Constants.DOWNLOAD_CANCELED_REASON) {
+                        DownloadStatus.NOT_DOWNLOADED
+                    } else {
+                        DownloadStatus.PAUSED
+                    }
+                }
+
                 Download.STATE_FAILED -> {
                     // TODO log the final exception
                     DownloadStatus.NOT_DOWNLOADED

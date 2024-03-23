@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.viewmodel
 
+import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.HomeViewState
@@ -18,6 +19,7 @@ class HomeViewModel internal constructor(
     podcastsAndEpisodesRepository: PodcastsAndEpisodesRepository,
     private val episodesRepository: EpisodesRepository,
     private val playerController: PlayerController,
+    private val episodeDownloader: EpisodeDownloader,
     private val settings: Settings,
     private val longLivingScope: CoroutineScope,
 ) : ViewModel() {
@@ -73,22 +75,16 @@ class HomeViewModel internal constructor(
         }
     }
 
-    fun onEpisodeDownloadClicked(episodeId: String) {
-        longLivingScope.launch {
-            episodesRepository.download(episodeId)
-        }
+    fun onEpisodeDownloadClicked(episode: Episode) {
+        episodeDownloader.add(episode)
     }
 
-    fun onEpisodeRemoveDownloadClicked(episodeId: String) {
-        viewModelScope.launch {
-            episodesRepository.removeDownload(episodeId)
-        }
+    fun onEpisodeRemoveDownloadClicked(episode: Episode) {
+        episodeDownloader.remove(episode)
     }
 
-    fun onEpisodeCancelDownloadClicked(episodeId: String) {
-        viewModelScope.launch {
-            episodesRepository.cancelDownload(episodeId)
-        }
+    fun onEpisodeCancelDownloadClicked(episode: Episode) {
+        episodeDownloader.cancel(episode)
     }
 
     fun onEpisodePlayedClicked(episodeId: String) {

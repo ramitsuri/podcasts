@@ -1,22 +1,17 @@
 package com.ramitsuri.podcasts.android.media
 
 import android.app.Notification
-import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
-import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.Scheduler
 import androidx.media3.exoplayer.workmanager.WorkManagerScheduler
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.utils.Constants
 import com.ramitsuri.podcasts.android.utils.NotificationChannel
-import com.ramitsuri.podcasts.model.Episode
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -48,7 +43,7 @@ class PodcastDownloadService :
         return DownloadNotificationHelper(this, NotificationChannel.Download.id)
             .buildProgressNotification(
                 this,
-                R.drawable.ic_launcher_foreground,
+                R.drawable.media3_notification_small_icon,
                 null,
                 getString(R.string.download_notification_text),
                 downloads,
@@ -67,40 +62,5 @@ class PodcastDownloadService :
 
     companion object {
         private const val DOWNLOAD_WORK_NAME = "podcast-downloader"
-        private const val DOWNLOAD_PAUSED = 1
-
-        @OptIn(UnstableApi::class)
-        fun downloadEpisode(
-            context: Context,
-            episode: Episode,
-        ) {
-            val downloadRequest =
-                DownloadRequest.Builder(
-                    episode.id,
-                    Uri.Builder()
-                        .encodedPath(episode.enclosureUrl)
-                        .build(),
-                ).build()
-            sendAddDownload(
-                context,
-                DownloadService::class.java,
-                downloadRequest,
-                false,
-            )
-        }
-
-        @OptIn(UnstableApi::class)
-        fun pauseDownload(
-            context: Context,
-            episodeId: Long,
-        ) {
-            sendSetStopReason(
-                context,
-                PodcastDownloadService::class.java,
-                episodeId.toString(),
-                DOWNLOAD_PAUSED,
-                false,
-            )
-        }
     }
 }
