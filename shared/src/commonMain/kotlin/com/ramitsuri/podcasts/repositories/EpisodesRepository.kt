@@ -149,23 +149,6 @@ class EpisodesRepository internal constructor(
         episodesDao.updateDuration(id, durationInSeconds)
     }
 
-    fun download(id: String) {
-        // TODO trigger download
-    }
-
-    suspend fun cancelDownload(id: String) {
-        // TODO cancel download and maybe remove downloaded file
-        episodesDao.updateDownloadStatus(id, DownloadStatus.NOT_DOWNLOADED)
-        episodesDao.updateDownloadProgress(id, 0.0)
-    }
-
-    suspend fun removeDownload(id: String) {
-        // TODO remove downloaded file
-        episodesDao.updateDownloadStatus(id, DownloadStatus.NOT_DOWNLOADED)
-        episodesDao.updateDownloadProgress(id, 0.0)
-        episodesDao.updateDownloadBlocked(id, true)
-    }
-
     suspend fun markPlayed(id: String) {
         updateCompletedAt(id)
         updatePlayProgress(id, Episode.PLAY_PROGRESS_MAX)
