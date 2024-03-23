@@ -81,18 +81,18 @@ fun PlayerScreen(
 ) {
     Box(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .padding(if (isExpanded) 16.dp else 0.dp),
+            modifier
+                .fillMaxWidth()
+                .padding(if (isExpanded) 16.dp else 0.dp),
         contentAlignment = Alignment.TopCenter,
     ) {
         if (!isExpanded) {
             if (state.hasEverBeenPlayed) {
                 PlayerScreenNotExpanded(
                     modifier =
-                    Modifier.onGloballyPositioned {
-                        onNotExpandedHeightKnown(it.size.height)
-                    },
+                        Modifier.onGloballyPositioned {
+                            onNotExpandedHeightKnown(it.size.height)
+                        },
                     episodeTitle = state.episodeTitle,
                     episodeArtwork = state.episodeArtworkUrl,
                     playingState = state.playingState,
@@ -103,9 +103,9 @@ fun PlayerScreen(
             } else {
                 NeverPlayedNotExpanded(
                     modifier =
-                    Modifier.onGloballyPositioned {
-                        onNotExpandedHeightKnown(it.size.height)
-                    },
+                        Modifier.onGloballyPositioned {
+                            onNotExpandedHeightKnown(it.size.height)
+                        },
                 )
             }
         }
@@ -178,16 +178,16 @@ private fun PlayerScreenExpanded(
     ) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(episodeArtwork)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(episodeArtwork)
+                    .crossfade(true)
+                    .build(),
             contentDescription = episodeTitle,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(360.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(360.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(

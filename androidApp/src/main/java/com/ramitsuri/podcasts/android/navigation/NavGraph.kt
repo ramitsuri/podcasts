@@ -63,8 +63,8 @@ fun NavGraph(
             if (scaffoldSheetState.bottomSheetState.currentValue != SheetValue.Expanded) {
                 BottomNavBar(
                     modifier =
-                    Modifier
-                        .offset { IntOffset(x = 0, y = 0) },
+                        Modifier
+                            .offset { IntOffset(x = 0, y = 0) },
                     selectedTabRoute = currentDestination,
                     onHomeTabClicked = {
                         navController.navigateToMainDestination(BottomNavItem.HOME)
