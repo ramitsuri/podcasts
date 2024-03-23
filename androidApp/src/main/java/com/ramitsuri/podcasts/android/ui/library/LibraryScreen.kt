@@ -36,8 +36,8 @@ fun LibraryScreen(
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
     ) {
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
         Item(
@@ -71,20 +71,23 @@ fun LibraryScreen(
 private fun Item(
     icon: ImageVector,
     @StringRes labelResId: Int,
-    onClick: () -> Unit, modifier: Modifier = Modifier
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .clickable(role = Role.Button, onClick = onClick)
-            .fillMaxWidth()
-            .padding(16.dp),
+        modifier =
+            modifier
+                .clickable(role = Role.Button, onClick = onClick)
+                .fillMaxWidth()
+                .padding(16.dp),
     ) {
         Icon(imageVector = icon, contentDescription = null)
         Text(
             text = stringResource(id = labelResId),
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp),
         )
         Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
     }

@@ -69,25 +69,26 @@ fun QueueScreen(
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
     ) {
         TopAppBar(onBack = onBack, label = stringResource(id = R.string.library_queue))
         val lazyListState = rememberLazyListState()
-        val reorderableLazyColumnState = rememberReorderableLazyColumnState(lazyListState) { from, to ->
-            onEpisodesRearranged(from.index, to.index)
-        }
+        val reorderableLazyColumnState =
+            rememberReorderableLazyColumnState(lazyListState) { from, to ->
+                onEpisodesRearranged(from.index, to.index)
+            }
         LazyColumn(state = lazyListState) {
             items(state.episodes, key = { it.id }) {
                 EpisodeItem(
                     reorderableLazyColumnState = reorderableLazyColumnState,
                     episode = it,
                     playingState =
-                    if (state.currentlyPlayingEpisodeId == it.id) {
-                        state.currentlyPlayingEpisodeState
-                    } else {
-                        PlayingState.NOT_PLAYING
-                    },
+                        if (state.currentlyPlayingEpisodeId == it.id) {
+                            state.currentlyPlayingEpisodeState
+                        } else {
+                            PlayingState.NOT_PLAYING
+                        },
                     onClicked = { onEpisodeClicked(it.id) },
                     onPlayClicked = { onEpisodePlayClicked(it) },
                     onPauseClicked = onEpisodePauseClicked,
@@ -109,9 +110,10 @@ fun QueueScreen(
 @Composable
 private fun QueueEmpty() {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -156,11 +158,12 @@ private fun LazyItemScope.EpisodeItem(
     ) {
         val interactionSource = remember { MutableInteractionSource() }
         Row(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .fillMaxWidth()
-                .padding(8.dp)
-                .clickable(onClick = onClicked),
+            modifier =
+                Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .clickable(onClick = onClicked),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(
@@ -194,16 +197,16 @@ private fun EpisodeInfo(episode: Episode) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(episode.podcastImageUrl)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(episode.podcastImageUrl)
+                    .crossfade(true)
+                    .build(),
             contentDescription = episode.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(56.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(56.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
@@ -239,9 +242,10 @@ private fun QueuePreview_Empty() {
 private fun QueuePreview_NotEmpty() {
     PreviewTheme {
         QueueScreen(
-            state = EpisodeListViewState(
-                episodes = listOf(episode()),
-            ),
+            state =
+                EpisodeListViewState(
+                    episodes = listOf(episode()),
+                ),
             onBack = { },
             onEpisodesRearranged = { _, _ -> },
             onEpisodeClicked = { },

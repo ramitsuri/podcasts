@@ -66,8 +66,8 @@ fun NavGraph(
             if (scaffoldSheetState.bottomSheetState.currentValue != SheetValue.Expanded) {
                 BottomNavBar(
                     modifier =
-                    Modifier
-                        .offset { IntOffset(x = 0, y = 0) },
+                        Modifier
+                            .offset { IntOffset(x = 0, y = 0) },
                     selectedTabRoute = currentDestination,
                     onHomeTabClicked = {
                         navController.navigateToMainDestination(BottomNavItem.HOME)
@@ -88,13 +88,13 @@ fun NavGraph(
         BottomSheetScaffold(
             scaffoldState = scaffoldSheetState,
             sheetPeekHeight =
-            if (peekHeightPx == 0) {
-                bottomPadding
-            } else {
-                with(LocalDensity.current) {
-                    innerPadding.calculateBottomPadding() + peekHeightPx.toDp()
-                }
-            },
+                if (peekHeightPx == 0) {
+                    bottomPadding
+                } else {
+                    with(LocalDensity.current) {
+                        innerPadding.calculateBottomPadding() + peekHeightPx.toDp()
+                    }
+                },
             modifier = Modifier.padding(innerPadding),
             sheetDragHandle = { },
             sheetContent = {
@@ -211,7 +211,7 @@ fun NavGraph(
                 }
 
                 composable(route = Route.QUEUE.value) {
-                    val viewModel = koinViewModel<EpisodeListViewModel>() { parametersOf(EpisodeListType.QUEUE) }
+                    val viewModel = koinViewModel<EpisodeListViewModel> { parametersOf(EpisodeListType.QUEUE) }
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     QueueScreen(

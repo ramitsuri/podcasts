@@ -120,9 +120,7 @@ class EpisodesRepository internal constructor(
         episodesDao.updateDownloadBlocked(id, blocked)
     }
 
-    suspend fun updateQueuePositions(
-        idToPositionMap: Map<String, Int>
-    ) {
+    suspend fun updateQueuePositions(idToPositionMap: Map<String, Int>) {
         episodesDao.updateQueuePositions(idToPositionMap)
     }
 

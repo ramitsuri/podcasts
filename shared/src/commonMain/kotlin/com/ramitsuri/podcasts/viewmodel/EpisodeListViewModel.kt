@@ -29,10 +29,11 @@ class EpisodeListViewModel internal constructor(
     val state = _state.asStateFlow()
 
     init {
-        val episodeList = when (episodeListType) {
-            EpisodeListType.SUBSCRIBED -> podcastsAndEpisodesRepository.getSubscribedFlow()
-            EpisodeListType.QUEUE -> episodesRepository.getQueueFlow()
-        }
+        val episodeList =
+            when (episodeListType) {
+                EpisodeListType.SUBSCRIBED -> podcastsAndEpisodesRepository.getSubscribedFlow()
+                EpisodeListType.QUEUE -> episodesRepository.getQueueFlow()
+            }
         viewModelScope.launch {
             combine(
                 episodeList,
@@ -105,7 +106,10 @@ class EpisodeListViewModel internal constructor(
         }
     }
 
-    fun test(from: Int, to: Int) {
+    fun test(
+        from: Int,
+        to: Int,
+    ) {
         viewModelScope.launch {
             val currentlyAtFrom = _state.value.episodes.getOrNull(from)
             val currentlyAtTo = _state.value.episodes.getOrNull(to)

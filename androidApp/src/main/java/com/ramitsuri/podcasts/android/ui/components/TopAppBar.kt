@@ -42,7 +42,6 @@ fun TopAppBar(
     }
 }
 
-
 @ThemePreview
 @Composable
 private fun TopAppBarPreview_WithTitle() {
