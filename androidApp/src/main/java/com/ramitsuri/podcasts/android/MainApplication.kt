@@ -16,7 +16,6 @@ import com.ramitsuri.podcasts.android.utils.Constants
 import com.ramitsuri.podcasts.initKoin
 import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
-import com.ramitsuri.podcasts.settings.Settings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
