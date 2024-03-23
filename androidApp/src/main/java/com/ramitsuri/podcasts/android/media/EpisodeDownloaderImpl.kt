@@ -31,9 +31,10 @@ class EpisodeDownloaderImpl(private val appContext: Context) : EpisodeDownloader
         )
 
         // Image download
-        val imageRequest = ImageRequest.Builder(appContext)
-            .data(episode.podcastImageUrl)
-            .build()
+        val imageRequest =
+            ImageRequest.Builder(appContext)
+                .data(episode.podcastImageUrl)
+                .build()
         appContext.imageLoader.enqueue(imageRequest)
     }
 

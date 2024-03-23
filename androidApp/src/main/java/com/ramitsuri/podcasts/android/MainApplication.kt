@@ -30,7 +30,7 @@ import org.koin.core.component.inject
 import org.koin.dsl.module
 
 @UnstableApi
-class MainApplication : Application(),ImageLoaderFactory, KoinComponent {
+class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
     private val playerController by inject<PlayerController>()
 
     override fun onCreate() {
