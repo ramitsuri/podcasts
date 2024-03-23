@@ -10,7 +10,7 @@ import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.DispatcherProvider
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
-import com.ramitsuri.podcasts.viewmodel.HomeViewModel
+import com.ramitsuri.podcasts.viewmodel.EpisodeListViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.android.Android
 import kotlinx.coroutines.CoroutineScope
@@ -37,8 +37,9 @@ actual val platformModule =
             DispatcherProvider()
         }
 
-        viewModel<HomeViewModel> {
-            HomeViewModel(
+        viewModel<EpisodeListViewModel> { params ->
+            EpisodeListViewModel(
+                episodeListType = params.get(),
                 podcastsAndEpisodesRepository = get<PodcastsAndEpisodesRepository>(),
                 episodesRepository = get<EpisodesRepository>(),
                 playerController = get<PlayerController>(),

@@ -36,10 +36,13 @@ import com.ramitsuri.podcasts.android.ui.episode.EpisodeDetailsScreen
 import com.ramitsuri.podcasts.android.ui.home.HomeScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsViewModel
+import com.ramitsuri.podcasts.android.ui.library.LibraryScreen
+import com.ramitsuri.podcasts.android.ui.library.queue.QueueScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerViewModel
+import com.ramitsuri.podcasts.model.EpisodeListType
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
-import com.ramitsuri.podcasts.viewmodel.HomeViewModel
+import com.ramitsuri.podcasts.viewmodel.EpisodeListViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -125,7 +128,8 @@ fun NavGraph(
                 modifier = modifier.padding(innerPadding),
             ) {
                 composable(route = BottomNavItem.HOME.route.value) {
-                    val viewModel = koinViewModel<HomeViewModel>()
+                    val viewModel =
+                        koinViewModel<EpisodeListViewModel>(parameters = { parametersOf(EpisodeListType.SUBSCRIBED) })
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     HomeScreen(
@@ -154,7 +158,12 @@ fun NavGraph(
                 }
 
                 composable(route = BottomNavItem.LIBRARY.route.value) {
-                    Text(text = "Library")
+                    LibraryScreen(
+                        onSubscriptionsClicked = { /*TODO*/ },
+                        onQueueClicked = { navController.navigate(Route.QUEUE.value) },
+                        onDownloadsClicked = { /*TODO*/ },
+                        onHistoryClicked = { /*TODO*/ },
+                    )
                 }
 
                 composable(route = Route.IMPORT_SUBSCRIPTIONS.value) {
@@ -198,6 +207,29 @@ fun NavGraph(
                         onEpisodeCancelDownloadClicked = {},
                         onEpisodePlayedClicked = {},
                         onEpisodeNotPlayedClicked = {},
+                    )
+                }
+
+                composable(route = Route.QUEUE.value) {
+                    val viewModel = koinViewModel<EpisodeListViewModel> { parametersOf(EpisodeListType.QUEUE) }
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    QueueScreen(
+                        state = state,
+                        onBack = { navController.popBackStack() },
+                        onEpisodesRearranged = viewModel::onEpisodeRearrangementRequested,
+                        onEpisodeClicked = {
+                            val encoded = Uri.encode(it)
+                            navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
+                        },
+                        onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
+                        onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
+                        onEpisodeRemoveFromQueueClicked = viewModel::onEpisodeRemoveFromQueueClicked,
+                        onEpisodeDownloadClicked = viewModel::onEpisodeDownloadClicked,
+                        onEpisodeRemoveDownloadClicked = viewModel::onEpisodeRemoveDownloadClicked,
+                        onEpisodeCancelDownloadClicked = viewModel::onEpisodeCancelDownloadClicked,
+                        onEpisodePlayedClicked = viewModel::onEpisodePlayedClicked,
+                        onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                     )
                 }
             }
