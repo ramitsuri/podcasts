@@ -106,7 +106,7 @@ class EpisodeListViewModel internal constructor(
         }
     }
 
-    fun test(
+    fun onEpisodeRearrangementRequested(
         from: Int,
         to: Int,
     ) {

@@ -217,7 +217,7 @@ fun NavGraph(
                     QueueScreen(
                         state = state,
                         onBack = { navController.popBackStack() },
-                        onEpisodesRearranged = viewModel::test,
+                        onEpisodesRearranged = viewModel::onEpisodeRearrangementRequested,
                         onEpisodeClicked = {
                             val encoded = Uri.encode(it)
                             navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
