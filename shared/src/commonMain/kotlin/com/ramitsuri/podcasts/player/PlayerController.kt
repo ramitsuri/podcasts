@@ -12,8 +12,6 @@ interface PlayerController {
 
     fun pause()
 
-    fun setPlaybackSpeed(speed: Float)
-
     fun replay(by: Duration)
 
     fun skip(by: Duration)

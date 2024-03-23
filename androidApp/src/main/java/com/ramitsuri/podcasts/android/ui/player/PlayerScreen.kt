@@ -20,7 +20,10 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Replay10
 import androidx.compose.material.icons.outlined.Nightlight
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -30,6 +33,10 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -39,6 +46,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -67,6 +75,9 @@ fun PlayerScreen(
     onSkipClicked: () -> Unit,
     onSeekValueChange: (Float) -> Unit,
     onPlaybackSpeedSet: (Float) -> Unit,
+    onPlaybackSpeedIncrease: () -> Unit,
+    onPlaybackSpeedDecrease: () -> Unit,
+    onToggleTrimSilence: () -> Unit,
 ) {
     Box(
         modifier =
@@ -110,6 +121,7 @@ fun PlayerScreen(
                 playProgress = state.progress,
                 sleepTimer = state.sleepTimer,
                 playbackSpeed = state.playbackSpeed,
+                trimSilence = state.trimSilence,
                 isCasting = state.isCasting,
                 onGoToQueueClicked = onGoToQueueClicked,
                 onReplayClicked = onReplayClicked,
@@ -118,6 +130,9 @@ fun PlayerScreen(
                 onSkipClicked = onSkipClicked,
                 onSeekValueChange = onSeekValueChange,
                 onPlaybackSpeedSet = onPlaybackSpeedSet,
+                onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
+                onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
+                onToggleTrimSilence = onToggleTrimSilence,
             )
         } else {
             NeverPlayedNotExpanded()
@@ -144,6 +159,7 @@ private fun PlayerScreenExpanded(
     playProgress: Float,
     sleepTimer: SleepTimer,
     playbackSpeed: Float,
+    trimSilence: Boolean,
     isCasting: Boolean,
     onGoToQueueClicked: () -> Unit,
     onReplayClicked: () -> Unit,
@@ -152,6 +168,9 @@ private fun PlayerScreenExpanded(
     onSkipClicked: () -> Unit,
     onSeekValueChange: (Float) -> Unit,
     onPlaybackSpeedSet: (Float) -> Unit,
+    onPlaybackSpeedIncrease: () -> Unit,
+    onPlaybackSpeedDecrease: () -> Unit,
+    onToggleTrimSilence: () -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -171,9 +190,22 @@ private fun PlayerScreenExpanded(
                     .size(360.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = episodeTitle, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        Text(
+            text = episodeTitle,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(8.dp),
+            textAlign = TextAlign.Center,
+        )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = podcastName, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        Text(
+            text = podcastName,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(8.dp),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyMedium,
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Seekbar(
             playedDuration = playedDuration,
@@ -193,9 +225,13 @@ private fun PlayerScreenExpanded(
         Spacer(modifier = Modifier.height(16.dp))
         SecondaryControls(
             playbackSpeed = playbackSpeed,
+            trimSilence = trimSilence,
             sleepTimer = sleepTimer,
             isCasting = isCasting,
             onPlaybackSpeedSet = onPlaybackSpeedSet,
+            onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
+            onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
+            onToggleTrimSilence = onToggleTrimSilence,
         )
     }
 }
@@ -267,18 +303,30 @@ private fun MainControls(
 @Composable
 private fun SecondaryControls(
     playbackSpeed: Float,
+    trimSilence: Boolean,
     sleepTimer: SleepTimer,
     isCasting: Boolean,
     onPlaybackSpeedSet: (Float) -> Unit,
+    onPlaybackSpeedIncrease: () -> Unit,
+    onPlaybackSpeedDecrease: () -> Unit,
+    onToggleTrimSilence: () -> Unit,
 ) {
+    var showSpeedControls by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround,
     ) {
-        TextButton(onClick = { /*TODO*/ }) {
-            Text(text = "${playbackSpeed}x")
-        }
+        SpeedControl(
+            playbackSpeed = playbackSpeed,
+            trimSilence = trimSilence,
+            showPlaybackSpeed = showSpeedControls,
+            onPlaybackSpeedSetRequested = onPlaybackSpeedSet,
+            onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
+            onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
+            onToggleTrimSilence = onToggleTrimSilence,
+            onToggleMenu = { showSpeedControls = !showSpeedControls },
+        )
         if (sleepTimer is SleepTimer.None) {
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
@@ -323,6 +371,78 @@ private fun SecondaryControls(
 }
 
 @Composable
+fun SpeedControl(
+    playbackSpeed: Float,
+    trimSilence: Boolean,
+    showPlaybackSpeed: Boolean,
+    onPlaybackSpeedSetRequested: (Float) -> Unit,
+    onPlaybackSpeedIncrease: () -> Unit,
+    onPlaybackSpeedDecrease: () -> Unit,
+    onToggleMenu: () -> Unit,
+    onToggleTrimSilence: () -> Unit,
+) {
+    Box {
+        TextButton(
+            onClick = onToggleMenu,
+            colors = ButtonDefaults.textButtonColors().copy(contentColor = MaterialTheme.colorScheme.onBackground),
+        ) {
+            Text(text = "${playbackSpeed}x")
+        }
+        DropdownMenu(
+            expanded = showPlaybackSpeed,
+            onDismissRequest = onToggleMenu,
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(id = R.string.player_playback_speed_1x)) },
+                onClick = {
+                    onToggleMenu()
+                    onPlaybackSpeedSetRequested(1f)
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(id = R.string.player_playback_speed_1_5x)) },
+                onClick = {
+                    onToggleMenu()
+                    onPlaybackSpeedSetRequested(1.5f)
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(id = R.string.player_playback_speed_2x)) },
+                onClick = {
+                    onToggleMenu()
+                    onPlaybackSpeedSetRequested(2.0f)
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(id = R.string.player_playback_speed_increase)) },
+                onClick = onPlaybackSpeedIncrease,
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(id = R.string.player_playback_speed_decrease)) },
+                onClick = onPlaybackSpeedDecrease,
+            )
+            if (trimSilence) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.player_trim_silence_disable)) },
+                    onClick = {
+                        onToggleMenu()
+                        onToggleTrimSilence()
+                    },
+                )
+            } else {
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.player_trim_silence_enable)) },
+                    onClick = {
+                        onToggleMenu()
+                        onToggleTrimSilence()
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun Seekbar(
     playedDuration: Duration,
     remainingDuration: Duration?,
@@ -340,9 +460,9 @@ private fun Seekbar(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(text = playedDuration.formatted())
+            Text(text = playedDuration.formatted(), style = MaterialTheme.typography.bodySmall)
             if (remainingDuration != null) {
-                Text(text = remainingDuration.formatted())
+                Text(text = remainingDuration.formatted(), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -461,6 +581,9 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
             onSkipClicked = { },
             onSeekValueChange = { },
             onPlaybackSpeedSet = { },
+            onPlaybackSpeedIncrease = { },
+            onPlaybackSpeedDecrease = { },
+            onToggleTrimSilence = { },
         )
     }
 }
@@ -492,6 +615,9 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
             onSkipClicked = { },
             onSeekValueChange = { },
             onPlaybackSpeedSet = { },
+            onPlaybackSpeedIncrease = { },
+            onPlaybackSpeedDecrease = { },
+            onToggleTrimSilence = { },
         )
     }
 }
@@ -504,6 +630,7 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
             isExpanded = true,
             state =
                 PlayerViewState(
+                    hasEverBeenPlayed = true,
                     playingState = PlayingState.PLAYING,
                     episodeTitle = episode().title,
                     episodeArtworkUrl = episode().podcastImageUrl,
@@ -523,6 +650,9 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
             onSkipClicked = { },
             onSeekValueChange = { },
             onPlaybackSpeedSet = { },
+            onPlaybackSpeedIncrease = { },
+            onPlaybackSpeedDecrease = { },
+            onToggleTrimSilence = { },
         )
     }
 }
@@ -554,6 +684,9 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
             onSkipClicked = { },
             onSeekValueChange = { },
             onPlaybackSpeedSet = { },
+            onPlaybackSpeedIncrease = { },
+            onPlaybackSpeedDecrease = { },
+            onToggleTrimSilence = { },
         )
     }
 }

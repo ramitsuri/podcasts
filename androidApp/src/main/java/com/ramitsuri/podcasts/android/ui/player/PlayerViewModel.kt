@@ -12,11 +12,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import kotlin.math.roundToInt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -51,7 +53,13 @@ class PlayerViewModel(
         updateEpisodeStateJob?.cancel()
         updateEpisodeStateJob =
             viewModelScope.launch {
-                episodesRepository.getEpisodeFlow(episodeId).collect { episode ->
+                combine(
+                    episodesRepository.getEpisodeFlow(episodeId),
+                    settings.getPlaybackSpeedFlow(),
+                    settings.getTrimSilenceFlow(),
+                ) { episode, speed, trimSilence ->
+                    Triple(episode, speed, trimSilence)
+                }.collect { (episode, speed, trimSilence) ->
                     if (episode != null) {
                         _state.update {
                             val duration = episode.duration
@@ -69,12 +77,13 @@ class PlayerViewModel(
                                 episodeArtworkUrl = episode.podcastImageUrl,
                                 podcastName = episode.podcastName,
                                 sleepTimer = SleepTimer.None,
-                                playbackSpeed = settings.getPlaybackSpeed(),
+                                playbackSpeed = speed,
                                 isCasting = false,
                                 progress = progressPercent,
                                 playedDuration = episode.progressInSeconds.seconds,
                                 remainingDuration = remainingDuration?.seconds,
                                 totalDuration = duration?.seconds,
+                                trimSilence = trimSilence,
                             )
                         }
                     }
@@ -112,8 +121,37 @@ class PlayerViewModel(
 
     fun onSpeedChangeRequested(speed: Float) {
         longLivingScope.launch {
-            playerController.setPlaybackSpeed(speed)
-            settings.setPlaybackSpeed(speed)
+            val rounded =
+                speed
+                    .times(1000)
+                    .roundToInt()
+                    .div(1000f)
+                    .coerceIn(0.1f, 3.0f)
+            settings.setPlaybackSpeed(rounded)
+            _state.update { it.copy(playbackSpeed = rounded) }
+            // Updated on the player via MediaSessionService
+        }
+    }
+
+    fun onSpeedIncreaseRequested() {
+        val currentSpeed = _state.value.playbackSpeed
+        val newSpeed = currentSpeed.plus(0.1f)
+        onSpeedChangeRequested(newSpeed)
+    }
+
+    fun onSpeedDecreaseRequested() {
+        val currentSpeed = _state.value.playbackSpeed
+        val newSpeed = currentSpeed.minus(0.1f)
+        onSpeedChangeRequested(newSpeed)
+    }
+
+    fun toggleTrimSilence() {
+        longLivingScope.launch {
+            val currentTrimSilence = _state.value.trimSilence
+            val newTrimSilence = !currentTrimSilence
+            settings.setTrimSilence(newTrimSilence)
+            _state.update { it.copy(trimSilence = newTrimSilence) }
+            // Updated on the player via MediaSessionService
         }
     }
 

@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -83,7 +84,14 @@ fun NavGraph(
         var peekHeightPx by remember { mutableIntStateOf(0) }
         BottomSheetScaffold(
             scaffoldState = scaffoldSheetState,
-            sheetPeekHeight = bottomPadding,
+            sheetPeekHeight =
+                if (peekHeightPx == 0) {
+                    bottomPadding
+                } else {
+                    with(LocalDensity.current) {
+                        innerPadding.calculateBottomPadding() + peekHeightPx.toDp()
+                    }
+                },
             modifier = Modifier.padding(innerPadding),
             sheetDragHandle = { },
             sheetContent = {
@@ -93,7 +101,6 @@ fun NavGraph(
                     )
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 PlayerScreen(
-                    modifier = Modifier.padding(bottom = bottomPadding),
                     isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
                     state = state,
                     onNotExpandedHeightKnown = {
@@ -106,6 +113,9 @@ fun NavGraph(
                     onSkipClicked = viewModel::onSkipRequested,
                     onSeekValueChange = viewModel::onSeekRequested,
                     onPlaybackSpeedSet = viewModel::onSpeedChangeRequested,
+                    onPlaybackSpeedIncrease = viewModel::onSpeedIncreaseRequested,
+                    onPlaybackSpeedDecrease = viewModel::onSpeedDecreaseRequested,
+                    onToggleTrimSilence = viewModel::toggleTrimSilence,
                 )
             },
         ) {
