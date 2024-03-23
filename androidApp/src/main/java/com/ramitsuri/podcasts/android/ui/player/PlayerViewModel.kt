@@ -127,9 +127,9 @@ class PlayerViewModel(
                     .roundToInt()
                     .div(1000f)
                     .coerceIn(0.1f, 3.0f)
-            playerController.setPlaybackSpeed(rounded)
             settings.setPlaybackSpeed(rounded)
             _state.update { it.copy(playbackSpeed = rounded) }
+            // Updated on the player via MediaSessionService
         }
     }
 
