@@ -10,6 +10,7 @@
     <string name="skip_30">Skip 30 seconds</string>
     <string name="replay_10">Replay 10 seconds</string>
     <string name="save_to_favorites">Save to favorites</string>
+    <string name="cancel">Cancel</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>
@@ -31,6 +32,12 @@
     <string name="player_playback_speed_decrease">-0.1x</string>
     <string name="player_trim_silence_enable">Trim silence</string>
     <string name="player_trim_silence_disable">Don\'t trim silence</string>
+    <string name="player_sleep_timer">Sleep timer</string>
+    <string name="player_sleep_timer_episode_end">End of episode</string>
+    <string name="player_sleep_timer_15_min">15 minutes</string>
+    <string name="player_sleep_timer_30_min">30 minutes</string>
+    <string name="player_sleep_timer_increase">+2 minutes</string>
+    <string name="player_sleep_timer_decrease">-2 minutes</string>
 
     <!-- Library screen -->
     <string name="library_subscriptions">Subscriptions</string>

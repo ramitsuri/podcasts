@@ -5,4 +5,6 @@ internal enum class Key(val value: String) {
     PLAYBACK_SPEED("playback_speed"),
     TRIM_SILENCE("trim_silence"),
     PLAYING_STATE("playing_state"),
+    STOP_AFTER_END_OF_EPISODE("stop_after_end_of_episode"),
+    STOP_AT_TIME("stop_at_time"),
 }

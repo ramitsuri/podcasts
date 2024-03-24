@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.android.ui.player
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.ui.PlayerViewState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
 import com.ramitsuri.podcasts.player.PlayerController
@@ -10,16 +11,19 @@ import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import kotlin.math.roundToInt
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class PlayerViewModel(
@@ -27,6 +31,7 @@ class PlayerViewModel(
     private val longLivingScope: CoroutineScope,
     private val settings: Settings,
     private val episodesRepository: EpisodesRepository,
+    private val clock: Clock,
 ) : ViewModel() {
     private val _state = MutableStateFlow(PlayerViewState())
     val state = _state.asStateFlow()
@@ -57,27 +62,28 @@ class PlayerViewModel(
                     episodesRepository.getEpisodeFlow(episodeId),
                     settings.getPlaybackSpeedFlow(),
                     settings.getTrimSilenceFlow(),
-                ) { episode, speed, trimSilence ->
-                    Triple(episode, speed, trimSilence)
-                }.collect { (episode, speed, trimSilence) ->
+                    settings.getSleepTimerFlow(),
+                ) { episode, speed, trimSilence, sleepTimer ->
+                    EpisodeUpdate(episode, speed, trimSilence, sleepTimer)
+                }.collect { (episode, speed, trimSilence, sleepTimer) ->
                     if (episode != null) {
+                        val duration = episode.duration
+                        val durationForProgress = (duration?.toFloat() ?: 1f).coerceAtLeast(1f)
+                        val progressPercent =
+                            episode
+                                .progressInSeconds
+                                .toFloat()
+                                .div(durationForProgress)
+                                .coerceIn(0f, 1f)
+                        val remainingDuration = duration?.minus(episode.progressInSeconds)
                         _state.update {
-                            val duration = episode.duration
-                            val durationForProgress = (duration?.toFloat() ?: 1f).coerceAtLeast(1f)
-                            val progressPercent =
-                                episode
-                                    .progressInSeconds
-                                    .toFloat()
-                                    .div(durationForProgress)
-                                    .coerceIn(0f, 1f)
-                            val remainingDuration = duration?.minus(episode.progressInSeconds)
                             it.copy(
                                 hasEverBeenPlayed = true,
                                 episodeTitle = episode.title,
                                 episodeArtworkUrl = episode.podcastImageUrl,
                                 podcastName = episode.podcastName,
-                                sleepTimer = SleepTimer.None,
                                 playbackSpeed = speed,
+                                sleepTimer = sleepTimer,
                                 isCasting = false,
                                 progress = progressPercent,
                                 playedDuration = episode.progressInSeconds.seconds,
@@ -86,6 +92,7 @@ class PlayerViewModel(
                                 trimSilence = trimSilence,
                             )
                         }
+                        updateSleepTimerDuration()
                     }
                 }
             }
@@ -155,6 +162,73 @@ class PlayerViewModel(
         }
     }
 
+    fun onSleepTimerRequested(sleepTimer: SleepTimer) {
+        viewModelScope.launch {
+            settings.setSleepTimer(sleepTimer)
+        }
+    }
+
+    fun onSleepTimerIncreaseRequested() {
+        val currentSleepTimer = _state.value.sleepTimer
+        if (currentSleepTimer !is SleepTimer.Custom) {
+            return
+        }
+        val newTime = currentSleepTimer.time.plus(2.minutes)
+        onSleepTimerRequested(SleepTimer.Custom(time = newTime))
+    }
+
+    fun onSleepTimerDecreaseRequested() {
+        val currentSleepTimer = _state.value.sleepTimer
+        if (currentSleepTimer !is SleepTimer.Custom) {
+            return
+        }
+        val newTime =
+            if (currentSleepTimer.time.minus(2.minutes) < clock.now()) {
+                clock.now()
+            } else {
+                currentSleepTimer.time.minus(2.minutes)
+            }
+        onSleepTimerRequested(SleepTimer.Custom(time = newTime))
+    }
+
+    private fun updateSleepTimerDuration() {
+        when (val sleepTimer = _state.value.sleepTimer) {
+            is SleepTimer.Custom -> {
+                setPeriodicSleepTimerUpdate()
+                sleepTimer.time.minus(clock.now())
+            }
+
+            is SleepTimer.EndOfEpisode -> {
+                _state.update { it.copy(sleepTimerDuration = it.remainingDuration) }
+            }
+
+            is SleepTimer.None -> {
+                _state.update { it.copy(sleepTimerDuration = null) }
+            }
+        }
+    }
+
+    private fun setPeriodicSleepTimerUpdate() {
+        viewModelScope.launch {
+            while (true) {
+                val sleepTimer = _state.value.sleepTimer
+                if (sleepTimer is SleepTimer.Custom) {
+                    _state.update { it.copy(sleepTimerDuration = sleepTimer.time.minus(clock.now())) }
+                    delay(1_000)
+                } else {
+                    break
+                }
+            }
+        }
+    }
+
+    private data class EpisodeUpdate(
+        val episode: Episode?,
+        val speed: Float,
+        val trimSilence: Boolean,
+        val sleepTimer: SleepTimer,
+    )
+
     companion object {
         fun factory(): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory, KoinComponent {
@@ -165,6 +239,7 @@ class PlayerViewModel(
                         longLivingScope = get<CoroutineScope>(),
                         settings = get<Settings>(),
                         episodesRepository = get<EpisodesRepository>(),
+                        clock = get<Clock>(),
                     ) as T
                 }
             }
