@@ -165,6 +165,7 @@ class PlayerViewModel(
     fun onSleepTimerRequested(sleepTimer: SleepTimer) {
         viewModelScope.launch {
             settings.setSleepTimer(sleepTimer)
+            // State and actual timer get set in the flow collection in updateEpisodeState
         }
     }
 
@@ -194,7 +195,7 @@ class PlayerViewModel(
     private fun updateSleepTimerDuration() {
         when (val sleepTimer = _state.value.sleepTimer) {
             is SleepTimer.Custom -> {
-                setPeriodicSleepTimerUpdate()
+                startCustomSleepTimerDurationUpdate()
                 sleepTimer.time.minus(clock.now())
             }
 
@@ -208,7 +209,7 @@ class PlayerViewModel(
         }
     }
 
-    private fun setPeriodicSleepTimerUpdate() {
+    private fun startCustomSleepTimerDurationUpdate() {
         viewModelScope.launch {
             while (true) {
                 val sleepTimer = _state.value.sleepTimer
