@@ -165,15 +165,16 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             var job: Job? = null
             settings.getSleepTimerFlow().collectLatest { sleepTimer ->
                 job?.cancel()
-                job = coroutineScope {
-                    launch {
-                        if (sleepTimer is SleepTimer.Custom) {
-                            delay(sleepTimer.time.minus(clock.now()))
-                            mediaSession?.player?.pause()
-                            settings.setSleepTimer(SleepTimer.None)
+                job =
+                    coroutineScope {
+                        launch {
+                            if (sleepTimer is SleepTimer.Custom) {
+                                delay(sleepTimer.time.minus(clock.now()))
+                                mediaSession?.player?.pause()
+                                settings.setSleepTimer(SleepTimer.None)
+                            }
                         }
                     }
-                }
             }
         }
     }

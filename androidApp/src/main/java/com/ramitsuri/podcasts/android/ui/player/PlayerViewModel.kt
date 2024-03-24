@@ -182,11 +182,12 @@ class PlayerViewModel(
         if (currentSleepTimer !is SleepTimer.Custom) {
             return
         }
-        val newTime = if (currentSleepTimer.time.minus(2.minutes) < clock.now()) {
-            clock.now()
-        } else {
-            currentSleepTimer.time.minus(2.minutes)
-        }
+        val newTime =
+            if (currentSleepTimer.time.minus(2.minutes) < clock.now()) {
+                clock.now()
+            } else {
+                currentSleepTimer.time.minus(2.minutes)
+            }
         onSleepTimerRequested(SleepTimer.Custom(time = newTime))
     }
 
