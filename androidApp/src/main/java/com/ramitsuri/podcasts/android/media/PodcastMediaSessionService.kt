@@ -61,6 +61,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
 
     private var mediaSession: MediaSession? = null
     private val currentlyPlayingEpisode = MutableStateFlow<Episode?>(null)
+    private var playNextMediaJob: Job? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -342,9 +343,12 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     }
 
     private fun playNextFromQueueOnMediaEnded(player: Player) {
-        launchSuspend {
+        Log.d(TAG, "Finding next media to play")
+        playNextMediaJob?.cancel()
+        playNextMediaJob = launchSuspend {
             val sleepTimer = settings.getSleepTimerFlow().first()
             if (sleepTimer is SleepTimer.EndOfEpisode) {
+                Log.d(TAG, "Sleep timer is set to end of episode")
                 settings.setSleepTimer(SleepTimer.None)
                 return@launchSuspend
             }
@@ -372,8 +376,8 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         }
     }
 
-    private fun launchSuspend(block: suspend () -> Unit) {
-        longLivingScope.launch {
+    private fun launchSuspend(block: suspend () -> Unit): Job {
+        return longLivingScope.launch {
             block()
         }
     }
