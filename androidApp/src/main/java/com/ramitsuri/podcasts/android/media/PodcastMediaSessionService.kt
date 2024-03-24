@@ -345,35 +345,36 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     private fun playNextFromQueueOnMediaEnded(player: Player) {
         Log.d(TAG, "Finding next media to play")
         playNextMediaJob?.cancel()
-        playNextMediaJob = launchSuspend {
-            val sleepTimer = settings.getSleepTimerFlow().first()
-            if (sleepTimer is SleepTimer.EndOfEpisode) {
-                Log.d(TAG, "Sleep timer is set to end of episode")
-                settings.setSleepTimer(SleepTimer.None)
-                return@launchSuspend
-            }
-            val queue = episodesRepository.getQueue()
-            val currentlyPlayingEpisode = currentlyPlayingEpisode.value
-            if (currentlyPlayingEpisode != null) {
-                episodesRepository.markPlayed(currentlyPlayingEpisode.id)
-            }
-            val currentEpisodeIndex = queue.indexOfFirst { it.id == currentlyPlayingEpisode?.id }
-            if (currentEpisodeIndex == -1) {
-                // TODO log with logger
-                Log.d(TAG, "current episode not found")
-                return@launchSuspend
-            }
-            val nextEpisode = queue.getOrNull(currentEpisodeIndex + 1)
-            if (nextEpisode == null) {
-                // TODO log with logger
-                Log.d(TAG, "next episode is null")
-                return@launchSuspend
-            }
+        playNextMediaJob =
+            launchSuspend {
+                val sleepTimer = settings.getSleepTimerFlow().first()
+                if (sleepTimer is SleepTimer.EndOfEpisode) {
+                    Log.d(TAG, "Sleep timer is set to end of episode")
+                    settings.setSleepTimer(SleepTimer.None)
+                    return@launchSuspend
+                }
+                val queue = episodesRepository.getQueue()
+                val currentlyPlayingEpisode = currentlyPlayingEpisode.value
+                if (currentlyPlayingEpisode != null) {
+                    episodesRepository.markPlayed(currentlyPlayingEpisode.id)
+                }
+                val currentEpisodeIndex = queue.indexOfFirst { it.id == currentlyPlayingEpisode?.id }
+                if (currentEpisodeIndex == -1) {
+                    // TODO log with logger
+                    Log.d(TAG, "current episode not found")
+                    return@launchSuspend
+                }
+                val nextEpisode = queue.getOrNull(currentEpisodeIndex + 1)
+                if (nextEpisode == null) {
+                    // TODO log with logger
+                    Log.d(TAG, "next episode is null")
+                    return@launchSuspend
+                }
 
-            val position = nextEpisode.progressInSeconds.times(1000L)
-            player.setMediaItem(nextEpisode.asMediaItem(), position)
-            episodesRepository.setCurrentlyPlayingEpisodeId(nextEpisode.id)
-        }
+                val position = nextEpisode.progressInSeconds.times(1000L)
+                player.setMediaItem(nextEpisode.asMediaItem(), position)
+                episodesRepository.setCurrentlyPlayingEpisodeId(nextEpisode.id)
+            }
     }
 
     private fun launchSuspend(block: suspend () -> Unit): Job {
