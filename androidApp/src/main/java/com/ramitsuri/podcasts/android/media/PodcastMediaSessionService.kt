@@ -31,16 +31,21 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
+import com.ramitsuri.podcasts.model.ui.SleepTimer
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.math.abs
@@ -52,6 +57,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     private val episodesRepository by inject<EpisodesRepository>()
     private val longLivingScope by inject<CoroutineScope>()
     private val settings by inject<Settings>()
+    private val clock: Clock by inject<Clock>()
 
     private var mediaSession: MediaSession? = null
     private val currentlyPlayingEpisode = MutableStateFlow<Episode?>(null)
@@ -153,6 +159,21 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             settings.getPlaybackSpeedFlow().collectLatest { speed ->
                 val player = mediaSession?.player
                 player?.setPlaybackSpeed(speed)
+            }
+        }
+        launchSuspend {
+            var job: Job? = null
+            settings.getSleepTimerFlow().collectLatest { sleepTimer ->
+                job?.cancel()
+                job = coroutineScope {
+                    launch {
+                        if (sleepTimer is SleepTimer.Custom) {
+                            delay(sleepTimer.time.minus(clock.now()))
+                            mediaSession?.player?.pause()
+                            settings.setSleepTimer(SleepTimer.None)
+                        }
+                    }
+                }
             }
         }
     }
@@ -321,6 +342,11 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
 
     private fun playNextFromQueueOnMediaEnded(player: Player) {
         launchSuspend {
+            val sleepTimer = settings.getSleepTimerFlow().first()
+            if (sleepTimer is SleepTimer.EndOfEpisode) {
+                settings.setSleepTimer(SleepTimer.None)
+                return@launchSuspend
+            }
             val queue = episodesRepository.getQueue()
             val currentlyPlayingEpisode = currentlyPlayingEpisode.value
             if (currentlyPlayingEpisode != null) {

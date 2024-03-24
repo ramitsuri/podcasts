@@ -119,6 +119,9 @@ fun NavGraph(
                     onPlaybackSpeedIncrease = viewModel::onSpeedIncreaseRequested,
                     onPlaybackSpeedDecrease = viewModel::onSpeedDecreaseRequested,
                     onToggleTrimSilence = viewModel::toggleTrimSilence,
+                    onSleepTimer = viewModel::onSleepTimerRequested,
+                    onSleepTimerIncrease = viewModel::onSleepTimerIncreaseRequested,
+                    onSleepTimerDecrease = viewModel::onSleepTimerDecreaseRequested,
                 )
             },
         ) {

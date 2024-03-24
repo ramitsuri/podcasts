@@ -58,6 +58,7 @@ import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.PlayerViewState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
+import kotlinx.datetime.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -78,21 +79,24 @@ fun PlayerScreen(
     onPlaybackSpeedIncrease: () -> Unit,
     onPlaybackSpeedDecrease: () -> Unit,
     onToggleTrimSilence: () -> Unit,
+    onSleepTimer: (SleepTimer) -> Unit,
+    onSleepTimerIncrease: () -> Unit,
+    onSleepTimerDecrease: () -> Unit,
 ) {
     Box(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(if (isExpanded) 16.dp else 0.dp),
+        modifier
+            .fillMaxWidth()
+            .padding(if (isExpanded) 16.dp else 0.dp),
         contentAlignment = Alignment.TopCenter,
     ) {
         if (!isExpanded) {
             if (state.hasEverBeenPlayed) {
                 PlayerScreenNotExpanded(
                     modifier =
-                        Modifier.onGloballyPositioned {
-                            onNotExpandedHeightKnown(it.size.height)
-                        },
+                    Modifier.onGloballyPositioned {
+                        onNotExpandedHeightKnown(it.size.height)
+                    },
                     episodeTitle = state.episodeTitle,
                     episodeArtwork = state.episodeArtworkUrl,
                     playingState = state.playingState,
@@ -103,9 +107,9 @@ fun PlayerScreen(
             } else {
                 NeverPlayedNotExpanded(
                     modifier =
-                        Modifier.onGloballyPositioned {
-                            onNotExpandedHeightKnown(it.size.height)
-                        },
+                    Modifier.onGloballyPositioned {
+                        onNotExpandedHeightKnown(it.size.height)
+                    },
                 )
             }
         }
@@ -120,6 +124,7 @@ fun PlayerScreen(
                 remainingDuration = state.remainingDuration,
                 playProgress = state.progress,
                 sleepTimer = state.sleepTimer,
+                sleepTimerDuration = state.sleepTimerDuration,
                 playbackSpeed = state.playbackSpeed,
                 trimSilence = state.trimSilence,
                 isCasting = state.isCasting,
@@ -133,6 +138,9 @@ fun PlayerScreen(
                 onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
                 onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
                 onToggleTrimSilence = onToggleTrimSilence,
+                onSleepTimer = onSleepTimer,
+                onSleepTimerIncrease = onSleepTimerIncrease,
+                onSleepTimerDecrease = onSleepTimerDecrease,
             )
         } else {
             NeverPlayedNotExpanded()
@@ -158,6 +166,7 @@ private fun PlayerScreenExpanded(
     remainingDuration: Duration?,
     playProgress: Float,
     sleepTimer: SleepTimer,
+    sleepTimerDuration: Duration?,
     playbackSpeed: Float,
     trimSilence: Boolean,
     isCasting: Boolean,
@@ -171,6 +180,9 @@ private fun PlayerScreenExpanded(
     onPlaybackSpeedIncrease: () -> Unit,
     onPlaybackSpeedDecrease: () -> Unit,
     onToggleTrimSilence: () -> Unit,
+    onSleepTimer: (SleepTimer) -> Unit,
+    onSleepTimerIncrease: () -> Unit,
+    onSleepTimerDecrease: () -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -178,16 +190,16 @@ private fun PlayerScreenExpanded(
     ) {
         AsyncImage(
             model =
-                ImageRequest.Builder(LocalContext.current)
-                    .data(episodeArtwork)
-                    .crossfade(true)
-                    .build(),
+            ImageRequest.Builder(LocalContext.current)
+                .data(episodeArtwork)
+                .crossfade(true)
+                .build(),
             contentDescription = episodeTitle,
             contentScale = ContentScale.FillBounds,
             modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(360.dp),
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .size(360.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
@@ -227,11 +239,15 @@ private fun PlayerScreenExpanded(
             playbackSpeed = playbackSpeed,
             trimSilence = trimSilence,
             sleepTimer = sleepTimer,
+            sleepTimerDuration = sleepTimerDuration,
             isCasting = isCasting,
             onPlaybackSpeedSet = onPlaybackSpeedSet,
             onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
             onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
             onToggleTrimSilence = onToggleTrimSilence,
+            onSleepTimer = onSleepTimer,
+            onSleepTimerIncrease = onSleepTimerIncrease,
+            onSleepTimerDecrease = onSleepTimerDecrease,
         )
     }
 }
@@ -305,13 +321,18 @@ private fun SecondaryControls(
     playbackSpeed: Float,
     trimSilence: Boolean,
     sleepTimer: SleepTimer,
+    sleepTimerDuration: Duration?,
     isCasting: Boolean,
     onPlaybackSpeedSet: (Float) -> Unit,
     onPlaybackSpeedIncrease: () -> Unit,
     onPlaybackSpeedDecrease: () -> Unit,
     onToggleTrimSilence: () -> Unit,
+    onSleepTimer: (SleepTimer) -> Unit,
+    onSleepTimerIncrease: () -> Unit,
+    onSleepTimerDecrease: () -> Unit,
 ) {
-    var showSpeedControls by remember { mutableStateOf(false) }
+    var showSpeedControl by remember { mutableStateOf(false) }
+    var showSleepTimerControl by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -320,29 +341,22 @@ private fun SecondaryControls(
         SpeedControl(
             playbackSpeed = playbackSpeed,
             trimSilence = trimSilence,
-            showPlaybackSpeed = showSpeedControls,
+            showPlaybackControl = showSpeedControl,
             onPlaybackSpeedSetRequested = onPlaybackSpeedSet,
             onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
             onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
             onToggleTrimSilence = onToggleTrimSilence,
-            onToggleMenu = { showSpeedControls = !showSpeedControls },
+            onToggleMenu = { showSpeedControl = !showSpeedControl },
         )
-        if (sleepTimer is SleepTimer.None) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Outlined.Nightlight,
-                    modifier =
-                        Modifier
-                            .size(24.dp)
-                            .rotate(-30f),
-                    contentDescription = stringResource(id = R.string.pause),
-                )
-            }
-        } else {
-            TextButton(onClick = { /*TODO*/ }) {
-                Text(text = sleepTimer.timerDuration.formatted())
-            }
-        }
+        SleepTimerControl(
+            sleepTimer = sleepTimer,
+            sleepTimerDuration = sleepTimerDuration,
+            showSleepTimerControl = showSleepTimerControl,
+            onSleepTimer = onSleepTimer,
+            onSleepTimerIncrease = onSleepTimerIncrease,
+            onSleepTimerDecrease = onSleepTimerDecrease,
+            onToggleMenu = { showSleepTimerControl = !showSleepTimerControl },
+        )
         if (isCasting) {
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
@@ -374,7 +388,7 @@ private fun SecondaryControls(
 fun SpeedControl(
     playbackSpeed: Float,
     trimSilence: Boolean,
-    showPlaybackSpeed: Boolean,
+    showPlaybackControl: Boolean,
     onPlaybackSpeedSetRequested: (Float) -> Unit,
     onPlaybackSpeedIncrease: () -> Unit,
     onPlaybackSpeedDecrease: () -> Unit,
@@ -389,7 +403,7 @@ fun SpeedControl(
             Text(text = "${playbackSpeed}x")
         }
         DropdownMenu(
-            expanded = showPlaybackSpeed,
+            expanded = showPlaybackControl,
             onDismissRequest = onToggleMenu,
         ) {
             DropdownMenuItem(
@@ -437,6 +451,94 @@ fun SpeedControl(
                         onToggleTrimSilence()
                     },
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun SleepTimerControl(
+    sleepTimer: SleepTimer,
+    sleepTimerDuration: Duration?,
+    showSleepTimerControl: Boolean,
+    onSleepTimer: (SleepTimer) -> Unit,
+    onSleepTimerIncrease: () -> Unit,
+    onSleepTimerDecrease: () -> Unit,
+    onToggleMenu: () -> Unit,
+) {
+    Box {
+        if (sleepTimer is SleepTimer.None) {
+            IconButton(onClick = { onToggleMenu() }) {
+                Icon(
+                    imageVector = Icons.Outlined.Nightlight,
+                    modifier =
+                    Modifier
+                        .size(24.dp)
+                        .rotate(-30f),
+                    contentDescription = stringResource(id = R.string.player_sleep_timer),
+                )
+            }
+        } else if (sleepTimerDuration != null) {
+            TextButton(onClick = { onToggleMenu() }) {
+                Text(text = sleepTimerDuration.formatted())
+            }
+        }
+        DropdownMenu(
+            expanded = showSleepTimerControl,
+            onDismissRequest = onToggleMenu,
+        ) {
+            when (sleepTimer) {
+                is SleepTimer.None -> {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(id = R.string.player_sleep_timer_15_min)) },
+                        onClick = {
+                            onToggleMenu()
+                            onSleepTimer(SleepTimer.Custom(Clock.System.now().plus(15.minutes)))
+                        },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(id = R.string.player_sleep_timer_30_min)) },
+                        onClick = {
+                            onToggleMenu()
+                            onSleepTimer(SleepTimer.Custom(Clock.System.now().plus(30.minutes)))
+                        },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(id = R.string.player_sleep_timer_episode_end)) },
+                        onClick = {
+                            onToggleMenu()
+                            onSleepTimer(SleepTimer.EndOfEpisode)
+                        },
+                    )
+                }
+
+                SleepTimer.EndOfEpisode -> {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(id = R.string.cancel)) },
+                        onClick = {
+                            onToggleMenu()
+                            onSleepTimer(SleepTimer.None)
+                        },
+                    )
+                }
+
+                else -> {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(id = R.string.player_sleep_timer_decrease)) },
+                        onClick = onSleepTimerDecrease,
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(id = R.string.player_sleep_timer_increase)) },
+                        onClick = onSleepTimerIncrease,
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(id = R.string.cancel)) },
+                        onClick = {
+                            onToggleMenu()
+                            onSleepTimer(SleepTimer.None)
+                        },
+                    )
+                }
             }
         }
     }
@@ -499,23 +601,23 @@ private fun PlayerScreenNotExpanded(
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
                 model =
-                    ImageRequest.Builder(LocalContext.current)
-                        .data(episodeArtwork)
-                        .crossfade(true)
-                        .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(episodeArtwork)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = episodeTitle,
                 contentScale = ContentScale.FillBounds,
                 modifier =
-                    Modifier
-                        .clip(MaterialTheme.shapes.small)
-                        .size(64.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(64.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
@@ -561,18 +663,19 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
         PlayerScreen(
             isExpanded = false,
             state =
-                PlayerViewState(
-                    playingState = PlayingState.PLAYING,
-                    episodeTitle = episode().title,
-                    episodeArtworkUrl = episode().podcastImageUrl,
-                    podcastName = episode().podcastName,
-                    sleepTimer = SleepTimer.None,
-                    playbackSpeed = 1f,
-                    isCasting = false,
-                    progress = 0.4f,
-                    playedDuration = 5.seconds,
-                    remainingDuration = 55.minutes + 32.seconds,
-                ),
+            PlayerViewState(
+                playingState = PlayingState.PLAYING,
+                episodeTitle = episode().title,
+                episodeArtworkUrl = episode().podcastImageUrl,
+                podcastName = episode().podcastName,
+                sleepTimer = SleepTimer.None,
+                sleepTimerDuration = null,
+                playbackSpeed = 1f,
+                isCasting = false,
+                progress = 0.4f,
+                playedDuration = 5.seconds,
+                remainingDuration = 55.minutes + 32.seconds,
+            ),
             onNotExpandedHeightKnown = { },
             onGoToQueueClicked = { },
             onReplayClicked = { },
@@ -584,6 +687,9 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
             onPlaybackSpeedIncrease = { },
             onPlaybackSpeedDecrease = { },
             onToggleTrimSilence = { },
+            onSleepTimer = { },
+            onSleepTimerIncrease = { },
+            onSleepTimerDecrease = { },
         )
     }
 }
@@ -595,18 +701,19 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
         PlayerScreen(
             isExpanded = false,
             state =
-                PlayerViewState(
-                    playingState = PlayingState.NOT_PLAYING,
-                    episodeTitle = episode().title,
-                    episodeArtworkUrl = episode().podcastImageUrl,
-                    podcastName = episode().podcastName,
-                    sleepTimer = SleepTimer.None,
-                    playbackSpeed = 1f,
-                    isCasting = false,
-                    progress = 0.4f,
-                    playedDuration = 5.seconds,
-                    remainingDuration = 55.minutes + 32.seconds,
-                ),
+            PlayerViewState(
+                playingState = PlayingState.NOT_PLAYING,
+                episodeTitle = episode().title,
+                episodeArtworkUrl = episode().podcastImageUrl,
+                podcastName = episode().podcastName,
+                sleepTimer = SleepTimer.None,
+                sleepTimerDuration = null,
+                playbackSpeed = 1f,
+                isCasting = false,
+                progress = 0.4f,
+                playedDuration = 5.seconds,
+                remainingDuration = 55.minutes + 32.seconds,
+            ),
             onNotExpandedHeightKnown = { },
             onGoToQueueClicked = { },
             onReplayClicked = { },
@@ -618,6 +725,9 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
             onPlaybackSpeedIncrease = { },
             onPlaybackSpeedDecrease = { },
             onToggleTrimSilence = { },
+            onSleepTimer = { },
+            onSleepTimerIncrease = { },
+            onSleepTimerDecrease = { },
         )
     }
 }
@@ -629,19 +739,20 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
         PlayerScreen(
             isExpanded = true,
             state =
-                PlayerViewState(
-                    hasEverBeenPlayed = true,
-                    playingState = PlayingState.PLAYING,
-                    episodeTitle = episode().title,
-                    episodeArtworkUrl = episode().podcastImageUrl,
-                    podcastName = episode().podcastName,
-                    sleepTimer = SleepTimer.None,
-                    playbackSpeed = 1f,
-                    isCasting = false,
-                    progress = 0.4f,
-                    playedDuration = 5.seconds,
-                    remainingDuration = 55.minutes + 32.seconds,
-                ),
+            PlayerViewState(
+                hasEverBeenPlayed = true,
+                playingState = PlayingState.PLAYING,
+                episodeTitle = episode().title,
+                episodeArtworkUrl = episode().podcastImageUrl,
+                podcastName = episode().podcastName,
+                sleepTimer = SleepTimer.None,
+                sleepTimerDuration = null,
+                playbackSpeed = 1f,
+                isCasting = false,
+                progress = 0.4f,
+                playedDuration = 5.seconds,
+                remainingDuration = 55.minutes + 32.seconds,
+            ),
             onNotExpandedHeightKnown = { },
             onGoToQueueClicked = { },
             onReplayClicked = { },
@@ -653,6 +764,9 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
             onPlaybackSpeedIncrease = { },
             onPlaybackSpeedDecrease = { },
             onToggleTrimSilence = { },
+            onSleepTimer = { },
+            onSleepTimerIncrease = { },
+            onSleepTimerDecrease = { },
         )
     }
 }
@@ -664,18 +778,19 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
         PlayerScreen(
             isExpanded = true,
             state =
-                PlayerViewState(
-                    playingState = PlayingState.NOT_PLAYING,
-                    episodeTitle = episode().title,
-                    episodeArtworkUrl = episode().podcastImageUrl,
-                    podcastName = episode().podcastName,
-                    sleepTimer = SleepTimer.None,
-                    playbackSpeed = 1f,
-                    isCasting = false,
-                    progress = 0.4f,
-                    playedDuration = 5.seconds,
-                    remainingDuration = 55.minutes + 32.seconds,
-                ),
+            PlayerViewState(
+                playingState = PlayingState.NOT_PLAYING,
+                episodeTitle = episode().title,
+                episodeArtworkUrl = episode().podcastImageUrl,
+                podcastName = episode().podcastName,
+                sleepTimer = SleepTimer.None,
+                sleepTimerDuration = null,
+                playbackSpeed = 1f,
+                isCasting = false,
+                progress = 0.4f,
+                playedDuration = 5.seconds,
+                remainingDuration = 55.minutes + 32.seconds,
+            ),
             onNotExpandedHeightKnown = { },
             onGoToQueueClicked = { },
             onReplayClicked = { },
@@ -687,6 +802,9 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
             onPlaybackSpeedIncrease = { },
             onPlaybackSpeedDecrease = { },
             onToggleTrimSilence = { },
+            onSleepTimer = { },
+            onSleepTimerIncrease = { },
+            onSleepTimerDecrease = { },
         )
     }
 }

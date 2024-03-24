@@ -10,6 +10,7 @@ data class PlayerViewState(
     val episodeArtworkUrl: String = "",
     val podcastName: String = "",
     val sleepTimer: SleepTimer = SleepTimer.None,
+    val sleepTimerDuration: Duration? = null,
     val playbackSpeed: Float = 1f,
     val isCasting: Boolean = false,
     val progress: Float = 0f,
