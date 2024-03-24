@@ -15,6 +15,7 @@ import com.ramitsuri.podcasts.network.api.interfaces.CategoriesApi
 import com.ramitsuri.podcasts.network.api.interfaces.EpisodesApi
 import com.ramitsuri.podcasts.network.api.interfaces.PodcastsApi
 import com.ramitsuri.podcasts.network.provideHttpClient
+import com.ramitsuri.podcasts.repositories.EpisodeListPagingSource
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository

@@ -11,10 +11,12 @@ import com.ramitsuri.podcasts.GetEpisode
 import com.ramitsuri.podcasts.GetEpisodesForPodcast
 import com.ramitsuri.podcasts.GetEpisodesForPodcasts
 import com.ramitsuri.podcasts.GetEpisodesInQueue
+import com.ramitsuri.podcasts.GetSubscribedEpisodes
 import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
@@ -84,6 +86,19 @@ internal class EpisodesDaoImpl(
         }
     }
 
+    override suspend fun getSubscribedEpisodes(page: Int): List<GetSubscribedEpisodes> {
+        val pageSize = 25L
+        // Initially offset is 0 when you want to get items from top of the list
+        // As page number increases, you want to get items with an offset that equals items up to previous page number
+        val offset = (page - 1) * pageSize
+        return withContext(ioDispatcher) {
+            delay(1_000)
+            episodeEntityQueries
+                .getSubscribedEpisodes(pageSize = pageSize, offset = offset)
+                .executeAsList()
+        }
+    }
+
     override suspend fun updatePlayProgress(
         id: String,
         playProgressInSeconds: Int,
@@ -139,7 +154,7 @@ internal class EpisodesDaoImpl(
                         .executeAsOneOrNull()
                         ?.currentMaxQueuePosition
                         ?: Episode.NOT_IN_QUEUE
-                ) + 1
+                    ) + 1
             updateQueuePosition(id, queuePosition)
         }
     }

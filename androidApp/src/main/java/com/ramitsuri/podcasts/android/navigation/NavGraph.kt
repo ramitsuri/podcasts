@@ -32,6 +32,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.ramitsuri.podcasts.android.ui.episode.EpisodeDetailsScreen
 import com.ramitsuri.podcasts.android.ui.home.HomeScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsScreen
@@ -134,8 +135,9 @@ fun NavGraph(
                     val viewModel =
                         koinViewModel<EpisodeListViewModel>(parameters = { parametersOf(EpisodeListType.SUBSCRIBED) })
                     val state by viewModel.state.collectAsStateWithLifecycle()
-
+                    val episodes = viewModel.episodes.collectAsLazyPagingItems()
                     HomeScreen(
+                        episodes=episodes,
                         state = state,
                         onImportSubscriptionsClicked = {
                             navController.navigate(Route.IMPORT_SUBSCRIPTIONS.value)

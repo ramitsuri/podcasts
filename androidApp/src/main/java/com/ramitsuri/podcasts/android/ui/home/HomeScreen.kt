@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,6 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.itemKey
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
@@ -28,6 +30,7 @@ import com.ramitsuri.podcasts.model.ui.EpisodeListViewState
 
 @Composable
 fun HomeScreen(
+    episodes: LazyPagingItems<Episode>,
     state: EpisodeListViewState,
     onImportSubscriptionsClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
@@ -44,32 +47,52 @@ fun HomeScreen(
 ) {
     Column(
         modifier =
-            modifier
-                .fillMaxSize(),
+        modifier
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         LazyColumn {
-            items(state.episodes) {
-                EpisodeItem(
-                    episode = it,
-                    playingState =
-                        if (state.currentlyPlayingEpisodeId == it.id) {
+            when (val pagingState = episodes.loadState.refresh) {
+                is LoadState.Error -> println("Refresh - error: ${pagingState.error}")
+                is LoadState.Loading -> println("Refresh - loading")
+                is LoadState.NotLoading -> println("Refresh - not loading end reached: ${pagingState.endOfPaginationReached}")
+            }
+            items(count = episodes.itemCount, key = episodes.itemKey { it.id }) { index ->
+                val episode = episodes[index]
+                if (episode != null) {
+                    EpisodeItem(
+                        episode = episode,
+                        playingState =
+                        if (state.currentlyPlayingEpisodeId == episode.id) {
                             state.currentlyPlayingEpisodeState
                         } else {
                             PlayingState.NOT_PLAYING
                         },
-                    onClicked = { onEpisodeClicked(it.id) },
-                    onPlayClicked = { onEpisodePlayClicked(it) },
-                    onPauseClicked = onEpisodePauseClicked,
-                    onAddToQueueClicked = { onEpisodeAddToQueueClicked(it) },
-                    onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(it) },
-                    onDownloadClicked = { onEpisodeDownloadClicked(it) },
-                    onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(it) },
-                    onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(it) },
-                    onPlayedClicked = { onEpisodePlayedClicked(it.id) },
-                    onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
-                )
+                        onClicked = { onEpisodeClicked(episode.id) },
+                        onPlayClicked = { onEpisodePlayClicked(episode) },
+                        onPauseClicked = onEpisodePauseClicked,
+                        onAddToQueueClicked = { onEpisodeAddToQueueClicked(episode)
+                                              episodes.refresh()},
+                        onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(episode)
+                            episodes.refresh()},
+                        onDownloadClicked = { onEpisodeDownloadClicked(episode) },
+                        onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(episode) },
+                        onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(episode) },
+                        onPlayedClicked = { onEpisodePlayedClicked(episode.id) },
+                        onNotPlayedClicked = { onEpisodeNotPlayedClicked(episode.id) },
+                    )
+                }
+            }
+            when (val pagingState = episodes.loadState.append) {
+                is LoadState.Error -> println("Append - error: ${pagingState.error}")
+                is LoadState.Loading -> {
+                    println("Append - loading")
+                    item {
+                        Text(text = "Loading more")
+                    }
+                }
+                is LoadState.NotLoading -> println("Append - not loading end reached: ${pagingState.endOfPaginationReached}")
             }
         }
         if (state.episodes.isEmpty()) {
@@ -97,9 +120,9 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-            Modifier
-                .padding(16.dp)
-                .clickable(onClick = onClicked),
+        Modifier
+            .padding(16.dp)
+            .clickable(onClick = onClicked),
     ) {
         Text(style = MaterialTheme.typography.labelSmall, text = episode.podcastName)
         Spacer(modifier = Modifier.height(8.dp))

@@ -4,6 +4,7 @@ import com.ramitsuri.podcasts.GetEpisode
 import com.ramitsuri.podcasts.GetEpisodesForPodcast
 import com.ramitsuri.podcasts.GetEpisodesForPodcasts
 import com.ramitsuri.podcasts.GetEpisodesInQueue
+import com.ramitsuri.podcasts.GetSubscribedEpisodes
 import com.ramitsuri.podcasts.network.model.EpisodeDto
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
@@ -165,6 +166,29 @@ data class Episode(
         downloadBlocked = getEpisodesInQueue.downloadBlocked,
         queuePosition = getEpisodesInQueue.queuePosition,
         completedAt = getEpisodesInQueue.completedAt,
+    )
+
+    internal constructor(getEpisodes: GetSubscribedEpisodes) : this(
+        id = getEpisodes.id,
+        podcastId = getEpisodes.podcastId,
+        podcastName = getEpisodes.podcastTitle,
+        podcastAuthor = getEpisodes.podcastAuthor,
+        podcastImageUrl = getEpisodes.podcastImageUrl,
+        title = getEpisodes.title,
+        description = getEpisodes.description,
+        link = getEpisodes.link,
+        enclosureUrl = getEpisodes.enclosureUrl,
+        datePublished = getEpisodes.datePublished,
+        duration = getEpisodes.duration,
+        explicit = getEpisodes.explicit,
+        episode = getEpisodes.episode,
+        season = getEpisodes.season,
+        progressInSeconds = getEpisodes.playProgress,
+        downloadStatus = getEpisodes.downloadStatus,
+        downloadProgress = getEpisodes.downloadProgress,
+        downloadBlocked = getEpisodes.downloadBlocked,
+        queuePosition = getEpisodes.queuePosition,
+        completedAt = getEpisodes.completedAt,
     )
 
     companion object {

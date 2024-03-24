@@ -1,5 +1,7 @@
 package com.ramitsuri.podcasts.repositories
 
+import app.cash.paging.Pager
+import app.cash.paging.PagingConfig
 import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
@@ -37,6 +39,15 @@ class EpisodesRepository internal constructor(
             false
         }
     }
+
+    fun getEpisodes() = Pager(
+        config = PagingConfig(
+            pageSize = 25,
+        ),
+        pagingSourceFactory = {
+            EpisodeListPagingSource(episodesDao)
+        },
+    ).flow
 
     fun getEpisodesForPodcastFlow(podcastId: Long): Flow<List<Episode>> {
         return episodesDao

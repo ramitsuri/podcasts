@@ -39,6 +39,7 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.ktor.okhttp)
             implementation(libs.ktor.client.android)
+            implementation(libs.paging.compose)
             implementation(libs.sqldelight.android)
             implementation(libs.viewmodel)
         }
@@ -58,6 +59,7 @@ kotlin {
             implementation(libs.ktor.logging)
             implementation(libs.kotlin.serialization)
             implementation(libs.kotlin.datetime)
+            implementation(libs.paging.common)
             implementation(libs.sqldelight.common)
             implementation(libs.touchlab.log)
         }

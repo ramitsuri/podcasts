@@ -4,6 +4,7 @@ import com.ramitsuri.podcasts.GetEpisode
 import com.ramitsuri.podcasts.GetEpisodesForPodcast
 import com.ramitsuri.podcasts.GetEpisodesForPodcasts
 import com.ramitsuri.podcasts.GetEpisodesInQueue
+import com.ramitsuri.podcasts.GetSubscribedEpisodes
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import kotlinx.coroutines.flow.Flow
@@ -25,6 +26,8 @@ internal interface EpisodesDao {
     fun getQueueFlow(): Flow<List<GetEpisodesInQueue>>
 
     suspend fun getQueue(): List<GetEpisodesInQueue>
+
+    suspend fun getSubscribedEpisodes(page: Int): List<GetSubscribedEpisodes>
 
     suspend fun updatePlayProgress(
         id: String,

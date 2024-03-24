@@ -16,8 +16,7 @@ CREATE TABLE IF NOT EXISTS EpisodeEntity (
 );
 
 getEpisode:
-SELECT
-ee.*,
+SELECT ee.*,
 eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt,
 pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl
 FROM EpisodeEntity AS ee
@@ -62,6 +61,18 @@ INNER JOIN EpisodeAdditionalInfoEntity AS eaie
     ON ee.id == eaie.id
 WHERE eaie.queuePosition != -1
 ORDER BY eaie.queuePosition ASC;
+
+getSubscribedEpisodes:
+SELECT ee.*,
+eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt,
+pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl
+FROM EpisodeEntity AS ee
+INNER JOIN PodcastEntity AS pe
+    ON ee.podcastId == pe.id
+INNER JOIN EpisodeAdditionalInfoEntity AS eaie
+    ON ee.id == eaie.id
+ORDER BY ee.datePublished DESC
+LIMIT :pageSize OFFSET :offset;
 
 insertOrReplace:
 INSERT OR REPLACE INTO

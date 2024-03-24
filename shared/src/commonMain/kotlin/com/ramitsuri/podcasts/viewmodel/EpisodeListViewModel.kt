@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.viewmodel
 
+import androidx.paging.cachedIn
 import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeListType
@@ -27,7 +28,7 @@ class EpisodeListViewModel internal constructor(
 ) : ViewModel() {
     private val _state = MutableStateFlow(EpisodeListViewState())
     val state = _state.asStateFlow()
-
+    val episodes = episodesRepository.getEpisodes().cachedIn(viewModelScope)
     init {
         val episodeList =
             when (episodeListType) {
