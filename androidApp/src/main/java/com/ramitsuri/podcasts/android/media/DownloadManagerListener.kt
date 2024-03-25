@@ -23,6 +23,7 @@ class DownloadManagerListener(
             episodesRepository.updateDownloadBlocked(episodeId, true)
             episodesRepository.updateDownloadStatus(episodeId, DownloadStatus.NOT_DOWNLOADED)
             episodesRepository.updateDownloadProgress(episodeId, 0.0)
+            episodesRepository.updateDownloadedAt(episodeId, null)
         }
     }
 
@@ -60,6 +61,9 @@ class DownloadManagerListener(
                     episodeId,
                     download.percentDownloaded.div(100.0).coerceIn(0.0, 1.0),
                 )
+                if (state == DownloadStatus.DOWNLOADED) {
+                    episodesRepository.updateDownloadedAt(episodeId)
+                }
             }
         }
     }

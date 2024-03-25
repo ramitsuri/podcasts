@@ -31,6 +31,7 @@ internal fun provideDatabase(driver: SqlDriver): PodcastsDatabase {
                 queuePositionAdapter = intToLongAdapter,
                 completedAtAdapter = instantToLongAdapter,
                 downloadProgressAdapter = doubleToDoubleAdapter,
+                downloadedAtAdapter = instantToLongAdapter,
             ),
         EpisodeEntityAdapter =
             EpisodeEntity.Adapter(

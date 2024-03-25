@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS EpisodeEntity (
 getEpisode:
 SELECT
 ee.*,
-eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt,
+eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt,
 pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl
 FROM EpisodeEntity AS ee
 INNER JOIN PodcastEntity AS pe
@@ -29,7 +29,7 @@ WHERE ee.id == :id;
 
 getEpisodesForPodcast:
 SELECT ee.*,
-eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt,
+eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt,
 pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl
 FROM EpisodeEntity AS ee
 INNER JOIN PodcastEntity AS pe
@@ -41,7 +41,7 @@ ORDER BY ee.datePublished DESC;
 
 getEpisodesForPodcasts:
 SELECT ee.*,
-eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt,
+eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt,
 pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl
 FROM EpisodeEntity AS ee
 INNER JOIN PodcastEntity AS pe
@@ -53,7 +53,7 @@ ORDER BY ee.datePublished DESC;
 
 getEpisodesInQueue:
 SELECT ee.*,
-eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt,
+eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt,
 pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl
 FROM EpisodeEntity AS ee
 INNER JOIN PodcastEntity AS pe

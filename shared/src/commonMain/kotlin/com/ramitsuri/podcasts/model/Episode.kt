@@ -31,6 +31,7 @@ data class Episode(
     val downloadStatus: DownloadStatus,
     val downloadProgress: Double,
     val downloadBlocked: Boolean,
+    val downloadedAt: Instant?,
     val queuePosition: Int,
     val completedAt: Instant?,
 ) {
@@ -71,6 +72,7 @@ data class Episode(
         downloadStatus = DownloadStatus.NOT_DOWNLOADED,
         downloadProgress = 0.0,
         downloadBlocked = false,
+        downloadedAt = null,
         queuePosition = NOT_IN_QUEUE,
         completedAt = null,
     )
@@ -94,6 +96,7 @@ data class Episode(
         downloadStatus = getEpisode.downloadStatus,
         downloadProgress = getEpisode.downloadProgress,
         downloadBlocked = getEpisode.downloadBlocked,
+        downloadedAt = getEpisode.downloadedAt,
         queuePosition = getEpisode.queuePosition,
         completedAt = getEpisode.completedAt,
     )
@@ -117,6 +120,7 @@ data class Episode(
         downloadStatus = getEpisodesForPodcast.downloadStatus,
         downloadProgress = getEpisodesForPodcast.downloadProgress,
         downloadBlocked = getEpisodesForPodcast.downloadBlocked,
+        downloadedAt = getEpisodesForPodcast.downloadedAt,
         queuePosition = getEpisodesForPodcast.queuePosition,
         completedAt = getEpisodesForPodcast.completedAt,
     )
@@ -140,6 +144,7 @@ data class Episode(
         downloadStatus = getEpisodesForPodcasts.downloadStatus,
         downloadProgress = getEpisodesForPodcasts.downloadProgress,
         downloadBlocked = getEpisodesForPodcasts.downloadBlocked,
+        downloadedAt = getEpisodesForPodcasts.downloadedAt,
         queuePosition = getEpisodesForPodcasts.queuePosition,
         completedAt = getEpisodesForPodcasts.completedAt,
     )
@@ -163,6 +168,7 @@ data class Episode(
         downloadStatus = getEpisodesInQueue.downloadStatus,
         downloadProgress = getEpisodesInQueue.downloadProgress,
         downloadBlocked = getEpisodesInQueue.downloadBlocked,
+        downloadedAt = getEpisodesInQueue.downloadedAt,
         queuePosition = getEpisodesInQueue.queuePosition,
         completedAt = getEpisodesInQueue.completedAt,
     )
