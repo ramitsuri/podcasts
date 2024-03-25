@@ -61,7 +61,7 @@ class DownloadManagerListener(
                     episodeId,
                     download.percentDownloaded.div(100.0).coerceIn(0.0, 1.0),
                 )
-                if (state == DownloadStatus.DOWNLOADED){
+                if (state == DownloadStatus.DOWNLOADED) {
                     episodesRepository.updateDownloadedAt(episodeId)
                 }
             }
