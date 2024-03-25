@@ -39,7 +39,7 @@ internal class PodcastsApiImpl(
                         append("q", request.term)
                         append("max", MAX_COUNT.toString())
                         append("fulltext", "true")
-                        append("similar", "true")
+                        append("similar", request.findSimilar.toString())
                         append("clean", "true")
                     }
                 }
