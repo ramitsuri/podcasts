@@ -124,7 +124,7 @@ internal class EpisodesDaoImpl(
         id: String,
         downloadedAt: Instant?,
     ) {
-        withContext(ioDispatcher){
+        withContext(ioDispatcher) {
             episodeAdditionalInfoEntityQueries.updateDownloadedAt(id = id, downloadedAt = downloadedAt)
         }
     }
