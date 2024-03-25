@@ -32,6 +32,10 @@ internal suspend inline fun <reified T> apiRequest(
                 PodcastResult.Success(response.body())
             }
 
+            response?.status == HttpStatusCode.BadRequest -> {
+                PodcastResult.Failure(PodcastError.BadRequest())
+            }
+
             exception is IOException -> {
                 PodcastResult.Failure(PodcastError.NoInternet(exception))
             }
