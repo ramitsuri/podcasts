@@ -32,6 +32,7 @@ fun episode(
     downloadStatus = downloadStatus,
     downloadProgress = downloadProgress,
     downloadBlocked = false,
+    downloadedAt = null,
     queuePosition = queuePosition,
     completedAt = null,
 )

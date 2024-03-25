@@ -120,6 +120,15 @@ internal class EpisodesDaoImpl(
         }
     }
 
+    override suspend fun updateDownloadedAt(
+        id: String,
+        downloadedAt: Instant?,
+    ) {
+        withContext(ioDispatcher){
+            episodeAdditionalInfoEntityQueries.updateDownloadedAt(id = id, downloadedAt = downloadedAt)
+        }
+    }
+
     override suspend fun updateQueuePositions(idToQueuePosition: Map<String, Int>) {
         withContext(ioDispatcher) {
             episodeEntityQueries.transaction {
@@ -192,6 +201,7 @@ internal class EpisodesDaoImpl(
                 downloadStatus = episode.downloadStatus,
                 downloadProgress = episode.downloadProgress,
                 downloadBlocked = episode.downloadBlocked,
+                downloadedAt = episode.downloadedAt,
                 queuePosition = episode.queuePosition,
                 completedAt = episode.completedAt,
             ),

@@ -10,13 +10,14 @@ CREATE TABLE IF NOT EXISTS EpisodeAdditionalInfoEntity (
     downloadStatus TEXT AS DownloadStatus DEFAULT "not_downloaded" NOT NULL,
     downloadProgress REAL AS Double DEFAULT 0.0 NOT NULL,
     downloadBlocked INTEGER AS Boolean NOT NULL,
+    downloadedAt INTEGER AS Instant,
     queuePosition INTEGER AS Int NOT NULL,
     completedAt INTEGER AS Instant
 );
 
 insertOrIgnore:
 INSERT OR IGNORE INTO
-EpisodeAdditionalInfoEntity(id, playProgress, downloadStatus, downloadProgress, downloadBlocked, queuePosition, completedAt)
+EpisodeAdditionalInfoEntity(id, playProgress, downloadStatus, downloadProgress, downloadBlocked, downloadedAt, queuePosition, completedAt)
 VALUES ?;
 
 updatePlayProgress:
@@ -37,6 +38,11 @@ WHERE id = :id;
 updateDownloadBlocked:
 UPDATE EpisodeAdditionalInfoEntity
 SET downloadBlocked = :downloadBlocked
+WHERE id = :id;
+
+updateDownloadedAt:
+UPDATE EpisodeAdditionalInfoEntity
+SET downloadedAt = :downloadedAt
 WHERE id = :id;
 
 updateQueuePosition:
