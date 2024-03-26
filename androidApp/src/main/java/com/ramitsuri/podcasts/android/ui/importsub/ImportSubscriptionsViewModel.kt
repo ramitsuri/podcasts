@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +21,7 @@ import java.io.InputStream
 
 class ImportSubscriptionsViewModel(
     application: Application,
+    private val podcastsAndEpisodesRepository: PodcastsAndEpisodesRepository,
     private val podcastsRepository: PodcastsRepository,
 ) : AndroidViewModel(application) {
     private val _state = MutableStateFlow(ImportSubscriptionsViewState())
@@ -64,7 +66,7 @@ class ImportSubscriptionsViewModel(
         val podcasts = _state.value.podcasts
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            podcasts.forEach { podcastsRepository.updateSubscribed(it.id, subscribed = true) }
+            podcastsAndEpisodesRepository.subscribeToPodcasts(podcasts)
             _state.update {
                 it.copy(isLoading = false, subscribed = true)
             }
@@ -105,6 +107,7 @@ class ImportSubscriptionsViewModel(
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return ImportSubscriptionsViewModel(
                         application = get(),
+                        podcastsAndEpisodesRepository = get(),
                         podcastsRepository = get(),
                     ) as T
                 }

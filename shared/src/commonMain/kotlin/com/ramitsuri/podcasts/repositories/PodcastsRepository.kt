@@ -11,8 +11,6 @@ import com.ramitsuri.podcasts.network.model.SearchPodcastsRequest
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class PodcastsRepository internal constructor(
     private val podcastsApi: PodcastsApi,
@@ -81,34 +79,27 @@ class PodcastsRepository internal constructor(
         }
     }
 
-    suspend fun refreshPodcast(id: Long): Boolean {
-        return podcastsApi.getById(id).saveToDb()
-    }
-
     suspend fun getPodcastByUrl(url: String): Boolean {
         return podcastsApi.getByUrl(url).saveToDb()
     }
 
     private suspend fun PodcastResult<PodcastResponseDto>.saveToDb(): Boolean {
         return if (this is PodcastResult.Success) {
-            podcastsDao.insert(listOf(Podcast(data.podcast)))
+            saveToDb(Podcast(data.podcast))
             true
         } else {
             false
         }
     }
 
+    suspend fun saveToDb(podcast: Podcast) {
+        podcastsDao.insert(listOf(podcast))
+    }
+
     suspend fun updateSubscribed(
         id: Long,
         subscribed: Boolean,
     ) {
-        if (subscribed) {
-            withContext(ioDispatcher) {
-                launch {
-                    refreshPodcast(id)
-                }
-            }
-        }
         podcastsDao.updateSubscribed(id, subscribed)
     }
 

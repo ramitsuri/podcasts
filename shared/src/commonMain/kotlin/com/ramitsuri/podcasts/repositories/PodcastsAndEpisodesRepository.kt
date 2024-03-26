@@ -1,16 +1,18 @@
 package com.ramitsuri.podcasts.repositories
 
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.PodcastWithEpisodes
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-internal class PodcastsAndEpisodesRepository internal constructor(
+class PodcastsAndEpisodesRepository internal constructor(
     private val podcastsRepository: PodcastsRepository,
     private val episodesRepository: EpisodesRepository,
     private val ioDispatcher: CoroutineDispatcher,
@@ -18,11 +20,22 @@ internal class PodcastsAndEpisodesRepository internal constructor(
     suspend fun refreshPodcasts() {
         withContext(ioDispatcher) {
             val subscribed = podcastsRepository.getAllSubscribed()
-            subscribed.forEach {
+            subscribed.map {
                 launch {
                     episodesRepository.refreshForPodcastId(podcastId = it.id)
                 }
-            }
+            }.joinAll()
+        }
+    }
+
+    suspend fun subscribeToPodcasts(podcasts: List<Podcast>) {
+        withContext(ioDispatcher) {
+            podcasts.map {
+                launch {
+                    podcastsRepository.updateSubscribed(it.id, subscribed = true)
+                    episodesRepository.refreshForPodcastId(it.id)
+                }
+            }.joinAll()
         }
     }
 
