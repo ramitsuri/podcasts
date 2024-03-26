@@ -36,9 +36,4 @@ internal interface PodcastsDao {
         id: Long,
         showNewEpisodeNotification: Boolean,
     )
-
-    suspend fun updateLastRefreshDate(
-        id: Long,
-        lastRefreshDate: Instant,
-    )
 }

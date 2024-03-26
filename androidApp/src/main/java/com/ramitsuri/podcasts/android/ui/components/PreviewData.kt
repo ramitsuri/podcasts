@@ -59,5 +59,4 @@ fun podcast() =
         autoDownloadEpisodes = false,
         newEpisodeNotifications = false,
         subscribedDate = null,
-        lastRefreshDate = null,
     )

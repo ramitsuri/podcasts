@@ -42,7 +42,6 @@ internal fun provideDatabase(driver: SqlDriver): PodcastsDatabase {
         PodcastAdditionalInfoEntityAdapter =
             PodcastAdditionalInfoEntity.Adapter(
                 subscribedDateAdapter = instantToLongAdapter,
-                lastRefreshDateAdapter = instantToLongAdapter,
             ),
         PodcastEntityAdapter =
             PodcastEntity.Adapter(
