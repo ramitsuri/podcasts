@@ -81,34 +81,27 @@ class PodcastsRepository internal constructor(
         }
     }
 
-    suspend fun refreshPodcast(id: Long): Boolean {
-        return podcastsApi.getById(id).saveToDb()
-    }
-
     suspend fun getPodcastByUrl(url: String): Boolean {
         return podcastsApi.getByUrl(url).saveToDb()
     }
 
     private suspend fun PodcastResult<PodcastResponseDto>.saveToDb(): Boolean {
         return if (this is PodcastResult.Success) {
-            podcastsDao.insert(listOf(Podcast(data.podcast)))
+            saveToDb(Podcast(data.podcast))
             true
         } else {
             false
         }
     }
 
+    suspend fun saveToDb(podcast: Podcast) {
+        podcastsDao.insert(listOf(podcast))
+    }
+
     suspend fun updateSubscribed(
         id: Long,
         subscribed: Boolean,
     ) {
-        if (subscribed) {
-            withContext(ioDispatcher) {
-                launch {
-                    refreshPodcast(id)
-                }
-            }
-        }
         podcastsDao.updateSubscribed(id, subscribed)
     }
 
