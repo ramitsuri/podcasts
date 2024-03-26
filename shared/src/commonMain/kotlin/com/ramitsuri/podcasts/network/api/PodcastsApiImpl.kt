@@ -37,7 +37,7 @@ internal class PodcastsApiImpl(
                 url {
                     parameters.apply {
                         append("q", request.term)
-                        append("max", MAX_COUNT.toString())
+                        append("max", request.maxResults.toString())
                         append("fulltext", "true")
                         append("similar", request.findSimilar.toString())
                         append("clean", "true")

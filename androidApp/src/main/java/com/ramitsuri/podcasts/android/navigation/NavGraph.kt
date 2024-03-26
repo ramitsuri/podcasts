@@ -180,6 +180,7 @@ fun NavGraph(
                         viewState = state,
                         onSubscriptionsDataFilePicked = viewModel::onSubscriptionDataFilePicked,
                         onSubscribeAllPodcasts = viewModel::subscribeAllPodcasts,
+                        onSuggestionAccepted = viewModel::onSuggestionAccepted,
                         onBack = { navController.popBackStack() },
                     )
                 }
