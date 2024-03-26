@@ -11,8 +11,6 @@ import com.ramitsuri.podcasts.network.model.SearchPodcastsRequest
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class PodcastsRepository internal constructor(
     private val podcastsApi: PodcastsApi,
