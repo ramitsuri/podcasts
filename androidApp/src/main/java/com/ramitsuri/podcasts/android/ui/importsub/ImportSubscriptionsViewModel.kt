@@ -47,10 +47,11 @@ class ImportSubscriptionsViewModel(
             val failed = mutableListOf<String>()
             subscriptionDataList.map {
                 launch {
-                    val (importedByUrl, importedByName) = podcastsRepository.getPodcastByUrlOrName(
-                        url = it.xmlUrl,
-                        name = it.text,
-                    )
+                    val (importedByUrl, importedByName) =
+                        podcastsRepository.getPodcastByUrlOrName(
+                            url = it.xmlUrl,
+                            name = it.text,
+                        )
                     if (importedByUrl != null) {
                         imported.add(importedByUrl)
                     } else if (importedByName != null) {

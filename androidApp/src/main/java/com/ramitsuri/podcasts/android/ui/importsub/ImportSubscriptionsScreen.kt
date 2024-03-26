@@ -71,9 +71,9 @@ fun ImportSubscriptionsScreen(
     }
     Column(
         modifier =
-        modifier
-            .fillMaxSize()
-            .padding(16.dp),
+            modifier
+                .fillMaxSize()
+                .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (viewState.isLoading) {
@@ -116,9 +116,10 @@ fun ImportSubscriptionsScreen(
 @Composable
 private fun Header(text: String) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background),
     ) {
         Text(
             text = text,
@@ -131,9 +132,10 @@ private fun Header(text: String) {
 private fun FailedToImportItem(text: String) {
     Card {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(text = text)
@@ -148,9 +150,10 @@ private fun FailedToImportWithSuggestionItem(
 ) {
     Card {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             PodcastInfo(podcast = failed.suggestion)
@@ -166,9 +169,10 @@ private fun FailedToImportWithSuggestionItem(
 private fun PodcastInfoItem(podcast: Podcast) {
     Card {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             PodcastInfo(podcast = podcast)
@@ -181,16 +185,16 @@ private fun PodcastInfo(podcast: Podcast) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(podcast.artwork)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(podcast.artwork)
+                    .crossfade(true)
+                    .build(),
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(96.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(96.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
@@ -205,10 +209,11 @@ private fun PodcastInfo(podcast: Podcast) {
 private fun FailedToImportWithSuggestionPreview() {
     PreviewTheme {
         FailedToImportWithSuggestionItem(
-            failed = FailedToImportWithSuggestion(
-                text = "Stuff you should know",
-                suggestion = podcast(),
-            ),
+            failed =
+                FailedToImportWithSuggestion(
+                    text = "Stuff you should know",
+                    suggestion = podcast(),
+                ),
             onSuggestionAccepted = { },
         )
     }
@@ -235,13 +240,17 @@ private fun FailedToImportPreview() {
 @ThemePreview
 @Composable
 private fun ImportSubscriptionsScreenPreview() {
-    val viewState = ImportSubscriptionsViewState(
-        isLoading = false,
-        subscribed = false,
-        imported = listOf(podcast(), podcast(), podcast()),
-        failedToImport = listOf("How To Money", "The Bike Shed"),
-        failedToImportWithSuggestion = listOf(FailedToImportWithSuggestion(text = "Stuff you should know", podcast())),
-    )
+    val viewState =
+        ImportSubscriptionsViewState(
+            isLoading = false,
+            subscribed = false,
+            imported = listOf(podcast(), podcast(), podcast()),
+            failedToImport = listOf("How To Money", "The Bike Shed"),
+            failedToImportWithSuggestion =
+                listOf(
+                    FailedToImportWithSuggestion(text = "Stuff you should know", podcast()),
+                ),
+        )
     PreviewTheme {
         ImportSubscriptionsScreen(
             viewState = viewState,

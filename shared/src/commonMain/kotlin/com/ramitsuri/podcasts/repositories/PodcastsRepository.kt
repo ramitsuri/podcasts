@@ -19,7 +19,6 @@ class PodcastsRepository internal constructor(
     private val categoryDao: CategoryDao,
     private val ioDispatcher: CoroutineDispatcher,
 ) {
-
     suspend fun getFlow(id: Long): Flow<Podcast?> {
         return podcastsDao
             .getFlow(id)
@@ -70,7 +69,10 @@ class PodcastsRepository internal constructor(
         }
     }
 
-    suspend fun getPodcastByUrlOrName(url: String, name: String): ImportedPodcast {
+    suspend fun getPodcastByUrlOrName(
+        url: String,
+        name: String,
+    ): ImportedPodcast {
         val byUrlResult = podcastsApi.getByUrl(url)
         if (byUrlResult is PodcastResult.Success) {
             return ImportedPodcast(byUrl = Podcast(byUrlResult.data.podcast))
