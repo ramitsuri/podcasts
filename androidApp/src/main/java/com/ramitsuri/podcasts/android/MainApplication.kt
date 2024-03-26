@@ -84,7 +84,7 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
                         DefaultHttpDataSource.Factory(),
                         Dispatchers.IO.limitedParallelism(4).asExecutor(),
                     ).apply {
-                        maxParallelDownloads = 1
+                        maxParallelDownloads = 3
                     }
                 }
 
