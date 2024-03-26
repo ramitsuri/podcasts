@@ -106,18 +106,6 @@ internal class PodcastsDaoImpl(
         }
     }
 
-    override suspend fun updateLastRefreshDate(
-        id: Long,
-        lastRefreshDate: Instant,
-    ) {
-        withContext(ioDispatcher) {
-            podcastAdditionalInfoEntityQueries.updateLastRefreshDate(
-                id = id,
-                lastRefreshDate = lastRefreshDate,
-            )
-        }
-    }
-
     private fun insert(podcast: Podcast) {
         podcastEntityQueries.insertOrReplace(
             PodcastEntity(
@@ -143,7 +131,6 @@ internal class PodcastsDaoImpl(
                 autoDownloadEpisodes = podcast.autoDownloadEpisodes,
                 newEpisodeNotification = podcast.newEpisodeNotifications,
                 subscribedDate = podcast.subscribedDate,
-                lastRefreshDate = podcast.lastRefreshDate,
             ),
         )
     }
