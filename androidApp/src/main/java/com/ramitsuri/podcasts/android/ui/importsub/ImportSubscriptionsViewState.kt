@@ -4,6 +4,10 @@ import com.ramitsuri.podcasts.model.Podcast
 
 data class ImportSubscriptionsViewState(
     val isLoading: Boolean = true,
-    val podcasts: List<Podcast> = listOf(),
     val subscribed: Boolean = false,
+    val imported: List<Podcast> = listOf(),
+    val failedToImportWithSuggestion: List<FailedToImportWithSuggestion> = listOf(),
+    val failedToImport: List<String> = listOf(),
 )
+
+data class FailedToImportWithSuggestion(val text: String, val suggestion: Podcast)

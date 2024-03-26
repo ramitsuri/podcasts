@@ -17,6 +17,10 @@
 
     <!-- Import Subscriptions Screen -->
     <string name="import_subscriptions_subscribe_all">Subscribe</string>
+    <string name="import_subscriptions_failed_to_import_but_found">Failed to import but found a suggestion:</string>
+    <string name="import_subscriptions_failed_to_import">Failed to import:</string>
+    <string name="import_subscriptions_failed_import_confirm_suggestion">Confirm</string>
+    <string name="import_subscriptions_imported">Imported:</string>
 
     <!-- Download service -->
     <string name="download_notification_channel_name">Downloads</string>

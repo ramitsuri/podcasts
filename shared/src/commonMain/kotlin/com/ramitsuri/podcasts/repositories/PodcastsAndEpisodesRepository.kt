@@ -32,7 +32,7 @@ class PodcastsAndEpisodesRepository internal constructor(
         withContext(ioDispatcher) {
             podcasts.map {
                 launch {
-                    podcastsRepository.updateSubscribed(it.id, subscribed = true)
+                    podcastsRepository.saveToDb(it.copy(subscribed = true))
                     episodesRepository.refreshForPodcastId(it.id)
                 }
             }.joinAll()

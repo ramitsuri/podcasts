@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,16 +28,6 @@ class ImportSubscriptionsViewModel(
     private val _state = MutableStateFlow(ImportSubscriptionsViewState())
     val state: StateFlow<ImportSubscriptionsViewState> = _state
 
-    init {
-        viewModelScope.launch {
-            podcastsRepository.getAllFlow().collect { podcasts ->
-                _state.update { previousState ->
-                    previousState.copy(podcasts = podcasts)
-                }
-            }
-        }
-    }
-
     fun onSubscriptionDataFilePicked(uri: Uri) {
         getApplication<Application>()
             .contentResolver
@@ -51,19 +42,54 @@ class ImportSubscriptionsViewModel(
 
     private fun onSubscriptionDataListReceived(subscriptionDataList: List<SubscriptionData>) {
         viewModelScope.launch {
+            val imported = mutableListOf<Podcast>()
+            val failedWithSuggestion = mutableListOf<FailedToImportWithSuggestion>()
+            val failed = mutableListOf<String>()
             subscriptionDataList.map {
                 launch {
-                    podcastsRepository.getPodcastByUrl(url = it.xmlUrl)
+                    val (importedByUrl, importedByName) =
+                        podcastsRepository.getPodcastByUrlOrName(
+                            url = it.xmlUrl,
+                            name = it.text,
+                        )
+                    if (importedByUrl != null) {
+                        imported.add(importedByUrl)
+                    } else if (importedByName != null) {
+                        failedWithSuggestion.add(
+                            FailedToImportWithSuggestion(
+                                text = it.text,
+                                suggestion = importedByName,
+                            ),
+                        )
+                    } else {
+                        failed.add(it.text)
+                    }
                 }
             }.joinAll()
             _state.update {
-                it.copy(isLoading = false)
+                it.copy(
+                    isLoading = false,
+                    failedToImportWithSuggestion = failedWithSuggestion,
+                    imported = imported,
+                    failedToImport = failed,
+                )
             }
         }
     }
 
+    fun onSuggestionAccepted(failedToImport: FailedToImportWithSuggestion) {
+        val currentImported = _state.value.imported.toMutableList()
+        val currentFailed = _state.value.failedToImportWithSuggestion.toMutableList()
+        _state.update {
+            it.copy(
+                imported = currentImported.plus(failedToImport.suggestion),
+                failedToImportWithSuggestion = currentFailed.minus(failedToImport),
+            )
+        }
+    }
+
     fun subscribeAllPodcasts() {
-        val podcasts = _state.value.podcasts
+        val podcasts = _state.value.imported
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             podcastsAndEpisodesRepository.subscribeToPodcasts(podcasts)
