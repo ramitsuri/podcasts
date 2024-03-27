@@ -53,6 +53,11 @@ internal interface EpisodesDao {
 
     suspend fun updateQueuePositions(idToQueuePosition: Map<String, Int>)
 
+    suspend fun updateFavorite(
+        id: String,
+        isFavorite: Boolean,
+    )
+
     suspend fun addToQueue(id: String)
 
     suspend fun updateCompletedAt(

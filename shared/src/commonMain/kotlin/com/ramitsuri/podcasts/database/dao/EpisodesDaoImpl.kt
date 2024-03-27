@@ -171,6 +171,15 @@ internal class EpisodesDaoImpl(
         }
     }
 
+    override suspend fun updateFavorite(
+        id: String,
+        isFavorite: Boolean,
+    ) {
+        withContext(ioDispatcher) {
+            episodeAdditionalInfoEntityQueries.updateFavorite(id = id, isFavorite = isFavorite)
+        }
+    }
+
     private fun updateQueuePosition(
         id: String,
         position: Int,
@@ -204,6 +213,7 @@ internal class EpisodesDaoImpl(
                 downloadedAt = episode.downloadedAt,
                 queuePosition = episode.queuePosition,
                 completedAt = episode.completedAt,
+                isFavorite = episode.isFavorite,
             ),
         )
     }

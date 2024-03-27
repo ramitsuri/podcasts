@@ -36,6 +36,7 @@ fun episode(
     downloadedAt = null,
     queuePosition = queuePosition,
     completedAt = null,
+    isFavorite = false,
 )
 
 fun podcast() =

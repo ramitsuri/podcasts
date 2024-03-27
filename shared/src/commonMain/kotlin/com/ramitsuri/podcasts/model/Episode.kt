@@ -34,6 +34,7 @@ data class Episode(
     val downloadedAt: Instant?,
     val queuePosition: Int,
     val completedAt: Instant?,
+    val isFavorite: Boolean,
 ) {
     val isCompleted = completedAt != null
 
@@ -75,6 +76,7 @@ data class Episode(
         downloadedAt = null,
         queuePosition = NOT_IN_QUEUE,
         completedAt = null,
+        isFavorite = false,
     )
 
     internal constructor(getEpisode: GetEpisode) : this(
@@ -99,6 +101,7 @@ data class Episode(
         downloadedAt = getEpisode.downloadedAt,
         queuePosition = getEpisode.queuePosition,
         completedAt = getEpisode.completedAt,
+        isFavorite = getEpisode.isFavorite,
     )
 
     internal constructor(getEpisodesForPodcast: GetEpisodesForPodcast) : this(
@@ -123,6 +126,7 @@ data class Episode(
         downloadedAt = getEpisodesForPodcast.downloadedAt,
         queuePosition = getEpisodesForPodcast.queuePosition,
         completedAt = getEpisodesForPodcast.completedAt,
+        isFavorite = getEpisodesForPodcast.isFavorite,
     )
 
     internal constructor(getEpisodesForPodcasts: GetEpisodesForPodcasts) : this(
@@ -147,6 +151,7 @@ data class Episode(
         downloadedAt = getEpisodesForPodcasts.downloadedAt,
         queuePosition = getEpisodesForPodcasts.queuePosition,
         completedAt = getEpisodesForPodcasts.completedAt,
+        isFavorite = getEpisodesForPodcasts.isFavorite,
     )
 
     internal constructor(getEpisodesInQueue: GetEpisodesInQueue) : this(
@@ -171,6 +176,7 @@ data class Episode(
         downloadedAt = getEpisodesInQueue.downloadedAt,
         queuePosition = getEpisodesInQueue.queuePosition,
         completedAt = getEpisodesInQueue.completedAt,
+        isFavorite = getEpisodesInQueue.isFavorite,
     )
 
     companion object {
