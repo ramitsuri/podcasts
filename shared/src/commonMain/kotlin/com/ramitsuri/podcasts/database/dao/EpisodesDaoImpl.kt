@@ -171,7 +171,10 @@ internal class EpisodesDaoImpl(
         }
     }
 
-    override suspend fun updateFavorite(id: String, isFavorite: Boolean) {
+    override suspend fun updateFavorite(
+        id: String,
+        isFavorite: Boolean,
+    ) {
         withContext(ioDispatcher) {
             episodeAdditionalInfoEntityQueries.updateFavorite(id = id, isFavorite = isFavorite)
         }
