@@ -19,7 +19,7 @@ getEpisode:
 SELECT
 ee.*,
 eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite,
-pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink
+pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink, pe.url AS podcastUrl
 FROM EpisodeEntity AS ee
 INNER JOIN PodcastEntity AS pe
     ON ee.podcastId == pe.id
@@ -30,7 +30,7 @@ WHERE ee.id == :id;
 getEpisodesForPodcast:
 SELECT ee.*,
 eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite,
-pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink
+pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink, pe.url AS podcastUrl
 FROM EpisodeEntity AS ee
 INNER JOIN PodcastEntity AS pe
     ON ee.podcastId == pe.id
@@ -42,7 +42,7 @@ ORDER BY ee.datePublished DESC;
 getEpisodesForPodcasts:
 SELECT ee.*,
 eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite,
-pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink
+pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink, pe.url AS podcastUrl
 FROM EpisodeEntity AS ee
 INNER JOIN PodcastEntity AS pe
     ON ee.podcastId == pe.id
@@ -54,7 +54,7 @@ ORDER BY ee.datePublished DESC;
 getEpisodesInQueue:
 SELECT ee.*,
 eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite,
-pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink
+pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink, pe.url AS podcastUrl
 FROM EpisodeEntity AS ee
 INNER JOIN PodcastEntity AS pe
     ON ee.podcastId == pe.id
