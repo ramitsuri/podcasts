@@ -17,7 +17,7 @@ data class SessionAction(
         sessionId: String,
         action: Action,
         time: Instant = Clock.System.now(),
-        playbackSpeed: Float
+        playbackSpeed: Float,
     ) : this(
         sessionId = sessionId,
         podcastId = episode.podcastId,

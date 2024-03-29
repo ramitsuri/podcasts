@@ -57,7 +57,7 @@ internal fun provideDatabase(driver: SqlDriver): PodcastsDatabase {
                 timeAdapter = instantToLongAdapter,
                 actionAdapter = actionToStringAdapter,
                 playbackSpeedAdapter = floatToDoubleAdapter,
-        ),
+            ),
     )
 }
 

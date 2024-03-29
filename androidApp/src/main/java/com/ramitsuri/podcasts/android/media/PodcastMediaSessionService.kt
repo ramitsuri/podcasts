@@ -307,14 +307,15 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             Log.i(TAG, "Canceling previous insert start action job")
         }
         val speed = session.player.playbackParameters.speed
-        insertStartActionJob = longLivingScope.launch(Dispatchers.IO) {
-            delay(500)
-            sessionHistoryRepository.episodeStart(
-                episode = episode,
-                sessionId = session.id,
-                speed = speed,
-            )
-        }
+        insertStartActionJob =
+            longLivingScope.launch(Dispatchers.IO) {
+                delay(500)
+                sessionHistoryRepository.episodeStart(
+                    episode = episode,
+                    sessionId = session.id,
+                    speed = speed,
+                )
+            }
     }
 
     private fun onEpisodePaused(
@@ -333,14 +334,15 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             Log.i(TAG, "Canceling previous insert stop action job")
         }
         val speed = session.player.playbackParameters.speed
-        insertStopActionJob = longLivingScope.launch(Dispatchers.IO) {
-            delay(500)
-            sessionHistoryRepository.episodeStop(
-                episode = episode,
-                sessionId = session.id,
-                speed = speed,
-            )
-        }
+        insertStopActionJob =
+            longLivingScope.launch(Dispatchers.IO) {
+                delay(500)
+                sessionHistoryRepository.episodeStop(
+                    episode = episode,
+                    sessionId = session.id,
+                    speed = speed,
+                )
+            }
     }
 
     private inner class PlayerListener(private val player: Player) : Player.Listener {

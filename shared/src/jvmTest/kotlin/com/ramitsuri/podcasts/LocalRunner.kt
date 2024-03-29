@@ -42,14 +42,15 @@ internal class LocalRunner : KoinTest {
                             sinceEpochSeconds = 1614709499,
                         ),
                     ) as? PodcastResult.Success
-                    )?.data?.items
+                )?.data?.items
             println(Instant.fromEpochSeconds(items?.minBy { it.datePublished }?.datePublished ?: 0))
         }
 
     @Test
-    fun databaseTest(): Unit = runBlocking {
-        PodcastsDatabase.Schema.create(get<SqlDriver>())
-    }
+    fun databaseTest(): Unit =
+        runBlocking {
+            PodcastsDatabase.Schema.create(get<SqlDriver>())
+        }
 
     @BeforeTest
     fun before() {

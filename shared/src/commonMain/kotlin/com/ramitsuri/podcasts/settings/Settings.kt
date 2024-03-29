@@ -34,7 +34,7 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
         return playingState
     }
 
-     fun setPlayingState(playingState: PlayingState) {
+    fun setPlayingState(playingState: PlayingState) {
         this.playingState.update { playingState }
     }
 

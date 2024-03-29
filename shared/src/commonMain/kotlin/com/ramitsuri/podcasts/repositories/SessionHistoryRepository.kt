@@ -8,14 +8,18 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class SessionHistoryRepository internal constructor(
-    private val sessionActionDao: SessionActionDao
+    private val sessionActionDao: SessionActionDao,
 ) {
     private val mutex = Mutex()
     private var previousEpisode: Episode? = null
     private var previousSpeed: Float? = null
     private var previousIsPlaying: Boolean? = null
 
-    suspend fun episodeStart(episode: Episode, sessionId: String, speed: Float) {
+    suspend fun episodeStart(
+        episode: Episode,
+        sessionId: String,
+        speed: Float,
+    ) {
         mutex.withLock {
             if (previousEpisode?.id == episode.id &&
                 previousIsPlaying == true
@@ -35,7 +39,7 @@ class SessionHistoryRepository internal constructor(
             } else {
                 val prevEpisode = previousEpisode
                 if (prevEpisode != null) {
-                log("STOPPING ${previousEpisode?.title}")
+                    log("STOPPING ${previousEpisode?.title}")
                     insert(
                         SessionAction(
                             episode = prevEpisode,
@@ -64,7 +68,11 @@ class SessionHistoryRepository internal constructor(
         }
     }
 
-    suspend fun episodeStop(episode: Episode, sessionId: String, speed: Float) {
+    suspend fun episodeStop(
+        episode: Episode,
+        sessionId: String,
+        speed: Float,
+    ) {
         mutex.withLock {
             if (previousEpisode?.id == episode.id &&
                 previousIsPlaying == false
@@ -86,7 +94,11 @@ class SessionHistoryRepository internal constructor(
         }
     }
 
-    suspend fun speedChange(isPlaying: Boolean, sessionId: String, speed: Float) {
+    suspend fun speedChange(
+        isPlaying: Boolean,
+        sessionId: String,
+        speed: Float,
+    ) {
         mutex.withLock {
             if (previousSpeed == speed) {
                 return
