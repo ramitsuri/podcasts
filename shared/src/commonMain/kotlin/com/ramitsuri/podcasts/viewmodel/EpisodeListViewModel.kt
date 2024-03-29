@@ -4,6 +4,7 @@ import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeListType
 import com.ramitsuri.podcasts.model.PlayingState
+import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.ui.EpisodeListViewState
 import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
@@ -13,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -29,27 +31,34 @@ class EpisodeListViewModel internal constructor(
     val state = _state.asStateFlow()
 
     init {
-        val episodeList =
+        val (episodeList, podcastList) =
             when (episodeListType) {
-                EpisodeListType.SUBSCRIBED -> podcastsAndEpisodesRepository.getSubscribedFlow()
-                EpisodeListType.QUEUE -> episodesRepository.getQueueFlow()
+                EpisodeListType.SUBSCRIBED ->
+                    Pair(
+                        podcastsAndEpisodesRepository.getSubscribedFlow(),
+                        podcastsAndEpisodesRepository.getSubscribedPodcastsFlow(),
+                    )
+
+                EpisodeListType.QUEUE -> Pair(episodesRepository.getQueueFlow(), emptyFlow())
             }
         viewModelScope.launch {
             combine(
+                podcastList,
                 episodeList,
                 episodesRepository.getCurrentEpisode(),
                 settings.getPlayingStateFlow(),
-            ) { subscribedEpisodes, currentlyPlayingEpisode, playingState ->
+            ) { subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState ->
                 val currentlyPlaying =
                     if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
                         currentlyPlayingEpisode
                     } else {
                         null
                     }
-                Triple(subscribedEpisodes, currentlyPlaying, playingState)
-            }.collect { (subscribedEpisodes, currentlyPlayingEpisode, playingState) ->
+                Data(subscribedPodcasts, subscribedEpisodes, currentlyPlaying, playingState)
+            }.collect { (subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState) ->
                 _state.update {
                     it.copy(
+                        subscribedPodcasts = subscribedPodcasts,
                         episodes = subscribedEpisodes,
                         currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
                         currentlyPlayingEpisodeState = playingState,
@@ -123,4 +132,11 @@ class EpisodeListViewModel internal constructor(
             }
         }
     }
+
+    private data class Data(
+        val podcasts: List<Podcast>,
+        val episodes: List<Episode>,
+        val currentEpisode: Episode?,
+        val playingState: PlayingState,
+    )
 }

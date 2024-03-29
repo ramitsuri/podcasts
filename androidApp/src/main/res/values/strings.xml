@@ -11,6 +11,7 @@
     <string name="replay_10">Replay 10 seconds</string>
     <string name="save_to_favorites">Save to favorites</string>
     <string name="cancel">Cancel</string>
+    <string name="subscriptions">Subscriptions</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>
@@ -44,7 +45,6 @@
     <string name="player_sleep_timer_decrease">-2 minutes</string>
 
     <!-- Library screen -->
-    <string name="library_subscriptions">Subscriptions</string>
     <string name="library_queue">Queue</string>
     <string name="library_downloads">Downloads</string>
     <string name="library_history">History</string>

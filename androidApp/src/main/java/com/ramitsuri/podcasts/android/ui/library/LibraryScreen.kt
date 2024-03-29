@@ -42,7 +42,7 @@ fun LibraryScreen(
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
         Item(
             icon = Icons.Outlined.Subscriptions,
-            labelResId = R.string.library_subscriptions,
+            labelResId = R.string.subscriptions,
             onClick = onSubscriptionsClicked,
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
