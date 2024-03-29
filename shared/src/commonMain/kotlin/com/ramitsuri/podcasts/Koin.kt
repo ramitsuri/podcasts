@@ -7,6 +7,8 @@ import com.ramitsuri.podcasts.database.dao.PodcastsDaoImpl
 import com.ramitsuri.podcasts.database.dao.interfaces.CategoryDao
 import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.database.dao.interfaces.PodcastsDao
+import com.ramitsuri.podcasts.database.dao.interfaces.SessionActionDao
+import com.ramitsuri.podcasts.database.dao.interfaces.SessionActionDaoImpl
 import com.ramitsuri.podcasts.database.provideDatabase
 import com.ramitsuri.podcasts.network.api.CategoriesApiImpl
 import com.ramitsuri.podcasts.network.api.EpisodesApiImpl
@@ -18,6 +20,7 @@ import com.ramitsuri.podcasts.network.provideHttpClient
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
+import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
 import com.ramitsuri.podcasts.settings.DataStoreKeyValueStore
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.DispatcherProvider
@@ -87,6 +90,12 @@ private val coreModule =
             )
         }
 
+        single<SessionHistoryRepository> {
+            SessionHistoryRepository(
+                sessionActionDao = get(),
+            )
+        }
+
         single<PodcastsDao> {
             PodcastsDaoImpl(
                 podcastEntityQueries = get<PodcastsDatabase>().podcastEntityQueries,
@@ -106,6 +115,13 @@ private val coreModule =
             EpisodesDaoImpl(
                 episodeEntityQueries = get<PodcastsDatabase>().episodeEntityQueries,
                 episodeAdditionalInfoEntityQueries = get<PodcastsDatabase>().episodeAdditionalInfoEntityQueries,
+                ioDispatcher = get<DispatcherProvider>().io,
+            )
+        }
+
+        single<SessionActionDao> {
+            SessionActionDaoImpl(
+                sessionHistoryQueries = get<PodcastsDatabase>().sessionHistoryQueries,
                 ioDispatcher = get<DispatcherProvider>().io,
             )
         }

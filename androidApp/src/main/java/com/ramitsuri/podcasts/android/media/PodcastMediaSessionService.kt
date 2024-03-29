@@ -33,8 +33,10 @@ import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
+import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
 import com.ramitsuri.podcasts.settings.Settings
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
@@ -48,6 +50,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.UUID
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.seconds
 
@@ -55,13 +58,17 @@ import kotlin.time.Duration.Companion.seconds
 class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     private val cache by inject<Cache>()
     private val episodesRepository by inject<EpisodesRepository>()
+    private val sessionHistoryRepository by inject<SessionHistoryRepository>()
     private val longLivingScope by inject<CoroutineScope>()
     private val settings by inject<Settings>()
     private val clock: Clock by inject<Clock>()
 
     private var mediaSession: MediaSession? = null
     private val currentlyPlayingEpisode = MutableStateFlow<Episode?>(null)
-    private var playNextMediaJob: Job? = null
+    private var attemptingToPlayNextMedia = false
+
+    private var insertStartActionJob: Job? = null
+    private var insertStopActionJob: Job? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -109,6 +116,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
 
         mediaSession =
             MediaSession.Builder(this, player)
+                .setId(UUID.randomUUID().toString())
                 .setCallback(MediaSessionCallback())
                 .setCustomLayout(customLayout)
                 .build()
@@ -116,6 +124,14 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         launchSuspend {
             settings.setPlayingState(PlayingState.NOT_PLAYING)
         }
+        // Setting currentlyPlayingEpisode sooner so that it's available for session tracking later
+        launchSuspend {
+            episodesRepository.getCurrentEpisode().collectLatest { currentEpisode ->
+                currentlyPlayingEpisode.update { currentEpisode }
+            }
+        }
+
+        Log.d(TAG, "Create with media session id: ${mediaSession?.id}")
     }
 
     override fun onStartCommand(
@@ -130,14 +146,13 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
 
     private fun startListeningForUpdates() {
         launchSuspend {
-            episodesRepository.getCurrentEpisode().collectLatest { currentEpisode ->
-                currentlyPlayingEpisode.update { currentEpisode }
+            currentlyPlayingEpisode.collectLatest { currentEpisode ->
                 val player = mediaSession?.player
-                currentlyPlayingEpisode.value?.let { episode ->
-                    val duration = player?.duration ?: return@let
+                if (currentEpisode != null && player?.duration != null) {
+                    val duration = player.duration
                     // Set episode's duration to what the player is reporting
-                    if (duration != C.TIME_UNSET && episode.duration?.toLong() != (duration / 1000)) {
-                        episodesRepository.updateDuration(episode.id, (duration / 1000).toInt())
+                    if (duration != C.TIME_UNSET && currentEpisode.duration?.toLong() != (duration / 1000)) {
+                        episodesRepository.updateDuration(currentEpisode.id, (duration / 1000).toInt())
                     }
                 }
                 while (true) {
@@ -158,8 +173,12 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         }
         launchSuspend {
             settings.getPlaybackSpeedFlow().collectLatest { speed ->
-                val player = mediaSession?.player
-                player?.setPlaybackSpeed(speed)
+                val session = mediaSession
+                if (session != null) {
+                    val player = session.player
+                    player.setPlaybackSpeed(speed)
+                    sessionHistoryRepository.speedChange(player.isPlaying, session.id, player.playbackParameters.speed)
+                }
             }
         }
         launchSuspend {
@@ -186,7 +205,6 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        // TODO investigate if this is going to be called since I only add one media at a time
         val player = mediaSession?.player ?: return
         if (!player.playWhenReady || player.mediaItemCount == 0) {
             stopSelf()
@@ -273,6 +291,60 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         }
     }
 
+    private suspend fun onEpisodePlayed(
+        episode: Episode?,
+        session: MediaSession?,
+    ) {
+        if (episode == null) {
+            Log.w(TAG, "Episode played but episode is null")
+            return
+        }
+        if (session == null) {
+            Log.w(TAG, "Episode played but media session is null")
+            return
+        }
+        insertStartActionJob?.cancel()?.also {
+            Log.i(TAG, "Canceling previous insert start action job")
+        }
+        val speed = session.player.playbackParameters.speed
+        insertStartActionJob =
+            longLivingScope.launch(Dispatchers.IO) {
+                delay(500)
+                sessionHistoryRepository.episodeStart(
+                    episode = episode,
+                    sessionId = session.id,
+                    speed = speed,
+                )
+            }
+    }
+
+    private fun onEpisodePaused(
+        episode: Episode?,
+        session: MediaSession?,
+    ) {
+        if (episode == null) {
+            Log.w(TAG, "Episode paused but episode is null")
+            return
+        }
+        if (session == null) {
+            Log.w(TAG, "Episode paused but media session is null")
+            return
+        }
+        insertStopActionJob?.cancel()?.also {
+            Log.i(TAG, "Canceling previous insert stop action job")
+        }
+        val speed = session.player.playbackParameters.speed
+        insertStopActionJob =
+            longLivingScope.launch(Dispatchers.IO) {
+                delay(500)
+                sessionHistoryRepository.episodeStop(
+                    episode = episode,
+                    sessionId = session.id,
+                    speed = speed,
+                )
+            }
+    }
+
     private inner class PlayerListener(private val player: Player) : Player.Listener {
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             super.onIsPlayingChanged(isPlaying)
@@ -288,6 +360,11 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 }
             launchSuspend {
                 settings.setPlayingState(state)
+                if (state == PlayingState.PLAYING) {
+                    onEpisodePlayed(currentlyPlayingEpisode.value, mediaSession)
+                } else if (state == PlayingState.NOT_PLAYING) {
+                    onEpisodePaused(currentlyPlayingEpisode.value, mediaSession)
+                }
             }
         }
 
@@ -298,9 +375,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             if (playbackState == Player.STATE_ENDED) {
                 playNextFromQueueOnMediaEnded(player)
             } else if (playbackState == STATE_BUFFERING && player.isPlaying) {
-                launchSuspend {
-                    settings.setPlayingState(PlayingState.LOADING)
-                }
+                settings.setPlayingState(PlayingState.LOADING)
             }
         }
 
@@ -344,37 +419,45 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
 
     private fun playNextFromQueueOnMediaEnded(player: Player) {
         Log.d(TAG, "Finding next media to play")
-        playNextMediaJob?.cancel()
-        playNextMediaJob =
-            launchSuspend {
-                val sleepTimer = settings.getSleepTimerFlow().first()
-                if (sleepTimer is SleepTimer.EndOfEpisode) {
-                    Log.d(TAG, "Sleep timer is set to end of episode")
-                    settings.setSleepTimer(SleepTimer.None)
-                    return@launchSuspend
-                }
-                val queue = episodesRepository.getQueue()
-                val currentlyPlayingEpisode = currentlyPlayingEpisode.value
-                if (currentlyPlayingEpisode != null) {
-                    episodesRepository.markPlayed(currentlyPlayingEpisode.id)
-                }
-                val currentEpisodeIndex = queue.indexOfFirst { it.id == currentlyPlayingEpisode?.id }
-                if (currentEpisodeIndex == -1) {
-                    // TODO log with logger
-                    Log.d(TAG, "current episode not found")
-                    return@launchSuspend
-                }
-                val nextEpisode = queue.getOrNull(currentEpisodeIndex + 1)
-                if (nextEpisode == null) {
-                    // TODO log with logger
-                    Log.d(TAG, "next episode is null")
-                    return@launchSuspend
-                }
-
-                val position = nextEpisode.progressInSeconds.times(1000L)
-                player.setMediaItem(nextEpisode.asMediaItem(), position)
-                episodesRepository.setCurrentlyPlayingEpisodeId(nextEpisode.id)
+        if (attemptingToPlayNextMedia) {
+            Log.d(TAG, "Already attempting to play next media")
+            return
+        }
+        attemptingToPlayNextMedia = true
+        launchSuspend {
+            delay(500)
+            val sleepTimer = settings.getSleepTimerFlow().first()
+            if (sleepTimer is SleepTimer.EndOfEpisode) {
+                Log.d(TAG, "Sleep timer is set to end of episode")
+                settings.setSleepTimer(SleepTimer.None)
+                attemptingToPlayNextMedia = false
+                return@launchSuspend
             }
+            val queue = episodesRepository.getQueue()
+            val currentlyPlayingEpisode = currentlyPlayingEpisode.value
+            if (currentlyPlayingEpisode != null) {
+                episodesRepository.markPlayed(currentlyPlayingEpisode.id)
+            }
+            val currentEpisodeIndex = queue.indexOfFirst { it.id == currentlyPlayingEpisode?.id }
+            if (currentEpisodeIndex == -1) {
+                // TODO log with logger
+                Log.d(TAG, "current episode not found")
+                attemptingToPlayNextMedia = false
+                return@launchSuspend
+            }
+            val nextEpisode = queue.getOrNull(currentEpisodeIndex + 1)
+            if (nextEpisode == null) {
+                // TODO log with logger
+                Log.d(TAG, "next episode is null")
+                attemptingToPlayNextMedia = false
+                return@launchSuspend
+            }
+
+            val position = nextEpisode.progressInSeconds.times(1000L)
+            player.setMediaItem(nextEpisode.asMediaItem(), position)
+            episodesRepository.setCurrentlyPlayingEpisodeId(nextEpisode.id)
+            attemptingToPlayNextMedia = false
+        }
     }
 
     private fun launchSuspend(block: suspend () -> Unit): Job {

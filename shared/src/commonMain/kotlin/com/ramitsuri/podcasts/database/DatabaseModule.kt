@@ -8,6 +8,8 @@ import com.ramitsuri.podcasts.EpisodeEntity
 import com.ramitsuri.podcasts.PodcastAdditionalInfoEntity
 import com.ramitsuri.podcasts.PodcastEntity
 import com.ramitsuri.podcasts.PodcastsDatabase
+import com.ramitsuri.podcasts.SessionActionEntity
+import com.ramitsuri.podcasts.model.Action
 import com.ramitsuri.podcasts.model.DownloadStatus
 import kotlinx.datetime.Instant
 
@@ -15,8 +17,10 @@ internal fun provideDatabase(driver: SqlDriver): PodcastsDatabase {
     val intToLongAdapter = IntToLongAdapter()
     val instantToLongAdapter = InstantToLongAdapter()
     val doubleToDoubleAdapter = DoubleToDoubleAdapter()
+    val floatToDoubleAdapter = FloatToDoubleAdapter()
     val downloadStatusToStringAdapter = DownloadStatusToStringAdapter()
     val intListToStringAdapter = IntListToStringAdapter()
+    val actionToStringAdapter = ActionToStringAdapter()
 
     return PodcastsDatabase(
         driver = driver,
@@ -47,6 +51,12 @@ internal fun provideDatabase(driver: SqlDriver): PodcastsDatabase {
             PodcastEntity.Adapter(
                 episodeCountAdapter = intToLongAdapter,
                 categoriesAdapter = intListToStringAdapter,
+            ),
+        SessionActionEntityAdapter =
+            SessionActionEntity.Adapter(
+                timeAdapter = instantToLongAdapter,
+                actionAdapter = actionToStringAdapter,
+                playbackSpeedAdapter = floatToDoubleAdapter,
             ),
     )
 }
@@ -81,6 +91,16 @@ private class DoubleToDoubleAdapter : ColumnAdapter<Double, Double> {
     }
 }
 
+private class FloatToDoubleAdapter : ColumnAdapter<Float, Double> {
+    override fun decode(databaseValue: Double): Float {
+        return databaseValue.toFloat()
+    }
+
+    override fun encode(value: Float): Double {
+        return value.toDouble()
+    }
+}
+
 private class DownloadStatusToStringAdapter : ColumnAdapter<DownloadStatus, String> {
     override fun decode(databaseValue: String): DownloadStatus {
         return DownloadStatus.fromValue(databaseValue)
@@ -105,5 +125,15 @@ private class IntListToStringAdapter : ColumnAdapter<List<Int>, String> {
 
     companion object {
         private const val SEPARATOR = ";;;"
+    }
+}
+
+private class ActionToStringAdapter : ColumnAdapter<Action, String> {
+    override fun decode(databaseValue: String): Action {
+        return Action.fromValue(databaseValue)
+    }
+
+    override fun encode(value: Action): String {
+        return value.value
     }
 }

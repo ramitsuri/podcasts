@@ -1,16 +1,17 @@
 package com.ramitsuri.podcasts
 
+import app.cash.sqldelight.db.SqlDriver
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.network.api.interfaces.EpisodesApi
 import com.ramitsuri.podcasts.network.api.interfaces.PodcastsApi
 import com.ramitsuri.podcasts.network.model.GetEpisodesRequest
 import com.ramitsuri.podcasts.network.model.SearchPodcastsRequest
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Instant
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.get
-import java.time.Instant
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -42,7 +43,13 @@ internal class LocalRunner : KoinTest {
                         ),
                     ) as? PodcastResult.Success
                 )?.data?.items
-            println(Instant.ofEpochSecond(items?.minBy { it.datePublished }?.datePublished ?: 0))
+            println(Instant.fromEpochSeconds(items?.minBy { it.datePublished }?.datePublished ?: 0))
+        }
+
+    @Test
+    fun databaseTest(): Unit =
+        runBlocking {
+            PodcastsDatabase.Schema.create(get<SqlDriver>())
         }
 
     @BeforeTest
@@ -52,7 +59,7 @@ internal class LocalRunner : KoinTest {
                 module {
                     single<AppInfo> {
                         object : AppInfo {
-                            override val isDebug = false
+                            override val isDebug = true
                         }
                     }
                 },
