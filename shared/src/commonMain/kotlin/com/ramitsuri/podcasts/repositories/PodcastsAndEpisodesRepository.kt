@@ -54,7 +54,7 @@ class PodcastsAndEpisodesRepository internal constructor(
         }
     }
 
-    fun getSubscribedPodcastsFlow(): Flow<List<Podcast>>{
+    fun getSubscribedPodcastsFlow(): Flow<List<Podcast>> {
         return podcastsRepository.getAllSubscribedFlow()
     }
 
