@@ -59,8 +59,8 @@ fun HomeScreen(
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -75,11 +75,11 @@ fun HomeScreen(
                 EpisodeItem(
                     episode = it,
                     playingState =
-                    if (state.currentlyPlayingEpisodeId == it.id) {
-                        state.currentlyPlayingEpisodeState
-                    } else {
-                        PlayingState.NOT_PLAYING
-                    },
+                        if (state.currentlyPlayingEpisodeId == it.id) {
+                            state.currentlyPlayingEpisodeState
+                        } else {
+                            PlayingState.NOT_PLAYING
+                        },
                     onClicked = { onEpisodeClicked(it.id) },
                     onPlayClicked = { onEpisodePlayClicked(it) },
                     onPauseClicked = onEpisodePauseClicked,
@@ -105,9 +105,9 @@ fun HomeScreen(
 private fun Subscriptions(podcasts: List<Podcast>) {
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
     ) {
         Text(
             text = stringResource(id = R.string.subscriptions),
@@ -127,16 +127,16 @@ private fun Subscriptions(podcasts: List<Podcast>) {
 private fun SubscribedPodcastItem(podcast: Podcast) {
     AsyncImage(
         model =
-        ImageRequest.Builder(LocalContext.current)
-            .data(podcast.artwork)
-            .crossfade(true)
-            .build(),
+            ImageRequest.Builder(LocalContext.current)
+                .data(podcast.artwork)
+                .crossfade(true)
+                .build(),
         contentDescription = podcast.title,
         contentScale = ContentScale.FillBounds,
         modifier =
-        Modifier
-            .clip(MaterialTheme.shapes.small)
-            .size(96.dp),
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .size(96.dp),
     )
 }
 
@@ -157,24 +157,24 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-        Modifier
-            .clickable(onClick = onClicked)
-            .padding(top = 12.dp, bottom = 4.dp)
-            .padding(horizontal = 16.dp),
+            Modifier
+                .clickable(onClick = onClicked)
+                .padding(top = 12.dp, bottom = 4.dp)
+                .padding(horizontal = 16.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
                 model =
-                ImageRequest.Builder(LocalContext.current)
-                    .data(episode.podcastImageUrl)
-                    .crossfade(true)
-                    .build(),
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(episode.podcastImageUrl)
+                        .crossfade(true)
+                        .build(),
                 contentDescription = episode.title,
                 contentScale = ContentScale.FillBounds,
                 modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(56.dp),
+                    Modifier
+                        .clip(MaterialTheme.shapes.small)
+                        .size(56.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column {

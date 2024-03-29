@@ -29,11 +29,12 @@ class EpisodeDetailsViewModel internal constructor(
                     repository.getCurrentEpisode(),
                     settings.getPlayingStateFlow(),
                 ) { episode, currentlyPlayingEpisode, playingState ->
-                    val currentlyPlaying = if (episode != null && episode.id == currentlyPlayingEpisode?.id) {
-                        playingState
-                    } else {
-                        PlayingState.NOT_PLAYING
-                    }
+                    val currentlyPlaying =
+                        if (episode != null && episode.id == currentlyPlayingEpisode?.id) {
+                            playingState
+                        } else {
+                            PlayingState.NOT_PLAYING
+                        }
                     Pair(episode, currentlyPlaying)
                 }.collect { (episode, playingState) ->
                     _state.update {
@@ -48,6 +49,7 @@ class EpisodeDetailsViewModel internal constructor(
             LogHelper.v(TAG, "Episode id is null")
         }
     }
+
     companion object {
         private const val TAG = "EpisodeDetails"
     }
