@@ -104,13 +104,6 @@ fun PlayerScreen(
                     onPlayClicked = onPlayClicked,
                     onPauseClicked = onPauseClicked,
                 )
-            } else {
-                NeverPlayedNotExpanded(
-                    modifier =
-                        Modifier.onGloballyPositioned {
-                            onNotExpandedHeightKnown(it.size.height)
-                        },
-                )
             }
         }
         if (state.hasEverBeenPlayed) {
@@ -142,16 +135,7 @@ fun PlayerScreen(
                 onSleepTimerIncrease = onSleepTimerIncrease,
                 onSleepTimerDecrease = onSleepTimerDecrease,
             )
-        } else {
-            NeverPlayedNotExpanded()
         }
-    }
-}
-
-@Composable
-private fun NeverPlayedNotExpanded(modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Text(text = stringResource(id = R.string.player_never_played))
     }
 }
 

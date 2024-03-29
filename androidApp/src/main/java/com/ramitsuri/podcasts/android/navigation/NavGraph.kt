@@ -1,6 +1,7 @@
 package com.ramitsuri.podcasts.android.navigation
 
 import android.net.Uri
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomSheetScaffold
@@ -82,47 +83,50 @@ fun NavGraph(
             }
         },
     ) { innerPadding ->
-        val bottomPadding = innerPadding.calculateBottomPadding() + 80.dp
-        // TODO fix to use peekHeightPx for sheetPeekHeight
+        val playerViewModel =
+            viewModel<PlayerViewModel>(
+                factory = PlayerViewModel.factory(),
+            )
+        val playerState by playerViewModel.state.collectAsStateWithLifecycle()
         var peekHeightPx by remember { mutableIntStateOf(0) }
+        val bottomSheetVisible = playerState.hasEverBeenPlayed
+        val bottomPadding = if (bottomSheetVisible) {
+            with(LocalDensity.current) {
+                innerPadding.calculateBottomPadding() + peekHeightPx.toDp()
+            }
+        } else {
+            0.dp
+        }
         BottomSheetScaffold(
             scaffoldState = scaffoldSheetState,
-            sheetPeekHeight =
-                if (peekHeightPx == 0) {
-                    bottomPadding
-                } else {
-                    with(LocalDensity.current) {
-                        innerPadding.calculateBottomPadding() + peekHeightPx.toDp()
-                    }
-                },
-            modifier = Modifier.padding(innerPadding),
+            sheetPeekHeight = bottomPadding,
+            modifier = Modifier.padding(if (bottomSheetVisible) innerPadding else PaddingValues(bottom = 0.dp)),
             sheetDragHandle = { },
-            sheetContent = {
-                val viewModel =
-                    viewModel<PlayerViewModel>(
-                        factory = PlayerViewModel.factory(),
+            sheetContent = if (bottomSheetVisible) {
+                {
+                    PlayerScreen(
+                        isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
+                        state = playerState,
+                        onNotExpandedHeightKnown = {
+                            peekHeightPx = it
+                        },
+                        onGoToQueueClicked = { },
+                        onReplayClicked = playerViewModel::onReplayRequested,
+                        onPauseClicked = playerViewModel::onPauseClicked,
+                        onPlayClicked = playerViewModel::onPlayClicked,
+                        onSkipClicked = playerViewModel::onSkipRequested,
+                        onSeekValueChange = playerViewModel::onSeekRequested,
+                        onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
+                        onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
+                        onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
+                        onToggleTrimSilence = playerViewModel::toggleTrimSilence,
+                        onSleepTimer = playerViewModel::onSleepTimerRequested,
+                        onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
+                        onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
                     )
-                val state by viewModel.state.collectAsStateWithLifecycle()
-                PlayerScreen(
-                    isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
-                    state = state,
-                    onNotExpandedHeightKnown = {
-                        peekHeightPx = it
-                    },
-                    onGoToQueueClicked = { },
-                    onReplayClicked = viewModel::onReplayRequested,
-                    onPauseClicked = viewModel::onPauseClicked,
-                    onPlayClicked = viewModel::onPlayClicked,
-                    onSkipClicked = viewModel::onSkipRequested,
-                    onSeekValueChange = viewModel::onSeekRequested,
-                    onPlaybackSpeedSet = viewModel::onSpeedChangeRequested,
-                    onPlaybackSpeedIncrease = viewModel::onSpeedIncreaseRequested,
-                    onPlaybackSpeedDecrease = viewModel::onSpeedDecreaseRequested,
-                    onToggleTrimSilence = viewModel::toggleTrimSilence,
-                    onSleepTimer = viewModel::onSleepTimerRequested,
-                    onSleepTimerIncrease = viewModel::onSleepTimerIncreaseRequested,
-                    onSleepTimerDecrease = viewModel::onSleepTimerDecreaseRequested,
-                )
+                }
+            } else {
+                { }
             },
         ) {
             NavHost(

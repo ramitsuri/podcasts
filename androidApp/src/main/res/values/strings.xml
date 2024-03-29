@@ -29,7 +29,6 @@
     <string name="download_notification_text">Downloading episodes</string>
 
     <!-- Player screen -->
-    <string name="player_never_played">Select episode to play</string>
     <string name="player_playback_speed_1x">1.0x</string>
     <string name="player_playback_speed_1_5x">1.5x</string>
     <string name="player_playback_speed_2x">2.0x</string>
