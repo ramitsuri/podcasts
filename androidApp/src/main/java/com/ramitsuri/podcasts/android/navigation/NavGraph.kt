@@ -202,20 +202,19 @@ fun NavGraph(
                             Uri.decode(episodeId)
                         }
                     val viewModel = koinViewModel<EpisodeDetailsViewModel>(parameters = { parametersOf(decoded) })
-
                     val state by viewModel.state.collectAsStateWithLifecycle()
                     EpisodeDetailsScreen(
                         state = state,
                         onBack = { navController.navigateUp() },
-                        onEpisodePlayClicked = {},
-                        onEpisodePauseClicked = {},
-                        onEpisodeAddToQueueClicked = {},
-                        onEpisodeRemoveFromQueueClicked = {},
-                        onEpisodeDownloadClicked = {},
-                        onEpisodeRemoveDownloadClicked = {},
-                        onEpisodeCancelDownloadClicked = {},
-                        onEpisodePlayedClicked = {},
-                        onEpisodeNotPlayedClicked = {},
+                        onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
+                        onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
+                        onEpisodeAddToQueueClicked = viewModel::onEpisodeAddToQueueClicked,
+                        onEpisodeRemoveFromQueueClicked = viewModel::onEpisodeRemoveFromQueueClicked,
+                        onEpisodeDownloadClicked = viewModel::onEpisodeDownloadClicked,
+                        onEpisodeRemoveDownloadClicked = viewModel::onEpisodeRemoveDownloadClicked,
+                        onEpisodeCancelDownloadClicked = viewModel::onEpisodeCancelDownloadClicked,
+                        onEpisodePlayedClicked = viewModel::onEpisodePlayedClicked,
+                        onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                     )
                 }
 

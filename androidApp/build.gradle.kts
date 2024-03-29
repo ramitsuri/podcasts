@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.coroutines.guava)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
+    implementation(libs.html.converter)
     implementation(libs.kotlin.datetime)
     implementation(libs.androidx.activity.compose)
     implementation(libs.koin.android)

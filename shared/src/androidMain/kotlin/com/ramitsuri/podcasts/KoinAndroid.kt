@@ -57,6 +57,8 @@ actual val platformModule =
             EpisodeDetailsViewModel(
                 episodeId = parameters.get(),
                 repository = get<EpisodesRepository>(),
+                episodeController = get<EpisodeController>(),
+                settings = get<Settings>(),
             )
         }
 

@@ -1,14 +1,28 @@
 package com.ramitsuri.podcasts.android.ui.episode
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
@@ -22,13 +36,13 @@ import com.ramitsuri.podcasts.model.ui.EpisodeDetailsViewState
 fun EpisodeDetailsScreen(
     state: EpisodeDetailsViewState,
     onBack: () -> Unit,
-    onEpisodePlayClicked: (episodeId: String) -> Unit,
-    onEpisodePauseClicked: (episodeId: String) -> Unit,
-    onEpisodeAddToQueueClicked: (episodeId: String) -> Unit,
-    onEpisodeRemoveFromQueueClicked: (episodeId: String) -> Unit,
-    onEpisodeDownloadClicked: (episodeId: String) -> Unit,
-    onEpisodeRemoveDownloadClicked: (episodeId: String) -> Unit,
-    onEpisodeCancelDownloadClicked: (episodeId: String) -> Unit,
+    onEpisodePlayClicked: (episode: Episode) -> Unit,
+    onEpisodePauseClicked: () -> Unit,
+    onEpisodeAddToQueueClicked: (episode: Episode) -> Unit,
+    onEpisodeRemoveFromQueueClicked: (episode: Episode) -> Unit,
+    onEpisodeDownloadClicked: (episode: Episode) -> Unit,
+    onEpisodeRemoveDownloadClicked: (episode: Episode) -> Unit,
+    onEpisodeCancelDownloadClicked: (episode: Episode) -> Unit,
     onEpisodePlayedClicked: (episodeId: String) -> Unit,
     onEpisodeNotPlayedClicked: (episodeId: String) -> Unit,
     modifier: Modifier = Modifier,
@@ -40,13 +54,13 @@ fun EpisodeDetailsScreen(
             EpisodeDetails(
                 episode,
                 playingState = state.playingState,
-                onPlayClicked = { onEpisodePlayClicked(episode.id) },
-                onPauseClicked = { onEpisodePauseClicked(episode.id) },
-                onAddToQueueClicked = { onEpisodeAddToQueueClicked(episode.id) },
-                onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(episode.id) },
-                onDownloadClicked = { onEpisodeDownloadClicked(episode.id) },
-                onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(episode.id) },
-                onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(episode.id) },
+                onPlayClicked = { onEpisodePlayClicked(episode) },
+                onPauseClicked = onEpisodePauseClicked,
+                onAddToQueueClicked = { onEpisodeAddToQueueClicked(episode) },
+                onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(episode) },
+                onDownloadClicked = { onEpisodeDownloadClicked(episode) },
+                onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(episode) },
+                onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(episode) },
                 onPlayedClicked = { onEpisodePlayedClicked(episode.id) },
                 onNotPlayedClicked = { onEpisodeNotPlayedClicked(episode.id) },
             )
@@ -71,14 +85,45 @@ private fun EpisodeDetails(
     Column(
         modifier =
             Modifier
-                .padding(16.dp),
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState()),
     ) {
-        Text(style = MaterialTheme.typography.labelSmall, text = episode.podcastName)
-        Text(style = MaterialTheme.typography.labelSmall, text = episode.podcastAuthor)
         Spacer(modifier = Modifier.height(8.dp))
+        Row(modifier = Modifier.fillMaxWidth()) {
+            AsyncImage(
+                model =
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(episode.podcastImageUrl)
+                        .crossfade(true)
+                        .build(),
+                contentDescription = episode.title,
+                contentScale = ContentScale.FillBounds,
+                modifier =
+                    Modifier
+                        .clip(MaterialTheme.shapes.small)
+                        .size(64.dp),
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(
+                    style = MaterialTheme.typography.bodyLarge,
+                    text = episode.podcastName,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    style = MaterialTheme.typography.bodySmall,
+                    text = episode.podcastAuthor,
+                    maxLines = 1,
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
         Text(style = MaterialTheme.typography.labelSmall, text = episode.friendlyDatePublished)
         Spacer(modifier = Modifier.height(8.dp))
-        Text(style = MaterialTheme.typography.labelSmall, text = episode.title)
+        Text(style = MaterialTheme.typography.titleLarge, text = episode.title)
+        Spacer(modifier = Modifier.height(8.dp))
         EpisodeControls(
             episode = episode,
             playingState = playingState,
@@ -92,7 +137,13 @@ private fun EpisodeDetails(
             onPlayedClicked = onPlayedClicked,
             onNotPlayedClicked = onNotPlayedClicked,
         )
-        Text(style = MaterialTheme.typography.labelSmall, text = episode.description)
+        Spacer(modifier = Modifier.height(8.dp))
+        val convertedText = remember(episode.description) { htmlToAnnotatedString(episode.description) }
+        Text(
+            style = MaterialTheme.typography.bodyMedium,
+            text = convertedText,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
