@@ -41,9 +41,9 @@ import com.ramitsuri.podcasts.android.ui.library.LibraryScreen
 import com.ramitsuri.podcasts.android.ui.library.queue.QueueScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerViewModel
-import com.ramitsuri.podcasts.model.EpisodeListType
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
-import com.ramitsuri.podcasts.viewmodel.EpisodeListViewModel
+import com.ramitsuri.podcasts.viewmodel.HomeViewModel
+import com.ramitsuri.podcasts.viewmodel.QueueViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -137,8 +137,7 @@ fun NavGraph(
                 modifier = modifier.padding(innerPadding),
             ) {
                 composable(route = BottomNavItem.HOME.route.value) {
-                    val viewModel =
-                        koinViewModel<EpisodeListViewModel>(parameters = { parametersOf(EpisodeListType.SUBSCRIBED) })
+                    val viewModel = koinViewModel<HomeViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     HomeScreen(
@@ -221,7 +220,7 @@ fun NavGraph(
                 }
 
                 composable(route = Route.QUEUE.value) {
-                    val viewModel = koinViewModel<EpisodeListViewModel> { parametersOf(EpisodeListType.QUEUE) }
+                    val viewModel = koinViewModel<QueueViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     QueueScreen(
