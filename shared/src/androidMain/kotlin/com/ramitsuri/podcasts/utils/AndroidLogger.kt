@@ -26,22 +26,34 @@ class AndroidLogger(
         enableRemote = enable
     }
 
-    override fun d(tag: String, message: String) {
+    override fun d(
+        tag: String,
+        message: String,
+    ) {
         localLog(tag, message)
     }
 
-    override fun v(tag: String, message: String) {
+    override fun v(
+        tag: String,
+        message: String,
+    ) {
         localLog(tag, message)
         remoteLog(tag, message)
     }
 
-    private fun localLog(tag: String, message: String) {
+    private fun localLog(
+        tag: String,
+        message: String,
+    ) {
         if (isDebug) {
             Log.d(tag, message)
         }
     }
 
-    private fun remoteLog(tag: String, message: String) {
+    private fun remoteLog(
+        tag: String,
+        message: String,
+    ) {
         if (isDebug) {
             return
         }

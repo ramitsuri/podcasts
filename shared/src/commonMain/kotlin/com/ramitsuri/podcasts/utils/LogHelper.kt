@@ -10,11 +10,17 @@ object LogHelper : KoinComponent {
         logger.toggleRemoteLogging(enable)
     }
 
-    fun d(tag: String, message: String) {
+    fun d(
+        tag: String,
+        message: String,
+    ) {
         logger.d(tag, message)
     }
 
-    fun v(tag: String, message: String) {
+    fun v(
+        tag: String,
+        message: String,
+    ) {
         logger.v(tag, message)
     }
 }
