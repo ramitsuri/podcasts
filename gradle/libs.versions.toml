@@ -13,6 +13,9 @@ compose-lifecycle = "2.7.0"
 coroutines-guava = "1.8.0"
 datastore-preferences = "1.1.0-beta01"
 detekt = "1.23.3"
+firebase-bom = "32.8.0"
+firebase-crashlytics = "2.9.9"
+google-services = "4.4.1"
 koin = "3.5.3"
 kotlin-datetime = "0.6.0-RC.2"
 kotlin-serialization = "1.6.3"
@@ -46,6 +49,10 @@ compose-navigation = { module = "androidx.navigation:navigation-compose", versio
 coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version.ref = "coroutines-guava" }
 
 datastore-preferences = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore-preferences" }
+
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database-ktx" }
 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
@@ -85,6 +92,8 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 
 build-konfig = { id = "com.codingfeline.buildkonfig", version.ref = "build-konfig" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

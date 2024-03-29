@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.detekt)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -66,6 +68,8 @@ dependencies {
     implementation(libs.compose.lifecycle.runtime)
     implementation(libs.coil)
     implementation(libs.coroutines.guava)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
     implementation(libs.kotlin.datetime)
     implementation(libs.androidx.activity.compose)
     implementation(libs.koin.android)

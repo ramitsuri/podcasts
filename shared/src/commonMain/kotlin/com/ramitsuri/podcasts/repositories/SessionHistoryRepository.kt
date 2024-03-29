@@ -4,6 +4,7 @@ import com.ramitsuri.podcasts.database.dao.interfaces.SessionActionDao
 import com.ramitsuri.podcasts.model.Action
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.SessionAction
+import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -27,7 +28,7 @@ class SessionHistoryRepository internal constructor(
                 return
             }
             if (previousEpisode?.id == episode.id) {
-                log("STARTING ${episode.title}")
+                d("STARTING ${episode.title}")
                 insert(
                     SessionAction(
                         episode = episode,
@@ -39,7 +40,7 @@ class SessionHistoryRepository internal constructor(
             } else {
                 val prevEpisode = previousEpisode
                 if (prevEpisode != null) {
-                    log("STOPPING ${previousEpisode?.title}")
+                    d("STOPPING ${previousEpisode?.title}")
                     insert(
                         SessionAction(
                             episode = prevEpisode,
@@ -49,10 +50,10 @@ class SessionHistoryRepository internal constructor(
                         ),
                     )
                 } else {
-                    log("Previous episode is null, can't STOP")
+                    v("Previous episode is null, can't STOP")
                 }
 
-                log("STARTING ${episode.title}")
+                d("STARTING ${episode.title}")
                 insert(
                     SessionAction(
                         episode = episode,
@@ -79,7 +80,7 @@ class SessionHistoryRepository internal constructor(
             ) {
                 return
             }
-            log("STOPPING ${previousEpisode?.title}, should be same as ${episode.title}")
+            d("STOPPING ${previousEpisode?.title}, should be same as ${episode.title}")
             insert(
                 SessionAction(
                     episode = episode,
@@ -106,7 +107,7 @@ class SessionHistoryRepository internal constructor(
             if (!isPlaying) {
                 return
             }
-            log("Changing speed for ${previousEpisode?.title} to $speed")
+            d("Changing speed for ${previousEpisode?.title} to $speed")
             val prevSpeed = previousSpeed
             val prevEpisode = previousEpisode
             if (prevEpisode != null && prevSpeed != null) {
@@ -129,7 +130,7 @@ class SessionHistoryRepository internal constructor(
                     ),
                 )
             } else {
-                log("Previous episode or previous speed is null, can't STOP+START for speed change action")
+                v("Previous episode or previous speed is null, can't STOP+START for speed change action")
             }
             previousIsPlaying = true
             previousSpeed = speed
@@ -140,7 +141,11 @@ class SessionHistoryRepository internal constructor(
         sessionActionDao.insert(action)
     }
 
-    private fun log(message: String) {
-        println("Session: $message")
+    private fun d(message: String) {
+        LogHelper.d("SessionHistory", message)
+    }
+
+    private fun v(message: String) {
+        LogHelper.v("SessionHistory", message)
     }
 }
