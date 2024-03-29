@@ -54,6 +54,10 @@ class PodcastsAndEpisodesRepository internal constructor(
         }
     }
 
+    fun getSubscribedPodcastsFlow(): Flow<List<Podcast>>{
+        return podcastsRepository.getAllSubscribedFlow()
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getSubscribedFlow(): Flow<List<Episode>> {
         return podcastsRepository
