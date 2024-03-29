@@ -1,6 +1,7 @@
 package com.ramitsuri.podcasts.android
 
 import android.app.Application
+import android.os.Build
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.DatabaseProvider
 import androidx.media3.database.StandaloneDatabaseProvider
@@ -21,6 +22,8 @@ import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.initKoin
 import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
+import com.ramitsuri.podcasts.utils.AndroidLogger
+import com.ramitsuri.podcasts.utils.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -97,6 +100,14 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
                 single<EpisodeDownloader> {
                     EpisodeDownloaderImpl(
                         appContext = get<Application>(),
+                    )
+                }
+
+                single<Logger> {
+                    AndroidLogger(
+                        isDebug = BuildConfig.DEBUG,
+                        enableRemote = !BuildConfig.DEBUG,
+                        deviceModel = Build.MODEL,
                     )
                 }
 

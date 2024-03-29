@@ -9,7 +9,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Player.STATE_BUFFERING
 import androidx.media3.common.Player.State
-import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.cache.Cache
@@ -35,6 +34,7 @@ import com.ramitsuri.podcasts.model.ui.SleepTimer
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
 import com.ramitsuri.podcasts.settings.Settings
+import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -131,7 +131,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             }
         }
 
-        Log.d(TAG, "Create with media session id: ${mediaSession?.id}")
+        LogHelper.v(TAG, "Create with media session id: ${mediaSession?.id}")
     }
 
     override fun onStartCommand(
@@ -284,7 +284,6 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 }
             }
             if (customCommand.customAction == ACTION_SAVE_TO_FAVORITES) {
-                Log.d(TAG, "Save to favorites")
                 // TODO handle
             }
             return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
@@ -296,16 +295,14 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         session: MediaSession?,
     ) {
         if (episode == null) {
-            Log.w(TAG, "Episode played but episode is null")
+            LogHelper.v(TAG, "Episode played but episode is null")
             return
         }
         if (session == null) {
-            Log.w(TAG, "Episode played but media session is null")
+            LogHelper.v(TAG, "Episode played but media session is null")
             return
         }
-        insertStartActionJob?.cancel()?.also {
-            Log.i(TAG, "Canceling previous insert start action job")
-        }
+        insertStartActionJob?.cancel()
         val speed = session.player.playbackParameters.speed
         insertStartActionJob =
             longLivingScope.launch(Dispatchers.IO) {
@@ -323,16 +320,14 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         session: MediaSession?,
     ) {
         if (episode == null) {
-            Log.w(TAG, "Episode paused but episode is null")
+            LogHelper.v(TAG, "Episode paused but episode is null")
             return
         }
         if (session == null) {
-            Log.w(TAG, "Episode paused but media session is null")
+            LogHelper.v(TAG, "Episode paused but media session is null")
             return
         }
-        insertStopActionJob?.cancel()?.also {
-            Log.i(TAG, "Canceling previous insert stop action job")
-        }
+        insertStopActionJob?.cancel()
         val speed = session.player.playbackParameters.speed
         insertStopActionJob =
             longLivingScope.launch(Dispatchers.IO) {
@@ -418,9 +413,9 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     }
 
     private fun playNextFromQueueOnMediaEnded(player: Player) {
-        Log.d(TAG, "Finding next media to play")
+        LogHelper.d(TAG, "Finding next media to play")
         if (attemptingToPlayNextMedia) {
-            Log.d(TAG, "Already attempting to play next media")
+            LogHelper.d(TAG, "Already attempting to play next media")
             return
         }
         attemptingToPlayNextMedia = true
@@ -428,7 +423,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             delay(500)
             val sleepTimer = settings.getSleepTimerFlow().first()
             if (sleepTimer is SleepTimer.EndOfEpisode) {
-                Log.d(TAG, "Sleep timer is set to end of episode")
+                LogHelper.d(TAG, "Sleep timer is set to end of episode")
                 settings.setSleepTimer(SleepTimer.None)
                 attemptingToPlayNextMedia = false
                 return@launchSuspend
@@ -440,19 +435,18 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             }
             val currentEpisodeIndex = queue.indexOfFirst { it.id == currentlyPlayingEpisode?.id }
             if (currentEpisodeIndex == -1) {
-                // TODO log with logger
-                Log.d(TAG, "current episode not found")
+                LogHelper.v(TAG, "current episode not found")
                 attemptingToPlayNextMedia = false
                 return@launchSuspend
             }
             val nextEpisode = queue.getOrNull(currentEpisodeIndex + 1)
             if (nextEpisode == null) {
-                // TODO log with logger
-                Log.d(TAG, "next episode is null")
+                LogHelper.v(TAG, "next episode is null")
                 attemptingToPlayNextMedia = false
                 return@launchSuspend
             }
 
+            LogHelper.d(TAG, "Found next media: ${nextEpisode.title}")
             val position = nextEpisode.progressInSeconds.times(1000L)
             player.setMediaItem(nextEpisode.asMediaItem(), position)
             episodesRepository.setCurrentlyPlayingEpisodeId(nextEpisode.id)
