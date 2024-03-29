@@ -33,10 +33,11 @@ class EpisodeListViewModel internal constructor(
     init {
         val (episodeList, podcastList) =
             when (episodeListType) {
-                EpisodeListType.SUBSCRIBED -> Pair(
-                    podcastsAndEpisodesRepository.getSubscribedFlow(),
-                    podcastsAndEpisodesRepository.getSubscribedPodcastsFlow(),
-                )
+                EpisodeListType.SUBSCRIBED ->
+                    Pair(
+                        podcastsAndEpisodesRepository.getSubscribedFlow(),
+                        podcastsAndEpisodesRepository.getSubscribedPodcastsFlow(),
+                    )
 
                 EpisodeListType.QUEUE -> Pair(episodesRepository.getQueueFlow(), emptyFlow())
             }
@@ -136,6 +137,6 @@ class EpisodeListViewModel internal constructor(
         val podcasts: List<Podcast>,
         val episodes: List<Episode>,
         val currentEpisode: Episode?,
-        val playingState: PlayingState
+        val playingState: PlayingState,
     )
 }
