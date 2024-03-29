@@ -1,0 +1,27 @@
+import com.ramitsuri.podcasts.model.Action;
+import kotlin.Float;
+import kotlinx.datetime.Instant;
+
+CREATE TABLE IF NOT EXISTS SessionActionEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    sessionId TEXT NOT NULL,
+    podcastId INTEGER NOT NULL,
+    episodeId TEXT NOT NULL,
+    time INTEGER AS Instant NOT NULL,
+    action TEXT AS Action NOT NULL,
+    playbackSpeed REAL AS Float NOT NULL
+);
+
+insertOrIgnore:
+INSERT OR IGNORE INTO
+SessionActionEntity(sessionId, podcastId, episodeId, time, action, playbackSpeed)
+VALUES (?, ?, ?, ?, ?, ?);
+
+getGroupSelectors:
+SELECT sessionId, podcastId, episodeId FROM SessionActionEntity
+GROUP BY sessionId, podcastId, episodeId;
+
+getGroups:
+SELECT * FROM SessionActionEntity
+WHERE sessionId = :sessionId AND podcastId = :podcastId AND episodeId = :episodeId
+ORDER BY time ASC;

@@ -3,11 +3,15 @@ package com.ramitsuri.podcasts.settings
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Instant
 
 class Settings internal constructor(private val keyValueStore: KeyValueStore) {
+    private val _playingState: MutableStateFlow<PlayingState> = MutableStateFlow(PlayingState.NOT_PLAYING)
+
     internal fun getCurrentEpisodeId(): Flow<String?> {
         return keyValueStore.getStringFlow(Key.CURRENTLY_PLAYING_EPISODE_ID, null)
     }
@@ -27,15 +31,11 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
     }
 
     fun getPlayingStateFlow(): Flow<PlayingState> {
-        return keyValueStore
-            .getStringFlow(Key.PLAYING_STATE, null)
-            .map { value ->
-                PlayingState.fromValue(value)
-            }
+        return _playingState
     }
 
-    suspend fun setPlayingState(playingState: PlayingState) {
-        keyValueStore.putString(Key.PLAYING_STATE, playingState.value)
+     fun setPlayingState(playingState: PlayingState) {
+        _playingState.update { playingState }
     }
 
     fun getTrimSilenceFlow(): Flow<Boolean> {

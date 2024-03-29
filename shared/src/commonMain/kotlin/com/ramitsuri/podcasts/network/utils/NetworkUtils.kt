@@ -15,34 +15,33 @@ internal suspend inline fun <reified T> apiRequest(
 ): PodcastResult<T> {
     return withContext(ioDispatcher) {
         var exception: Throwable? = null
-        val response: HttpResponse? =
-            try {
-                call()
-            } catch (e: Exception) {
-                exception = e
-                null
-            }
-        return@withContext when {
-            response?.status == HttpStatusCode.OK -> {
-                val data: T = response.body()
-                PodcastResult.Success(data)
-            }
+        try {
+            val response: HttpResponse = call()
+            when {
+                response.status == HttpStatusCode.OK -> {
+                    val data: T = response.body()
+                    PodcastResult.Success(data)
+                }
 
-            response?.status == HttpStatusCode.Created && T::class == Unit::class -> {
-                PodcastResult.Success(response.body())
-            }
+                response.status == HttpStatusCode.Created && T::class == Unit::class -> {
+                    PodcastResult.Success(response.body())
+                }
 
-            response?.status == HttpStatusCode.BadRequest -> {
-                PodcastResult.Failure(PodcastError.BadRequest())
-            }
+                response.status == HttpStatusCode.BadRequest -> {
+                    PodcastResult.Failure(PodcastError.BadRequest())
+                }
 
-            exception is IOException -> {
-                PodcastResult.Failure(PodcastError.NoInternet(exception))
-            }
+                exception is IOException -> {
+                    PodcastResult.Failure(PodcastError.NoInternet(exception))
+                }
 
-            else -> {
-                PodcastResult.Failure(PodcastError.Unknown(exception))
+                else -> {
+                    PodcastResult.Failure(PodcastError.Unknown(exception))
+                }
             }
+        } catch (e: Exception) {
+            exception = e
+            PodcastResult.Failure(PodcastError.Unknown(exception))
         }
     }
 }
