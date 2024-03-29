@@ -16,6 +16,7 @@ detekt = "1.23.3"
 firebase-bom = "32.8.0"
 firebase-crashlytics = "2.9.9"
 google-services = "4.4.1"
+html-converter = "0.9.5"
 koin = "3.5.3"
 kotlin-datetime = "0.6.0-RC.2"
 kotlin-serialization = "1.6.3"
@@ -53,6 +54,8 @@ datastore-preferences = { module = "androidx.datastore:datastore-preferences-cor
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database-ktx" }
+
+html-converter = { group = "be.digitalia.compose.htmlconverter", name = "htmlconverter", version.ref = "html-converter" }
 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }

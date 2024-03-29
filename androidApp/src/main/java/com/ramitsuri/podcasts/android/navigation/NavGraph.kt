@@ -67,8 +67,8 @@ fun NavGraph(
             if (scaffoldSheetState.bottomSheetState.currentValue != SheetValue.Expanded) {
                 BottomNavBar(
                     modifier =
-                        Modifier
-                            .offset { IntOffset(x = 0, y = 0) },
+                    Modifier
+                        .offset { IntOffset(x = 0, y = 0) },
                     selectedTabRoute = currentDestination,
                     onHomeTabClicked = {
                         navController.navigateToMainDestination(BottomNavItem.HOME)
@@ -104,32 +104,32 @@ fun NavGraph(
             modifier = Modifier.padding(if (bottomSheetVisible) innerPadding else PaddingValues(bottom = 0.dp)),
             sheetDragHandle = { },
             sheetContent =
-                if (bottomSheetVisible) {
-                    {
-                        PlayerScreen(
-                            isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
-                            state = playerState,
-                            onNotExpandedHeightKnown = {
-                                peekHeightPx = it
-                            },
-                            onGoToQueueClicked = { },
-                            onReplayClicked = playerViewModel::onReplayRequested,
-                            onPauseClicked = playerViewModel::onPauseClicked,
-                            onPlayClicked = playerViewModel::onPlayClicked,
-                            onSkipClicked = playerViewModel::onSkipRequested,
-                            onSeekValueChange = playerViewModel::onSeekRequested,
-                            onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
-                            onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
-                            onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
-                            onToggleTrimSilence = playerViewModel::toggleTrimSilence,
-                            onSleepTimer = playerViewModel::onSleepTimerRequested,
-                            onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
-                            onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
-                        )
-                    }
-                } else {
-                    { }
-                },
+            if (bottomSheetVisible) {
+                {
+                    PlayerScreen(
+                        isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
+                        state = playerState,
+                        onNotExpandedHeightKnown = {
+                            peekHeightPx = it
+                        },
+                        onGoToQueueClicked = { },
+                        onReplayClicked = playerViewModel::onReplayRequested,
+                        onPauseClicked = playerViewModel::onPauseClicked,
+                        onPlayClicked = playerViewModel::onPlayClicked,
+                        onSkipClicked = playerViewModel::onSkipRequested,
+                        onSeekValueChange = playerViewModel::onSeekRequested,
+                        onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
+                        onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
+                        onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
+                        onToggleTrimSilence = playerViewModel::toggleTrimSilence,
+                        onSleepTimer = playerViewModel::onSleepTimerRequested,
+                        onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
+                        onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
+                    )
+                }
+            } else {
+                { }
+            },
         ) {
             NavHost(
                 navController = navController,
@@ -202,20 +202,19 @@ fun NavGraph(
                             Uri.decode(episodeId)
                         }
                     val viewModel = koinViewModel<EpisodeDetailsViewModel>(parameters = { parametersOf(decoded) })
-
                     val state by viewModel.state.collectAsStateWithLifecycle()
                     EpisodeDetailsScreen(
                         state = state,
                         onBack = { navController.navigateUp() },
-                        onEpisodePlayClicked = {},
-                        onEpisodePauseClicked = {},
-                        onEpisodeAddToQueueClicked = {},
-                        onEpisodeRemoveFromQueueClicked = {},
-                        onEpisodeDownloadClicked = {},
-                        onEpisodeRemoveDownloadClicked = {},
-                        onEpisodeCancelDownloadClicked = {},
-                        onEpisodePlayedClicked = {},
-                        onEpisodeNotPlayedClicked = {},
+                        onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
+                        onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
+                        onEpisodeAddToQueueClicked = viewModel::onEpisodeAddToQueueClicked,
+                        onEpisodeRemoveFromQueueClicked = viewModel::onEpisodeRemoveFromQueueClicked,
+                        onEpisodeDownloadClicked = viewModel::onEpisodeDownloadClicked,
+                        onEpisodeRemoveDownloadClicked = viewModel::onEpisodeRemoveDownloadClicked,
+                        onEpisodeCancelDownloadClicked = viewModel::onEpisodeCancelDownloadClicked,
+                        onEpisodePlayedClicked = viewModel::onEpisodePlayedClicked,
+                        onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                     )
                 }
 

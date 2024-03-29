@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.android.ui.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -24,12 +25,12 @@ fun TopAppBar(
     label: String = "",
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
             onClick = onBack,
-            modifier = Modifier.size(64.dp),
+            modifier = Modifier.size(56.dp),
         ) {
             Icon(
                 Icons.AutoMirrored.Filled.ArrowBack,
