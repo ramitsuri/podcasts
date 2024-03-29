@@ -25,14 +25,14 @@ class QueueViewModel internal constructor(
                 episodesRepository.getQueueFlow(),
                 episodesRepository.getCurrentEpisode(),
                 settings.getPlayingStateFlow(),
-            ) {  subscribedEpisodes, currentlyPlayingEpisode, playingState ->
+            ) { subscribedEpisodes, currentlyPlayingEpisode, playingState ->
                 val currentlyPlaying =
                     if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
                         currentlyPlayingEpisode
                     } else {
                         null
                     }
-                Triple( subscribedEpisodes, currentlyPlaying, playingState)
+                Triple(subscribedEpisodes, currentlyPlaying, playingState)
             }.collect { (subscribedEpisodes, currentlyPlayingEpisode, playingState) ->
                 _state.update {
                     it.copy(
