@@ -90,44 +90,46 @@ fun NavGraph(
         val playerState by playerViewModel.state.collectAsStateWithLifecycle()
         var peekHeightPx by remember { mutableIntStateOf(0) }
         val bottomSheetVisible = playerState.hasEverBeenPlayed
-        val bottomPadding = if (bottomSheetVisible) {
-            with(LocalDensity.current) {
-                innerPadding.calculateBottomPadding() + peekHeightPx.toDp()
+        val bottomPadding =
+            if (bottomSheetVisible) {
+                with(LocalDensity.current) {
+                    innerPadding.calculateBottomPadding() + peekHeightPx.toDp()
+                }
+            } else {
+                0.dp
             }
-        } else {
-            0.dp
-        }
         BottomSheetScaffold(
             scaffoldState = scaffoldSheetState,
             sheetPeekHeight = bottomPadding,
             modifier = Modifier.padding(if (bottomSheetVisible) innerPadding else PaddingValues(bottom = 0.dp)),
             sheetDragHandle = { },
-            sheetContent = if (bottomSheetVisible) {
-                {
-                    PlayerScreen(
-                        isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
-                        state = playerState,
-                        onNotExpandedHeightKnown = {
-                            peekHeightPx = it
-                        },
-                        onGoToQueueClicked = { },
-                        onReplayClicked = playerViewModel::onReplayRequested,
-                        onPauseClicked = playerViewModel::onPauseClicked,
-                        onPlayClicked = playerViewModel::onPlayClicked,
-                        onSkipClicked = playerViewModel::onSkipRequested,
-                        onSeekValueChange = playerViewModel::onSeekRequested,
-                        onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
-                        onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
-                        onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
-                        onToggleTrimSilence = playerViewModel::toggleTrimSilence,
-                        onSleepTimer = playerViewModel::onSleepTimerRequested,
-                        onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
-                        onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
-                    )
-                }
-            } else {
-                { }
-            },
+            sheetContent =
+                if (bottomSheetVisible) {
+                    {
+                        PlayerScreen(
+                            isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
+                            state = playerState,
+                            onNotExpandedHeightKnown = {
+                                peekHeightPx = it
+                            },
+                            onGoToQueueClicked = { },
+                            onReplayClicked = playerViewModel::onReplayRequested,
+                            onPauseClicked = playerViewModel::onPauseClicked,
+                            onPlayClicked = playerViewModel::onPlayClicked,
+                            onSkipClicked = playerViewModel::onSkipRequested,
+                            onSeekValueChange = playerViewModel::onSeekRequested,
+                            onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
+                            onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
+                            onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
+                            onToggleTrimSilence = playerViewModel::toggleTrimSilence,
+                            onSleepTimer = playerViewModel::onSleepTimerRequested,
+                            onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
+                            onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
+                        )
+                    }
+                } else {
+                    { }
+                },
         ) {
             NavHost(
                 navController = navController,
