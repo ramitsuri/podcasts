@@ -37,11 +37,11 @@ import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.Podcast
-import com.ramitsuri.podcasts.model.ui.EpisodeListViewState
+import com.ramitsuri.podcasts.model.ui.HomeViewState
 
 @Composable
 fun HomeScreen(
-    state: EpisodeListViewState,
+    state: HomeViewState,
     onImportSubscriptionsClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,

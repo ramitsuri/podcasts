@@ -46,14 +46,14 @@ import com.ramitsuri.podcasts.android.ui.components.TopAppBar
 import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
-import com.ramitsuri.podcasts.model.ui.EpisodeListViewState
+import com.ramitsuri.podcasts.model.ui.QueueViewState
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyColumnState
 
 @Composable
 fun QueueScreen(
-    state: EpisodeListViewState,
+    state: QueueViewState,
     onBack: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
@@ -221,7 +221,7 @@ private fun EpisodeInfo(episode: Episode) {
 private fun QueuePreview_Empty() {
     PreviewTheme {
         QueueScreen(
-            state = EpisodeListViewState(),
+            state = QueueViewState(),
             onBack = { },
             onEpisodesRearranged = { _, _ -> },
             onEpisodeClicked = { },
@@ -243,7 +243,7 @@ private fun QueuePreview_NotEmpty() {
     PreviewTheme {
         QueueScreen(
             state =
-                EpisodeListViewState(
+                QueueViewState(
                     episodes = listOf(episode()),
                 ),
             onBack = { },

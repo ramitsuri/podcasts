@@ -3,17 +3,16 @@ package com.ramitsuri.podcasts
 import android.app.Application
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import com.ramitsuri.podcasts.download.EpisodeDownloader
-import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.DispatcherProvider
+import com.ramitsuri.podcasts.utils.EpisodeController
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
-import com.ramitsuri.podcasts.viewmodel.EpisodeListViewModel
+import com.ramitsuri.podcasts.viewmodel.HomeViewModel
+import com.ramitsuri.podcasts.viewmodel.QueueViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.android.Android
-import kotlinx.coroutines.CoroutineScope
 import okio.Path
 import okio.Path.Companion.toPath
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -37,15 +36,20 @@ actual val platformModule =
             DispatcherProvider()
         }
 
-        viewModel<EpisodeListViewModel> { params ->
-            EpisodeListViewModel(
-                episodeListType = params.get(),
+        viewModel<HomeViewModel> {
+            HomeViewModel(
                 podcastsAndEpisodesRepository = get<PodcastsAndEpisodesRepository>(),
+                episodeController = get<EpisodeController>(),
                 episodesRepository = get<EpisodesRepository>(),
-                playerController = get<PlayerController>(),
-                episodeDownloader = get<EpisodeDownloader>(),
                 settings = get<Settings>(),
-                longLivingScope = get<CoroutineScope>(),
+            )
+        }
+
+        viewModel<QueueViewModel> {
+            QueueViewModel(
+                episodeController = get<EpisodeController>(),
+                episodesRepository = get<EpisodesRepository>(),
+                settings = get<Settings>(),
             )
         }
 

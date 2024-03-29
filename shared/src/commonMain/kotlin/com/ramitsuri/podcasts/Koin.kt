@@ -24,6 +24,8 @@ import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
 import com.ramitsuri.podcasts.settings.DataStoreKeyValueStore
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.DispatcherProvider
+import com.ramitsuri.podcasts.utils.EpisodeController
+import com.ramitsuri.podcasts.utils.EpisodeControllerImpl
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -138,6 +140,15 @@ private val coreModule =
 
         single<CoroutineScope> {
             CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+        }
+
+        single<EpisodeController> {
+            EpisodeControllerImpl(
+                longLivingScope = get(),
+                episodesRepository = get(),
+                playerController = get(),
+                episodeDownloader = get(),
+            )
         }
 
         factory<PodcastsApi> {
