@@ -63,8 +63,8 @@ fun SearchScreen(
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (state.result !is SearchResult.Searching) {
@@ -89,7 +89,7 @@ private fun SearchInput(
     onSearchTermUpdated: (String) -> Unit,
     onSearchRequested: () -> Unit,
     onSearchCleared: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -104,9 +104,10 @@ private fun SearchInput(
         }
     }
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
     ) {
         OutlinedTextField(
             value = TextFieldValue(text = term, selection = selection),
@@ -114,50 +115,53 @@ private fun SearchInput(
                 onSearchTermUpdated(it.text)
                 selection = it.selection
             },
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
-                imeAction = ImeAction.Search,
-            ),
+            keyboardOptions =
+                KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Search,
+                ),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = stringResource(id = R.string.search),
                 )
             },
-            trailingIcon = if (term.isNotEmpty()) {
-                {
-                    IconButton(onClick = onSearchCleared) {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = stringResource(id = R.string.search),
-                        )
+            trailingIcon =
+                if (term.isNotEmpty()) {
+                    {
+                        IconButton(onClick = onSearchCleared) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = stringResource(id = R.string.search),
+                            )
+                        }
                     }
-                }
-            } else {
-                { }
-            },
+                } else {
+                    { }
+                },
             singleLine = true,
             label = { Text(stringResource(id = R.string.search)) },
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    focusManager.clearFocus()
-                    onSearchRequested()
-                },
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester),
+            keyboardActions =
+                KeyboardActions(
+                    onSearch = {
+                        focusManager.clearFocus()
+                        onSearchRequested()
+                    },
+                ),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
         )
     }
 }
 
 @Composable
-private fun SearchOutput(
-    searchResult: SearchResult,
-) {
+private fun SearchOutput(searchResult: SearchResult) {
     when (searchResult) {
         is SearchResult.Default,
-        is SearchResult.Error -> {
+        is SearchResult.Error,
+        -> {
             val context = LocalContext.current
             LaunchedEffect(searchResult) {
                 if (searchResult is SearchResult.Error) {
@@ -213,9 +217,10 @@ private fun SearchLoading() {
 private fun SearchResults(podcasts: List<Podcast>) {
     if (podcasts.isNotEmpty()) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(podcasts) {
@@ -318,14 +323,21 @@ private fun SearchScreenPreview_Success_Empty() {
 private fun SearchScreenPreview_Success_NotEmpty() {
     PreviewTheme {
         SearchScreen(
-            state = SearchViewState(
-                term = "",
-                result = SearchResult.Success(
-                    listOf(
-                        podcast(), podcast(), podcast(), podcast(), podcast(), podcast(),
-                    ),
+            state =
+                SearchViewState(
+                    term = "",
+                    result =
+                        SearchResult.Success(
+                            listOf(
+                                podcast(),
+                                podcast(),
+                                podcast(),
+                                podcast(),
+                                podcast(),
+                                podcast(),
+                            ),
+                        ),
                 ),
-            ),
             onSearchTermUpdated = {},
             onSearchRequested = {},
             onSearchCleared = {},

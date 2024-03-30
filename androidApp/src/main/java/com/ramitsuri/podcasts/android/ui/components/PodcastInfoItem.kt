@@ -28,9 +28,9 @@ fun PodcastInfoItem(podcast: Podcast) {
     Card {
         Column(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             PodcastInfo(podcast = podcast)
@@ -43,16 +43,16 @@ fun PodcastInfo(podcast: Podcast) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(podcast.artwork)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(podcast.artwork)
+                    .crossfade(true)
+                    .build(),
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(96.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(96.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {

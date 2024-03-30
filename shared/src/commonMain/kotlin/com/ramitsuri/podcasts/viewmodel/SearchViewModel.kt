@@ -33,13 +33,15 @@ class SearchViewModel(
         viewModelScope.launch {
             val term = _state.value.term
             println("Searching with $term")
-            val result = podcastsRepository.search(
-                request = SearchPodcastsRequest(
-                    term = term,
-                    findSimilar = true,
-                    maxResults = 20,
-                ),
-            )
+            val result =
+                podcastsRepository.search(
+                    request =
+                        SearchPodcastsRequest(
+                            term = term,
+                            findSimilar = true,
+                            maxResults = 20,
+                        ),
+                )
 
             when (result) {
                 is PodcastResult.Failure -> {
