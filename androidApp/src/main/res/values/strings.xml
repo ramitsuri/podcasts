@@ -12,6 +12,7 @@
     <string name="save_to_favorites">Save to favorites</string>
     <string name="cancel">Cancel</string>
     <string name="subscriptions">Subscriptions</string>
+    <string name="search">Search</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>
@@ -51,4 +52,9 @@
     <!-- Queue screen -->
     <string name="queue_empty_title">Your queue is empty</string>
     <string name="queue_empty_info">Tap this button on any episode to add yo your queue</string>
+
+    <!-- Search screen -->
+    <string name="search_tip">Search for your podcasts</string>
+    <string name="search_did_not_find_anything">Did not find anything</string>
+    <string name="search_error">Something went wrong</string>
 </resources>

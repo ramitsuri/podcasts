@@ -41,9 +41,11 @@ import com.ramitsuri.podcasts.android.ui.library.LibraryScreen
 import com.ramitsuri.podcasts.android.ui.library.queue.QueueScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerViewModel
+import com.ramitsuri.podcasts.android.ui.search.SearchScreen
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.QueueViewModel
+import com.ramitsuri.podcasts.viewmodel.SearchViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -67,8 +69,8 @@ fun NavGraph(
             if (scaffoldSheetState.bottomSheetState.currentValue != SheetValue.Expanded) {
                 BottomNavBar(
                     modifier =
-                        Modifier
-                            .offset { IntOffset(x = 0, y = 0) },
+                    Modifier
+                        .offset { IntOffset(x = 0, y = 0) },
                     selectedTabRoute = currentDestination,
                     onHomeTabClicked = {
                         navController.navigateToMainDestination(BottomNavItem.HOME)
@@ -104,32 +106,32 @@ fun NavGraph(
             modifier = Modifier.padding(if (bottomSheetVisible) innerPadding else PaddingValues(bottom = 0.dp)),
             sheetDragHandle = { },
             sheetContent =
-                if (bottomSheetVisible) {
-                    {
-                        PlayerScreen(
-                            isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
-                            state = playerState,
-                            onNotExpandedHeightKnown = {
-                                peekHeightPx = it
-                            },
-                            onGoToQueueClicked = { },
-                            onReplayClicked = playerViewModel::onReplayRequested,
-                            onPauseClicked = playerViewModel::onPauseClicked,
-                            onPlayClicked = playerViewModel::onPlayClicked,
-                            onSkipClicked = playerViewModel::onSkipRequested,
-                            onSeekValueChange = playerViewModel::onSeekRequested,
-                            onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
-                            onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
-                            onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
-                            onToggleTrimSilence = playerViewModel::toggleTrimSilence,
-                            onSleepTimer = playerViewModel::onSleepTimerRequested,
-                            onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
-                            onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
-                        )
-                    }
-                } else {
-                    { }
-                },
+            if (bottomSheetVisible) {
+                {
+                    PlayerScreen(
+                        isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
+                        state = playerState,
+                        onNotExpandedHeightKnown = {
+                            peekHeightPx = it
+                        },
+                        onGoToQueueClicked = { },
+                        onReplayClicked = playerViewModel::onReplayRequested,
+                        onPauseClicked = playerViewModel::onPauseClicked,
+                        onPlayClicked = playerViewModel::onPlayClicked,
+                        onSkipClicked = playerViewModel::onSkipRequested,
+                        onSeekValueChange = playerViewModel::onSeekRequested,
+                        onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
+                        onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
+                        onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
+                        onToggleTrimSilence = playerViewModel::toggleTrimSilence,
+                        onSleepTimer = playerViewModel::onSleepTimerRequested,
+                        onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
+                        onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
+                    )
+                }
+            } else {
+                { }
+            },
         ) {
             NavHost(
                 navController = navController,
@@ -162,7 +164,15 @@ fun NavGraph(
                 }
 
                 composable(route = BottomNavItem.EXPLORE.route.value) {
-                    Text(text = "Explore")
+                    val viewModel = koinViewModel<SearchViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    SearchScreen(
+                        state = state,
+                        onSearchTermUpdated = viewModel::onSearchTermUpdated,
+                        onSearchRequested = viewModel::search,
+                        onSearchCleared = viewModel::clearSearch
+                    )
                 }
 
                 composable(route = BottomNavItem.LIBRARY.route.value) {
