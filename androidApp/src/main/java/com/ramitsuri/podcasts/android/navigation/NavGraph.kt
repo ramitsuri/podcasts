@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -109,6 +110,12 @@ fun NavGraph(
             sheetPeekHeight = bottomPadding,
             modifier = Modifier.padding(if (bottomSheetVisible) innerPadding else PaddingValues(bottom = 0.dp)),
             sheetDragHandle = { },
+            sheetShape =
+                if (scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded) {
+                    RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                } else {
+                    RoundedCornerShape(0.dp)
+                },
             sheetContent =
                 if (bottomSheetVisible) {
                     {

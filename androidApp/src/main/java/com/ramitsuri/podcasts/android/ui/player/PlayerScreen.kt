@@ -606,12 +606,13 @@ private fun PlayerScreenNotExpanded(
                 modifier =
                     Modifier
                         .clip(MaterialTheme.shapes.small)
-                        .size(64.dp),
+                        .size(48.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = episodeTitle,
                 maxLines = 1,
+                style = MaterialTheme.typography.bodySmall,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
             )
