@@ -115,16 +115,18 @@ fun EpisodeControls(
         }
         ControlWithTooltip(
             icon = Icons.Outlined.CheckCircleOutline,
-            toolTipLabelRes = if (episode.isCompleted) {
-                R.string.episode_controller_mark_not_played
-            } else {
-                R.string.episode_controller_mark_played
-            },
-            onClicked = if (episode.isCompleted) {
-                onNotPlayedClicked
-            } else {
-                onPlayedClicked
-            },
+            toolTipLabelRes =
+                if (episode.isCompleted) {
+                    R.string.episode_controller_mark_not_played
+                } else {
+                    R.string.episode_controller_mark_played
+                },
+            onClicked =
+                if (episode.isCompleted) {
+                    onNotPlayedClicked
+                } else {
+                    onPlayedClicked
+                },
         )
     }
 }
@@ -134,7 +136,7 @@ fun EpisodeControls(
 private fun ControlWithTooltip(
     icon: ImageVector,
     @StringRes toolTipLabelRes: Int,
-    onClicked: () -> Unit
+    onClicked: () -> Unit,
 ) {
     val state = rememberTooltipState()
     TooltipBox(
@@ -150,7 +152,6 @@ private fun ControlWithTooltip(
             Icon(imageVector = icon, contentDescription = "")
         }
     }
-
 }
 
 @ThemePreview
