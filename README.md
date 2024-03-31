@@ -20,7 +20,6 @@ to replicate the UI and functionality here.
 - Media 3
 
 ## Screenshots
-<p align="center">
+
 ![1](images/1.png)
 ![2](images/2.png)
-</p>
