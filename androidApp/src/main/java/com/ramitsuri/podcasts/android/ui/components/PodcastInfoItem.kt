@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.android.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,8 +25,16 @@ import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.model.Podcast
 
 @Composable
-fun PodcastInfoItem(podcast: Podcast) {
-    Card {
+fun PodcastInfoItem(
+    podcast: Podcast,
+    onClick: ((Long) -> Unit)? = null,
+) {
+    val modifier = if (onClick == null) {
+        Modifier
+    } else {
+        Modifier.clickable(onClick = { onClick(podcast.id) })
+    }
+    Card(modifier = modifier) {
         Column(
             modifier =
                 Modifier

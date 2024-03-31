@@ -32,7 +32,6 @@ class SearchViewModel(
         _state.update { it.copy(result = SearchResult.Searching) }
         viewModelScope.launch {
             val term = _state.value.term
-            println("Searching with $term")
             val result =
                 podcastsRepository.search(
                     request =

@@ -13,6 +13,9 @@
     <string name="cancel">Cancel</string>
     <string name="subscriptions">Subscriptions</string>
     <string name="search">Search</string>
+    <string name="menu">Dropdown menu</string>
+    <string name="subscribe">Subscribe</string>
+    <string name="unsubscribe">Unsubscribe</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>

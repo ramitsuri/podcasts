@@ -28,7 +28,7 @@ class PodcastsAndEpisodesRepository internal constructor(
         }
     }
 
-    suspend fun subscribeToPodcasts(podcasts: List<Podcast>) {
+    suspend fun subscribeToImportedPodcasts(podcasts: List<Podcast>) {
         withContext(ioDispatcher) {
             podcasts.map {
                 launch {

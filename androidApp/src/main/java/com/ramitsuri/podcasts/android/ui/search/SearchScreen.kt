@@ -57,6 +57,7 @@ import kotlinx.coroutines.delay
 fun SearchScreen(
     state: SearchViewState,
     modifier: Modifier = Modifier,
+    onPodcastClicked: (Long) -> Unit,
     onSearchTermUpdated: (String) -> Unit,
     onSearchRequested: () -> Unit,
     onSearchCleared: () -> Unit,
@@ -78,7 +79,10 @@ fun SearchScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
-        SearchOutput(searchResult = state.result)
+        SearchOutput(
+            searchResult = state.result,
+            onPodcastClicked = onPodcastClicked,
+        )
     }
 }
 
@@ -157,7 +161,10 @@ private fun SearchInput(
 }
 
 @Composable
-private fun SearchOutput(searchResult: SearchResult) {
+private fun SearchOutput(
+    searchResult: SearchResult,
+    onPodcastClicked: (Long) -> Unit,
+) {
     when (searchResult) {
         is SearchResult.Default,
         is SearchResult.Error,
@@ -176,7 +183,10 @@ private fun SearchOutput(searchResult: SearchResult) {
         }
 
         is SearchResult.Success -> {
-            SearchResults(podcasts = searchResult.podcasts)
+            SearchResults(
+                podcasts = searchResult.podcasts,
+                onPodcastClicked = onPodcastClicked,
+            )
         }
     }
 }
@@ -214,7 +224,10 @@ private fun SearchLoading() {
 }
 
 @Composable
-private fun SearchResults(podcasts: List<Podcast>) {
+private fun SearchResults(
+    podcasts: List<Podcast>,
+    onPodcastClicked: (Long) -> Unit,
+) {
     if (podcasts.isNotEmpty()) {
         LazyColumn(
             modifier =
@@ -224,7 +237,7 @@ private fun SearchResults(podcasts: List<Podcast>) {
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(podcasts) {
-                PodcastInfoItem(it)
+                PodcastInfoItem(it, onClick = onPodcastClicked)
             }
         }
     } else {
@@ -259,9 +272,10 @@ private fun SearchScreenPreview_Default() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = ""),
-            onSearchTermUpdated = {},
-            onSearchRequested = {},
-            onSearchCleared = {},
+            onSearchTermUpdated = { },
+            onSearchRequested = { },
+            onSearchCleared = { },
+            onPodcastClicked = { },
         )
     }
 }
@@ -272,9 +286,10 @@ private fun SearchScreenPreview_Default_SearchTermNotEmpty() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = "Science Vs"),
-            onSearchTermUpdated = {},
-            onSearchRequested = {},
-            onSearchCleared = {},
+            onSearchTermUpdated = { },
+            onSearchRequested = { },
+            onSearchCleared = { },
+            onPodcastClicked = { },
         )
     }
 }
@@ -285,9 +300,10 @@ private fun SearchScreenPreview_Loading() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = "", result = SearchResult.Searching),
-            onSearchTermUpdated = {},
-            onSearchRequested = {},
-            onSearchCleared = {},
+            onSearchTermUpdated = { },
+            onSearchRequested = { },
+            onSearchCleared = { },
+            onPodcastClicked = { },
         )
     }
 }
@@ -298,9 +314,10 @@ private fun SearchScreenPreview_Error() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = "", result = SearchResult.Error),
-            onSearchTermUpdated = {},
-            onSearchRequested = {},
-            onSearchCleared = {},
+            onSearchTermUpdated = { },
+            onSearchRequested = { },
+            onSearchCleared = { },
+            onPodcastClicked = { },
         )
     }
 }
@@ -311,9 +328,10 @@ private fun SearchScreenPreview_Success_Empty() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = "", result = SearchResult.Success(listOf())),
-            onSearchTermUpdated = {},
-            onSearchRequested = {},
-            onSearchCleared = {},
+            onSearchTermUpdated = { },
+            onSearchRequested = { },
+            onSearchCleared = { },
+            onPodcastClicked = { },
         )
     }
 }
@@ -338,9 +356,10 @@ private fun SearchScreenPreview_Success_NotEmpty() {
                             ),
                         ),
                 ),
-            onSearchTermUpdated = {},
-            onSearchRequested = {},
-            onSearchCleared = {},
+            onSearchTermUpdated = { },
+            onSearchRequested = { },
+            onSearchCleared = { },
+            onPodcastClicked = { },
         )
     }
 }

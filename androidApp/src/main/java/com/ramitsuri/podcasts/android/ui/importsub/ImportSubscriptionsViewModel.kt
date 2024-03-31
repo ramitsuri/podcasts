@@ -92,7 +92,7 @@ class ImportSubscriptionsViewModel(
         val podcasts = _state.value.imported
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            podcastsAndEpisodesRepository.subscribeToPodcasts(podcasts)
+            podcastsAndEpisodesRepository.subscribeToImportedPodcasts(podcasts)
             _state.update {
                 it.copy(isLoading = false, subscribed = true)
             }

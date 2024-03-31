@@ -11,10 +11,13 @@ enum class Route(val value: String) {
     LIBRARY("library"),
     EPISODE_DETAILS("episode_details"),
     QUEUE("queue"),
+    PODCAST_DETAILS("podcast_details"),
     ;
 
     fun routeWithArgValue(argValue: String?): String {
         return if (this == EPISODE_DETAILS) {
+            value.plus("/$argValue")
+        } else if (this == PODCAST_DETAILS) {
             value.plus("/$argValue")
         } else {
             value
@@ -24,6 +27,8 @@ enum class Route(val value: String) {
     fun routeWithArgName(): String {
         return if (this == EPISODE_DETAILS) {
             value.plus("/{${RouteArgs.EPISODE_ID.value}}")
+        } else if (this == PODCAST_DETAILS) {
+            value.plus("/{${RouteArgs.PODCAST_ID.value}}")
         } else {
             value
         }
@@ -34,6 +39,13 @@ enum class Route(val value: String) {
             listOf(
                 navArgument(RouteArgs.EPISODE_ID.value) {
                     type = NavType.StringType
+                    nullable = false
+                },
+            )
+        } else if (this == PODCAST_DETAILS) {
+            listOf(
+                navArgument(RouteArgs.PODCAST_ID.value) {
+                    type = NavType.LongType
                     nullable = false
                 },
             )

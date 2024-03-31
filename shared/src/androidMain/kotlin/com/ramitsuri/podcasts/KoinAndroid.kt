@@ -11,10 +11,12 @@ import com.ramitsuri.podcasts.utils.DispatcherProvider
 import com.ramitsuri.podcasts.utils.EpisodeController
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
+import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.QueueViewModel
 import com.ramitsuri.podcasts.viewmodel.SearchViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.android.Android
+import kotlinx.coroutines.CoroutineScope
 import okio.Path
 import okio.Path.Companion.toPath
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -67,6 +69,18 @@ actual val platformModule =
         viewModel<SearchViewModel> {
             SearchViewModel(
                 podcastsRepository = get<PodcastsRepository>(),
+            )
+        }
+
+        viewModel<PodcastDetailsViewModel> { parameters ->
+            PodcastDetailsViewModel(
+                podcastId = parameters.get(),
+                podcastsAndEpisodesRepository = get<PodcastsAndEpisodesRepository>(),
+                episodesRepository = get<EpisodesRepository>(),
+                episodeController = get<EpisodeController>(),
+                settings = get<Settings>(),
+                repository = get<PodcastsRepository>(),
+                longLivingScope = get<CoroutineScope>(),
             )
         }
 
