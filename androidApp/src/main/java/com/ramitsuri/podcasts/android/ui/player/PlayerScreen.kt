@@ -341,7 +341,9 @@ private fun SecondaryControls(
             onSleepTimerDecrease = onSleepTimerDecrease,
             onToggleMenu = { showSleepTimerControl = !showSleepTimerControl },
         )
+
         // TODO Hidden until implemented
+
         /*if (isCasting) {
             IconButton(onClick = { *//*TODO*//* }) {
                 Icon(
@@ -359,7 +361,9 @@ private fun SecondaryControls(
                 )
             }
         }*/
+
         // TODO Hidden until implemented
+
         /*IconButton(onClick = { *//*TODO*//* }) {
             Icon(
                 imageVector = Icons.Filled.MoreHoriz,
