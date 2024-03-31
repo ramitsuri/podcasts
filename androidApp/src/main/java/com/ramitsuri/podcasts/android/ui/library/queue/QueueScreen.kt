@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.rounded.DragHandle
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -81,6 +82,7 @@ fun QueueScreen(
             }
         LazyColumn(state = lazyListState) {
             items(state.episodes, key = { it.id }) {
+                HorizontalDivider()
                 EpisodeItem(
                     reorderableLazyColumnState = reorderableLazyColumnState,
                     episode = it,
@@ -163,8 +165,8 @@ private fun LazyItemScope.EpisodeItem(
                 Modifier
                     .background(MaterialTheme.colorScheme.background)
                     .fillMaxWidth()
-                    .padding(8.dp)
-                    .clickable(onClick = onClicked),
+                    .clickable(onClick = onClicked)
+                    .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(
@@ -251,7 +253,7 @@ private fun QueuePreview_NotEmpty() {
         QueueScreen(
             state =
                 QueueViewState(
-                    episodes = listOf(episode()),
+                    episodes = listOf(episode(), episode()),
                 ),
             onBack = { },
             onEpisodesRearranged = { _, _ -> },
