@@ -6,11 +6,6 @@ import com.ramitsuri.podcasts.GetEpisodesForPodcasts
 import com.ramitsuri.podcasts.GetEpisodesInQueue
 import com.ramitsuri.podcasts.network.model.EpisodeDto
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
-import kotlinx.datetime.format.char
-import kotlinx.datetime.toLocalDateTime
 
 data class Episode(
     val id: String,
@@ -40,21 +35,7 @@ data class Episode(
 ) {
     val isCompleted = completedAt != null
 
-    val friendlyDatePublished: String
-        get() {
-            val format =
-                LocalDateTime.Format {
-                    year()
-                    char('-')
-                    monthNumber()
-                    char('-')
-                    dayOfMonth()
-                }
-            return Instant
-                .fromEpochSeconds(datePublished)
-                .toLocalDateTime(TimeZone.currentSystemDefault())
-                .format(format)
-        }
+    val datePublishedInstant = runCatching { Instant.fromEpochSeconds(datePublished) }.getOrNull()
 
     internal constructor(dto: EpisodeDto) : this(
         id = dto.id,
