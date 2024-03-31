@@ -41,7 +41,7 @@ fun LibraryScreen(
     ) {
         // TODO enable when ready
         if (false) {
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
             Item(
                 icon = Icons.Outlined.Subscriptions,
                 labelResId = R.string.subscriptions,
