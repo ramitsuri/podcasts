@@ -71,4 +71,22 @@
     <string name="episode_controller_remove_download">Remove download</string>
     <string name="episode_controller_mark_played">Mark played</string>
     <string name="episode_controller_mark_not_played">Mark not played</string>
+
+    <!-- Publish date time -->
+    <string name="one_hour_ago">1 hour ago</string>
+    <string name="hours_ago_format">%1$s hours ago</string>
+    <string name="one_day_ago">1 day ago</string>
+    <string name="days_ago_format">%1$s days ago</string>
+    <string name="month_jan">Jan</string>
+    <string name="month_feb">Feb</string>
+    <string name="month_mar">Mar</string>
+    <string name="month_apr">Apr</string>
+    <string name="month_may">May</string>
+    <string name="month_jun">Jun</string>
+    <string name="month_jul">Jul</string>
+    <string name="month_aug">Aug</string>
+    <string name="month_sep">Sep</string>
+    <string name="month_oct">Oct</string>
+    <string name="month_nov">Nov</string>
+    <string name="month_dec">Dec</string>
 </resources>

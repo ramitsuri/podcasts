@@ -36,6 +36,7 @@ import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
 import com.ramitsuri.podcasts.android.ui.components.episode
+import com.ramitsuri.podcasts.android.utils.friendlyPublishDate
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.Podcast
@@ -191,7 +192,13 @@ private fun EpisodeItem(
             Spacer(modifier = Modifier.width(8.dp))
             Column {
                 Text(style = MaterialTheme.typography.bodySmall, text = episode.podcastName)
-                Text(style = MaterialTheme.typography.bodySmall, text = episode.friendlyDatePublished)
+                val datePublished = episode.datePublishedInstant
+                if (datePublished != null) {
+                    Text(
+                        style = MaterialTheme.typography.bodySmall,
+                        text = friendlyPublishDate(publishedDateTime = datePublished),
+                    )
+                }
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
