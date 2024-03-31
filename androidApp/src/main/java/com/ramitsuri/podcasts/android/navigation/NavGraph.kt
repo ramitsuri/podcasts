@@ -152,7 +152,18 @@ fun NavGraph(
             NavHost(
                 navController = navController,
                 startDestination = BottomNavItem.HOME.route.value,
-                modifier = modifier.padding(innerPadding),
+                modifier =
+                    modifier
+                        .padding(
+                            top = innerPadding.calculateTopPadding(),
+                            bottom =  if (bottomSheetVisible) {
+                                with(LocalDensity.current) {
+                                    peekHeightPx.toDp()
+                                }
+                            } else {
+                                innerPadding.calculateBottomPadding()
+                            }
+                        ),
             ) {
                 composable(route = BottomNavItem.HOME.route.value) {
                     val viewModel = koinViewModel<HomeViewModel>()
