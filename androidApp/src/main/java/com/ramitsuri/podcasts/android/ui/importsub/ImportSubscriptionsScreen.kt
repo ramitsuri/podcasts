@@ -65,8 +65,8 @@ fun ImportSubscriptionsScreen(
     }
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (viewState.isLoading) {
@@ -115,9 +115,10 @@ fun ImportSubscriptionsScreen(
         }
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -132,9 +133,9 @@ fun ImportSubscriptionsScreen(
 private fun Header(text: String) {
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background),
+            Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background),
     ) {
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -150,9 +151,9 @@ private fun Header(text: String) {
 private fun FailedToImportItem(text: String) {
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -167,9 +168,9 @@ private fun FailedToImportWithSuggestionItem(
 ) {
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         PodcastInfo(podcast = failed.suggestion)
@@ -186,10 +187,10 @@ private fun FailedToImportWithSuggestionPreview() {
     PreviewTheme {
         FailedToImportWithSuggestionItem(
             failed =
-            FailedToImportWithSuggestion(
-                text = "Stuff you should know",
-                suggestion = podcast(),
-            ),
+                FailedToImportWithSuggestion(
+                    text = "Stuff you should know",
+                    suggestion = podcast(),
+                ),
             onSuggestionAccepted = { },
         )
     }
@@ -223,9 +224,9 @@ private fun ImportSubscriptionsScreenPreview() {
             imported = listOf(podcast(), podcast(), podcast()),
             failedToImport = listOf("How To Money", "The Bike Shed"),
             failedToImportWithSuggestion =
-            listOf(
-                FailedToImportWithSuggestion(text = "Stuff you should know", podcast()),
-            ),
+                listOf(
+                    FailedToImportWithSuggestion(text = "Stuff you should know", podcast()),
+                ),
         )
     PreviewTheme {
         ImportSubscriptionsScreen(

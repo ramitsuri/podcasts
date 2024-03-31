@@ -37,9 +37,9 @@ fun PodcastInfoItem(
         }
     Column(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         PodcastInfo(podcast = podcast)
@@ -51,16 +51,16 @@ fun PodcastInfo(podcast: Podcast) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(podcast.artwork)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(podcast.artwork)
+                    .crossfade(true)
+                    .build(),
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(96.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(96.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {

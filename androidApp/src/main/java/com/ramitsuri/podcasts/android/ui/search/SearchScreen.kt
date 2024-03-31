@@ -109,9 +109,9 @@ private fun SearchInput(
     }
     Column(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
     ) {
         OutlinedTextField(
             value = TextFieldValue(text = term, selection = selection),
@@ -153,9 +153,9 @@ private fun SearchInput(
                     },
                 ),
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester),
+                Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
         )
     }
 }
@@ -231,10 +231,10 @@ private fun SearchResults(
     if (podcasts.isNotEmpty()) {
         LazyColumn(
             modifier =
-            Modifier
-                .fillMaxWidth(),
+                Modifier
+                    .fillMaxWidth(),
         ) {
-            item { 
+            item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
             items(podcasts) {
