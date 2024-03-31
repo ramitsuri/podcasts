@@ -45,6 +45,7 @@ import com.ramitsuri.podcasts.model.ui.HomeViewState
 fun HomeScreen(
     state: HomeViewState,
     onImportSubscriptionsClicked: () -> Unit,
+    onPodcastClicked: (podcastId: Long) -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
     onEpisodePauseClicked: () -> Unit,
@@ -67,7 +68,7 @@ fun HomeScreen(
         LazyColumn {
             if (state.subscribedPodcasts.isNotEmpty()) {
                 item {
-                    Subscriptions(podcasts = state.subscribedPodcasts)
+                    Subscriptions(podcasts = state.subscribedPodcasts, onPodcastClicked = { onPodcastClicked(it.id) })
                 }
             }
             items(state.episodes) {
@@ -102,7 +103,10 @@ fun HomeScreen(
 }
 
 @Composable
-private fun Subscriptions(podcasts: List<Podcast>) {
+private fun Subscriptions(
+    podcasts: List<Podcast>,
+    onPodcastClicked: (Podcast) -> Unit,
+) {
     Column(
         modifier =
             Modifier
@@ -115,29 +119,37 @@ private fun Subscriptions(podcasts: List<Podcast>) {
             fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(8.dp))
-        LazyRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             items(podcasts) {
-                SubscribedPodcastItem(it)
+                SubscribedPodcastItem(it, onPodcastClicked)
             }
         }
     }
 }
 
 @Composable
-private fun SubscribedPodcastItem(podcast: Podcast) {
-    AsyncImage(
-        model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(podcast.artwork)
-                .crossfade(true)
-                .build(),
-        contentDescription = podcast.title,
-        contentScale = ContentScale.FillBounds,
-        modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(96.dp),
-    )
+private fun SubscribedPodcastItem(
+    podcast: Podcast,
+    onClicked: (Podcast) -> Unit,
+) {
+    Column(modifier = Modifier.clickable(onClick = { onClicked(podcast) })) {
+        AsyncImage(
+            model =
+                ImageRequest.Builder(LocalContext.current)
+                    .data(podcast.artwork)
+                    .crossfade(true)
+                    .build(),
+            contentDescription = podcast.title,
+            contentScale = ContentScale.FillBounds,
+            modifier =
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(96.dp),
+        )
+    }
 }
 
 @Composable

@@ -149,6 +149,9 @@ fun NavGraph(
                         onImportSubscriptionsClicked = {
                             navController.navigate(Route.IMPORT_SUBSCRIPTIONS.value)
                         },
+                        onPodcastClicked = {
+                            navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(it.toString()))
+                        },
                         onEpisodeClicked = {
                             val encoded = Uri.encode(it)
                             navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
