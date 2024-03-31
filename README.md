@@ -15,6 +15,7 @@ to replicate the UI and functionality here.
 - More to come...
 
 ## Built using 
+- Podcast Index
 - Kotlin multiplatform (Android only for now)
 - Jetpack compose
 - Media 3
