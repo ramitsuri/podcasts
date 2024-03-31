@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.android.ui.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -13,11 +14,20 @@ import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.DownloadDone
 import androidx.compose.material.icons.outlined.Downloading
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.model.DownloadStatus
@@ -41,15 +51,19 @@ fun EpisodeControls(
     Row(modifier = Modifier.fillMaxWidth()) {
         when (playingState) {
             PlayingState.PLAYING -> {
-                IconButton(onClick = onPauseClicked) {
-                    Icon(imageVector = Icons.Filled.PauseCircleOutline, contentDescription = "")
-                }
+                ControlWithTooltip(
+                    icon = Icons.Filled.PauseCircleOutline,
+                    toolTipLabelRes = R.string.pause,
+                    onClicked = onPauseClicked,
+                )
             }
 
             PlayingState.NOT_PLAYING -> {
-                IconButton(onClick = onPlayClicked) {
-                    Icon(imageVector = Icons.Filled.PlayCircleOutline, contentDescription = "")
-                }
+                ControlWithTooltip(
+                    icon = Icons.Filled.PlayCircleOutline,
+                    toolTipLabelRes = R.string.play,
+                    onClicked = onPlayClicked,
+                )
             }
 
             PlayingState.LOADING -> {
@@ -59,47 +73,84 @@ fun EpisodeControls(
             }
         }
         if (episode.queuePosition == Episode.NOT_IN_QUEUE) {
-            IconButton(onClick = onAddToQueueClicked) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = "")
-            }
+            ControlWithTooltip(
+                icon = Icons.AutoMirrored.Filled.PlaylistAdd,
+                toolTipLabelRes = R.string.episode_controller_add_to_queue,
+                onClicked = onAddToQueueClicked,
+            )
         } else {
-            IconButton(onClick = onRemoveFromQueueClicked) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.PlaylistAddCheck, contentDescription = "")
-            }
+            ControlWithTooltip(
+                icon = Icons.AutoMirrored.Filled.PlaylistAddCheck,
+                toolTipLabelRes = R.string.episode_controller_remove_from_queue,
+                onClicked = onRemoveFromQueueClicked,
+            )
         }
         when (episode.downloadStatus) {
             DownloadStatus.NOT_DOWNLOADED -> {
-                IconButton(onClick = onDownloadClicked) {
-                    Icon(imageVector = Icons.Outlined.ArrowCircleDown, contentDescription = "")
-                }
+                ControlWithTooltip(
+                    icon = Icons.Outlined.ArrowCircleDown,
+                    toolTipLabelRes = R.string.episode_controller_download,
+                    onClicked = onDownloadClicked,
+                )
             }
 
             DownloadStatus.PAUSED,
             DownloadStatus.DOWNLOADING,
             DownloadStatus.QUEUED,
             -> {
-                IconButton(onClick = onCancelDownloadClicked) {
-                    Icon(imageVector = Icons.Outlined.Downloading, contentDescription = "")
-                }
+                ControlWithTooltip(
+                    icon = Icons.Outlined.Downloading,
+                    toolTipLabelRes = R.string.episode_controller_downloading,
+                    onClicked = onCancelDownloadClicked,
+                )
             }
 
             DownloadStatus.DOWNLOADED -> {
-                IconButton(onClick = onRemoveDownloadClicked) {
-                    Icon(imageVector = Icons.Outlined.DownloadDone, contentDescription = "")
-                }
+                ControlWithTooltip(
+                    icon = Icons.Outlined.DownloadDone,
+                    toolTipLabelRes = R.string.episode_controller_remove_download,
+                    onClicked = onRemoveDownloadClicked,
+                )
             }
         }
-        IconButton(
-            onClick =
-                if (episode.completedAt == null) {
-                    onPlayedClicked
-                } else {
-                    onNotPlayedClicked
-                },
-        ) {
-            Icon(imageVector = Icons.Outlined.CheckCircleOutline, contentDescription = "")
+        ControlWithTooltip(
+            icon = Icons.Outlined.CheckCircleOutline,
+            toolTipLabelRes = if (episode.isCompleted) {
+                R.string.episode_controller_mark_not_played
+            } else {
+                R.string.episode_controller_mark_played
+            },
+            onClicked = if (episode.isCompleted) {
+                onNotPlayedClicked
+            } else {
+                onPlayedClicked
+            },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ControlWithTooltip(
+    icon: ImageVector,
+    @StringRes toolTipLabelRes: Int,
+    onClicked: () -> Unit
+) {
+    val state = rememberTooltipState()
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        tooltip = {
+            PlainTooltip {
+                Text(stringResource(id = toolTipLabelRes))
+            }
+        },
+        state = state,
+    ) {
+        IconButton(onClick = onClicked) {
+            Icon(imageVector = icon, contentDescription = "")
         }
     }
+
 }
 
 @ThemePreview
