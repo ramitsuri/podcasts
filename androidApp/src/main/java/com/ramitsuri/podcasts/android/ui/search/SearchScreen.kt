@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -77,7 +78,6 @@ fun SearchScreen(
                 onSearchRequested = onSearchRequested,
                 onSearchCleared = onSearchCleared,
             )
-            Spacer(modifier = Modifier.height(16.dp))
         }
         SearchOutput(
             searchResult = state.result,
@@ -232,11 +232,13 @@ private fun SearchResults(
         LazyColumn(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+                    .fillMaxWidth(),
         ) {
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
             items(podcasts) {
+                HorizontalDivider()
                 PodcastInfoItem(it, onClick = onPodcastClicked)
             }
         }
