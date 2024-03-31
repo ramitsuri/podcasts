@@ -58,7 +58,7 @@ class PodcastDetailsViewModel(
 
     fun onSubscribeClicked() {
         val podcast = _state.value.podcastWithEpisodes?.podcast
-        if (podcast == null){
+        if (podcast == null) {
             LogHelper.v(TAG, "Podcast subscribe requested but podcast is null")
             return
         }
@@ -69,7 +69,7 @@ class PodcastDetailsViewModel(
 
     fun onUnsubscribeClicked() {
         val podcast = _state.value.podcastWithEpisodes?.podcast
-        if (podcast == null){
+        if (podcast == null) {
             LogHelper.v(TAG, "Podcast unsubscribe requested but podcast is null")
             return
         }
