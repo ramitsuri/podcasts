@@ -138,16 +138,16 @@ private fun SubscribedPodcastItem(
     Column(modifier = Modifier.clickable(onClick = { onClicked(podcast) })) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(podcast.artwork)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(podcast.artwork)
+                    .crossfade(true)
+                    .build(),
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(96.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(96.dp),
         )
     }
 }
