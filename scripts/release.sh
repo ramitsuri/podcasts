@@ -1,6 +1,6 @@
 prev_tag=$(git describe --tags "$(git rev-list --tags --max-count=1)")
-# If tag not found, set it to v0.0
-[ -z "$prev_tag" ] && prev_tag="v0.0"
+# If tag not found, set it to v0.1
+[ -z "$prev_tag" ] && prev_tag="v0.1"
 # Remove 'v' from tag which is in format v6.6 to get version name
 old_version_name="${prev_tag/v/}"
 # Remove '.' from version name to get version code
