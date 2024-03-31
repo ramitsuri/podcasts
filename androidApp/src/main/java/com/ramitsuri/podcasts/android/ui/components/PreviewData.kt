@@ -3,13 +3,14 @@ package com.ramitsuri.podcasts.android.ui.components
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.Podcast
+import java.util.UUID
 
 fun episode(
     downloadStatus: DownloadStatus = DownloadStatus.NOT_DOWNLOADED,
     downloadProgress: Double = 0.0,
     queuePosition: Int = Episode.NOT_IN_QUEUE,
 ) = Episode(
-    id = "",
+    id = UUID.randomUUID().toString(),
     podcastId = 0,
     podcastName = "Stuff You Should Know",
     podcastAuthor = "iHeartPodcasts",
