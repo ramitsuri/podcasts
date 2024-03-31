@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -35,16 +35,14 @@ fun PodcastInfoItem(
         } else {
             Modifier.clickable(onClick = { onClick(podcast.id) })
         }
-    Card(modifier = modifier) {
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            PodcastInfo(podcast = podcast)
-        }
+    Column(
+        modifier =
+        modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        PodcastInfo(podcast = podcast)
     }
 }
 
@@ -53,21 +51,32 @@ fun PodcastInfo(podcast: Podcast) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
             model =
-                ImageRequest.Builder(LocalContext.current)
-                    .data(podcast.artwork)
-                    .crossfade(true)
-                    .build(),
+            ImageRequest.Builder(LocalContext.current)
+                .data(podcast.artwork)
+                .crossfade(true)
+                .build(),
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(96.dp),
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .size(96.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
-            Text(style = MaterialTheme.typography.labelSmall, text = podcast.title)
-            Text(style = MaterialTheme.typography.bodySmall, text = podcast.author, maxLines = 3)
+            Text(
+                style = MaterialTheme.typography.bodyMedium,
+                text = podcast.title,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 2,
+            )
+
+            Text(
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1,
+                text = podcast.author,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 }

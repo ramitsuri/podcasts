@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -77,7 +78,6 @@ fun SearchScreen(
                 onSearchRequested = onSearchRequested,
                 onSearchCleared = onSearchCleared,
             )
-            Spacer(modifier = Modifier.height(16.dp))
         }
         SearchOutput(
             searchResult = state.result,
@@ -109,9 +109,9 @@ private fun SearchInput(
     }
     Column(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+        modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
     ) {
         OutlinedTextField(
             value = TextFieldValue(text = term, selection = selection),
@@ -153,9 +153,9 @@ private fun SearchInput(
                     },
                 ),
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
+            Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester),
         )
     }
 }
@@ -231,12 +231,14 @@ private fun SearchResults(
     if (podcasts.isNotEmpty()) {
         LazyColumn(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            Modifier
+                .fillMaxWidth(),
         ) {
+            item { 
+                Spacer(modifier = Modifier.height(16.dp))
+            }
             items(podcasts) {
+                HorizontalDivider()
                 PodcastInfoItem(it, onClick = onPodcastClicked)
             }
         }
