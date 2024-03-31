@@ -19,10 +19,10 @@ class PodcastsRepository internal constructor(
     private val categoryDao: CategoryDao,
     private val ioDispatcher: CoroutineDispatcher,
 ) {
-
     suspend fun get(id: Long): Podcast? {
-        val getPodcast = podcastsDao
-            .get(id)
+        val getPodcast =
+            podcastsDao
+                .get(id)
         return if (getPodcast == null) {
             null
         } else {
@@ -74,10 +74,11 @@ class PodcastsRepository internal constructor(
             }
 
             is PodcastResult.Success -> {
-                val podcasts = apiResult.data.podcasts
-                    .map {
-                        Podcast(it)
-                    }
+                val podcasts =
+                    apiResult.data.podcasts
+                        .map {
+                            Podcast(it)
+                        }
                 if (saveSearchResults) {
                     podcasts.forEach { saveToDb(it) }
                 }

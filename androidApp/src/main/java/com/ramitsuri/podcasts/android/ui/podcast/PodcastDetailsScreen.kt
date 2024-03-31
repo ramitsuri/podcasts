@@ -115,11 +115,11 @@ private fun PodcastDetails(
             EpisodeItem(
                 episode = it,
                 playingState =
-                if (currentlyPlayingEpisodeId == it.id) {
-                    currentlyPlayingEpisodeState
-                } else {
-                    PlayingState.NOT_PLAYING
-                },
+                    if (currentlyPlayingEpisodeId == it.id) {
+                        currentlyPlayingEpisodeState
+                    } else {
+                        PlayingState.NOT_PLAYING
+                    },
                 onClicked = { onEpisodeClicked(it.id) },
                 onPlayClicked = { onEpisodePlayClicked(it) },
                 onPauseClicked = onEpisodePauseClicked,
@@ -161,16 +161,16 @@ private fun TitleAndImage(podcast: Podcast) {
     Row(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(podcast.artwork)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(podcast.artwork)
+                    .crossfade(true)
+                    .build(),
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(64.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(64.dp),
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column {
@@ -220,10 +220,10 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-        Modifier
-            .clickable(onClick = onClicked)
-            .padding(top = 12.dp, bottom = 4.dp)
-            .padding(horizontal = 16.dp),
+            Modifier
+                .clickable(onClick = onClicked)
+                .padding(top = 12.dp, bottom = 4.dp)
+                .padding(horizontal = 16.dp),
     ) {
         Text(style = MaterialTheme.typography.bodySmall, text = episode.friendlyDatePublished)
         Spacer(modifier = Modifier.height(8.dp))
@@ -261,14 +261,16 @@ private fun EpisodeItem(
 private fun PodcastDetailsPreview() {
     PreviewTheme {
         PodcastDetailsScreen(
-            state = PodcastDetailsViewState(
-                podcastWithEpisodes = PodcastWithEpisodes(
-                    podcast = podcast(),
-                    episodes = listOf(episode(), episode(), episode(), episode()),
+            state =
+                PodcastDetailsViewState(
+                    podcastWithEpisodes =
+                        PodcastWithEpisodes(
+                            podcast = podcast(),
+                            episodes = listOf(episode(), episode(), episode(), episode()),
+                        ),
+                    currentlyPlayingEpisodeId = null,
+                    playingState = PlayingState.NOT_PLAYING,
                 ),
-                currentlyPlayingEpisodeId = null,
-                playingState = PlayingState.NOT_PLAYING,
-            ),
             onBack = { },
             onSubscribeClicked = { },
             onUnsubscribeClicked = { },

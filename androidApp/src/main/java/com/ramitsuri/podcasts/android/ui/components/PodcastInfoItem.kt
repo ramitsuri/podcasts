@@ -29,11 +29,12 @@ fun PodcastInfoItem(
     podcast: Podcast,
     onClick: ((Long) -> Unit)? = null,
 ) {
-    val modifier = if (onClick == null) {
-        Modifier
-    } else {
-        Modifier.clickable(onClick = { onClick(podcast.id) })
-    }
+    val modifier =
+        if (onClick == null) {
+            Modifier
+        } else {
+            Modifier.clickable(onClick = { onClick(podcast.id) })
+        }
     Card(modifier = modifier) {
         Column(
             modifier =
