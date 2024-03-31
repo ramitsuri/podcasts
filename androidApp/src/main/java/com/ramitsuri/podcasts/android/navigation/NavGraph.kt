@@ -156,13 +156,14 @@ fun NavGraph(
                     modifier
                         .padding(
                             top = innerPadding.calculateTopPadding(),
-                            bottom =  if (bottomSheetVisible) {
-                                with(LocalDensity.current) {
-                                    peekHeightPx.toDp()
-                                }
-                            } else {
-                                innerPadding.calculateBottomPadding()
-                            }
+                            bottom =
+                                if (bottomSheetVisible) {
+                                    with(LocalDensity.current) {
+                                        peekHeightPx.toDp()
+                                    }
+                                } else {
+                                    innerPadding.calculateBottomPadding()
+                                },
                         ),
             ) {
                 composable(route = BottomNavItem.HOME.route.value) {
