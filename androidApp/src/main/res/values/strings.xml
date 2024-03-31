@@ -46,6 +46,7 @@
     <string name="player_sleep_timer_30_min">30 minutes</string>
     <string name="player_sleep_timer_increase">+2 minutes</string>
     <string name="player_sleep_timer_decrease">-2 minutes</string>
+    <string name="player_go_to_queue">Go to queue</string>
 
     <!-- Library screen -->
     <string name="library_queue">Queue</string>

@@ -254,14 +254,14 @@ private fun MainControls(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.PlaylistPlay,
                 modifier = Modifier.size(24.dp),
-                contentDescription = stringResource(id = R.string.pause),
+                contentDescription = stringResource(id = R.string.player_go_to_queue),
             )
         }
         IconButton(onClick = onReplayClicked) {
             Icon(
                 imageVector = Icons.Filled.Replay10,
                 modifier = Modifier.size(32.dp),
-                contentDescription = stringResource(id = R.string.pause),
+                contentDescription = stringResource(id = R.string.replay_10),
             )
         }
         when (playingState) {
@@ -280,7 +280,7 @@ private fun MainControls(
                     Icon(
                         imageVector = Icons.Filled.PlayArrow,
                         modifier = Modifier.size(32.dp),
-                        contentDescription = stringResource(id = R.string.pause),
+                        contentDescription = stringResource(id = R.string.play),
                     )
                 }
             }
@@ -293,7 +293,7 @@ private fun MainControls(
             Icon(
                 imageVector = Icons.Filled.Forward30,
                 modifier = Modifier.size(32.dp),
-                contentDescription = stringResource(id = R.string.pause),
+                contentDescription = stringResource(id = R.string.skip_30),
             )
         }
         Spacer(modifier = Modifier.width(40.dp))
@@ -341,8 +341,9 @@ private fun SecondaryControls(
             onSleepTimerDecrease = onSleepTimerDecrease,
             onToggleMenu = { showSleepTimerControl = !showSleepTimerControl },
         )
-        if (isCasting) {
-            IconButton(onClick = { /*TODO*/ }) {
+        // TODO Hidden until implemented
+        /*if (isCasting) {
+            IconButton(onClick = { *//*TODO*//* }) {
                 Icon(
                     imageVector = Icons.Filled.CastConnected,
                     modifier = Modifier.size(24.dp),
@@ -350,21 +351,22 @@ private fun SecondaryControls(
                 )
             }
         } else {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { *//*TODO*//* }) {
                 Icon(
                     imageVector = Icons.Filled.Cast,
                     modifier = Modifier.size(24.dp),
                     contentDescription = stringResource(id = R.string.pause),
                 )
             }
-        }
-        IconButton(onClick = { /*TODO*/ }) {
+        }*/
+        // TODO Hidden until implemented
+        /*IconButton(onClick = { *//*TODO*//* }) {
             Icon(
                 imageVector = Icons.Filled.MoreHoriz,
                 modifier = Modifier.size(24.dp),
                 contentDescription = stringResource(id = R.string.pause),
             )
-        }
+        }*/
     }
 }
 
