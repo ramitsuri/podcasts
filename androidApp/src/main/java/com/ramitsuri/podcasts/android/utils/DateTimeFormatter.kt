@@ -16,7 +16,7 @@ import kotlinx.datetime.toLocalDateTime
 fun friendlyPublishDate(
     publishedDateTime: Instant,
     now: Instant = Clock.System.now(),
-    timeZone: TimeZone = TimeZone.currentSystemDefault()
+    timeZone: TimeZone = TimeZone.currentSystemDefault(),
 ): String {
     val durationSincePublished = now - publishedDateTime
     val hours = durationSincePublished.inWholeHours
@@ -53,24 +53,24 @@ fun friendlyPublishDate(
     return publishedDateTime
         .toLocalDateTime(timeZone)
         .format(format)
-
 }
 
 private val monthNames: MonthNames
     @Composable
-    get() = MonthNames(
-        listOf(
-            stringResource(id = R.string.month_jan),
-            stringResource(id = R.string.month_feb),
-            stringResource(id = R.string.month_mar),
-            stringResource(id = R.string.month_apr),
-            stringResource(id = R.string.month_may),
-            stringResource(id = R.string.month_jun),
-            stringResource(id = R.string.month_jul),
-            stringResource(id = R.string.month_aug),
-            stringResource(id = R.string.month_sep),
-            stringResource(id = R.string.month_oct),
-            stringResource(id = R.string.month_nov),
-            stringResource(id = R.string.month_dec),
-        ),
-    )
+    get() =
+        MonthNames(
+            listOf(
+                stringResource(id = R.string.month_jan),
+                stringResource(id = R.string.month_feb),
+                stringResource(id = R.string.month_mar),
+                stringResource(id = R.string.month_apr),
+                stringResource(id = R.string.month_may),
+                stringResource(id = R.string.month_jun),
+                stringResource(id = R.string.month_jul),
+                stringResource(id = R.string.month_aug),
+                stringResource(id = R.string.month_sep),
+                stringResource(id = R.string.month_oct),
+                stringResource(id = R.string.month_nov),
+                stringResource(id = R.string.month_dec),
+            ),
+        )
