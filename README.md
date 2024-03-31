@@ -21,8 +21,8 @@ to replicate the UI and functionality here.
 
 ## Screenshots
 
-![1](https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/1.png | width=100)
-![2](https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/2.png | width=100)
-![3](https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/3.png | width=100)
-![4](https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/4.png | width=100)
-![5](https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/5.png | width=100)
+<img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/1.png" width="20%"  alt="1.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/2.png" width="20%"  alt="2.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/3.png" width="20%"  alt="3.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/4.png" width="20%"  alt="4.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/5.png" width="20%"  alt="5.png"/>
