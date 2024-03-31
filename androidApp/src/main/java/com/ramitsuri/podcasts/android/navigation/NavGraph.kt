@@ -72,8 +72,8 @@ fun NavGraph(
             if (scaffoldSheetState.bottomSheetState.currentValue != SheetValue.Expanded) {
                 BottomNavBar(
                     modifier =
-                    Modifier
-                        .offset { IntOffset(x = 0, y = 0) },
+                        Modifier
+                            .offset { IntOffset(x = 0, y = 0) },
                     selectedTabRoute = currentDestination,
                     onHomeTabClicked = {
                         navController.navigateToMainDestination(BottomNavItem.HOME)
@@ -110,37 +110,37 @@ fun NavGraph(
             modifier = Modifier.padding(if (bottomSheetVisible) innerPadding else PaddingValues(bottom = 0.dp)),
             sheetDragHandle = { },
             sheetContent =
-            if (bottomSheetVisible) {
-                {
-                    PlayerScreen(
-                        isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
-                        state = playerState,
-                        onNotExpandedHeightKnown = {
-                            peekHeightPx = it
-                        },
-                        onGoToQueueClicked = {
-                            coroutineScope.launch {
-                                scaffoldSheetState.bottomSheetState.partialExpand()
-                            }
-                            navController.navigate(Route.QUEUE.value)
-                        },
-                        onReplayClicked = playerViewModel::onReplayRequested,
-                        onPauseClicked = playerViewModel::onPauseClicked,
-                        onPlayClicked = playerViewModel::onPlayClicked,
-                        onSkipClicked = playerViewModel::onSkipRequested,
-                        onSeekValueChange = playerViewModel::onSeekRequested,
-                        onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
-                        onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
-                        onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
-                        onToggleTrimSilence = playerViewModel::toggleTrimSilence,
-                        onSleepTimer = playerViewModel::onSleepTimerRequested,
-                        onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
-                        onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
-                    )
-                }
-            } else {
-                { }
-            },
+                if (bottomSheetVisible) {
+                    {
+                        PlayerScreen(
+                            isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
+                            state = playerState,
+                            onNotExpandedHeightKnown = {
+                                peekHeightPx = it
+                            },
+                            onGoToQueueClicked = {
+                                coroutineScope.launch {
+                                    scaffoldSheetState.bottomSheetState.partialExpand()
+                                }
+                                navController.navigate(Route.QUEUE.value)
+                            },
+                            onReplayClicked = playerViewModel::onReplayRequested,
+                            onPauseClicked = playerViewModel::onPauseClicked,
+                            onPlayClicked = playerViewModel::onPlayClicked,
+                            onSkipClicked = playerViewModel::onSkipRequested,
+                            onSeekValueChange = playerViewModel::onSeekRequested,
+                            onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
+                            onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
+                            onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
+                            onToggleTrimSilence = playerViewModel::toggleTrimSilence,
+                            onSleepTimer = playerViewModel::onSleepTimerRequested,
+                            onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
+                            onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
+                        )
+                    }
+                } else {
+                    { }
+                },
         ) {
             NavHost(
                 navController = navController,
