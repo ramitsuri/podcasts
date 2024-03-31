@@ -21,7 +21,6 @@ to replicate the UI and functionality here.
 - Media 3
 
 ## Screenshots
-
 <p align="center">
 <img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/1.png" width="25%"  alt="1.png"/>
 <img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/2.png" width="25%"  alt="2.png"/>
