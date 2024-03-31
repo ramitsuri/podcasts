@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.android.ui.player
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -83,6 +84,8 @@ fun PlayerScreen(
     onSleepTimerIncrease: () -> Unit,
     onSleepTimerDecrease: () -> Unit,
 ) {
+    val alphaExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 1f else 0f, label = "player visibility")
+    val alphaNotExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 0f else 1f, label = "player visibility")
     Box(
         modifier =
             modifier
@@ -96,7 +99,7 @@ fun PlayerScreen(
                     modifier =
                         Modifier.onGloballyPositioned {
                             onNotExpandedHeightKnown(it.size.height)
-                        },
+                        }.alpha(alphaNotExpandedPlayer),
                     episodeTitle = state.episodeTitle,
                     episodeArtwork = state.episodeArtworkUrl,
                     playingState = state.playingState,
@@ -108,7 +111,7 @@ fun PlayerScreen(
         }
         if (state.hasEverBeenPlayed) {
             PlayerScreenExpanded(
-                modifier = Modifier.alpha(if (isExpanded) 1f else 0f),
+                modifier = Modifier.alpha(alphaExpandedPlayer),
                 episodeTitle = state.episodeTitle,
                 episodeArtwork = state.episodeArtworkUrl,
                 podcastName = state.podcastName,
