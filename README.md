@@ -28,3 +28,11 @@ to replicate the UI and functionality here.
 <img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/4.png" width="25%"  alt="4.png"/>
 <img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/5.png" width="25%"  alt="5.png"/>
 </p>
+
+[!NOTE]  
+> For building the app, create a `secret.properties` file in the root of the project and paste
+> your Podacst Index key and secret like
+> ```
+> PODCAST_INDEX_KEY=<key_value>
+> PODCAST_INDEX_SECRET=<secret_value>
+> ```
