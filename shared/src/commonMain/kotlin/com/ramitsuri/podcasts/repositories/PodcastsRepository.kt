@@ -19,6 +19,18 @@ class PodcastsRepository internal constructor(
     private val categoryDao: CategoryDao,
     private val ioDispatcher: CoroutineDispatcher,
 ) {
+    suspend fun get(id: Long): Podcast? {
+        val getPodcast =
+            podcastsDao
+                .get(id)
+        return if (getPodcast == null) {
+            null
+        } else {
+            val categories = categoryDao.get(getPodcast.categories).map { Category(it.id, it.name) }
+            Podcast(getPodcast, categories)
+        }
+    }
+
     suspend fun getFlow(id: Long): Flow<Podcast?> {
         return podcastsDao
             .getFlow(id)
@@ -52,19 +64,25 @@ class PodcastsRepository internal constructor(
             }
     }
 
-    suspend fun search(request: SearchPodcastsRequest): PodcastResult<List<Podcast>> {
+    suspend fun search(
+        request: SearchPodcastsRequest,
+        saveSearchResults: Boolean = true,
+    ): PodcastResult<List<Podcast>> {
         return when (val apiResult = podcastsApi.search(request)) {
             is PodcastResult.Failure -> {
                 apiResult
             }
 
             is PodcastResult.Success -> {
-                PodcastResult.Success(
+                val podcasts =
                     apiResult.data.podcasts
                         .map {
                             Podcast(it)
-                        },
-                )
+                        }
+                if (saveSearchResults) {
+                    podcasts.forEach { saveToDb(it) }
+                }
+                PodcastResult.Success(podcasts)
             }
         }
     }

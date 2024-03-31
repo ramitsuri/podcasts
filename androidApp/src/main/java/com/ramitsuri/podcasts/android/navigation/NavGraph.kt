@@ -41,9 +41,13 @@ import com.ramitsuri.podcasts.android.ui.library.LibraryScreen
 import com.ramitsuri.podcasts.android.ui.library.queue.QueueScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerViewModel
+import com.ramitsuri.podcasts.android.ui.podcast.PodcastDetailsScreen
+import com.ramitsuri.podcasts.android.ui.search.SearchScreen
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
+import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.QueueViewModel
+import com.ramitsuri.podcasts.viewmodel.SearchViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -162,7 +166,18 @@ fun NavGraph(
                 }
 
                 composable(route = BottomNavItem.EXPLORE.route.value) {
-                    Text(text = "Explore")
+                    val viewModel = koinViewModel<SearchViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    SearchScreen(
+                        state = state,
+                        onPodcastClicked = {
+                            navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(it.toString()))
+                        },
+                        onSearchTermUpdated = viewModel::onSearchTermUpdated,
+                        onSearchRequested = viewModel::search,
+                        onSearchCleared = viewModel::clearSearch,
+                    )
                 }
 
                 composable(route = BottomNavItem.LIBRARY.route.value) {
@@ -206,6 +221,35 @@ fun NavGraph(
                     EpisodeDetailsScreen(
                         state = state,
                         onBack = { navController.navigateUp() },
+                        onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
+                        onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
+                        onEpisodeAddToQueueClicked = viewModel::onEpisodeAddToQueueClicked,
+                        onEpisodeRemoveFromQueueClicked = viewModel::onEpisodeRemoveFromQueueClicked,
+                        onEpisodeDownloadClicked = viewModel::onEpisodeDownloadClicked,
+                        onEpisodeRemoveDownloadClicked = viewModel::onEpisodeRemoveDownloadClicked,
+                        onEpisodeCancelDownloadClicked = viewModel::onEpisodeCancelDownloadClicked,
+                        onEpisodePlayedClicked = viewModel::onEpisodePlayedClicked,
+                        onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
+                    )
+                }
+
+                composable(
+                    route = Route.PODCAST_DETAILS.routeWithArgName(),
+                    arguments = Route.PODCAST_DETAILS.navArgs(),
+                ) { backStackEntry ->
+                    val podcastId = backStackEntry.arguments?.getLong(RouteArgs.PODCAST_ID.value)
+                    val viewModel = koinViewModel<PodcastDetailsViewModel>(parameters = { parametersOf(podcastId) })
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    PodcastDetailsScreen(
+                        state = state,
+                        onBack = { navController.navigateUp() },
+                        onSubscribeClicked = viewModel::onSubscribeClicked,
+                        onUnsubscribeClicked = viewModel::onUnsubscribeClicked,
+                        onEpisodeClicked = {
+                            val encoded = Uri.encode(it)
+                            navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
+                        },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                         onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
                         onEpisodeAddToQueueClicked = viewModel::onEpisodeAddToQueueClicked,
