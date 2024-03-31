@@ -48,6 +48,7 @@ import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.QueueViewModel
 import com.ramitsuri.podcasts.viewmodel.SearchViewModel
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -102,6 +103,7 @@ fun NavGraph(
             } else {
                 0.dp
             }
+        val coroutineScope = rememberCoroutineScope()
         BottomSheetScaffold(
             scaffoldState = scaffoldSheetState,
             sheetPeekHeight = bottomPadding,
@@ -116,7 +118,12 @@ fun NavGraph(
                             onNotExpandedHeightKnown = {
                                 peekHeightPx = it
                             },
-                            onGoToQueueClicked = { },
+                            onGoToQueueClicked = {
+                                coroutineScope.launch {
+                                    scaffoldSheetState.bottomSheetState.partialExpand()
+                                }
+                                navController.navigate(Route.QUEUE.value)
+                            },
                             onReplayClicked = playerViewModel::onReplayRequested,
                             onPauseClicked = playerViewModel::onPauseClicked,
                             onPlayClicked = playerViewModel::onPlayClicked,
