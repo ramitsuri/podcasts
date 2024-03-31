@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -96,7 +96,7 @@ fun HomeScreen(
             }
         }
         if (state.episodes.isEmpty()) {
-            Button(onClick = onImportSubscriptionsClicked) {
+            FilledTonalButton(onClick = onImportSubscriptionsClicked) {
                 Text(text = stringResource(id = R.string.home_import_subscriptions))
             }
         }
