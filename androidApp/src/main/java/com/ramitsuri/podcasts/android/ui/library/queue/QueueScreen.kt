@@ -66,6 +66,8 @@ fun QueueScreen(
     onEpisodeCancelDownloadClicked: (episode: Episode) -> Unit,
     onEpisodePlayedClicked: (episodeId: String) -> Unit,
     onEpisodeNotPlayedClicked: (episodeId: String) -> Unit,
+    onEpisodeFavoriteClicked: (episodeId: String) -> Unit,
+    onEpisodeNotFavoriteClicked: (episodeId: String) -> Unit,
     onEpisodesRearranged: (from: Int, to: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -101,6 +103,8 @@ fun QueueScreen(
                     onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(it) },
                     onPlayedClicked = { onEpisodePlayedClicked(it.id) },
                     onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
+                    onFavoriteClicked = { onEpisodeFavoriteClicked(it.id) },
+                    onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(it.id) },
                 )
             }
             item {
@@ -157,6 +161,8 @@ private fun LazyItemScope.EpisodeItem(
     onCancelDownloadClicked: () -> Unit,
     onPlayedClicked: () -> Unit,
     onNotPlayedClicked: () -> Unit,
+    onFavoriteClicked: () -> Unit,
+    onNotFavoriteClicked: () -> Unit,
 ) {
     ReorderableItem(
         reorderableLazyListState = reorderableLazyColumnState,
@@ -192,6 +198,8 @@ private fun LazyItemScope.EpisodeItem(
                     onCancelDownloadClicked = onCancelDownloadClicked,
                     onPlayedClicked = onPlayedClicked,
                     onNotPlayedClicked = onNotPlayedClicked,
+                    onFavoriteClicked = onFavoriteClicked,
+                    onNotFavoriteClicked = onNotFavoriteClicked,
                 )
             }
         }
@@ -245,6 +253,8 @@ private fun QueuePreview_Empty() {
             onEpisodeCancelDownloadClicked = { },
             onEpisodePlayedClicked = { },
             onEpisodeNotPlayedClicked = { },
+            onEpisodeFavoriteClicked = { },
+            onEpisodeNotFavoriteClicked = { },
         )
     }
 }
@@ -269,6 +279,8 @@ private fun QueuePreview_NotEmpty() {
             onEpisodeCancelDownloadClicked = { },
             onEpisodePlayedClicked = { },
             onEpisodeNotPlayedClicked = { },
+            onEpisodeFavoriteClicked = { },
+            onEpisodeNotFavoriteClicked = { },
         )
     }
 }
