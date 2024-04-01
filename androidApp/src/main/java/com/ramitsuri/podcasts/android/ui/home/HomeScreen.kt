@@ -128,7 +128,8 @@ private fun Subscriptions(
                 .fillMaxWidth()
                 .padding(16.dp),
     ) {
-        Row(modifier = Modifier.fillMaxWidth(),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -167,9 +168,9 @@ private fun SubscribedPodcastItem(
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(80.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(80.dp),
         )
     }
 }

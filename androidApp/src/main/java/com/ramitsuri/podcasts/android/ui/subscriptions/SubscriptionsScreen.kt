@@ -47,15 +47,15 @@ fun SubscriptionsScreen(
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
     ) {
         TopAppBar(onBack = onBack, label = stringResource(id = R.string.subscriptions))
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 112.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp),
         ) {
             fullWidthSpacer()
             items(state.subscribedPodcasts) { podcast ->
@@ -85,22 +85,23 @@ private fun SubscribedPodcastItem(
     onClicked: (Podcast) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .clickable(onClick = { onClicked(podcast) }),
+        modifier =
+            Modifier
+                .clickable(onClick = { onClicked(podcast) }),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(podcast.artwork)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(podcast.artwork)
+                    .crossfade(true)
+                    .build(),
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(128.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(128.dp),
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -116,9 +117,9 @@ private fun SubscribedPodcastItem(
 private fun SubscriptionsEmpty() {
     Column(
         modifier =
-        Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -146,9 +147,10 @@ private fun SubscriptionsEmpty() {
 private fun SubscriptionsScreenPreview_NotEmpty() {
     PreviewTheme {
         SubscriptionsScreen(
-            state = SubscriptionsViewState(
-                subscribedPodcasts = (1..50).map { podcast() },
-            ),
+            state =
+                SubscriptionsViewState(
+                    subscribedPodcasts = (1..50).map { podcast() },
+                ),
             onBack = { },
             onPodcastClicked = { },
         )
