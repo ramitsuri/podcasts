@@ -53,6 +53,7 @@
     <string name="library_queue">Queue</string>
     <string name="library_downloads">Downloads</string>
     <string name="library_history">History</string>
+    <string name="library_favorites">Favorites</string>
 
     <!-- Queue screen -->
     <string name="queue_empty_title">Your queue is empty</string>
@@ -100,4 +101,8 @@
     <!-- Downloads screen -->
     <string name="downloads_empty_title">No downloaded episodes</string>
     <string name="downloads_empty_info">Tap this button on any episode to download and listen offline</string>
+
+    <!-- Favorites screen -->
+    <string name="favorites_empty_title">No favorite episodes</string>
+    <string name="favorites_empty_info">Tap this button on any episode to mark it as favorite</string>
 </resources>

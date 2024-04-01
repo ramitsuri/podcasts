@@ -12,6 +12,7 @@ import com.ramitsuri.podcasts.GetEpisode
 import com.ramitsuri.podcasts.GetEpisodesForPodcast
 import com.ramitsuri.podcasts.GetEpisodesForPodcasts
 import com.ramitsuri.podcasts.GetEpisodesInQueue
+import com.ramitsuri.podcasts.GetFavoriteEpisodes
 import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
@@ -80,6 +81,13 @@ internal class EpisodesDaoImpl(
     override fun getDownloadedFlow(): Flow<List<GetDownloadedEpisodes>> {
         return episodeEntityQueries
             .getDownloadedEpisodes()
+            .asFlow()
+            .mapToList(ioDispatcher)
+    }
+
+    override fun getFavoritesFlow(): Flow<List<GetFavoriteEpisodes>> {
+        return episodeEntityQueries
+            .getFavoriteEpisodes()
             .asFlow()
             .mapToList(ioDispatcher)
     }
