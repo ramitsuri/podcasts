@@ -5,8 +5,10 @@ import com.ramitsuri.podcasts.model.ui.SleepTimer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
 class Settings internal constructor(private val keyValueStore: KeyValueStore) {
@@ -86,5 +88,18 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
                 keyValueStore.putString(Key.STOP_AT_TIME, null)
             }
         }
+    }
+
+    suspend fun getLastEpisodeFetchTime(): Instant {
+        val stringTime = keyValueStore.getStringFlow(Key.LAST_EPISODE_FETCH_TIME, null).first()
+        return if (stringTime == null) {
+            Instant.DISTANT_PAST
+        } else {
+            runCatching { Instant.parse(stringTime) }.getOrNull() ?: Instant.DISTANT_PAST
+        }
+    }
+
+    suspend fun setLastEpisodeFetchTime(time: Instant = Clock.System.now()) {
+        keyValueStore.putString(Key.LAST_EPISODE_FETCH_TIME, time.toString())
     }
 }

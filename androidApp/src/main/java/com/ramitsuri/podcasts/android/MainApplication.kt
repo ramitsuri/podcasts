@@ -23,6 +23,7 @@ import com.ramitsuri.podcasts.initKoin
 import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.utils.AndroidLogger
+import com.ramitsuri.podcasts.utils.EpisodeFetcher
 import com.ramitsuri.podcasts.utils.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,11 +36,13 @@ import org.koin.dsl.module
 @UnstableApi
 class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
     private val playerController by inject<PlayerController>()
+    private val episodeFetcher by inject<EpisodeFetcher>()
 
     override fun onCreate() {
         super.onCreate()
         initDependencyInjection()
         playerController.initializePlayer()
+        episodeFetcher.startForegroundStateBasedFetcher()
     }
 
     override fun newImageLoader(): ImageLoader {

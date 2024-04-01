@@ -11,30 +11,36 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlin.time.Duration.Companion.hours
 
 class EpisodesRepository internal constructor(
     private val episodesDao: EpisodesDao,
     private val episodesApi: EpisodesApi,
     private val settings: Settings,
 ) {
-    suspend fun refreshForPodcastId(podcastId: Long): Boolean {
+    suspend fun refreshForPodcastId(podcastId: Long): PodcastResult<Unit> {
         val episodes = episodesDao.getEpisodesForPodcast(podcastId)
         val fetchSinceTime =
             episodes
                 .maxByOrNull { it.datePublished }
                 ?.datePublished
+                // Subtract an hour so that if podcasts were published close to each other, they don't get missed
+                ?.minus(1.hours.inWholeSeconds)
         val request =
             GetEpisodesRequest(
                 id = podcastId,
                 sinceEpochSeconds = fetchSinceTime,
                 max = 100,
             )
-        val result = episodesApi.getByPodcastId(request)
-        return if (result is PodcastResult.Success) {
-            episodesDao.insert(result.data.items.map { Episode(it) })
-            true
-        } else {
-            false
+        return when (val result = episodesApi.getByPodcastId(request)) {
+            is PodcastResult.Success -> {
+                episodesDao.insert(result.data.items.map { Episode(it) })
+                PodcastResult.Success(Unit)
+            }
+
+            is PodcastResult.Failure -> {
+                PodcastResult.Failure(result.error)
+            }
         }
     }
 
