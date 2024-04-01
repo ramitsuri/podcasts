@@ -103,6 +103,9 @@ fun QueueScreen(
                     onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
                 )
             }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
         if (state.episodes.isEmpty()) {
             QueueEmpty()
@@ -162,11 +165,11 @@ private fun LazyItemScope.EpisodeItem(
         val interactionSource = remember { MutableInteractionSource() }
         Row(
             modifier =
-                Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .fillMaxWidth()
-                    .clickable(onClick = onClicked)
-                    .padding(8.dp),
+            Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxWidth()
+                .clickable(onClick = onClicked)
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(

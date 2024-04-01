@@ -133,6 +133,9 @@ private fun PodcastDetails(
                 onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
             )
         }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
 

@@ -94,6 +94,9 @@ fun HomeScreen(
                     onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
                 )
             }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
         if (state.episodes.isEmpty()) {
             FilledTonalButton(onClick = onImportSubscriptionsClicked) {
