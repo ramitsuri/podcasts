@@ -1,6 +1,6 @@
 package com.ramitsuri.podcasts.viewmodel
 
-import com.ramitsuri.podcasts.model.SubscriptionsViewState
+import com.ramitsuri.podcasts.model.ui.SubscriptionsViewState
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
