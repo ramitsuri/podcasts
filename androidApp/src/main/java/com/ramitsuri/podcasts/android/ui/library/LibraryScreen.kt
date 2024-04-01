@@ -39,15 +39,12 @@ fun LibraryScreen(
             modifier
                 .fillMaxSize(),
     ) {
-        // TODO enable when ready
-        if (false) {
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-            Item(
-                icon = Icons.Outlined.Subscriptions,
-                labelResId = R.string.subscriptions,
-                onClick = onSubscriptionsClicked,
-            )
-        }
+        HorizontalDivider(modifier = Modifier.fillMaxWidth())
+        Item(
+            icon = Icons.Outlined.Subscriptions,
+            labelResId = R.string.subscriptions,
+            onClick = onSubscriptionsClicked,
+        )
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
         Item(
             icon = Icons.AutoMirrored.Default.PlaylistAdd,

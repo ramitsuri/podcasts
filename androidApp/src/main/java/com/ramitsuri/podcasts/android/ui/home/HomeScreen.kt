@@ -18,6 +18,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -47,6 +48,7 @@ fun HomeScreen(
     state: HomeViewState,
     onImportSubscriptionsClicked: () -> Unit,
     onPodcastClicked: (podcastId: Long) -> Unit,
+    onMorePodcastsClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
     onEpisodePauseClicked: () -> Unit,
@@ -71,7 +73,11 @@ fun HomeScreen(
         LazyColumn {
             if (state.subscribedPodcasts.isNotEmpty()) {
                 item {
-                    Subscriptions(podcasts = state.subscribedPodcasts, onPodcastClicked = { onPodcastClicked(it.id) })
+                    Subscriptions(
+                        podcasts = state.subscribedPodcasts,
+                        onPodcastClicked = { onPodcastClicked(it.id) },
+                        onMoreClicked = onMorePodcastsClicked,
+                    )
                 }
             }
             items(state.episodes) {
@@ -114,6 +120,7 @@ fun HomeScreen(
 private fun Subscriptions(
     podcasts: List<Podcast>,
     onPodcastClicked: (Podcast) -> Unit,
+    onMoreClicked: () -> Unit,
 ) {
     Column(
         modifier =
@@ -121,11 +128,18 @@ private fun Subscriptions(
                 .fillMaxWidth()
                 .padding(16.dp),
     ) {
-        Text(
-            text = stringResource(id = R.string.subscriptions),
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Bold,
-        )
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(id = R.string.subscriptions),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            TextButton(onClick = onMoreClicked) {
+                Text(text = stringResource(id = R.string.more))
+            }
+        }
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
@@ -153,9 +167,9 @@ private fun SubscribedPodcastItem(
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(96.dp),
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .size(80.dp),
         )
     }
 }

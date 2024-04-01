@@ -16,6 +16,7 @@ import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.QueueViewModel
 import com.ramitsuri.podcasts.viewmodel.SearchViewModel
+import com.ramitsuri.podcasts.viewmodel.SubscriptionsViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.android.Android
 import kotlinx.coroutines.CoroutineScope
@@ -87,6 +88,12 @@ actual val platformModule =
                 settings = get<Settings>(),
                 repository = get<PodcastsRepository>(),
                 longLivingScope = get<CoroutineScope>(),
+            )
+        }
+
+        viewModel<SubscriptionsViewModel> {
+            SubscriptionsViewModel(
+                podcastsAndEpisodesRepository = get<PodcastsAndEpisodesRepository>(),
             )
         }
 
