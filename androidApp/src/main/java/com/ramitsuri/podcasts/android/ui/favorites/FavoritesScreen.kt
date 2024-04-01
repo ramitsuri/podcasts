@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.outlined.ArrowCircleDown
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -61,8 +60,8 @@ fun FavoritesScreen(
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
     ) {
         TopAppBar(onBack = onBack, label = stringResource(id = R.string.library_favorites))
         LazyColumn {
@@ -71,11 +70,11 @@ fun FavoritesScreen(
                 EpisodeItem(
                     episode = it,
                     playingState =
-                    if (state.currentlyPlayingEpisodeId == it.id) {
-                        state.currentlyPlayingEpisodeState
-                    } else {
-                        PlayingState.NOT_PLAYING
-                    },
+                        if (state.currentlyPlayingEpisodeId == it.id) {
+                            state.currentlyPlayingEpisodeState
+                        } else {
+                            PlayingState.NOT_PLAYING
+                        },
                     onClicked = { onEpisodeClicked(it.id) },
                     onPlayClicked = { onEpisodePlayClicked(it) },
                     onPauseClicked = onEpisodePauseClicked,
@@ -119,11 +118,11 @@ private fun EpisodeItem(
 ) {
     Row(
         modifier =
-        Modifier
-            .background(MaterialTheme.colorScheme.background)
-            .fillMaxWidth()
-            .clickable(onClick = onClicked)
-            .padding(8.dp),
+            Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxWidth()
+                .clickable(onClick = onClicked)
+                .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column {
@@ -152,16 +151,16 @@ private fun EpisodeInfo(episode: Episode) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(episode.podcastImageUrl)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(episode.podcastImageUrl)
+                    .crossfade(true)
+                    .build(),
             contentDescription = episode.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(56.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(56.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
@@ -181,9 +180,9 @@ private fun EpisodeInfo(episode: Episode) {
 private fun FavoritesEmpty() {
     Column(
         modifier =
-        Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

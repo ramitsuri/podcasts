@@ -164,7 +164,7 @@ internal class EpisodesDaoImpl(
                         .executeAsOneOrNull()
                         ?.currentMaxQueuePosition
                         ?: Episode.NOT_IN_QUEUE
-                    ) + 1
+                ) + 1
             updateQueuePosition(id, queuePosition)
         }
     }
