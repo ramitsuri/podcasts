@@ -52,14 +52,13 @@ fun LibraryScreen(
             onClick = onQueueClicked,
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
-        // TODO enable when ready
+        Item(
+            icon = Icons.Outlined.ArrowCircleDown,
+            labelResId = R.string.library_downloads,
+            onClick = onDownloadsClicked,
+        )
+        HorizontalDivider(modifier = Modifier.fillMaxWidth())
         if (false) {
-            Item(
-                icon = Icons.Outlined.ArrowCircleDown,
-                labelResId = R.string.library_downloads,
-                onClick = onDownloadsClicked,
-            )
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
             Item(
                 icon = Icons.Default.History,
                 labelResId = R.string.library_history,

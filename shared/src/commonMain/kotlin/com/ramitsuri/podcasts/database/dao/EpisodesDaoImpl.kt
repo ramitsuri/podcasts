@@ -7,6 +7,7 @@ import com.ramitsuri.podcasts.EpisodeAdditionalInfoEntity
 import com.ramitsuri.podcasts.EpisodeAdditionalInfoEntityQueries
 import com.ramitsuri.podcasts.EpisodeEntity
 import com.ramitsuri.podcasts.EpisodeEntityQueries
+import com.ramitsuri.podcasts.GetDownloadedEpisodes
 import com.ramitsuri.podcasts.GetEpisode
 import com.ramitsuri.podcasts.GetEpisodesForPodcast
 import com.ramitsuri.podcasts.GetEpisodesForPodcasts
@@ -72,6 +73,13 @@ internal class EpisodesDaoImpl(
     override fun getQueueFlow(): Flow<List<GetEpisodesInQueue>> {
         return episodeEntityQueries
             .getEpisodesInQueue()
+            .asFlow()
+            .mapToList(ioDispatcher)
+    }
+
+    override fun getDownloadedFlow(): Flow<List<GetDownloadedEpisodes>> {
+        return episodeEntityQueries
+            .getDownloadedEpisodes()
             .asFlow()
             .mapToList(ioDispatcher)
     }

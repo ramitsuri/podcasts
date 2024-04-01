@@ -11,6 +11,7 @@ import com.ramitsuri.podcasts.utils.AndroidForegroundStateObserver
 import com.ramitsuri.podcasts.utils.DispatcherProvider
 import com.ramitsuri.podcasts.utils.EpisodeController
 import com.ramitsuri.podcasts.utils.ForegroundStateObserver
+import com.ramitsuri.podcasts.viewmodel.DownloadsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
@@ -94,6 +95,14 @@ actual val platformModule =
         viewModel<SubscriptionsViewModel> {
             SubscriptionsViewModel(
                 podcastsAndEpisodesRepository = get<PodcastsAndEpisodesRepository>(),
+            )
+        }
+
+        viewModel<DownloadsViewModel> {
+            DownloadsViewModel(
+                episodeController = get<EpisodeController>(),
+                episodesRepository = get<EpisodesRepository>(),
+                settings = get<Settings>(),
             )
         }
 

@@ -96,4 +96,8 @@
     <!-- Subscriptions screen -->
     <string name="subscriptions_empty_title">No subscriptions</string>
     <string name="subscriptions_empty_info">Tap Subscribe on any podcast to see new episodes at a glance</string>
+
+    <!-- Downloads screen -->
+    <string name="downloads_empty_title">No downloaded episodes</string>
+    <string name="downloads_empty_info">Tap this button on any episode to download and listen offline</string>
 </resources>
