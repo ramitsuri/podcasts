@@ -233,7 +233,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 SessionCommands.Builder()
                     .add(SessionCommand(ACTION_REPLAY_10, Bundle.EMPTY))
                     .add(SessionCommand(ACTION_SKIP_30, Bundle.EMPTY))
-                    //.add(SessionCommand(ACTION_SAVE_TO_FAVORITES, Bundle.EMPTY))
+                    // .add(SessionCommand(ACTION_SAVE_TO_FAVORITES, Bundle.EMPTY))
                     .build()
             val playerCommands =
                 ConnectionResult.DEFAULT_PLAYER_COMMANDS.buildUpon()
