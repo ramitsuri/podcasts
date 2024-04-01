@@ -36,7 +36,7 @@ import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.TopAppBar
 import com.ramitsuri.podcasts.android.ui.components.podcast
 import com.ramitsuri.podcasts.model.Podcast
-import com.ramitsuri.podcasts.model.SubscriptionsViewState
+import com.ramitsuri.podcasts.model.ui.SubscriptionsViewState
 
 @Composable
 fun SubscriptionsScreen(
