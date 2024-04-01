@@ -57,6 +57,8 @@ fun HomeScreen(
     onEpisodeCancelDownloadClicked: (episode: Episode) -> Unit,
     onEpisodePlayedClicked: (episodeId: String) -> Unit,
     onEpisodeNotPlayedClicked: (episodeId: String) -> Unit,
+    onEpisodeFavoriteClicked: (episodeId: String) -> Unit,
+    onEpisodeNotFavoriteClicked: (episodeId: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -92,6 +94,8 @@ fun HomeScreen(
                     onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(it) },
                     onPlayedClicked = { onEpisodePlayedClicked(it.id) },
                     onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
+                    onFavoriteClicked = { onEpisodeFavoriteClicked(it.id) },
+                    onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(it.id) },
                 )
             }
             item {
@@ -170,6 +174,8 @@ private fun EpisodeItem(
     onCancelDownloadClicked: () -> Unit,
     onPlayedClicked: () -> Unit,
     onNotPlayedClicked: () -> Unit,
+    onFavoriteClicked: () -> Unit,
+    onNotFavoriteClicked: () -> Unit,
 ) {
     Column(
         modifier =
@@ -229,6 +235,8 @@ private fun EpisodeItem(
             onCancelDownloadClicked = onCancelDownloadClicked,
             onPlayedClicked = onPlayedClicked,
             onNotPlayedClicked = onNotPlayedClicked,
+            onFavoriteClicked = onFavoriteClicked,
+            onNotFavoriteClicked = onNotFavoriteClicked,
         )
     }
 }
@@ -250,6 +258,8 @@ private fun EpisodeItemPreview() {
             onCancelDownloadClicked = { },
             onPlayedClicked = { },
             onNotPlayedClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
         )
     }
 }

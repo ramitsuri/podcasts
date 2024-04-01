@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.PlaylistAddCheck
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PauseCircleOutline
 import androidx.compose.material.icons.filled.PlayCircleOutline
@@ -55,6 +57,8 @@ fun EpisodeControls(
     onCancelDownloadClicked: () -> Unit,
     onPlayedClicked: () -> Unit,
     onNotPlayedClicked: () -> Unit,
+    onFavoriteClicked: () -> Unit,
+    onNotFavoriteClicked: () -> Unit,
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
@@ -122,6 +126,19 @@ fun EpisodeControls(
                     onClicked = onRemoveDownloadClicked,
                 )
             }
+        }
+        if (episode.isFavorite) {
+            ControlWithTooltip(
+                icon = Icons.Filled.Favorite,
+                toolTipLabelRes = R.string.episode_controller_mark_not_favorite,
+                onClicked = onNotFavoriteClicked,
+            )
+        } else {
+            ControlWithTooltip(
+                icon = Icons.Filled.FavoriteBorder,
+                toolTipLabelRes = R.string.episode_controller_mark_favorite,
+                onClicked = onFavoriteClicked,
+            )
         }
         Spacer(modifier = Modifier.weight(1f))
         EpisodeMenu(
@@ -216,6 +233,8 @@ private fun EpisodeControlsPreview_IsPlaying() {
             onCancelDownloadClicked = { },
             onPlayedClicked = { },
             onNotPlayedClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
         )
     }
 }
@@ -236,6 +255,8 @@ private fun EpisodeControlsPreview_IsNotPlaying() {
             onCancelDownloadClicked = { },
             onPlayedClicked = { },
             onNotPlayedClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
         )
     }
 }
@@ -256,6 +277,8 @@ private fun EpisodeControlsPreview_IsLoading() {
             onCancelDownloadClicked = { },
             onPlayedClicked = { },
             onNotPlayedClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
         )
     }
 }
@@ -276,6 +299,8 @@ private fun EpisodeControlsPreview_IsInQueue() {
             onCancelDownloadClicked = { },
             onPlayedClicked = { },
             onNotPlayedClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
         )
     }
 }
@@ -296,6 +321,8 @@ private fun EpisodeControlsPreview_IsNotInQueue() {
             onCancelDownloadClicked = { },
             onPlayedClicked = { },
             onNotPlayedClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
         )
     }
 }
@@ -316,6 +343,8 @@ private fun EpisodeControlsPreview_IsDownloaded() {
             onCancelDownloadClicked = { },
             onPlayedClicked = { },
             onNotPlayedClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
         )
     }
 }
@@ -336,6 +365,8 @@ private fun EpisodeControlsPreview_IsNotNotDownloaded() {
             onCancelDownloadClicked = { },
             onPlayedClicked = { },
             onNotPlayedClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
         )
     }
 }
@@ -356,6 +387,52 @@ private fun EpisodeControlsPreview_IsDownloading() {
             onCancelDownloadClicked = { },
             onPlayedClicked = { },
             onNotPlayedClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
+        )
+    }
+}
+
+@ThemePreview
+@Composable
+private fun EpisodeControlsPreview_IsFavorite() {
+    PreviewTheme {
+        EpisodeControls(
+            episode(isFavorite = true),
+            playingState = PlayingState.NOT_PLAYING,
+            onPlayClicked = { },
+            onPauseClicked = { },
+            onAddToQueueClicked = { },
+            onRemoveFromQueueClicked = { },
+            onDownloadClicked = { },
+            onRemoveDownloadClicked = { },
+            onCancelDownloadClicked = { },
+            onPlayedClicked = { },
+            onNotPlayedClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
+        )
+    }
+}
+
+@ThemePreview
+@Composable
+private fun EpisodeControlsPreview_IsNotFavorite() {
+    PreviewTheme {
+        EpisodeControls(
+            episode(isFavorite = false),
+            playingState = PlayingState.NOT_PLAYING,
+            onPlayClicked = { },
+            onPauseClicked = { },
+            onAddToQueueClicked = { },
+            onRemoveFromQueueClicked = { },
+            onDownloadClicked = { },
+            onRemoveDownloadClicked = { },
+            onCancelDownloadClicked = { },
+            onPlayedClicked = { },
+            onNotPlayedClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
         )
     }
 }

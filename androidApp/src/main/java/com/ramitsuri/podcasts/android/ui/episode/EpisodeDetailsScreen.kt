@@ -46,6 +46,8 @@ fun EpisodeDetailsScreen(
     onEpisodeCancelDownloadClicked: (episode: Episode) -> Unit,
     onEpisodePlayedClicked: (episodeId: String) -> Unit,
     onEpisodeNotPlayedClicked: (episodeId: String) -> Unit,
+    onEpisodeFavoriteClicked: (episodeId: String) -> Unit,
+    onEpisodeNotFavoriteClicked: (episodeId: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -64,6 +66,8 @@ fun EpisodeDetailsScreen(
                 onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(episode) },
                 onPlayedClicked = { onEpisodePlayedClicked(episode.id) },
                 onNotPlayedClicked = { onEpisodeNotPlayedClicked(episode.id) },
+                onFavoriteClicked = { onEpisodeFavoriteClicked(episode.id) },
+                onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(episode.id) },
             )
         }
     }
@@ -82,6 +86,8 @@ private fun EpisodeDetails(
     onCancelDownloadClicked: () -> Unit,
     onPlayedClicked: () -> Unit,
     onNotPlayedClicked: () -> Unit,
+    onFavoriteClicked: () -> Unit,
+    onNotFavoriteClicked: () -> Unit,
 ) {
     Column(
         modifier =
@@ -143,6 +149,8 @@ private fun EpisodeDetails(
             onCancelDownloadClicked = onCancelDownloadClicked,
             onPlayedClicked = onPlayedClicked,
             onNotPlayedClicked = onNotPlayedClicked,
+            onFavoriteClicked = onFavoriteClicked,
+            onNotFavoriteClicked = onNotFavoriteClicked,
         )
         Spacer(modifier = Modifier.height(8.dp))
         val convertedText = remember(episode.description) { htmlToAnnotatedString(episode.description) }
@@ -171,6 +179,8 @@ private fun EpisodeDetailsPreview() {
             onEpisodeCancelDownloadClicked = { },
             onEpisodePlayedClicked = { },
             onEpisodeNotPlayedClicked = { },
+            onEpisodeFavoriteClicked = { },
+            onEpisodeNotFavoriteClicked = { },
         )
     }
 }

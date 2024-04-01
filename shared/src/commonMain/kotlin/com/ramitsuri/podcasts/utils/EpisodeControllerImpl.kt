@@ -59,4 +59,16 @@ internal class EpisodeControllerImpl(
             episodesRepository.markNotPlayed(episodeId)
         }
     }
+
+    override fun onEpisodeMarkFavorite(episodeId: String) {
+        longLivingScope.launch {
+            episodesRepository.updateFavorite(id = episodeId, isFavorite = true)
+        }
+    }
+
+    override fun onEpisodeMarkNotFavorite(episodeId: String) {
+        longLivingScope.launch {
+            episodesRepository.updateFavorite(id = episodeId, isFavorite = false)
+        }
+    }
 }

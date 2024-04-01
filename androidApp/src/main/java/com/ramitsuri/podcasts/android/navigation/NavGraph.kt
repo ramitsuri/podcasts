@@ -192,6 +192,8 @@ fun NavGraph(
                         onEpisodeCancelDownloadClicked = viewModel::onEpisodeCancelDownloadClicked,
                         onEpisodePlayedClicked = viewModel::onEpisodePlayedClicked,
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
+                        onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
+                        onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                     )
                 }
 
@@ -260,6 +262,8 @@ fun NavGraph(
                         onEpisodeCancelDownloadClicked = viewModel::onEpisodeCancelDownloadClicked,
                         onEpisodePlayedClicked = viewModel::onEpisodePlayedClicked,
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
+                        onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
+                        onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                     )
                 }
 
@@ -289,6 +293,8 @@ fun NavGraph(
                         onEpisodeCancelDownloadClicked = viewModel::onEpisodeCancelDownloadClicked,
                         onEpisodePlayedClicked = viewModel::onEpisodePlayedClicked,
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
+                        onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
+                        onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                     )
                 }
 
@@ -312,6 +318,8 @@ fun NavGraph(
                         onEpisodeCancelDownloadClicked = viewModel::onEpisodeCancelDownloadClicked,
                         onEpisodePlayedClicked = viewModel::onEpisodePlayedClicked,
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
+                        onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
+                        onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                     )
                 }
             }

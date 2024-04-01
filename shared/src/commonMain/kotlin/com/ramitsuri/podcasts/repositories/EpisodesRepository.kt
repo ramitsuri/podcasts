@@ -159,6 +159,13 @@ class EpisodesRepository internal constructor(
         episodesDao.updateDuration(id, durationInSeconds)
     }
 
+    suspend fun updateFavorite(
+        id: String,
+        isFavorite: Boolean,
+    ) {
+        episodesDao.updateFavorite(id, isFavorite)
+    }
+
     suspend fun markPlayed(id: String) {
         updateCompletedAt(id)
         updatePlayProgress(id, Episode.PLAY_PROGRESS_MAX)

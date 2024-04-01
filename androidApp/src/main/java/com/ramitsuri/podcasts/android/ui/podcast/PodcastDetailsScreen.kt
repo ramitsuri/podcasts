@@ -57,6 +57,8 @@ fun PodcastDetailsScreen(
     onEpisodeCancelDownloadClicked: (episode: Episode) -> Unit,
     onEpisodePlayedClicked: (episodeId: String) -> Unit,
     onEpisodeNotPlayedClicked: (episodeId: String) -> Unit,
+    onEpisodeFavoriteClicked: (episodeId: String) -> Unit,
+    onEpisodeNotFavoriteClicked: (episodeId: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -79,6 +81,8 @@ fun PodcastDetailsScreen(
                 onEpisodeCancelDownloadClicked = onEpisodeCancelDownloadClicked,
                 onEpisodePlayedClicked = onEpisodePlayedClicked,
                 onEpisodeNotPlayedClicked = onEpisodeNotPlayedClicked,
+                onEpisodeFavoriteClicked = onEpisodeFavoriteClicked,
+                onEpisodeNotFavoriteClicked = onEpisodeNotFavoriteClicked,
             )
         }
     }
@@ -101,6 +105,8 @@ private fun PodcastDetails(
     onEpisodeCancelDownloadClicked: (episode: Episode) -> Unit,
     onEpisodePlayedClicked: (episodeId: String) -> Unit,
     onEpisodeNotPlayedClicked: (episodeId: String) -> Unit,
+    onEpisodeFavoriteClicked: (episodeId: String) -> Unit,
+    onEpisodeNotFavoriteClicked: (episodeId: String) -> Unit,
 ) {
     val podcast = podcastWithEpisodes.podcast
     LazyColumn {
@@ -131,6 +137,8 @@ private fun PodcastDetails(
                 onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(it) },
                 onPlayedClicked = { onEpisodePlayedClicked(it.id) },
                 onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
+                onFavoriteClicked = { onEpisodeFavoriteClicked(it.id) },
+                onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(it.id) },
             )
         }
         item {
@@ -221,6 +229,8 @@ private fun EpisodeItem(
     onCancelDownloadClicked: () -> Unit,
     onPlayedClicked: () -> Unit,
     onNotPlayedClicked: () -> Unit,
+    onFavoriteClicked: () -> Unit,
+    onNotFavoriteClicked: () -> Unit,
 ) {
     Column(
         modifier =
@@ -262,6 +272,8 @@ private fun EpisodeItem(
             onCancelDownloadClicked = onCancelDownloadClicked,
             onPlayedClicked = onPlayedClicked,
             onNotPlayedClicked = onNotPlayedClicked,
+            onFavoriteClicked = onFavoriteClicked,
+            onNotFavoriteClicked = onNotFavoriteClicked,
         )
     }
 }
@@ -294,6 +306,8 @@ private fun PodcastDetailsPreview() {
             onEpisodeCancelDownloadClicked = { },
             onEpisodePlayedClicked = { },
             onEpisodeNotPlayedClicked = { },
+            onEpisodeFavoriteClicked = { },
+            onEpisodeNotFavoriteClicked = { },
         )
     }
 }

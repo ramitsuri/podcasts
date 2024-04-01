@@ -9,6 +9,7 @@ fun episode(
     downloadStatus: DownloadStatus = DownloadStatus.NOT_DOWNLOADED,
     downloadProgress: Double = 0.0,
     queuePosition: Int = Episode.NOT_IN_QUEUE,
+    isFavorite: Boolean = false,
 ) = Episode(
     id = UUID.randomUUID().toString(),
     podcastId = 0,
@@ -39,7 +40,7 @@ fun episode(
     downloadedAt = null,
     queuePosition = queuePosition,
     completedAt = null,
-    isFavorite = false,
+    isFavorite = isFavorite,
 )
 
 fun podcast() =

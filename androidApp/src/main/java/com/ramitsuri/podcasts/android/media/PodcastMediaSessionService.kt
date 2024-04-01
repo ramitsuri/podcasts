@@ -85,13 +85,14 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 .setIconResId(R.drawable.ic_skip_30)
                 .setSessionCommand(SessionCommand(ACTION_SKIP_30, Bundle.EMPTY))
                 .build()
+        // TODO make available
         val saveToFavoritesButton =
             CommandButton.Builder()
                 .setDisplayName(getString(R.string.save_to_favorites))
                 .setIconResId(R.drawable.ic_favorite)
                 .setSessionCommand(SessionCommand(ACTION_SAVE_TO_FAVORITES, Bundle.EMPTY))
                 .build()
-        val customLayout = listOf(replay10Button, skip30Button, saveToFavoritesButton)
+        val customLayout = listOf(replay10Button, skip30Button)
 
         val audioAttributes =
             AudioAttributes.Builder()
@@ -232,7 +233,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 SessionCommands.Builder()
                     .add(SessionCommand(ACTION_REPLAY_10, Bundle.EMPTY))
                     .add(SessionCommand(ACTION_SKIP_30, Bundle.EMPTY))
-                    .add(SessionCommand(ACTION_SAVE_TO_FAVORITES, Bundle.EMPTY))
+                    //.add(SessionCommand(ACTION_SAVE_TO_FAVORITES, Bundle.EMPTY))
                     .build()
             val playerCommands =
                 ConnectionResult.DEFAULT_PLAYER_COMMANDS.buildUpon()

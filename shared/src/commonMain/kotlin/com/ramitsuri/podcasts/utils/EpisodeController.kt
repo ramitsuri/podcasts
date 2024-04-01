@@ -20,4 +20,8 @@ interface EpisodeController {
     fun onEpisodePlayedClicked(episodeId: String)
 
     fun onEpisodeNotPlayedClicked(episodeId: String)
+
+    fun onEpisodeMarkFavorite(episodeId: String)
+
+    fun onEpisodeMarkNotFavorite(episodeId: String)
 }
