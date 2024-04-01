@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.database.dao.interfaces
 
+import com.ramitsuri.podcasts.GetDownloadedEpisodes
 import com.ramitsuri.podcasts.GetEpisode
 import com.ramitsuri.podcasts.GetEpisodesForPodcast
 import com.ramitsuri.podcasts.GetEpisodesForPodcasts
@@ -23,6 +24,8 @@ internal interface EpisodesDao {
     suspend fun getEpisode(id: String): GetEpisode?
 
     fun getQueueFlow(): Flow<List<GetEpisodesInQueue>>
+
+    fun getDownloadedFlow(): Flow<List<GetDownloadedEpisodes>>
 
     suspend fun getQueue(): List<GetEpisodesInQueue>
 

@@ -35,6 +35,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ramitsuri.podcasts.android.ui.downloads.DownloadsScreen
 import com.ramitsuri.podcasts.android.ui.episode.EpisodeDetailsScreen
 import com.ramitsuri.podcasts.android.ui.home.HomeScreen
 import com.ramitsuri.podcasts.android.ui.importsub.ImportSubscriptionsScreen
@@ -46,6 +47,7 @@ import com.ramitsuri.podcasts.android.ui.player.PlayerViewModel
 import com.ramitsuri.podcasts.android.ui.podcast.PodcastDetailsScreen
 import com.ramitsuri.podcasts.android.ui.search.SearchScreen
 import com.ramitsuri.podcasts.android.ui.subscriptions.SubscriptionsScreen
+import com.ramitsuri.podcasts.viewmodel.DownloadsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
@@ -221,7 +223,7 @@ fun NavGraph(
                     LibraryScreen(
                         onSubscriptionsClicked = { navController.navigate(Route.SUBSCRIPTIONS.value) },
                         onQueueClicked = { navController.navigate(Route.QUEUE.value) },
-                        onDownloadsClicked = { /*TODO*/ },
+                        onDownloadsClicked = { navController.navigate(Route.DOWNLOADS.value) },
                         onHistoryClicked = { /*TODO*/ },
                     )
                 }
@@ -338,6 +340,31 @@ fun NavGraph(
                         onPodcastClicked = {
                             navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(it.toString()))
                         },
+                    )
+                }
+
+                composable(route = Route.DOWNLOADS.value) {
+                    val viewModel = koinViewModel<DownloadsViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    DownloadsScreen(
+                        state = state,
+                        onBack = { navController.popBackStack() },
+                        onEpisodeClicked = {
+                            val encoded = Uri.encode(it)
+                            navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
+                        },
+                        onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
+                        onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
+                        onEpisodeAddToQueueClicked = viewModel::onEpisodeAddToQueueClicked,
+                        onEpisodeRemoveFromQueueClicked = viewModel::onEpisodeRemoveFromQueueClicked,
+                        onEpisodeDownloadClicked = viewModel::onEpisodeDownloadClicked,
+                        onEpisodeRemoveDownloadClicked = viewModel::onEpisodeRemoveDownloadClicked,
+                        onEpisodeCancelDownloadClicked = viewModel::onEpisodeCancelDownloadClicked,
+                        onEpisodePlayedClicked = viewModel::onEpisodePlayedClicked,
+                        onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
+                        onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
+                        onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                     )
                 }
             }

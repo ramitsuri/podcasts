@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.model
 
+import com.ramitsuri.podcasts.GetDownloadedEpisodes
 import com.ramitsuri.podcasts.GetEpisode
 import com.ramitsuri.podcasts.GetEpisodesForPodcast
 import com.ramitsuri.podcasts.GetEpisodesForPodcasts
@@ -170,6 +171,33 @@ data class Episode(
         queuePosition = getEpisodesInQueue.queuePosition,
         completedAt = getEpisodesInQueue.completedAt,
         isFavorite = getEpisodesInQueue.isFavorite,
+    )
+
+    internal constructor(getDownloadedEpisodes: GetDownloadedEpisodes) : this(
+        id = getDownloadedEpisodes.id,
+        podcastId = getDownloadedEpisodes.podcastId,
+        podcastName = getDownloadedEpisodes.podcastTitle,
+        podcastAuthor = getDownloadedEpisodes.podcastAuthor,
+        podcastImageUrl = getDownloadedEpisodes.podcastImageUrl,
+        podcastLink = getDownloadedEpisodes.podcastLink,
+        podcastUrl = getDownloadedEpisodes.podcastUrl,
+        title = getDownloadedEpisodes.title,
+        description = getDownloadedEpisodes.description,
+        link = getDownloadedEpisodes.link,
+        enclosureUrl = getDownloadedEpisodes.enclosureUrl,
+        datePublished = getDownloadedEpisodes.datePublished,
+        duration = getDownloadedEpisodes.duration,
+        explicit = getDownloadedEpisodes.explicit,
+        episode = getDownloadedEpisodes.episode,
+        season = getDownloadedEpisodes.season,
+        progressInSeconds = getDownloadedEpisodes.playProgress,
+        downloadStatus = getDownloadedEpisodes.downloadStatus,
+        downloadProgress = getDownloadedEpisodes.downloadProgress,
+        downloadBlocked = getDownloadedEpisodes.downloadBlocked,
+        downloadedAt = getDownloadedEpisodes.downloadedAt,
+        queuePosition = getDownloadedEpisodes.queuePosition,
+        completedAt = getDownloadedEpisodes.completedAt,
+        isFavorite = getDownloadedEpisodes.isFavorite,
     )
 
     companion object {

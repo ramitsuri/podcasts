@@ -90,6 +90,16 @@ class EpisodesRepository internal constructor(
             }
     }
 
+    fun getDownloadedFlow(): Flow<List<Episode>> {
+        return episodesDao
+            .getDownloadedFlow()
+            .map { list ->
+                list.map { getDownloadedEpisodes ->
+                    Episode(getDownloadedEpisodes)
+                }
+            }
+    }
+
     suspend fun getQueue(): List<Episode> {
         return episodesDao
             .getQueue()
