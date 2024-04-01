@@ -5,6 +5,7 @@ import com.ramitsuri.podcasts.GetEpisode
 import com.ramitsuri.podcasts.GetEpisodesForPodcast
 import com.ramitsuri.podcasts.GetEpisodesForPodcasts
 import com.ramitsuri.podcasts.GetEpisodesInQueue
+import com.ramitsuri.podcasts.GetFavoriteEpisodes
 import com.ramitsuri.podcasts.network.model.EpisodeDto
 import kotlinx.datetime.Instant
 
@@ -198,6 +199,33 @@ data class Episode(
         queuePosition = getDownloadedEpisodes.queuePosition,
         completedAt = getDownloadedEpisodes.completedAt,
         isFavorite = getDownloadedEpisodes.isFavorite,
+    )
+
+    internal constructor(getFavoriteEpisodes: GetFavoriteEpisodes) : this(
+        id = getFavoriteEpisodes.id,
+        podcastId = getFavoriteEpisodes.podcastId,
+        podcastName = getFavoriteEpisodes.podcastTitle,
+        podcastAuthor = getFavoriteEpisodes.podcastAuthor,
+        podcastImageUrl = getFavoriteEpisodes.podcastImageUrl,
+        podcastLink = getFavoriteEpisodes.podcastLink,
+        podcastUrl = getFavoriteEpisodes.podcastUrl,
+        title = getFavoriteEpisodes.title,
+        description = getFavoriteEpisodes.description,
+        link = getFavoriteEpisodes.link,
+        enclosureUrl = getFavoriteEpisodes.enclosureUrl,
+        datePublished = getFavoriteEpisodes.datePublished,
+        duration = getFavoriteEpisodes.duration,
+        explicit = getFavoriteEpisodes.explicit,
+        episode = getFavoriteEpisodes.episode,
+        season = getFavoriteEpisodes.season,
+        progressInSeconds = getFavoriteEpisodes.playProgress,
+        downloadStatus = getFavoriteEpisodes.downloadStatus,
+        downloadProgress = getFavoriteEpisodes.downloadProgress,
+        downloadBlocked = getFavoriteEpisodes.downloadBlocked,
+        downloadedAt = getFavoriteEpisodes.downloadedAt,
+        queuePosition = getFavoriteEpisodes.queuePosition,
+        completedAt = getFavoriteEpisodes.completedAt,
+        isFavorite = getFavoriteEpisodes.isFavorite,
     )
 
     companion object {

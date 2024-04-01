@@ -90,6 +90,14 @@ class EpisodesRepository internal constructor(
             }
     }
 
+    suspend fun getQueue(): List<Episode> {
+        return episodesDao
+            .getQueue()
+            .map { getEpisodesInQueue ->
+                Episode(getEpisodesInQueue)
+            }
+    }
+
     fun getDownloadedFlow(): Flow<List<Episode>> {
         return episodesDao
             .getDownloadedFlow()
@@ -100,11 +108,13 @@ class EpisodesRepository internal constructor(
             }
     }
 
-    suspend fun getQueue(): List<Episode> {
+    fun getFavoritesFlow(): Flow<List<Episode>> {
         return episodesDao
-            .getQueue()
-            .map { getEpisodesInQueue ->
-                Episode(getEpisodesInQueue)
+            .getFavoritesFlow()
+            .map { list ->
+                list.map { getFavoriteEpisodes ->
+                    Episode(getFavoriteEpisodes)
+                }
             }
     }
 

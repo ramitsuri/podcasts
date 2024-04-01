@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.outlined.ArrowCircleDown
 import androidx.compose.material.icons.outlined.Subscriptions
@@ -33,6 +34,7 @@ fun LibraryScreen(
     onQueueClicked: () -> Unit,
     onDownloadsClicked: () -> Unit,
     onHistoryClicked: () -> Unit,
+    onFavoritesClicked: () -> Unit,
 ) {
     Column(
         modifier =
@@ -56,6 +58,12 @@ fun LibraryScreen(
             icon = Icons.Outlined.ArrowCircleDown,
             labelResId = R.string.library_downloads,
             onClick = onDownloadsClicked,
+        )
+        HorizontalDivider(modifier = Modifier.fillMaxWidth())
+        Item(
+            icon = Icons.Filled.FavoriteBorder,
+            labelResId = R.string.library_favorites,
+            onClick = onFavoritesClicked,
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
         if (false) {
@@ -104,6 +112,7 @@ private fun LibraryScreenPreview() {
             onQueueClicked = { },
             onDownloadsClicked = { },
             onHistoryClicked = { },
+            onFavoritesClicked = { },
         )
     }
 }

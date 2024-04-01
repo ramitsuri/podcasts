@@ -5,6 +5,7 @@ import com.ramitsuri.podcasts.GetEpisode
 import com.ramitsuri.podcasts.GetEpisodesForPodcast
 import com.ramitsuri.podcasts.GetEpisodesForPodcasts
 import com.ramitsuri.podcasts.GetEpisodesInQueue
+import com.ramitsuri.podcasts.GetFavoriteEpisodes
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +27,8 @@ internal interface EpisodesDao {
     fun getQueueFlow(): Flow<List<GetEpisodesInQueue>>
 
     fun getDownloadedFlow(): Flow<List<GetDownloadedEpisodes>>
+
+    fun getFavoritesFlow(): Flow<List<GetFavoriteEpisodes>>
 
     suspend fun getQueue(): List<GetEpisodesInQueue>
 

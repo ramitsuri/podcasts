@@ -13,6 +13,7 @@ import com.ramitsuri.podcasts.utils.EpisodeController
 import com.ramitsuri.podcasts.utils.ForegroundStateObserver
 import com.ramitsuri.podcasts.viewmodel.DownloadsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
+import com.ramitsuri.podcasts.viewmodel.FavoritesViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.QueueViewModel
@@ -100,6 +101,14 @@ actual val platformModule =
 
         viewModel<DownloadsViewModel> {
             DownloadsViewModel(
+                episodeController = get<EpisodeController>(),
+                episodesRepository = get<EpisodesRepository>(),
+                settings = get<Settings>(),
+            )
+        }
+
+        viewModel<FavoritesViewModel> {
+            FavoritesViewModel(
                 episodeController = get<EpisodeController>(),
                 episodesRepository = get<EpisodesRepository>(),
                 settings = get<Settings>(),
