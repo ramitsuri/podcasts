@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.repositories
 
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.Podcast
+import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.model.PodcastWithEpisodes
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,14 +18,21 @@ class PodcastsAndEpisodesRepository internal constructor(
     private val episodesRepository: EpisodesRepository,
     private val ioDispatcher: CoroutineDispatcher,
 ) {
-    suspend fun refreshPodcasts() {
-        withContext(ioDispatcher) {
+    suspend fun refreshPodcasts(): PodcastResult<Unit> {
+        return withContext(ioDispatcher) {
             val subscribed = podcastsRepository.getAllSubscribed()
+            val results = mutableListOf<PodcastResult<Unit>>()
             subscribed.map {
                 launch {
-                    episodesRepository.refreshForPodcastId(podcastId = it.id)
+                    results.add(episodesRepository.refreshForPodcastId(podcastId = it.id))
                 }
             }.joinAll()
+            val failure = results.firstOrNull { it is PodcastResult.Failure } as? PodcastResult.Failure
+            if (failure == null) {
+                PodcastResult.Success(Unit)
+            } else {
+                PodcastResult.Failure(failure.error)
+            }
         }
     }
 

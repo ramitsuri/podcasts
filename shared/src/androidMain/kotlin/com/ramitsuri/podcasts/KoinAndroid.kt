@@ -7,8 +7,10 @@ import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
 import com.ramitsuri.podcasts.settings.Settings
+import com.ramitsuri.podcasts.utils.AndroidForegroundStateObserver
 import com.ramitsuri.podcasts.utils.DispatcherProvider
 import com.ramitsuri.podcasts.utils.EpisodeController
+import com.ramitsuri.podcasts.utils.ForegroundStateObserver
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
@@ -38,6 +40,10 @@ actual val platformModule =
 
         single<DispatcherProvider> {
             DispatcherProvider()
+        }
+
+        single<ForegroundStateObserver> {
+            AndroidForegroundStateObserver()
         }
 
         viewModel<HomeViewModel> {

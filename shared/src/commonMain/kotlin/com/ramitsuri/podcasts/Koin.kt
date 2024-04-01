@@ -26,6 +26,8 @@ import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.DispatcherProvider
 import com.ramitsuri.podcasts.utils.EpisodeController
 import com.ramitsuri.podcasts.utils.EpisodeControllerImpl
+import com.ramitsuri.podcasts.utils.EpisodeFetcher
+import com.ramitsuri.podcasts.utils.ForegroundStateObserver
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -148,6 +150,16 @@ private val coreModule =
                 episodesRepository = get(),
                 playerController = get(),
                 episodeDownloader = get(),
+            )
+        }
+
+        single<EpisodeFetcher> {
+            EpisodeFetcher(
+                repository = get<PodcastsAndEpisodesRepository>(),
+                settings = get<Settings>(),
+                clock = get<Clock>(),
+                foregroundStateObserver = get<ForegroundStateObserver>(),
+                longLivingScope = get<CoroutineScope>(),
             )
         }
 
