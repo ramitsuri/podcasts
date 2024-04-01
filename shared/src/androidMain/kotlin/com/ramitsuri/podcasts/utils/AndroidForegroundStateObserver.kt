@@ -19,7 +19,10 @@ internal class AndroidForegroundStateObserver : ForegroundStateObserver, Lifecyc
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
 
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+    override fun onStateChanged(
+        source: LifecycleOwner,
+        event: Lifecycle.Event,
+    ) {
         if (event == Lifecycle.Event.ON_START) {
             _state.update { ForegroundState(isInForeground = true) }
         }
@@ -27,5 +30,4 @@ internal class AndroidForegroundStateObserver : ForegroundStateObserver, Lifecyc
             _state.update { ForegroundState(isInForeground = false) }
         }
     }
-
 }

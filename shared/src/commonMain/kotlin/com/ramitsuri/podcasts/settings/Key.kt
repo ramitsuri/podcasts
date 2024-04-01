@@ -7,5 +7,4 @@ internal enum class Key(val value: String) {
     STOP_AFTER_END_OF_EPISODE("stop_after_end_of_episode"),
     STOP_AT_TIME("stop_at_time"),
     LAST_EPISODE_FETCH_TIME("last_episode_fetch_time"),
-    ;
 }
