@@ -103,6 +103,9 @@ fun QueueScreen(
                     onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
                 )
             }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
         if (state.episodes.isEmpty()) {
             QueueEmpty()

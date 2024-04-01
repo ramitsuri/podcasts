@@ -241,6 +241,9 @@ private fun SearchResults(
                 HorizontalDivider()
                 PodcastInfoItem(it, onClick = onPodcastClicked)
             }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
     } else {
         SearchResultsEmpty()

@@ -151,6 +151,7 @@ private fun EpisodeDetails(
             text = convertedText,
             modifier = Modifier.fillMaxWidth(),
         )
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
