@@ -1,19 +1,23 @@
 package com.ramitsuri.podcasts.android.ui.components
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.PlaylistAddCheck
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PauseCircleOutline
 import androidx.compose.material.icons.filled.PlayCircleOutline
 import androidx.compose.material.icons.outlined.ArrowCircleDown
-import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.DownloadDone
 import androidx.compose.material.icons.outlined.Downloading
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +27,10 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -48,6 +56,8 @@ fun EpisodeControls(
     onPlayedClicked: () -> Unit,
     onNotPlayedClicked: () -> Unit,
 ) {
+    var showMenu by remember { mutableStateOf(false) }
+
     Row(modifier = Modifier.fillMaxWidth()) {
         when (playingState) {
             PlayingState.PLAYING -> {
@@ -113,21 +123,57 @@ fun EpisodeControls(
                 )
             }
         }
-        ControlWithTooltip(
-            icon = Icons.Outlined.CheckCircleOutline,
-            toolTipLabelRes =
-                if (episode.isCompleted) {
-                    R.string.episode_controller_mark_not_played
-                } else {
-                    R.string.episode_controller_mark_played
-                },
-            onClicked =
-                if (episode.isCompleted) {
-                    onNotPlayedClicked
-                } else {
-                    onPlayedClicked
-                },
+        Spacer(modifier = Modifier.weight(1f))
+        EpisodeMenu(
+            showMenu = showMenu,
+            onToggleMenu = { showMenu = !showMenu },
+            episodeCompleted = episode.isCompleted,
+            onPlayedClicked = onPlayedClicked,
+            onNotPlayedClicked = onNotPlayedClicked,
         )
+    }
+}
+
+@Composable
+private fun EpisodeMenu(
+    showMenu: Boolean,
+    onToggleMenu: () -> Unit,
+    episodeCompleted: Boolean,
+    onPlayedClicked: () -> Unit,
+    onNotPlayedClicked: () -> Unit,
+) {
+    Box {
+        IconButton(onClick = { onToggleMenu() }) {
+            Icon(
+                imageVector = Icons.Filled.MoreVert,
+                modifier =
+                Modifier
+                    .size(24.dp),
+                contentDescription = stringResource(id = R.string.menu),
+            )
+        }
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = onToggleMenu,
+        ) {
+            if (episodeCompleted) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.episode_controller_mark_not_played)) },
+                    onClick = {
+                        onToggleMenu()
+                        onNotPlayedClicked()
+                    },
+                )
+            } else {
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.episode_controller_mark_played)) },
+                    onClick = {
+                        onToggleMenu()
+                        onPlayedClicked()
+                    },
+                )
+            }
+        }
     }
 }
 

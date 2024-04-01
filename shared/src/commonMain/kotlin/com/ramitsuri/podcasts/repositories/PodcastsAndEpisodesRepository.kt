@@ -8,6 +8,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -64,7 +65,9 @@ class PodcastsAndEpisodesRepository internal constructor(
             .getAllSubscribedFlow()
             .flatMapLatest { podcasts ->
                 val subscribedPodcastIds = podcasts.map { it.id }
-                episodesRepository.getEpisodesForPodcastsFlow(subscribedPodcastIds)
+                episodesRepository.getEpisodesForPodcastsFlow(subscribedPodcastIds).map { list ->
+                    list.filter { !it.isCompleted }
+                }
             }
     }
 }
