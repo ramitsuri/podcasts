@@ -42,7 +42,9 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
         super.onCreate()
         initDependencyInjection()
         playerController.initializePlayer()
-        episodeFetcher.startForegroundStateBasedFetcher()
+        if (!BuildConfig.DEBUG) {
+            episodeFetcher.startForegroundStateBasedFetcher()
+        }
     }
 
     override fun newImageLoader(): ImageLoader {

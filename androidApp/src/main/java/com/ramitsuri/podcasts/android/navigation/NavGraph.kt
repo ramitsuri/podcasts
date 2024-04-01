@@ -45,11 +45,13 @@ import com.ramitsuri.podcasts.android.ui.player.PlayerScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerViewModel
 import com.ramitsuri.podcasts.android.ui.podcast.PodcastDetailsScreen
 import com.ramitsuri.podcasts.android.ui.search.SearchScreen
+import com.ramitsuri.podcasts.android.ui.subscriptions.SubscriptionsScreen
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.QueueViewModel
 import com.ramitsuri.podcasts.viewmodel.SearchViewModel
+import com.ramitsuri.podcasts.viewmodel.SubscriptionsViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -179,6 +181,9 @@ fun NavGraph(
                         onPodcastClicked = {
                             navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(it.toString()))
                         },
+                        onMorePodcastsClicked = {
+                            navController.navigate(Route.SUBSCRIPTIONS.value)
+                        },
                         onEpisodeClicked = {
                             val encoded = Uri.encode(it)
                             navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
@@ -214,7 +219,7 @@ fun NavGraph(
 
                 composable(route = BottomNavItem.LIBRARY.route.value) {
                     LibraryScreen(
-                        onSubscriptionsClicked = { /*TODO*/ },
+                        onSubscriptionsClicked = { navController.navigate(Route.SUBSCRIPTIONS.value) },
                         onQueueClicked = { navController.navigate(Route.QUEUE.value) },
                         onDownloadsClicked = { /*TODO*/ },
                         onHistoryClicked = { /*TODO*/ },
@@ -320,6 +325,19 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
+                    )
+                }
+
+                composable(route = Route.SUBSCRIPTIONS.value) {
+                    val viewModel = koinViewModel<SubscriptionsViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    SubscriptionsScreen(
+                        state = state,
+                        onBack = { navController.popBackStack() },
+                        onPodcastClicked = {
+                            navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(it.toString()))
+                        },
                     )
                 }
             }

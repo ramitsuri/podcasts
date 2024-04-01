@@ -12,6 +12,7 @@ enum class Route(val value: String) {
     EPISODE_DETAILS("episode_details"),
     QUEUE("queue"),
     PODCAST_DETAILS("podcast_details"),
+    SUBSCRIPTIONS("subscriptions"),
     ;
 
     fun routeWithArgValue(argValue: String?): String {
