@@ -154,8 +154,8 @@ private fun EpisodeMenu(
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                Modifier
-                    .size(24.dp),
+                    Modifier
+                        .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
             )
         }

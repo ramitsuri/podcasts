@@ -61,20 +61,21 @@ fun minutesFormatted(
     suffix: String,
 ): String {
     val hours = minutes / 60
-    val formatted = when {
-        minutes < 60 -> {
-            stringResource(id = R.string.play_state_button_min, minutes)
-        }
+    val formatted =
+        when {
+            minutes < 60 -> {
+                stringResource(id = R.string.play_state_button_min, minutes)
+            }
 
-        else -> {
-            val minutesRemaining = minutes - (hours * 60)
-            if (minutesRemaining == 0L) {
-                stringResource(id = R.string.play_state_button_hour, hours)
-            } else {
-                stringResource(id = R.string.play_state_button_hour_and_min, hours, minutesRemaining)
+            else -> {
+                val minutesRemaining = minutes - (hours * 60)
+                if (minutesRemaining == 0L) {
+                    stringResource(id = R.string.play_state_button_hour, hours)
+                } else {
+                    stringResource(id = R.string.play_state_button_hour_and_min, hours, minutesRemaining)
+                }
             }
         }
-    }
     return formatted + suffix
 }
 

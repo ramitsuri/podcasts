@@ -52,13 +52,14 @@ fun PlayStateButton(
     onClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .border(
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)),
-                shape = RoundedCornerShape(8.dp),
-            )
-            .padding(vertical = 4.dp, horizontal = 8.dp),
+        modifier =
+            Modifier
+                .clickable(onClick = onClick)
+                .border(
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)),
+                    shape = RoundedCornerShape(8.dp),
+                )
+                .padding(vertical = 4.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
@@ -91,9 +92,10 @@ private fun Playing() {
 @Composable
 private fun PlayingIndicator() {
     Box(
-        modifier = Modifier
-            .size(24.dp)
-            .padding(horizontal = 4.dp),
+        modifier =
+            Modifier
+                .size(24.dp)
+                .padding(horizontal = 4.dp),
     ) {
         val color = MaterialTheme.colorScheme.onBackground
         val infiniteTransition = rememberInfiniteTransition(label = "playing indicator")
@@ -101,33 +103,37 @@ private fun PlayingIndicator() {
         val firstLineHeight by infiniteTransition.animateFloat(
             initialValue = with(density) { 8.dp.toPx() },
             targetValue = with(density) { 2.dp.toPx() },
-            animationSpec = infiniteRepeatable(
-                animation = tween(100),
-                repeatMode = RepeatMode.Reverse,
-            ),
+            animationSpec =
+                infiniteRepeatable(
+                    animation = tween(100),
+                    repeatMode = RepeatMode.Reverse,
+                ),
             label = "",
         )
         val middleLineHeight by infiniteTransition.animateFloat(
             initialValue = with(density) { 16.dp.toPx() },
             targetValue = with(density) { 6.dp.toPx() },
-            animationSpec = infiniteRepeatable(
-                animation = tween(200),
-                repeatMode = RepeatMode.Reverse,
-            ),
+            animationSpec =
+                infiniteRepeatable(
+                    animation = tween(200),
+                    repeatMode = RepeatMode.Reverse,
+                ),
             label = "",
         )
         val lastLineHeight by infiniteTransition.animateFloat(
             initialValue = with(density) { 8.dp.toPx() },
             targetValue = with(density) { 3.dp.toPx() },
-            animationSpec = infiniteRepeatable(
-                animation = tween(150),
-                repeatMode = RepeatMode.Reverse,
-            ),
+            animationSpec =
+                infiniteRepeatable(
+                    animation = tween(150),
+                    repeatMode = RepeatMode.Reverse,
+                ),
             label = "",
         )
         Canvas(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier =
+                Modifier
+                    .fillMaxSize(),
         ) {
             val lineWidth = 4.dp.toPx()
             val spacingBetweenLines = 2.dp.toPx()
@@ -167,11 +173,12 @@ private fun Paused(
     Icon(imageVector = Icons.Filled.PlayCircleOutline, contentDescription = "")
     minutes?.let {
         Spacer(modifier = Modifier.width(8.dp))
-        val suffix = if (hasBeenPlayed) {
-            stringResource(id = R.string.play_state_button_left)
-        } else {
-            ""
-        }
+        val suffix =
+            if (hasBeenPlayed) {
+                stringResource(id = R.string.play_state_button_left)
+            } else {
+                ""
+            }
         Text(
             text = minutesFormatted(minutes = it, suffix = suffix),
             style = MaterialTheme.typography.bodySmall,
@@ -186,9 +193,10 @@ private fun Loading() {
         verticalArrangement = Arrangement.Center,
     ) {
         LinearProgressIndicator(
-            modifier = Modifier
-                .width(16.dp)
-                .height(2.dp),
+            modifier =
+                Modifier
+                    .width(16.dp)
+                    .height(2.dp),
             color = MaterialTheme.colorScheme.onBackground,
             trackColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f),
         )
