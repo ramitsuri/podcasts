@@ -150,6 +150,8 @@ fun NavGraph(
                             onSleepTimer = playerViewModel::onSleepTimerRequested,
                             onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
                             onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
+                            onFavoriteClicked = playerViewModel::onFavoriteClicked,
+                            onNotFavoriteClicked = playerViewModel::onNotFavoriteClicked,
                         )
                     }
                 } else {

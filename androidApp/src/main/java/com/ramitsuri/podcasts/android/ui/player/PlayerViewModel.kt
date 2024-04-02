@@ -89,6 +89,7 @@ class PlayerViewModel(
                                 remainingDuration = episode.remainingDuration,
                                 totalDuration = duration?.seconds,
                                 trimSilence = trimSilence,
+                                isFavorite = episode.isFavorite
                             )
                         }
                         updateSleepTimerDuration()
@@ -189,6 +190,24 @@ class PlayerViewModel(
                 currentSleepTimer.time.minus(2.minutes)
             }
         onSleepTimerRequested(SleepTimer.Custom(time = newTime))
+    }
+
+    fun onFavoriteClicked() {
+        longLivingScope.launch {
+            val episode = episodesRepository.getCurrentEpisode().firstOrNull()
+            if (episode != null) {
+                episodesRepository.updateFavorite(episode.id, true)
+            }
+        }
+    }
+
+    fun onNotFavoriteClicked() {
+        longLivingScope.launch {
+            val episode = episodesRepository.getCurrentEpisode().firstOrNull()
+            if (episode != null) {
+                episodesRepository.updateFavorite(episode.id, false)
+            }
+        }
     }
 
     private fun updateSleepTimerDuration() {
