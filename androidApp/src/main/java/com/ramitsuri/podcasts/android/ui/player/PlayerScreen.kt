@@ -84,26 +84,26 @@ fun PlayerScreen(
     onSleepTimer: (SleepTimer) -> Unit,
     onSleepTimerIncrease: () -> Unit,
     onSleepTimerDecrease: () -> Unit,
-    onNotExpandedPlayerClicked: () ->Unit,
+    onNotExpandedPlayerClicked: () -> Unit,
 ) {
     val alphaExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 1f else 0f, label = "player visibility")
     val alphaNotExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 0f else 1f, label = "player visibility")
     Box(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .padding(if (isExpanded) 16.dp else 0.dp),
+            modifier
+                .fillMaxWidth()
+                .padding(if (isExpanded) 16.dp else 0.dp),
         contentAlignment = Alignment.TopCenter,
     ) {
         if (!isExpanded) {
             if (state.hasEverBeenPlayed) {
                 PlayerScreenNotExpanded(
                     modifier =
-                    Modifier
-                        .onGloballyPositioned {
-                            onNotExpandedHeightKnown(it.size.height)
-                        }
-                        .alpha(alphaNotExpandedPlayer),
+                        Modifier
+                            .onGloballyPositioned {
+                                onNotExpandedHeightKnown(it.size.height)
+                            }
+                            .alpha(alphaNotExpandedPlayer),
                     episodeTitle = state.episodeTitle,
                     episodeArtwork = state.episodeArtworkUrl,
                     playingState = state.playingState,
@@ -182,16 +182,16 @@ private fun PlayerScreenExpanded(
     ) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(episodeArtwork)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(episodeArtwork)
+                    .crossfade(true)
+                    .build(),
             contentDescription = episodeTitle,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(360.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(360.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
@@ -594,12 +594,13 @@ private fun PlayerScreenNotExpanded(
     playProgress: Float,
     onPlayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
-    onClicked: () -> Unit
+    onClicked: () -> Unit,
 ) {
-    Column(modifier =
+    Column(
+        modifier =
             modifier
                 .fillMaxWidth()
-                .clickable(onClick = onClicked)
+                .clickable(onClick = onClicked),
     ) {
         Row(
             modifier =
@@ -666,19 +667,19 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
         PlayerScreen(
             isExpanded = false,
             state =
-            PlayerViewState(
-                playingState = PlayingState.PLAYING,
-                episodeTitle = episode().title,
-                episodeArtworkUrl = episode().podcastImageUrl,
-                podcastName = episode().podcastName,
-                sleepTimer = SleepTimer.None,
-                sleepTimerDuration = null,
-                playbackSpeed = 1f,
-                isCasting = false,
-                progress = 0.4f,
-                playedDuration = 5.seconds,
-                remainingDuration = 55.minutes + 32.seconds,
-            ),
+                PlayerViewState(
+                    playingState = PlayingState.PLAYING,
+                    episodeTitle = episode().title,
+                    episodeArtworkUrl = episode().podcastImageUrl,
+                    podcastName = episode().podcastName,
+                    sleepTimer = SleepTimer.None,
+                    sleepTimerDuration = null,
+                    playbackSpeed = 1f,
+                    isCasting = false,
+                    progress = 0.4f,
+                    playedDuration = 5.seconds,
+                    remainingDuration = 55.minutes + 32.seconds,
+                ),
             onNotExpandedHeightKnown = { },
             onGoToQueueClicked = { },
             onReplayClicked = { },
@@ -705,19 +706,19 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
         PlayerScreen(
             isExpanded = false,
             state =
-            PlayerViewState(
-                playingState = PlayingState.NOT_PLAYING,
-                episodeTitle = episode().title,
-                episodeArtworkUrl = episode().podcastImageUrl,
-                podcastName = episode().podcastName,
-                sleepTimer = SleepTimer.None,
-                sleepTimerDuration = null,
-                playbackSpeed = 1f,
-                isCasting = false,
-                progress = 0.4f,
-                playedDuration = 5.seconds,
-                remainingDuration = 55.minutes + 32.seconds,
-            ),
+                PlayerViewState(
+                    playingState = PlayingState.NOT_PLAYING,
+                    episodeTitle = episode().title,
+                    episodeArtworkUrl = episode().podcastImageUrl,
+                    podcastName = episode().podcastName,
+                    sleepTimer = SleepTimer.None,
+                    sleepTimerDuration = null,
+                    playbackSpeed = 1f,
+                    isCasting = false,
+                    progress = 0.4f,
+                    playedDuration = 5.seconds,
+                    remainingDuration = 55.minutes + 32.seconds,
+                ),
             onNotExpandedHeightKnown = { },
             onGoToQueueClicked = { },
             onReplayClicked = { },
@@ -744,20 +745,20 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
         PlayerScreen(
             isExpanded = true,
             state =
-            PlayerViewState(
-                hasEverBeenPlayed = true,
-                playingState = PlayingState.PLAYING,
-                episodeTitle = episode().title,
-                episodeArtworkUrl = episode().podcastImageUrl,
-                podcastName = episode().podcastName,
-                sleepTimer = SleepTimer.None,
-                sleepTimerDuration = null,
-                playbackSpeed = 1f,
-                isCasting = false,
-                progress = 0.4f,
-                playedDuration = 5.seconds,
-                remainingDuration = 55.minutes + 32.seconds,
-            ),
+                PlayerViewState(
+                    hasEverBeenPlayed = true,
+                    playingState = PlayingState.PLAYING,
+                    episodeTitle = episode().title,
+                    episodeArtworkUrl = episode().podcastImageUrl,
+                    podcastName = episode().podcastName,
+                    sleepTimer = SleepTimer.None,
+                    sleepTimerDuration = null,
+                    playbackSpeed = 1f,
+                    isCasting = false,
+                    progress = 0.4f,
+                    playedDuration = 5.seconds,
+                    remainingDuration = 55.minutes + 32.seconds,
+                ),
             onNotExpandedHeightKnown = { },
             onGoToQueueClicked = { },
             onReplayClicked = { },
@@ -784,19 +785,19 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
         PlayerScreen(
             isExpanded = true,
             state =
-            PlayerViewState(
-                playingState = PlayingState.NOT_PLAYING,
-                episodeTitle = episode().title,
-                episodeArtworkUrl = episode().podcastImageUrl,
-                podcastName = episode().podcastName,
-                sleepTimer = SleepTimer.None,
-                sleepTimerDuration = null,
-                playbackSpeed = 1f,
-                isCasting = false,
-                progress = 0.4f,
-                playedDuration = 5.seconds,
-                remainingDuration = 55.minutes + 32.seconds,
-            ),
+                PlayerViewState(
+                    playingState = PlayingState.NOT_PLAYING,
+                    episodeTitle = episode().title,
+                    episodeArtworkUrl = episode().podcastImageUrl,
+                    podcastName = episode().podcastName,
+                    sleepTimer = SleepTimer.None,
+                    sleepTimerDuration = null,
+                    playbackSpeed = 1f,
+                    isCasting = false,
+                    progress = 0.4f,
+                    playedDuration = 5.seconds,
+                    remainingDuration = 55.minutes + 32.seconds,
+                ),
             onNotExpandedHeightKnown = { },
             onGoToQueueClicked = { },
             onReplayClicked = { },

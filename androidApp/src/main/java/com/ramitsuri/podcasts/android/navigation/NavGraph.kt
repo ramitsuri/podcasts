@@ -154,7 +154,7 @@ fun NavGraph(
                                 coroutineScope.launch {
                                     scaffoldSheetState.bottomSheetState.expand()
                                 }
-                            }
+                            },
                         )
                     }
                 } else {
