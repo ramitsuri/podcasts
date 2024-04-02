@@ -32,7 +32,7 @@ class PodcastDetailsViewModel(
         } else {
             viewModelScope.launch {
                 launch {
-                    episodesRepository.refreshForPodcastId(podcastId)
+                    podcastsAndEpisodesRepository.refreshPodcast(podcastId)
                 }
 
                 launch {
@@ -51,6 +51,11 @@ class PodcastDetailsViewModel(
                             )
                         }
                     }
+                }
+
+                launch {
+                    // Remove has new episodes marker if podcast page visited
+                    repository.updateHasNewEpisodes(id = podcastId, hasNewEpisodes = false)
                 }
             }
         }

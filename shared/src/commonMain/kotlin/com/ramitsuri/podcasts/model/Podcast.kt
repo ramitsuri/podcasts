@@ -24,6 +24,7 @@ data class Podcast(
     val autoDownloadEpisodes: Boolean,
     val newEpisodeNotifications: Boolean,
     val subscribedDate: Instant?,
+    val hasNewEpisodes: Boolean,
 ) {
     internal constructor(dto: PodcastDto) : this(
         id = dto.id,
@@ -43,6 +44,7 @@ data class Podcast(
         autoDownloadEpisodes = false,
         newEpisodeNotifications = false,
         subscribedDate = null,
+        hasNewEpisodes = false,
     )
 
     internal constructor(getPodcast: GetPodcast, categories: List<Category>) : this(
@@ -63,6 +65,7 @@ data class Podcast(
         autoDownloadEpisodes = getPodcast.autoDownloadEpisodes,
         newEpisodeNotifications = getPodcast.newEpisodeNotification,
         subscribedDate = getPodcast.subscribedDate,
+        hasNewEpisodes = getPodcast.hasNewEpisodes,
     )
 
     internal constructor(getAllPodcasts: GetAllPodcasts, categories: List<Category>) : this(
@@ -83,6 +86,7 @@ data class Podcast(
         autoDownloadEpisodes = getAllPodcasts.autoDownloadEpisodes,
         newEpisodeNotifications = getAllPodcasts.newEpisodeNotification,
         subscribedDate = getAllPodcasts.subscribedDate,
+        hasNewEpisodes = getAllPodcasts.hasNewEpisodes,
     )
 
     internal constructor(getAllSubscribedPodcasts: GetAllSubscribedPodcasts, categories: List<Category>) : this(
@@ -103,5 +107,6 @@ data class Podcast(
         autoDownloadEpisodes = getAllSubscribedPodcasts.autoDownloadEpisodes,
         newEpisodeNotifications = getAllSubscribedPodcasts.newEpisodeNotification,
         subscribedDate = getAllSubscribedPodcasts.subscribedDate,
+        hasNewEpisodes = getAllSubscribedPodcasts.hasNewEpisodes,
     )
 }

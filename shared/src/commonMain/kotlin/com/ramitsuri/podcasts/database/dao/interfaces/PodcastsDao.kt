@@ -36,4 +36,9 @@ internal interface PodcastsDao {
         id: Long,
         showNewEpisodeNotification: Boolean,
     )
+
+    suspend fun updateHasNewEpisodes(
+        id: Long,
+        hasNewEpisodes: Boolean,
+    )
 }

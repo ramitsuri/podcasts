@@ -131,4 +131,11 @@ class PodcastsRepository internal constructor(
     ) {
         podcastsDao.updateNewEpisodeNotification(id, showNewEpisodeNotification)
     }
+
+    suspend fun updateHasNewEpisodes(
+        id: Long,
+        hasNewEpisodes: Boolean,
+    ) {
+        podcastsDao.updateHasNewEpisodes(id, hasNewEpisodes)
+    }
 }

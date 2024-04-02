@@ -19,13 +19,28 @@ class PodcastsAndEpisodesRepository internal constructor(
     private val episodesRepository: EpisodesRepository,
     private val ioDispatcher: CoroutineDispatcher,
 ) {
+    suspend fun refreshPodcast(podcastId: Long): PodcastResult<Unit> {
+        return when (val result = episodesRepository.refreshForPodcastId(podcastId)) {
+            is PodcastResult.Failure -> {
+                result
+            }
+
+            is PodcastResult.Success -> {
+                if (result.data.count > 0) {
+                    podcastsRepository.updateHasNewEpisodes(podcastId, true)
+                }
+                PodcastResult.Success(Unit)
+            }
+        }
+    }
+
     suspend fun refreshPodcasts(): PodcastResult<Unit> {
         return withContext(ioDispatcher) {
             val subscribed = podcastsRepository.getAllSubscribed()
             val results = mutableListOf<PodcastResult<Unit>>()
             subscribed.map {
                 launch {
-                    results.add(episodesRepository.refreshForPodcastId(podcastId = it.id))
+                    results.add(refreshPodcast(podcastId = it.id))
                 }
             }.joinAll()
             val failure = results.firstOrNull { it is PodcastResult.Failure } as? PodcastResult.Failure
@@ -42,6 +57,8 @@ class PodcastsAndEpisodesRepository internal constructor(
             podcasts.map {
                 launch {
                     podcastsRepository.saveToDb(it.copy(subscribed = true))
+                    // Calling this directly here rather than via refreshPodcast because we don't really need to mark
+                    // podcasts having new episodes as we've just imported them, all of the episodes are going to be new
                     episodesRepository.refreshForPodcastId(it.id)
                 }
             }.joinAll()
