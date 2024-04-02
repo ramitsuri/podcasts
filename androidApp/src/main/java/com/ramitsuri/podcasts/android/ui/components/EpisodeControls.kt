@@ -12,12 +12,9 @@ import androidx.compose.material.icons.automirrored.filled.PlaylistAddCheck
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PauseCircleOutline
-import androidx.compose.material.icons.filled.PlayCircleOutline
 import androidx.compose.material.icons.outlined.ArrowCircleDown
 import androidx.compose.material.icons.outlined.DownloadDone
 import androidx.compose.material.icons.outlined.Downloading
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -62,30 +60,22 @@ fun EpisodeControls(
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
-    Row(modifier = Modifier.fillMaxWidth()) {
-        when (playingState) {
-            PlayingState.PLAYING -> {
-                ControlWithTooltip(
-                    icon = Icons.Filled.PauseCircleOutline,
-                    toolTipLabelRes = R.string.pause,
-                    onClicked = onPauseClicked,
-                )
-            }
-
-            PlayingState.NOT_PLAYING -> {
-                ControlWithTooltip(
-                    icon = Icons.Filled.PlayCircleOutline,
-                    toolTipLabelRes = R.string.play,
-                    onClicked = onPlayClicked,
-                )
-            }
-
-            PlayingState.LOADING -> {
-                IconButton(onClick = { }) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        PlayStateButton(
+            playingState = playingState,
+            hasBeenPlayed = episode.progressInSeconds > 0,
+            remainingDuration = episode.remainingDuration,
+            onClick = {
+                when (playingState) {
+                    PlayingState.PLAYING -> onPauseClicked()
+                    PlayingState.NOT_PLAYING -> onPlayClicked()
+                    PlayingState.LOADING -> { }
                 }
-            }
-        }
+            },
+        )
         if (episode.queuePosition == Episode.NOT_IN_QUEUE) {
             ControlWithTooltip(
                 icon = Icons.AutoMirrored.Filled.PlaylistAdd,
@@ -164,8 +154,8 @@ private fun EpisodeMenu(
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                    Modifier
-                        .size(24.dp),
+                Modifier
+                    .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
             )
         }

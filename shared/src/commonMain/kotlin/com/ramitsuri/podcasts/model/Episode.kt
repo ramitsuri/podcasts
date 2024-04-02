@@ -8,6 +8,8 @@ import com.ramitsuri.podcasts.GetEpisodesInQueue
 import com.ramitsuri.podcasts.GetFavoriteEpisodes
 import com.ramitsuri.podcasts.network.model.EpisodeDto
 import kotlinx.datetime.Instant
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 data class Episode(
     val id: String,
@@ -38,6 +40,9 @@ data class Episode(
     val isCompleted = completedAt != null
 
     val datePublishedInstant = runCatching { Instant.fromEpochSeconds(datePublished) }.getOrNull()
+
+    val remainingDuration: Duration?
+        get() = (duration?.minus(progressInSeconds))?.seconds
 
     internal constructor(dto: EpisodeDto) : this(
         id = dto.id,
