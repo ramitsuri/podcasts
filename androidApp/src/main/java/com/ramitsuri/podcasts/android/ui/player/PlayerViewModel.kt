@@ -75,7 +75,6 @@ class PlayerViewModel(
                                 .toFloat()
                                 .div(durationForProgress)
                                 .coerceIn(0f, 1f)
-                        val remainingDuration = duration?.minus(episode.progressInSeconds)
                         _state.update {
                             it.copy(
                                 hasEverBeenPlayed = true,
@@ -87,7 +86,7 @@ class PlayerViewModel(
                                 isCasting = false,
                                 progress = progressPercent,
                                 playedDuration = episode.progressInSeconds.seconds,
-                                remainingDuration = remainingDuration?.seconds,
+                                remainingDuration = episode.remainingDuration,
                                 totalDuration = duration?.seconds,
                                 trimSilence = trimSilence,
                             )
