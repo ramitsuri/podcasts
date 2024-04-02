@@ -89,7 +89,7 @@ class PlayerViewModel(
                                 remainingDuration = episode.remainingDuration,
                                 totalDuration = duration?.seconds,
                                 trimSilence = trimSilence,
-                                isFavorite = episode.isFavorite
+                                isFavorite = episode.isFavorite,
                             )
                         }
                         updateSleepTimerDuration()
