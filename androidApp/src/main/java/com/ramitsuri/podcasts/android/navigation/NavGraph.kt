@@ -150,6 +150,11 @@ fun NavGraph(
                             onSleepTimer = playerViewModel::onSleepTimerRequested,
                             onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
                             onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
+                            onNotExpandedPlayerClicked = {
+                                coroutineScope.launch {
+                                    scaffoldSheetState.bottomSheetState.expand()
+                                }
+                            },
                             onFavoriteClicked = playerViewModel::onFavoriteClicked,
                             onNotFavoriteClicked = playerViewModel::onNotFavoriteClicked,
                         )
