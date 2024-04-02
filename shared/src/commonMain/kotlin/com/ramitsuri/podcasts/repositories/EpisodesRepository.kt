@@ -37,8 +37,8 @@ class EpisodesRepository internal constructor(
             )
         return when (val result = episodesApi.getByPodcastId(request)) {
             is PodcastResult.Success -> {
-                episodesDao.insert(result.data.items.map { Episode(it) })
-                PodcastResult.Success(RefreshedEpisodes(count = result.data.items.count()))
+                val insertCount = episodesDao.insert(result.data.items.map { Episode(it) })
+                PodcastResult.Success(RefreshedEpisodes(count = insertCount))
             }
 
             is PodcastResult.Failure -> {

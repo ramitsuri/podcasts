@@ -21,6 +21,11 @@ INSERT OR IGNORE INTO
 EpisodeAdditionalInfoEntity(id, playProgress, downloadStatus, downloadProgress, downloadBlocked, downloadedAt, queuePosition, completedAt, isFavorite)
 VALUES ?;
 
+hasId:
+SELECT COUNT(*)
+FROM EpisodeAdditionalInfoEntity
+WHERE id = :id;
+
 updatePlayProgress:
 UPDATE EpisodeAdditionalInfoEntity
 SET playProgress = :playProgress

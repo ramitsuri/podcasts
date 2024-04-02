@@ -19,3 +19,4 @@ xcuserdata
 !/.idea/inspectionProfiles/*
 
 secret.properties
+*.aab
