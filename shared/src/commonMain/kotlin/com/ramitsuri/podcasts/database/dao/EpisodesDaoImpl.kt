@@ -18,6 +18,8 @@ import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 
@@ -26,11 +28,15 @@ internal class EpisodesDaoImpl(
     private val episodeAdditionalInfoEntityQueries: EpisodeAdditionalInfoEntityQueries,
     private val ioDispatcher: CoroutineDispatcher,
 ) : EpisodesDao {
-    override suspend fun insert(episodes: List<Episode>) {
-        withContext(ioDispatcher) {
-            episodes.forEach {
-                insert(it)
-            }
+    override suspend fun insert(episodes: List<Episode>): Int {
+        return withContext(ioDispatcher) {
+            val results = mutableListOf<Boolean>()
+            episodes.map {
+                launch {
+                    results.add(insert(it))
+                }
+            }.joinAll()
+            results.filter { it }.size
         }
     }
 
@@ -203,7 +209,8 @@ internal class EpisodesDaoImpl(
         episodeAdditionalInfoEntityQueries.updateQueuePosition(id = id, queuePosition = position)
     }
 
-    private fun insert(episode: Episode) {
+    private fun insert(episode: Episode): Boolean {
+        // Always insert episode data because something might have changed
         episodeEntityQueries.insertOrReplace(
             EpisodeEntity(
                 id = episode.id,
@@ -219,6 +226,11 @@ internal class EpisodesDaoImpl(
                 season = episode.season,
             ),
         )
+        // Don't insert additional data because we maintain this and if we already have something, we're going to update
+        // it separately, not insert anything we get
+        if (episodeAdditionalInfoEntityQueries.hasId(episode.id).executeAsOne() > 0) {
+            return false
+        }
         episodeAdditionalInfoEntityQueries.insertOrIgnore(
             EpisodeAdditionalInfoEntity(
                 id = episode.id,
@@ -232,5 +244,6 @@ internal class EpisodesDaoImpl(
                 isFavorite = episode.isFavorite,
             ),
         )
+        return true
     }
 }

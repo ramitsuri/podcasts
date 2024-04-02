@@ -12,7 +12,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
 
 internal interface EpisodesDao {
-    suspend fun insert(episodes: List<Episode>)
+    /**
+     * Returns count of how many episodes are inserted.
+     * If additional data is not inserted but episode data is, that counts as not inserted
+     */
+    suspend fun insert(episodes: List<Episode>): Int
 
     fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<GetEpisodesForPodcasts>>
 
