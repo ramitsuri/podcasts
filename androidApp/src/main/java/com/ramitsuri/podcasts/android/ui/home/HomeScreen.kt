@@ -70,8 +70,8 @@ fun HomeScreen(
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -90,11 +90,11 @@ fun HomeScreen(
                 EpisodeItem(
                     episode = it,
                     playingState =
-                    if (state.currentlyPlayingEpisodeId == it.id) {
-                        state.currentlyPlayingEpisodeState
-                    } else {
-                        PlayingState.NOT_PLAYING
-                    },
+                        if (state.currentlyPlayingEpisodeId == it.id) {
+                            state.currentlyPlayingEpisodeState
+                        } else {
+                            PlayingState.NOT_PLAYING
+                        },
                     onClicked = { onEpisodeClicked(it.id) },
                     onPlayClicked = { onEpisodePlayClicked(it) },
                     onPauseClicked = onEpisodePauseClicked,
@@ -174,25 +174,26 @@ private fun SubscribedPodcastItem(
     ) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(artwork)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(artwork)
+                    .crossfade(true)
+                    .build(),
             contentDescription = title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(80.dp)
-                .padding(4.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(80.dp)
+                    .padding(4.dp),
         )
         if (hasNewEpisodes) {
             Badge(
-                modifier = Modifier
-                    .size(16.dp)
-                    .border(4.dp, color = MaterialTheme.colorScheme.background, shape = CircleShape)
-                    .align(Alignment.TopEnd)
-                    .clip(CircleShape),
+                modifier =
+                    Modifier
+                        .size(16.dp)
+                        .border(4.dp, color = MaterialTheme.colorScheme.background, shape = CircleShape)
+                        .align(Alignment.TopEnd)
+                        .clip(CircleShape),
             )
         }
     }
@@ -217,24 +218,24 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-        Modifier
-            .clickable(onClick = onClicked)
-            .padding(top = 12.dp, bottom = 4.dp)
-            .padding(horizontal = 16.dp),
+            Modifier
+                .clickable(onClick = onClicked)
+                .padding(top = 12.dp, bottom = 4.dp)
+                .padding(horizontal = 16.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
                 model =
-                ImageRequest.Builder(LocalContext.current)
-                    .data(episode.podcastImageUrl)
-                    .crossfade(true)
-                    .build(),
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(episode.podcastImageUrl)
+                        .crossfade(true)
+                        .build(),
                 contentDescription = episode.title,
                 contentScale = ContentScale.FillBounds,
                 modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(56.dp),
+                    Modifier
+                        .clip(MaterialTheme.shapes.small)
+                        .size(56.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
@@ -315,7 +316,6 @@ private fun SubscribedPodcastItemPreview_HasNewEpisodes() {
         )
     }
 }
-
 
 @ThemePreview
 @Composable
