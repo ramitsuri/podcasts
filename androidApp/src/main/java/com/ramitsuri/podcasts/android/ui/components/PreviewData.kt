@@ -43,7 +43,7 @@ fun episode(
     isFavorite = isFavorite,
 )
 
-fun podcast() =
+fun podcast(hasNewEpisodes: Boolean = false) =
     Podcast(
         id = 1,
         guid = "guid",
@@ -64,4 +64,5 @@ fun podcast() =
         autoDownloadEpisodes = false,
         newEpisodeNotifications = false,
         subscribedDate = null,
+        hasNewEpisodes = hasNewEpisodes,
     )

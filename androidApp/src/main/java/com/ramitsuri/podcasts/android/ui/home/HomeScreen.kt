@@ -1,7 +1,9 @@
 package com.ramitsuri.podcasts.android.ui.home
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Badge
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +41,7 @@ import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
 import com.ramitsuri.podcasts.android.ui.components.episode
+import com.ramitsuri.podcasts.android.ui.components.podcast
 import com.ramitsuri.podcasts.android.utils.friendlyPublishDate
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
@@ -144,10 +149,14 @@ private fun Subscriptions(
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(podcasts) {
-                SubscribedPodcastItem(it, onPodcastClicked)
+                SubscribedPodcastItem(
+                    title = it.title,
+                    artwork = it.artwork,
+                    hasNewEpisodes = it.hasNewEpisodes,
+                    onClicked = { onPodcastClicked(it) },
+                )
             }
         }
     }
@@ -155,23 +164,38 @@ private fun Subscriptions(
 
 @Composable
 private fun SubscribedPodcastItem(
-    podcast: Podcast,
-    onClicked: (Podcast) -> Unit,
+    title: String,
+    artwork: String,
+    hasNewEpisodes: Boolean,
+    onClicked: () -> Unit,
 ) {
-    Column(modifier = Modifier.clickable(onClick = { onClicked(podcast) })) {
+    Box(
+        modifier = Modifier.clickable(onClick = onClicked),
+    ) {
         AsyncImage(
             model =
                 ImageRequest.Builder(LocalContext.current)
-                    .data(podcast.artwork)
+                    .data(artwork)
                     .crossfade(true)
                     .build(),
-            contentDescription = podcast.title,
+            contentDescription = title,
             contentScale = ContentScale.FillBounds,
             modifier =
                 Modifier
                     .clip(MaterialTheme.shapes.small)
-                    .size(80.dp),
+                    .size(80.dp)
+                    .padding(4.dp),
         )
+        if (hasNewEpisodes) {
+            Badge(
+                modifier =
+                    Modifier
+                        .size(16.dp)
+                        .border(4.dp, color = MaterialTheme.colorScheme.background, shape = CircleShape)
+                        .align(Alignment.TopEnd)
+                        .clip(CircleShape),
+            )
+        }
     }
 }
 
@@ -275,6 +299,34 @@ private fun EpisodeItemPreview() {
             onNotPlayedClicked = { },
             onFavoriteClicked = { },
             onNotFavoriteClicked = { },
+        )
+    }
+}
+
+@ThemePreview
+@Composable
+private fun SubscribedPodcastItemPreview_HasNewEpisodes() {
+    PreviewTheme {
+        val podcast = podcast(hasNewEpisodes = true)
+        SubscribedPodcastItem(
+            title = podcast.title,
+            hasNewEpisodes = podcast.hasNewEpisodes,
+            artwork = "",
+            onClicked = { },
+        )
+    }
+}
+
+@ThemePreview
+@Composable
+private fun SubscribedPodcastItemPreview() {
+    PreviewTheme {
+        val podcast = podcast(hasNewEpisodes = false)
+        SubscribedPodcastItem(
+            title = podcast.title,
+            hasNewEpisodes = podcast.hasNewEpisodes,
+            artwork = "",
+            onClicked = { },
         )
     }
 }

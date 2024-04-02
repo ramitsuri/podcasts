@@ -106,6 +106,18 @@ internal class PodcastsDaoImpl(
         }
     }
 
+    override suspend fun updateHasNewEpisodes(
+        id: Long,
+        hasNewEpisodes: Boolean,
+    ) {
+        withContext(ioDispatcher) {
+            podcastAdditionalInfoEntityQueries.updateHasNewEpisodes(
+                id = id,
+                hasNewEpisodes = hasNewEpisodes,
+            )
+        }
+    }
+
     private fun insert(podcast: Podcast) {
         podcastEntityQueries.insertOrReplace(
             PodcastEntity(
@@ -131,6 +143,7 @@ internal class PodcastsDaoImpl(
                 autoDownloadEpisodes = podcast.autoDownloadEpisodes,
                 newEpisodeNotification = podcast.newEpisodeNotifications,
                 subscribedDate = podcast.subscribedDate,
+                hasNewEpisodes = podcast.hasNewEpisodes,
             ),
         )
     }
