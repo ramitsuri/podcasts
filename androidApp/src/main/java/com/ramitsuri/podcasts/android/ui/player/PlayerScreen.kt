@@ -1,6 +1,7 @@
 package com.ramitsuri.podcasts.android.ui.player
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -83,6 +84,7 @@ fun PlayerScreen(
     onSleepTimer: (SleepTimer) -> Unit,
     onSleepTimerIncrease: () -> Unit,
     onSleepTimerDecrease: () -> Unit,
+    onNotExpandedPlayerClicked: () -> Unit,
 ) {
     val alphaExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 1f else 0f, label = "player visibility")
     val alphaNotExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 0f else 1f, label = "player visibility")
@@ -97,15 +99,18 @@ fun PlayerScreen(
             if (state.hasEverBeenPlayed) {
                 PlayerScreenNotExpanded(
                     modifier =
-                        Modifier.onGloballyPositioned {
-                            onNotExpandedHeightKnown(it.size.height)
-                        }.alpha(alphaNotExpandedPlayer),
+                        Modifier
+                            .onGloballyPositioned {
+                                onNotExpandedHeightKnown(it.size.height)
+                            }
+                            .alpha(alphaNotExpandedPlayer),
                     episodeTitle = state.episodeTitle,
                     episodeArtwork = state.episodeArtworkUrl,
                     playingState = state.playingState,
                     playProgress = state.progress,
                     onPlayClicked = onPlayClicked,
                     onPauseClicked = onPauseClicked,
+                    onClicked = onNotExpandedPlayerClicked,
                 )
             }
         }
@@ -589,8 +594,14 @@ private fun PlayerScreenNotExpanded(
     playProgress: Float,
     onPlayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
+    onClicked: () -> Unit,
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClicked),
+    ) {
         Row(
             modifier =
                 Modifier
@@ -683,6 +694,7 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
             onSleepTimer = { },
             onSleepTimerIncrease = { },
             onSleepTimerDecrease = { },
+            onNotExpandedPlayerClicked = { },
         )
     }
 }
@@ -721,6 +733,7 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
             onSleepTimer = { },
             onSleepTimerIncrease = { },
             onSleepTimerDecrease = { },
+            onNotExpandedPlayerClicked = { },
         )
     }
 }
@@ -760,6 +773,7 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
             onSleepTimer = { },
             onSleepTimerIncrease = { },
             onSleepTimerDecrease = { },
+            onNotExpandedPlayerClicked = { },
         )
     }
 }
@@ -798,6 +812,7 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
             onSleepTimer = { },
             onSleepTimerIncrease = { },
             onSleepTimerDecrease = { },
+            onNotExpandedPlayerClicked = { },
         )
     }
 }
