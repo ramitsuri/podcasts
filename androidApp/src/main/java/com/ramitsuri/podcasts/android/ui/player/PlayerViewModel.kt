@@ -77,7 +77,7 @@ class PlayerViewModel(
                                 .coerceIn(0f, 1f)
                         _state.update {
                             it.copy(
-                                hasEverBeenPlayed = true,
+                                episodeId = episode.id,
                                 episodeTitle = episode.title,
                                 episodeArtworkUrl = episode.podcastImageUrl,
                                 podcastName = episode.podcastName,
@@ -194,18 +194,18 @@ class PlayerViewModel(
 
     fun onFavoriteClicked() {
         longLivingScope.launch {
-            val episode = episodesRepository.getCurrentEpisode().firstOrNull()
-            if (episode != null) {
-                episodesRepository.updateFavorite(episode.id, true)
+            val episodeId = _state.value.episodeId
+            if (episodeId != null) {
+                episodesRepository.updateFavorite(episodeId, true)
             }
         }
     }
 
     fun onNotFavoriteClicked() {
         longLivingScope.launch {
-            val episode = episodesRepository.getCurrentEpisode().firstOrNull()
-            if (episode != null) {
-                episodesRepository.updateFavorite(episode.id, false)
+            val episodeId = _state.value.episodeId
+            if (episodeId != null) {
+                episodesRepository.updateFavorite(episodeId, false)
             }
         }
     }

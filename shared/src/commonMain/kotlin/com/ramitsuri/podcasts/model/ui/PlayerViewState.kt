@@ -4,7 +4,7 @@ import com.ramitsuri.podcasts.model.PlayingState
 import kotlin.time.Duration
 
 data class PlayerViewState(
-    val hasEverBeenPlayed: Boolean = false,
+    val episodeId: String? = null,
     val playingState: PlayingState = PlayingState.NOT_PLAYING,
     val episodeTitle: String = "",
     val episodeArtworkUrl: String = "",
@@ -19,4 +19,6 @@ data class PlayerViewState(
     val totalDuration: Duration? = Duration.ZERO,
     val trimSilence: Boolean = false,
     val isFavorite: Boolean = false,
-)
+) {
+    val hasEverBeenPlayed = episodeId != null
+}

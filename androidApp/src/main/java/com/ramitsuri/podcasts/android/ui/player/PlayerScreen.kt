@@ -75,6 +75,7 @@ fun PlayerScreen(
     modifier: Modifier = Modifier,
     onNotExpandedHeightKnown: (Int) -> Unit,
     onGoToQueueClicked: () -> Unit,
+    onEpisodeTitleClicked: () -> Unit,
     onReplayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
     onPlayClicked: () -> Unit,
@@ -135,6 +136,7 @@ fun PlayerScreen(
                 trimSilence = state.trimSilence,
                 isCasting = state.isCasting,
                 isFavorite = state.isFavorite,
+                onEpisodeTitleClicked = onEpisodeTitleClicked,
                 onGoToQueueClicked = onGoToQueueClicked,
                 onReplayClicked = onReplayClicked,
                 onPauseClicked = onPauseClicked,
@@ -171,6 +173,7 @@ private fun PlayerScreenExpanded(
     trimSilence: Boolean,
     isCasting: Boolean,
     isFavorite: Boolean,
+    onEpisodeTitleClicked: () -> Unit,
     onGoToQueueClicked: () -> Unit,
     onReplayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
@@ -205,13 +208,21 @@ private fun PlayerScreenExpanded(
                     .size(360.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = episodeTitle,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(8.dp),
-            textAlign = TextAlign.Center,
-        )
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onEpisodeTitleClicked),
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = episodeTitle,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(8.dp),
+                textAlign = TextAlign.Center,
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = podcastName,
@@ -726,7 +737,6 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
                 isExpanded = false,
                 state =
                     PlayerViewState(
-                        hasEverBeenPlayed = true,
                         playingState = PlayingState.PLAYING,
                         episodeTitle = episode().title,
                         episodeArtworkUrl = episode().podcastImageUrl,
@@ -740,6 +750,7 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
                         remainingDuration = 55.minutes + 32.seconds,
                     ),
                 onNotExpandedHeightKnown = { },
+                onEpisodeTitleClicked = { },
                 onGoToQueueClicked = { },
                 onReplayClicked = { },
                 onPauseClicked = { },
@@ -783,6 +794,7 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
                         remainingDuration = 55.minutes + 32.seconds,
                     ),
                 onNotExpandedHeightKnown = { },
+                onEpisodeTitleClicked = { },
                 onGoToQueueClicked = { },
                 onReplayClicked = { },
                 onPauseClicked = { },
@@ -813,7 +825,7 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
                 isExpanded = true,
                 state =
                     PlayerViewState(
-                        hasEverBeenPlayed = true,
+                        episodeId = "",
                         playingState = PlayingState.PLAYING,
                         episodeTitle = episode().title,
                         episodeArtworkUrl = episode().podcastImageUrl,
@@ -827,6 +839,7 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
                         remainingDuration = 55.minutes + 32.seconds,
                     ),
                 onNotExpandedHeightKnown = { },
+                onEpisodeTitleClicked = { },
                 onGoToQueueClicked = { },
                 onReplayClicked = { },
                 onPauseClicked = { },
@@ -869,6 +882,7 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
                     remainingDuration = 55.minutes + 32.seconds,
                 ),
             onNotExpandedHeightKnown = { },
+            onEpisodeTitleClicked = { },
             onGoToQueueClicked = { },
             onReplayClicked = { },
             onPauseClicked = { },
