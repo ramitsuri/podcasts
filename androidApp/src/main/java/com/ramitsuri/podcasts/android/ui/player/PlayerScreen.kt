@@ -1,6 +1,7 @@
 package com.ramitsuri.podcasts.android.ui.player
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,7 +30,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -94,20 +95,20 @@ fun PlayerScreen(
     val alphaNotExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 0f else 1f, label = "player visibility")
     Box(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(if (isExpanded) 16.dp else 0.dp),
+        modifier
+            .fillMaxWidth()
+            .padding(if (isExpanded) 16.dp else 0.dp),
         contentAlignment = Alignment.TopCenter,
     ) {
         if (!isExpanded) {
             if (state.hasEverBeenPlayed) {
                 PlayerScreenNotExpanded(
                     modifier =
-                        Modifier
-                            .onGloballyPositioned {
-                                onNotExpandedHeightKnown(it.size.height)
-                            }
-                            .alpha(alphaNotExpandedPlayer),
+                    Modifier
+                        .onGloballyPositioned {
+                            onNotExpandedHeightKnown(it.size.height)
+                        }
+                        .alpha(alphaNotExpandedPlayer),
                     episodeTitle = state.episodeTitle,
                     episodeArtwork = state.episodeArtworkUrl,
                     playingState = state.playingState,
@@ -192,16 +193,16 @@ private fun PlayerScreenExpanded(
     ) {
         AsyncImage(
             model =
-                ImageRequest.Builder(LocalContext.current)
-                    .data(episodeArtwork)
-                    .crossfade(true)
-                    .build(),
+            ImageRequest.Builder(LocalContext.current)
+                .data(episodeArtwork)
+                .crossfade(true)
+                .build(),
             contentDescription = episodeTitle,
             contentScale = ContentScale.FillBounds,
             modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(360.dp),
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .size(360.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
@@ -501,9 +502,9 @@ fun SleepTimerControl(
                 Icon(
                     imageVector = Icons.Outlined.Nightlight,
                     modifier =
-                        Modifier
-                            .size(24.dp)
-                            .rotate(-30f),
+                    Modifier
+                        .size(24.dp)
+                        .rotate(-30f),
                     contentDescription = stringResource(id = R.string.player_sleep_timer),
                 )
             }
@@ -630,29 +631,29 @@ private fun PlayerScreenNotExpanded(
 ) {
     Column(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClicked),
+        modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClicked),
     ) {
         Row(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
                 model =
-                    ImageRequest.Builder(LocalContext.current)
-                        .data(episodeArtwork)
-                        .crossfade(true)
-                        .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(episodeArtwork)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = episodeTitle,
                 contentScale = ContentScale.FillBounds,
                 modifier =
-                    Modifier
-                        .clip(MaterialTheme.shapes.small)
-                        .size(48.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(48.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
@@ -687,8 +688,32 @@ private fun PlayerScreenNotExpanded(
                 }
             }
         }
-        // TODO show play progress in divider
-        HorizontalDivider()
+        PlayProgressNotExpanded(playProgress = playProgress)
+    }
+}
+
+@Composable
+private fun PlayProgressNotExpanded(playProgress: Float) {
+    val color1 = MaterialTheme.colorScheme.onSurface
+    val color2 = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+    val thickness = 1.dp
+    Canvas(
+        Modifier
+            .fillMaxWidth()
+            .height(thickness),
+    ) {
+        drawLine(
+            color = color1,
+            strokeWidth = thickness.toPx(),
+            start = Offset(0f, thickness.toPx() / 2),
+            end = Offset(size.width * playProgress, thickness.toPx() / 2),
+        )
+        drawLine(
+            color = color2,
+            strokeWidth = thickness.toPx(),
+            start = Offset(size.width * playProgress, thickness.toPx() / 2),
+            end = Offset(size.width, thickness.toPx() / 2),
+        )
     }
 }
 
@@ -696,91 +721,10 @@ private fun PlayerScreenNotExpanded(
 @Composable
 private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
     PreviewTheme {
-        PlayerScreen(
-            isExpanded = false,
-            state =
-                PlayerViewState(
-                    playingState = PlayingState.PLAYING,
-                    episodeTitle = episode().title,
-                    episodeArtworkUrl = episode().podcastImageUrl,
-                    podcastName = episode().podcastName,
-                    sleepTimer = SleepTimer.None,
-                    sleepTimerDuration = null,
-                    playbackSpeed = 1f,
-                    isCasting = false,
-                    progress = 0.4f,
-                    playedDuration = 5.seconds,
-                    remainingDuration = 55.minutes + 32.seconds,
-                ),
-            onNotExpandedHeightKnown = { },
-            onGoToQueueClicked = { },
-            onReplayClicked = { },
-            onPauseClicked = { },
-            onPlayClicked = { },
-            onSkipClicked = { },
-            onSeekValueChange = { },
-            onPlaybackSpeedSet = { },
-            onPlaybackSpeedIncrease = { },
-            onPlaybackSpeedDecrease = { },
-            onToggleTrimSilence = { },
-            onSleepTimer = { },
-            onSleepTimerIncrease = { },
-            onSleepTimerDecrease = { },
-            onNotExpandedPlayerClicked = { },
-            onFavoriteClicked = { },
-            onNotFavoriteClicked = { },
-        )
-    }
-}
-
-@ThemePreview
-@Composable
-private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
-    PreviewTheme {
-        PlayerScreen(
-            isExpanded = false,
-            state =
-                PlayerViewState(
-                    playingState = PlayingState.NOT_PLAYING,
-                    episodeTitle = episode().title,
-                    episodeArtworkUrl = episode().podcastImageUrl,
-                    podcastName = episode().podcastName,
-                    sleepTimer = SleepTimer.None,
-                    sleepTimerDuration = null,
-                    playbackSpeed = 1f,
-                    isCasting = false,
-                    progress = 0.4f,
-                    playedDuration = 5.seconds,
-                    remainingDuration = 55.minutes + 32.seconds,
-                ),
-            onNotExpandedHeightKnown = { },
-            onGoToQueueClicked = { },
-            onReplayClicked = { },
-            onPauseClicked = { },
-            onPlayClicked = { },
-            onSkipClicked = { },
-            onSeekValueChange = { },
-            onPlaybackSpeedSet = { },
-            onPlaybackSpeedIncrease = { },
-            onPlaybackSpeedDecrease = { },
-            onToggleTrimSilence = { },
-            onSleepTimer = { },
-            onSleepTimerIncrease = { },
-            onSleepTimerDecrease = { },
-            onNotExpandedPlayerClicked = { },
-            onFavoriteClicked = { },
-            onNotFavoriteClicked = { },
-        )
-    }
-}
-
-@ThemePreview
-@Composable
-private fun PlayerScreenPreview_IsPlaying_Expanded() {
-    PreviewTheme {
-        PlayerScreen(
-            isExpanded = true,
-            state =
+        Column(modifier = Modifier.fillMaxWidth()) {
+            PlayerScreen(
+                isExpanded = false,
+                state =
                 PlayerViewState(
                     hasEverBeenPlayed = true,
                     playingState = PlayingState.PLAYING,
@@ -795,35 +739,36 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
                     playedDuration = 5.seconds,
                     remainingDuration = 55.minutes + 32.seconds,
                 ),
-            onNotExpandedHeightKnown = { },
-            onGoToQueueClicked = { },
-            onReplayClicked = { },
-            onPauseClicked = { },
-            onPlayClicked = { },
-            onSkipClicked = { },
-            onSeekValueChange = { },
-            onPlaybackSpeedSet = { },
-            onPlaybackSpeedIncrease = { },
-            onPlaybackSpeedDecrease = { },
-            onToggleTrimSilence = { },
-            onSleepTimer = { },
-            onSleepTimerIncrease = { },
-            onSleepTimerDecrease = { },
-            onNotExpandedPlayerClicked = { },
-            onFavoriteClicked = { },
-            onNotFavoriteClicked = { },
-        )
+                onNotExpandedHeightKnown = { },
+                onGoToQueueClicked = { },
+                onReplayClicked = { },
+                onPauseClicked = { },
+                onPlayClicked = { },
+                onSkipClicked = { },
+                onSeekValueChange = { },
+                onPlaybackSpeedSet = { },
+                onPlaybackSpeedIncrease = { },
+                onPlaybackSpeedDecrease = { },
+                onToggleTrimSilence = { },
+                onSleepTimer = { },
+                onSleepTimerIncrease = { },
+                onSleepTimerDecrease = { },
+                onNotExpandedPlayerClicked = { },
+                onFavoriteClicked = { },
+                onNotFavoriteClicked = { },
+            )
+        }
     }
 }
 
 @ThemePreview
 @Composable
-private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
+private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
     PreviewTheme {
-        PlayerScreen(
-            isExpanded = true,
-            state =
-                PlayerViewState(
+        Column(modifier = Modifier.fillMaxWidth()) {
+            PlayerScreen(
+                isExpanded = false,
+                state = PlayerViewState(
                     playingState = PlayingState.NOT_PLAYING,
                     episodeTitle = episode().title,
                     episodeArtworkUrl = episode().podcastImageUrl,
@@ -836,6 +781,92 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
                     playedDuration = 5.seconds,
                     remainingDuration = 55.minutes + 32.seconds,
                 ),
+                onNotExpandedHeightKnown = { },
+                onGoToQueueClicked = { },
+                onReplayClicked = { },
+                onPauseClicked = { },
+                onPlayClicked = { },
+                onSkipClicked = { },
+                onSeekValueChange = { },
+                onPlaybackSpeedSet = { },
+                onPlaybackSpeedIncrease = { },
+                onPlaybackSpeedDecrease = { },
+                onToggleTrimSilence = { },
+                onSleepTimer = { },
+                onSleepTimerIncrease = { },
+                onSleepTimerDecrease = { },
+                onNotExpandedPlayerClicked = { },
+                onFavoriteClicked = { },
+                onNotFavoriteClicked = { },
+            )
+        }
+    }
+}
+
+@ThemePreview
+@Composable
+private fun PlayerScreenPreview_IsPlaying_Expanded() {
+    PreviewTheme {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            PlayerScreen(
+                isExpanded = true,
+                state =
+                PlayerViewState(
+                    hasEverBeenPlayed = true,
+                    playingState = PlayingState.PLAYING,
+                    episodeTitle = episode().title,
+                    episodeArtworkUrl = episode().podcastImageUrl,
+                    podcastName = episode().podcastName,
+                    sleepTimer = SleepTimer.None,
+                    sleepTimerDuration = null,
+                    playbackSpeed = 1f,
+                    isCasting = false,
+                    progress = 0.4f,
+                    playedDuration = 5.seconds,
+                    remainingDuration = 55.minutes + 32.seconds,
+                ),
+                onNotExpandedHeightKnown = { },
+                onGoToQueueClicked = { },
+                onReplayClicked = { },
+                onPauseClicked = { },
+                onPlayClicked = { },
+                onSkipClicked = { },
+                onSeekValueChange = { },
+                onPlaybackSpeedSet = { },
+                onPlaybackSpeedIncrease = { },
+                onPlaybackSpeedDecrease = { },
+                onToggleTrimSilence = { },
+                onSleepTimer = { },
+                onSleepTimerIncrease = { },
+                onSleepTimerDecrease = { },
+                onNotExpandedPlayerClicked = { },
+                onFavoriteClicked = { },
+                onNotFavoriteClicked = { },
+            )
+        }
+    }
+}
+
+@ThemePreview
+@Composable
+private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
+    PreviewTheme {
+        PlayerScreen(
+            isExpanded = true,
+            state =
+            PlayerViewState(
+                playingState = PlayingState.NOT_PLAYING,
+                episodeTitle = episode().title,
+                episodeArtworkUrl = episode().podcastImageUrl,
+                podcastName = episode().podcastName,
+                sleepTimer = SleepTimer.None,
+                sleepTimerDuration = null,
+                playbackSpeed = 1f,
+                isCasting = false,
+                progress = 0.4f,
+                playedDuration = 5.seconds,
+                remainingDuration = 55.minutes + 32.seconds,
+            ),
             onNotExpandedHeightKnown = { },
             onGoToQueueClicked = { },
             onReplayClicked = { },
