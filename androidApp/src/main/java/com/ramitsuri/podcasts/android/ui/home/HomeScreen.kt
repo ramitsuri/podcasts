@@ -32,7 +32,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import be.digitalia.compose.htmlconverter.htmlToString
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -239,7 +241,10 @@ private fun EpisodeItem(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
-                Text(style = MaterialTheme.typography.bodySmall, text = episode.podcastName)
+                Text(
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
+                    text = episode.podcastName,
+                )
                 val datePublished = episode.datePublishedInstant
                 if (datePublished != null) {
                     Text(
@@ -251,16 +256,18 @@ private fun EpisodeItem(
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             text = episode.title,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Medium,
             maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
         )
         Text(
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.5.sp),
             maxLines = 2,
             text = remember(episode.description) { htmlToString(episode.description) },
             modifier = Modifier.fillMaxWidth(),
+            overflow = TextOverflow.Ellipsis,
         )
         EpisodeControls(
             episode = episode,
