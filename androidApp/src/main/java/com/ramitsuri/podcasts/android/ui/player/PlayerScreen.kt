@@ -16,6 +16,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistPlay
 import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material.icons.filled.CastConnected
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Forward30
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Pause
@@ -85,6 +87,8 @@ fun PlayerScreen(
     onSleepTimerIncrease: () -> Unit,
     onSleepTimerDecrease: () -> Unit,
     onNotExpandedPlayerClicked: () -> Unit,
+    onFavoriteClicked: () -> Unit,
+    onNotFavoriteClicked: () -> Unit,
 ) {
     val alphaExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 1f else 0f, label = "player visibility")
     val alphaNotExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 0f else 1f, label = "player visibility")
@@ -129,6 +133,7 @@ fun PlayerScreen(
                 playbackSpeed = state.playbackSpeed,
                 trimSilence = state.trimSilence,
                 isCasting = state.isCasting,
+                isFavorite = state.isFavorite,
                 onGoToQueueClicked = onGoToQueueClicked,
                 onReplayClicked = onReplayClicked,
                 onPauseClicked = onPauseClicked,
@@ -142,6 +147,8 @@ fun PlayerScreen(
                 onSleepTimer = onSleepTimer,
                 onSleepTimerIncrease = onSleepTimerIncrease,
                 onSleepTimerDecrease = onSleepTimerDecrease,
+                onFavoriteClicked = onFavoriteClicked,
+                onNotFavoriteClicked = onNotFavoriteClicked,
             )
         }
     }
@@ -162,6 +169,7 @@ private fun PlayerScreenExpanded(
     playbackSpeed: Float,
     trimSilence: Boolean,
     isCasting: Boolean,
+    isFavorite: Boolean,
     onGoToQueueClicked: () -> Unit,
     onReplayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
@@ -175,6 +183,8 @@ private fun PlayerScreenExpanded(
     onSleepTimer: (SleepTimer) -> Unit,
     onSleepTimerIncrease: () -> Unit,
     onSleepTimerDecrease: () -> Unit,
+    onFavoriteClicked: () -> Unit,
+    onNotFavoriteClicked: () -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -220,11 +230,14 @@ private fun PlayerScreenExpanded(
         Spacer(modifier = Modifier.height(16.dp))
         MainControls(
             playingState = playingState,
+            isFavorite = isFavorite,
             onGoToQueueClicked = onGoToQueueClicked,
             onReplayClicked = onReplayClicked,
             onPauseClicked = onPauseClicked,
             onPlayClicked = onPlayClicked,
             onSkipClicked = onSkipClicked,
+            onFavoriteClicked = onFavoriteClicked,
+            onNotFavoriteClicked = onNotFavoriteClicked,
         )
         Spacer(modifier = Modifier.height(16.dp))
         SecondaryControls(
@@ -247,11 +260,14 @@ private fun PlayerScreenExpanded(
 @Composable
 private fun MainControls(
     playingState: PlayingState,
+    isFavorite: Boolean,
     onGoToQueueClicked: () -> Unit,
     onReplayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
     onPlayClicked: () -> Unit,
     onSkipClicked: () -> Unit,
+    onFavoriteClicked: () -> Unit,
+    onNotFavoriteClicked: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -304,7 +320,23 @@ private fun MainControls(
                 contentDescription = stringResource(id = R.string.skip_30),
             )
         }
-        Spacer(modifier = Modifier.width(40.dp))
+        if (isFavorite) {
+            IconButton(onClick = onNotFavoriteClicked) {
+                Icon(
+                    imageVector = Icons.Filled.Favorite,
+                    modifier = Modifier.size(24.dp),
+                    contentDescription = stringResource(id = R.string.episode_controller_mark_not_favorite),
+                )
+            }
+        } else {
+            IconButton(onClick = onFavoriteClicked) {
+                Icon(
+                    imageVector = Icons.Filled.FavoriteBorder,
+                    modifier = Modifier.size(24.dp),
+                    contentDescription = stringResource(id = R.string.episode_controller_mark_favorite),
+                )
+            }
+        }
     }
 }
 
@@ -695,6 +727,8 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
             onSleepTimerIncrease = { },
             onSleepTimerDecrease = { },
             onNotExpandedPlayerClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
         )
     }
 }
@@ -734,6 +768,8 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
             onSleepTimerIncrease = { },
             onSleepTimerDecrease = { },
             onNotExpandedPlayerClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
         )
     }
 }
@@ -774,6 +810,8 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
             onSleepTimerIncrease = { },
             onSleepTimerDecrease = { },
             onNotExpandedPlayerClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
         )
     }
 }
@@ -813,6 +851,8 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
             onSleepTimerIncrease = { },
             onSleepTimerDecrease = { },
             onNotExpandedPlayerClicked = { },
+            onFavoriteClicked = { },
+            onNotFavoriteClicked = { },
         )
     }
 }

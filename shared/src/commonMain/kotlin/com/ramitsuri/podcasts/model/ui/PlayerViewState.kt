@@ -18,4 +18,5 @@ data class PlayerViewState(
     val remainingDuration: Duration? = Duration.ZERO,
     val totalDuration: Duration? = Duration.ZERO,
     val trimSilence: Boolean = false,
+    val isFavorite: Boolean = false,
 )

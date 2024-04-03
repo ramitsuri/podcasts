@@ -155,6 +155,8 @@ fun NavGraph(
                                     scaffoldSheetState.bottomSheetState.expand()
                                 }
                             },
+                            onFavoriteClicked = playerViewModel::onFavoriteClicked,
+                            onNotFavoriteClicked = playerViewModel::onNotFavoriteClicked,
                         )
                     }
                 } else {
