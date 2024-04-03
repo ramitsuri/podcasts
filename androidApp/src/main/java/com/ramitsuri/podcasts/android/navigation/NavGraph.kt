@@ -132,6 +132,16 @@ fun NavGraph(
                             onNotExpandedHeightKnown = {
                                 peekHeightPx = it
                             },
+                            onEpisodeTitleClicked = {
+                                coroutineScope.launch {
+                                    scaffoldSheetState.bottomSheetState.partialExpand()
+                                }
+                                val episodeId = playerState.episodeId
+                                if (episodeId != null) {
+                                    val encoded = Uri.encode(episodeId)
+                                    navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
+                                }
+                            },
                             onGoToQueueClicked = {
                                 coroutineScope.launch {
                                     scaffoldSheetState.bottomSheetState.partialExpand()
