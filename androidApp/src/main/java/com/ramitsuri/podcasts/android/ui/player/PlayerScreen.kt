@@ -208,11 +208,12 @@ private fun PlayerScreenExpanded(
                     .size(360.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Row(modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onEpisodeTitleClicked),
-                horizontalArrangement = Arrangement.Center
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onEpisodeTitleClicked),
+            horizontalArrangement = Arrangement.Center,
         ) {
             Text(
                 text = episodeTitle,
