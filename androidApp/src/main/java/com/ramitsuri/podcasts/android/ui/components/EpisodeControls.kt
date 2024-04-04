@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.DownloadForOffline
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
@@ -39,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
@@ -118,7 +118,7 @@ fun EpisodeControls(
 
             DownloadStatus.DOWNLOADED -> {
                 ControlWithTooltip(
-                    icon = Icons.Filled.DownloadForOffline,
+                    icon = ImageVector.vectorResource(R.drawable.ic_arrow_circle_down),
                     toolTipLabelRes = R.string.episode_controller_remove_download,
                     onClicked = onRemoveDownloadClicked,
                     useTint = true,
