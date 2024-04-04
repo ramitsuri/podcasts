@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.repositories
 
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.Podcast
+import com.ramitsuri.podcasts.model.PodcastRefreshResult
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.model.PodcastWithEpisodes
 import kotlinx.coroutines.CoroutineDispatcher
@@ -19,33 +20,45 @@ class PodcastsAndEpisodesRepository internal constructor(
     private val episodesRepository: EpisodesRepository,
     private val ioDispatcher: CoroutineDispatcher,
 ) {
-    suspend fun refreshPodcast(podcastId: Long): PodcastResult<Unit> {
-        return when (val result = episodesRepository.refreshForPodcastId(podcastId)) {
-            is PodcastResult.Failure -> {
-                result
-            }
-
-            is PodcastResult.Success -> {
-                if (result.data.count > 0) {
-                    podcastsRepository.updateHasNewEpisodes(podcastId, true)
-                }
-                PodcastResult.Success(Unit)
-            }
+    suspend fun refreshPodcast(podcastId: Long): PodcastResult<List<Episode>> {
+        val result = episodesRepository.refreshForPodcastId(podcastId)
+        if ((result as? PodcastResult.Success)?.data?.isNotEmpty() == true) {
+            podcastsRepository.updateHasNewEpisodes(podcastId, true)
         }
+        return result
     }
 
-    suspend fun refreshPodcasts(): PodcastResult<Unit> {
+    suspend fun refreshPodcasts(): PodcastResult<PodcastRefreshResult> {
         return withContext(ioDispatcher) {
             val subscribed = podcastsRepository.getAllSubscribed()
-            val results = mutableListOf<PodcastResult<Unit>>()
-            subscribed.map {
+            val autoDownloadableEpisodes = mutableListOf<Episode>()
+            val otherEpisodes = mutableListOf<Episode>()
+            val failures = mutableListOf<PodcastResult.Failure>()
+            subscribed.map { podcast ->
                 launch {
-                    results.add(refreshPodcast(podcastId = it.id))
+                    when (val refreshResult = refreshPodcast(podcastId = podcast.id)) {
+                        is PodcastResult.Failure -> {
+                            failures.add(refreshResult)
+                        }
+
+                        is PodcastResult.Success -> {
+                            if (podcast.autoDownloadEpisodes) {
+                                autoDownloadableEpisodes.addAll(refreshResult.data)
+                            } else {
+                                otherEpisodes.addAll(refreshResult.data)
+                            }
+                        }
+                    }
                 }
             }.joinAll()
-            val failure = results.firstOrNull { it is PodcastResult.Failure } as? PodcastResult.Failure
+            val failure = failures.firstOrNull()
             if (failure == null) {
-                PodcastResult.Success(Unit)
+                PodcastResult.Success(
+                    PodcastRefreshResult(
+                        autoDownloadableEpisodes = autoDownloadableEpisodes,
+                        otherEpisodes = otherEpisodes,
+                    )
+                )
             } else {
                 PodcastResult.Failure(failure.error)
             }
