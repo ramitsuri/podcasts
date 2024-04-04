@@ -10,6 +10,7 @@ import com.ramitsuri.podcasts.database.dao.interfaces.PodcastsDao
 import com.ramitsuri.podcasts.database.dao.interfaces.SessionActionDao
 import com.ramitsuri.podcasts.database.dao.interfaces.SessionActionDaoImpl
 import com.ramitsuri.podcasts.database.provideDatabase
+import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.network.api.CategoriesApiImpl
 import com.ramitsuri.podcasts.network.api.EpisodesApiImpl
 import com.ramitsuri.podcasts.network.api.PodcastsApiImpl
@@ -160,6 +161,7 @@ private val coreModule =
                 clock = get<Clock>(),
                 foregroundStateObserver = get<ForegroundStateObserver>(),
                 longLivingScope = get<CoroutineScope>(),
+                episodeDownloader = get<EpisodeDownloader>(),
             )
         }
 
