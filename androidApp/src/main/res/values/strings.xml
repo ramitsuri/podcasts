@@ -115,4 +115,8 @@
     <string name="play_state_button_hour">%1$s hr</string>
     <string name="play_state_button_hour_and_min">%1$s hr %2$s min</string>
     <string name="play_state_button_left">" left"</string>
+
+    <!-- Episode Fetch Worker -->
+    <string name="episode_fetch_worker_id">high_priority_tasks</string>
+    <string name="episode_fetch_worker">Checking for new episodes</string>
 </resources>

@@ -18,6 +18,7 @@ import com.ramitsuri.podcasts.AppInfo
 import com.ramitsuri.podcasts.android.media.DownloadManagerListener
 import com.ramitsuri.podcasts.android.media.EpisodeDownloaderImpl
 import com.ramitsuri.podcasts.android.media.PlayerControllerImpl
+import com.ramitsuri.podcasts.android.utils.EpisodeFetchWorker
 import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.initKoin
 import com.ramitsuri.podcasts.player.PlayerController
@@ -44,6 +45,7 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
         playerController.initializePlayer()
         if (!BuildConfig.DEBUG) {
             episodeFetcher.startForegroundStateBasedFetcher()
+            EpisodeFetchWorker.enqueuePeriodic(this)
         }
     }
 

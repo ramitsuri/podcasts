@@ -34,11 +34,11 @@ class EpisodeFetcher(
         }
     }
 
-    suspend fun fetchPodcastsIfNecessary() {
+    suspend fun fetchPodcastsIfNecessary(forced: Boolean = false) {
         refreshPodcastsMutex.withLock {
             val lastFetchTime = settings.getLastEpisodeFetchTime()
             val now = clock.now()
-            if (now.minus(lastFetchTime) > FETCH_THRESHOLD_MINUTES.minutes) {
+            if (forced || now.minus(lastFetchTime) > FETCH_THRESHOLD_MINUTES.minutes) {
                 LogHelper.d(TAG, "Last fetched more than 5 minutes ago, fetching now")
                 val result = repository.refreshPodcasts()
                 if (result is PodcastResult.Failure) {
@@ -51,7 +51,7 @@ class EpisodeFetcher(
                     episodeDownloader.add(episode)
                 }
             } else {
-                LogHelper.d(TAG, "Last fetched less than 5 minutes ago, skipping")
+                LogHelper.d(TAG, "Last fetched less than 5 minutes ago and not forced, skipping")
             }
         }
     }
