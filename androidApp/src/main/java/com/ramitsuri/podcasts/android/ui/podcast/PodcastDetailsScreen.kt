@@ -1,6 +1,9 @@
 package com.ramitsuri.podcasts.android.ui.podcast
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,12 +14,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -47,6 +64,7 @@ fun PodcastDetailsScreen(
     onBack: () -> Unit,
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
+    toggleAutoDownloadClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
     onEpisodePauseClicked: () -> Unit,
@@ -71,6 +89,7 @@ fun PodcastDetailsScreen(
                 currentlyPlayingEpisodeState = state.playingState,
                 onSubscribeClicked = onSubscribeClicked,
                 onUnsubscribeClicked = onUnsubscribeClicked,
+                toggleAutoDownloadClicked = toggleAutoDownloadClicked,
                 onEpisodeClicked = onEpisodeClicked,
                 onEpisodePlayClicked = onEpisodePlayClicked,
                 onEpisodePauseClicked = onEpisodePauseClicked,
@@ -95,6 +114,7 @@ private fun PodcastDetails(
     currentlyPlayingEpisodeState: PlayingState,
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
+    toggleAutoDownloadClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
     onEpisodePauseClicked: () -> Unit,
@@ -115,6 +135,7 @@ private fun PodcastDetails(
                 podcast = podcast,
                 onSubscribeClicked = onSubscribeClicked,
                 onUnsubscribeClicked = onUnsubscribeClicked,
+                toggleAutoDownloadClicked = toggleAutoDownloadClicked,
             )
         }
         items(podcastWithEpisodes.episodes) {
@@ -122,11 +143,11 @@ private fun PodcastDetails(
             EpisodeItem(
                 episode = it,
                 playingState =
-                    if (currentlyPlayingEpisodeId == it.id) {
-                        currentlyPlayingEpisodeState
-                    } else {
-                        PlayingState.NOT_PLAYING
-                    },
+                if (currentlyPlayingEpisodeId == it.id) {
+                    currentlyPlayingEpisodeState
+                } else {
+                    PlayingState.NOT_PLAYING
+                },
                 onClicked = { onEpisodeClicked(it.id) },
                 onPlayClicked = { onEpisodePlayClicked(it) },
                 onPauseClicked = onEpisodePauseClicked,
@@ -150,6 +171,7 @@ private fun PodcastDetails(
 @Composable
 private fun PodcastHeader(
     podcast: Podcast,
+    toggleAutoDownloadClicked: () -> Unit,
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
 ) {
@@ -159,8 +181,10 @@ private fun PodcastHeader(
         Spacer(modifier = Modifier.height(16.dp))
         PodcastControls(
             subscribed = podcast.subscribed,
+            autoDownloadNewEpisodes = podcast.autoDownloadEpisodes,
             onSubscribeClicked = onSubscribeClicked,
             onUnsubscribeClicked = onUnsubscribeClicked,
+            toggleAutoDownloadClicked = toggleAutoDownloadClicked,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = remember(podcast.description) { htmlToString(podcast.description) })
@@ -173,16 +197,16 @@ private fun TitleAndImage(podcast: Podcast) {
     Row(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
             model =
-                ImageRequest.Builder(LocalContext.current)
-                    .data(podcast.artwork)
-                    .crossfade(true)
-                    .build(),
+            ImageRequest.Builder(LocalContext.current)
+                .data(podcast.artwork)
+                .crossfade(true)
+                .build(),
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(64.dp),
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .size(64.dp),
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column {
@@ -205,12 +229,78 @@ private fun TitleAndImage(podcast: Podcast) {
 @Composable
 private fun PodcastControls(
     subscribed: Boolean,
+    autoDownloadNewEpisodes: Boolean,
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
+    toggleAutoDownloadClicked: () -> Unit,
 ) {
-    Row(modifier = Modifier.fillMaxWidth()) {
+    var showMenu by remember { mutableStateOf(false) }
+
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         OutlinedButton(onClick = if (subscribed) onUnsubscribeClicked else onSubscribeClicked) {
             Text(text = stringResource(id = if (subscribed) R.string.unsubscribe else R.string.subscribe))
+        }
+        AnimatedVisibility(visible = subscribed) {
+            PodcastMenu(
+                showMenu = showMenu,
+                onToggleMenu = { showMenu = !showMenu },
+                autoDownloadNewEpisodes = autoDownloadNewEpisodes,
+                toggleAutoDownloadClicked = toggleAutoDownloadClicked,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PodcastMenu(
+    showMenu: Boolean,
+    onToggleMenu: () -> Unit,
+    autoDownloadNewEpisodes: Boolean,
+    toggleAutoDownloadClicked: () -> Unit,
+) {
+    Box {
+        IconButton(onClick = { onToggleMenu() }) {
+            Icon(
+                imageVector = Icons.Filled.MoreVert,
+                modifier =
+                Modifier
+                    .size(24.dp),
+                contentDescription = stringResource(id = R.string.menu),
+            )
+        }
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = onToggleMenu,
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(stringResource(id = R.string.auto_download_new_episodes))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Switch(
+                            checked = autoDownloadNewEpisodes,
+                            onCheckedChange = null,
+                            thumbContent = if (autoDownloadNewEpisodes) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Filled.Check,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
+                                }
+                            } else {
+                                null
+                            }
+                        )
+
+                    }
+                },
+                onClick = {
+                    toggleAutoDownloadClicked()
+                },
+            )
         }
     }
 }
@@ -234,10 +324,10 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-            Modifier
-                .clickable(onClick = onClicked)
-                .padding(top = 12.dp, bottom = 4.dp)
-                .padding(horizontal = 16.dp),
+        Modifier
+            .clickable(onClick = onClicked)
+            .padding(top = 12.dp, bottom = 4.dp)
+            .padding(horizontal = 16.dp),
     ) {
         val datePublished = episode.datePublishedInstant
         if (datePublished != null) {
@@ -284,18 +374,19 @@ private fun PodcastDetailsPreview() {
     PreviewTheme {
         PodcastDetailsScreen(
             state =
-                PodcastDetailsViewState(
-                    podcastWithEpisodes =
-                        PodcastWithEpisodes(
-                            podcast = podcast(),
-                            episodes = listOf(episode(), episode(), episode(), episode()),
-                        ),
-                    currentlyPlayingEpisodeId = null,
-                    playingState = PlayingState.NOT_PLAYING,
+            PodcastDetailsViewState(
+                podcastWithEpisodes =
+                PodcastWithEpisodes(
+                    podcast = podcast(),
+                    episodes = listOf(episode(), episode(), episode(), episode()),
                 ),
+                currentlyPlayingEpisodeId = null,
+                playingState = PlayingState.NOT_PLAYING,
+            ),
             onBack = { },
             onSubscribeClicked = { },
             onUnsubscribeClicked = { },
+            toggleAutoDownloadClicked = { },
             onEpisodeClicked = { },
             onEpisodePlayClicked = { },
             onEpisodePauseClicked = { },
