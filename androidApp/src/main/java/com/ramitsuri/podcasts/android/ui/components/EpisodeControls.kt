@@ -158,10 +158,11 @@ private fun EpisodeMenu(
     onPlayedClicked: () -> Unit,
     onNotPlayedClicked: () -> Unit,
 ) {
-    val sendIntent = Intent(Intent.ACTION_SEND).apply {
-        putExtra(Intent.EXTRA_TEXT, "$podcastTitle: $episodeTitle")
-        type = "text/plain"
-    }
+    val sendIntent =
+        Intent(Intent.ACTION_SEND).apply {
+            putExtra(Intent.EXTRA_TEXT, "$podcastTitle: $episodeTitle")
+            type = "text/plain"
+        }
     val shareIntent = Intent.createChooser(sendIntent, null)
     val context = LocalContext.current
 
@@ -170,8 +171,8 @@ private fun EpisodeMenu(
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                Modifier
-                    .size(24.dp),
+                    Modifier
+                        .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
             )
         }
@@ -199,13 +200,14 @@ private fun EpisodeMenu(
             DropdownMenuItem(
                 text = {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(
-                                onClick = {
-                                    context.startActivity(shareIntent)
-                                },
-                            ),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable(
+                                    onClick = {
+                                        context.startActivity(shareIntent)
+                                    },
+                                ),
                     ) {
                         Icon(imageVector = Icons.Filled.Share, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
