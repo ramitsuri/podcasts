@@ -11,13 +11,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
-import androidx.compose.material.icons.automirrored.filled.PlaylistAddCheck
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DownloadForOffline
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.ArrowCircleDown
-import androidx.compose.material.icons.outlined.DownloadDone
 import androidx.compose.material.icons.outlined.Downloading
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.greenColor
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
@@ -89,9 +90,10 @@ fun EpisodeControls(
             )
         } else {
             ControlWithTooltip(
-                icon = Icons.AutoMirrored.Filled.PlaylistAddCheck,
+                icon = Icons.Filled.CheckCircle,
                 toolTipLabelRes = R.string.episode_controller_remove_from_queue,
                 onClicked = onRemoveFromQueueClicked,
+                useTint = true,
             )
         }
         when (episode.downloadStatus) {
@@ -116,9 +118,10 @@ fun EpisodeControls(
 
             DownloadStatus.DOWNLOADED -> {
                 ControlWithTooltip(
-                    icon = Icons.Outlined.DownloadDone,
+                    icon = Icons.Filled.DownloadForOffline,
                     toolTipLabelRes = R.string.episode_controller_remove_download,
                     onClicked = onRemoveDownloadClicked,
+                    useTint = true,
                 )
             }
         }
@@ -228,6 +231,7 @@ private fun EpisodeMenu(
 private fun ControlWithTooltip(
     icon: ImageVector,
     @StringRes toolTipLabelRes: Int,
+    useTint: Boolean = false,
     onClicked: () -> Unit,
 ) {
     val state = rememberTooltipState()
@@ -241,7 +245,11 @@ private fun ControlWithTooltip(
         state = state,
     ) {
         IconButton(onClick = onClicked) {
-            Icon(imageVector = icon, contentDescription = "")
+            if (useTint) {
+                Icon(imageVector = icon, contentDescription = "", tint = greenColor)
+            } else {
+                Icon(imageVector = icon, contentDescription = "")
+            }
         }
     }
 }
