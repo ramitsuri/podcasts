@@ -8,6 +8,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Player.STATE_BUFFERING
+import androidx.media3.common.Player.STATE_READY
 import androidx.media3.common.Player.State
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultHttpDataSource
@@ -159,7 +160,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 while (true) {
                     val episodeId = player?.currentMediaItem?.mediaId ?: break
                     val progressInSeconds = player.currentPosition.div(1000)
-                    if (progressInSeconds != 0L && player.isPlaying) {
+                    if (progressInSeconds != 0L) {
                         episodesRepository.updatePlayProgress(episodeId, progressInSeconds.toInt())
                     }
                     delay(1.seconds)
@@ -370,8 +371,14 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             super.onPlaybackStateChanged(playbackState)
             if (playbackState == Player.STATE_ENDED) {
                 playNextFromQueueOnMediaEnded(player)
-            } else if (playbackState == STATE_BUFFERING && player.isPlaying) {
+            } else if (playbackState == STATE_BUFFERING) {
                 settings.setPlayingState(PlayingState.LOADING)
+            } else if (playbackState == STATE_READY) {
+                if (player.isPlaying) {
+                    settings.setPlayingState(PlayingState.PLAYING)
+                } else {
+                    settings.setPlayingState(PlayingState.NOT_PLAYING)
+                }
             }
         }
 
