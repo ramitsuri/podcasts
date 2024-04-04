@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
@@ -73,6 +76,7 @@ fun EpisodeDetailsScreen(
     }
 }
 
+@OptIn(ExperimentalTextApi::class)
 @Composable
 private fun EpisodeDetails(
     episode: Episode,
@@ -154,10 +158,18 @@ private fun EpisodeDetails(
         )
         Spacer(modifier = Modifier.height(8.dp))
         val convertedText = remember(episode.description) { htmlToAnnotatedString(episode.description) }
-        Text(
+        val uriHandler = LocalUriHandler.current
+        ClickableText(
             style = MaterialTheme.typography.bodyMedium,
             text = convertedText,
             modifier = Modifier.fillMaxWidth(),
+            onClick = { position ->
+                convertedText
+                    .getUrlAnnotations(position, position)
+                    .firstOrNull()?.let { range ->
+                        uriHandler.openUri(range.item.url)
+                    }
+            },
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
