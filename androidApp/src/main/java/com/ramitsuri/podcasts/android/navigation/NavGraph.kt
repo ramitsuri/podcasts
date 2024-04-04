@@ -307,6 +307,7 @@ fun NavGraph(
                         onBack = { navController.navigateUp() },
                         onSubscribeClicked = viewModel::onSubscribeClicked,
                         onUnsubscribeClicked = viewModel::onUnsubscribeClicked,
+                        toggleAutoDownloadClicked = viewModel::toggleAutoDownloadClicked,
                         onEpisodeClicked = {
                             val encoded = Uri.encode(it)
                             navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))

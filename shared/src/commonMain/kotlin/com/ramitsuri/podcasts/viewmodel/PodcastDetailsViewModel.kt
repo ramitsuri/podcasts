@@ -83,6 +83,18 @@ class PodcastDetailsViewModel(
         }
     }
 
+    fun toggleAutoDownloadClicked() {
+        val podcast = _state.value.podcastWithEpisodes?.podcast
+        if (podcast == null) {
+            LogHelper.v(TAG, "Podcast toggle auto download requested but podcast is null")
+            return
+        }
+        longLivingScope.launch {
+            val currentAutoDownload = podcast.autoDownloadEpisodes
+            repository.updateAutoDownloadEpisodes(id = podcast.id, autoDownloadEpisodes = !currentAutoDownload)
+        }
+    }
+
     companion object {
         private const val TAG = "PodcastDetails"
     }
