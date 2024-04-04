@@ -4,7 +4,6 @@ import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PodcastResult
-import com.ramitsuri.podcasts.model.RefreshedEpisodes
 import com.ramitsuri.podcasts.network.api.interfaces.EpisodesApi
 import com.ramitsuri.podcasts.network.model.GetEpisodesRequest
 import com.ramitsuri.podcasts.settings.Settings
@@ -21,7 +20,7 @@ class EpisodesRepository internal constructor(
 ) {
     // Should be called via PodcastsAndEpisodesRepository because that does other things like marking podcasts
     // having new episodes
-    suspend fun refreshForPodcastId(podcastId: Long): PodcastResult<RefreshedEpisodes> {
+    suspend fun refreshForPodcastId(podcastId: Long): PodcastResult<List<Episode>> {
         val episodes = episodesDao.getEpisodesForPodcast(podcastId)
         val fetchSinceTime =
             episodes
@@ -37,8 +36,8 @@ class EpisodesRepository internal constructor(
             )
         return when (val result = episodesApi.getByPodcastId(request)) {
             is PodcastResult.Success -> {
-                val insertCount = episodesDao.insert(result.data.items.map { Episode(it) })
-                PodcastResult.Success(RefreshedEpisodes(count = insertCount))
+                val inserted = episodesDao.insert(result.data.items.map { Episode(it) })
+                PodcastResult.Success(inserted)
             }
 
             is PodcastResult.Failure -> {

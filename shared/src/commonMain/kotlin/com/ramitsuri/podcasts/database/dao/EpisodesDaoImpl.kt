@@ -28,15 +28,17 @@ internal class EpisodesDaoImpl(
     private val episodeAdditionalInfoEntityQueries: EpisodeAdditionalInfoEntityQueries,
     private val ioDispatcher: CoroutineDispatcher,
 ) : EpisodesDao {
-    override suspend fun insert(episodes: List<Episode>): Int {
+    override suspend fun insert(episodes: List<Episode>): List<Episode> {
         return withContext(ioDispatcher) {
-            val results = mutableListOf<Boolean>()
+            val insertedEpisodes = mutableListOf<Episode>()
             episodes.map {
                 launch {
-                    results.add(insert(it))
+                    if (insert(it)) {
+                        insertedEpisodes.add(it)
+                    }
                 }
             }.joinAll()
-            results.filter { it }.size
+            insertedEpisodes
         }
     }
 
