@@ -1,17 +1,21 @@
 package com.ramitsuri.podcasts.android.ui.components
 
+import android.content.Intent
 import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.PlaylistAddCheck
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.ArrowCircleDown
 import androidx.compose.material.icons.outlined.DownloadDone
 import androidx.compose.material.icons.outlined.Downloading
@@ -33,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
@@ -135,6 +140,8 @@ fun EpisodeControls(
             showMenu = showMenu,
             onToggleMenu = { showMenu = !showMenu },
             episodeCompleted = episode.isCompleted,
+            podcastTitle = episode.podcastName,
+            episodeTitle = episode.title,
             onPlayedClicked = onPlayedClicked,
             onNotPlayedClicked = onNotPlayedClicked,
         )
@@ -146,9 +153,19 @@ private fun EpisodeMenu(
     showMenu: Boolean,
     onToggleMenu: () -> Unit,
     episodeCompleted: Boolean,
+    podcastTitle: String,
+    episodeTitle: String,
     onPlayedClicked: () -> Unit,
     onNotPlayedClicked: () -> Unit,
 ) {
+    val sendIntent =
+        Intent(Intent.ACTION_SEND).apply {
+            putExtra(Intent.EXTRA_TEXT, "$podcastTitle: $episodeTitle")
+            type = "text/plain"
+        }
+    val shareIntent = Intent.createChooser(sendIntent, null)
+    val context = LocalContext.current
+
     Box {
         IconButton(onClick = { onToggleMenu() }) {
             Icon(
@@ -180,6 +197,28 @@ private fun EpisodeMenu(
                     },
                 )
             }
+            DropdownMenuItem(
+                text = {
+                    Row(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable(
+                                    onClick = {
+                                        context.startActivity(shareIntent)
+                                    },
+                                ),
+                    ) {
+                        Icon(imageVector = Icons.Filled.Share, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(id = R.string.episode_controller_mark_played))
+                    }
+                },
+                onClick = {
+                    onToggleMenu()
+                    onPlayedClicked()
+                },
+            )
         }
     }
 }

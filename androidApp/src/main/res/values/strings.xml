@@ -76,6 +76,7 @@
     <string name="episode_controller_mark_not_played">Mark not played</string>
     <string name="episode_controller_mark_not_favorite">Not favorite</string>
     <string name="episode_controller_mark_favorite">Favorite</string>
+    <string name="episode_controller_share">Share</string>
 
     <!-- Publish date time -->
     <string name="one_hour_ago">1 hour ago</string>
