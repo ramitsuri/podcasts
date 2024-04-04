@@ -83,7 +83,7 @@ class PodcastDetailsViewModel(
         }
     }
 
-    fun toggleAutoDownloadClicked(){
+    fun toggleAutoDownloadClicked() {
         val podcast = _state.value.podcastWithEpisodes?.podcast
         if (podcast == null) {
             LogHelper.v(TAG, "Podcast toggle auto download requested but podcast is null")
