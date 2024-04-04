@@ -18,26 +18,27 @@ import java.util.concurrent.TimeUnit
 
 class EpisodeFetchWorker(
     context: Context,
-    workerParams: WorkerParameters
+    workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
-
     private val episodeFetcher by inject<EpisodeFetcher>()
+
     override suspend fun doWork(): Result {
         episodeFetcher.fetchPodcastsIfNecessary(forced = true)
         return Result.success()
     }
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        val notification = NotificationCompat.Builder(
-            applicationContext,
-            applicationContext.getString(
-                R.string.episode_fetch_worker_id,
-            ),
-        ).apply {
-            setSmallIcon(R.drawable.media3_notification_small_icon)
-            setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            setContentTitle(applicationContext.getString(R.string.episode_fetch_worker))
-        }.build()
+        val notification =
+            NotificationCompat.Builder(
+                applicationContext,
+                applicationContext.getString(
+                    R.string.episode_fetch_worker_id,
+                ),
+            ).apply {
+                setSmallIcon(R.drawable.media3_notification_small_icon)
+                setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                setContentTitle(applicationContext.getString(R.string.episode_fetch_worker))
+            }.build()
         return ForegroundInfo(NOTIFICATION_ID, notification)
     }
 
@@ -47,15 +48,16 @@ class EpisodeFetchWorker(
         private const val NOTIFICATION_ID = NotificationId.EPISODE_FETCH_WORKER
 
         fun enqueuePeriodic(context: Context) {
-            val builder = PeriodicWorkRequest
-                .Builder(EpisodeFetchWorker::class.java, REPEAT_HOURS, TimeUnit.HOURS)
-                .addTag(WORK_NAME_PERIODIC)
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiresCharging(false)
-                        .setRequiredNetworkType(NetworkType.UNMETERED)
-                        .build(),
-                )
+            val builder =
+                PeriodicWorkRequest
+                    .Builder(EpisodeFetchWorker::class.java, REPEAT_HOURS, TimeUnit.HOURS)
+                    .addTag(WORK_NAME_PERIODIC)
+                    .setConstraints(
+                        Constraints.Builder()
+                            .setRequiresCharging(false)
+                            .setRequiredNetworkType(NetworkType.UNMETERED)
+                            .build(),
+                    )
 
             WorkManager
                 .getInstance(context)
@@ -65,6 +67,5 @@ class EpisodeFetchWorker(
                     builder.build(),
                 )
         }
-
     }
 }
