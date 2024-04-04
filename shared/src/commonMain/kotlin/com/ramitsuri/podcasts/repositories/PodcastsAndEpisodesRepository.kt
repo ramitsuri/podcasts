@@ -57,7 +57,7 @@ class PodcastsAndEpisodesRepository internal constructor(
                     PodcastRefreshResult(
                         autoDownloadableEpisodes = autoDownloadableEpisodes,
                         otherEpisodes = otherEpisodes,
-                    )
+                    ),
                 )
             } else {
                 PodcastResult.Failure(failure.error)
