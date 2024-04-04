@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -143,11 +142,11 @@ private fun PodcastDetails(
             EpisodeItem(
                 episode = it,
                 playingState =
-                if (currentlyPlayingEpisodeId == it.id) {
-                    currentlyPlayingEpisodeState
-                } else {
-                    PlayingState.NOT_PLAYING
-                },
+                    if (currentlyPlayingEpisodeId == it.id) {
+                        currentlyPlayingEpisodeState
+                    } else {
+                        PlayingState.NOT_PLAYING
+                    },
                 onClicked = { onEpisodeClicked(it.id) },
                 onPlayClicked = { onEpisodePlayClicked(it) },
                 onPauseClicked = onEpisodePauseClicked,
@@ -197,16 +196,16 @@ private fun TitleAndImage(podcast: Podcast) {
     Row(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(podcast.artwork)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(podcast.artwork)
+                    .crossfade(true)
+                    .build(),
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(64.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(64.dp),
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column {
@@ -263,8 +262,8 @@ private fun PodcastMenu(
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                Modifier
-                    .size(24.dp),
+                    Modifier
+                        .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
             )
         }
@@ -282,19 +281,19 @@ private fun PodcastMenu(
                         Switch(
                             checked = autoDownloadNewEpisodes,
                             onCheckedChange = null,
-                            thumbContent = if (autoDownloadNewEpisodes) {
-                                {
-                                    Icon(
-                                        imageVector = Icons.Filled.Check,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                                    )
-                                }
-                            } else {
-                                null
-                            }
+                            thumbContent =
+                                if (autoDownloadNewEpisodes) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Filled.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                                        )
+                                    }
+                                } else {
+                                    null
+                                },
                         )
-
                     }
                 },
                 onClick = {
@@ -324,10 +323,10 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-        Modifier
-            .clickable(onClick = onClicked)
-            .padding(top = 12.dp, bottom = 4.dp)
-            .padding(horizontal = 16.dp),
+            Modifier
+                .clickable(onClick = onClicked)
+                .padding(top = 12.dp, bottom = 4.dp)
+                .padding(horizontal = 16.dp),
     ) {
         val datePublished = episode.datePublishedInstant
         if (datePublished != null) {
@@ -374,15 +373,15 @@ private fun PodcastDetailsPreview() {
     PreviewTheme {
         PodcastDetailsScreen(
             state =
-            PodcastDetailsViewState(
-                podcastWithEpisodes =
-                PodcastWithEpisodes(
-                    podcast = podcast(),
-                    episodes = listOf(episode(), episode(), episode(), episode()),
+                PodcastDetailsViewState(
+                    podcastWithEpisodes =
+                        PodcastWithEpisodes(
+                            podcast = podcast(),
+                            episodes = listOf(episode(), episode(), episode(), episode()),
+                        ),
+                    currentlyPlayingEpisodeId = null,
+                    playingState = PlayingState.NOT_PLAYING,
                 ),
-                currentlyPlayingEpisodeId = null,
-                playingState = PlayingState.NOT_PLAYING,
-            ),
             onBack = { },
             onSubscribeClicked = { },
             onUnsubscribeClicked = { },
