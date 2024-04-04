@@ -169,8 +169,7 @@ private fun EpisodeDetails(
                     .firstOrNull()?.let { range ->
                         uriHandler.openUri(range.item.url)
                     }
-            }
-
+            },
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
