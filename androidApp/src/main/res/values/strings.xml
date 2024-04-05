@@ -74,8 +74,8 @@
     <string name="episode_controller_remove_download">Remove download</string>
     <string name="episode_controller_mark_played">Mark played</string>
     <string name="episode_controller_mark_not_played">Mark not played</string>
-    <string name="episode_controller_mark_not_favorite">Not favorite</string>
-    <string name="episode_controller_mark_favorite">Favorite</string>
+    <string name="episode_controller_mark_not_favorite">Mark not favorite</string>
+    <string name="episode_controller_mark_favorite">Mark favorite</string>
     <string name="episode_controller_share">Share</string>
 
     <!-- Publish date time -->

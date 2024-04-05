@@ -2,7 +2,6 @@ package com.ramitsuri.podcasts.android.ui.components
 
 import android.content.Intent
 import androidx.annotation.StringRes
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -78,7 +78,7 @@ fun EpisodeControls(
                 when (playingState) {
                     PlayingState.PLAYING -> onPauseClicked()
                     PlayingState.NOT_PLAYING -> onPlayClicked()
-                    PlayingState.LOADING -> { }
+                    PlayingState.LOADING -> {}
                 }
             },
         )
@@ -125,19 +125,6 @@ fun EpisodeControls(
                 )
             }
         }
-        if (episode.isFavorite) {
-            ControlWithTooltip(
-                icon = Icons.Filled.Favorite,
-                toolTipLabelRes = R.string.episode_controller_mark_not_favorite,
-                onClicked = onNotFavoriteClicked,
-            )
-        } else {
-            ControlWithTooltip(
-                icon = Icons.Filled.FavoriteBorder,
-                toolTipLabelRes = R.string.episode_controller_mark_favorite,
-                onClicked = onFavoriteClicked,
-            )
-        }
         Spacer(modifier = Modifier.weight(1f))
         EpisodeMenu(
             showMenu = showMenu,
@@ -145,6 +132,9 @@ fun EpisodeControls(
             episodeCompleted = episode.isCompleted,
             podcastTitle = episode.podcastName,
             episodeTitle = episode.title,
+            isFavorite = episode.isFavorite,
+            onFavoriteClicked = onFavoriteClicked,
+            onNotFavoriteClicked = onNotFavoriteClicked,
             onPlayedClicked = onPlayedClicked,
             onNotPlayedClicked = onNotPlayedClicked,
         )
@@ -158,6 +148,9 @@ private fun EpisodeMenu(
     episodeCompleted: Boolean,
     podcastTitle: String,
     episodeTitle: String,
+    isFavorite: Boolean,
+    onFavoriteClicked: () -> Unit,
+    onNotFavoriteClicked: () -> Unit,
     onPlayedClicked: () -> Unit,
     onNotPlayedClicked: () -> Unit,
 ) {
@@ -174,8 +167,8 @@ private fun EpisodeMenu(
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                    Modifier
-                        .size(24.dp),
+                Modifier
+                    .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
             )
         }
@@ -183,47 +176,73 @@ private fun EpisodeMenu(
             expanded = showMenu,
             onDismissRequest = onToggleMenu,
         ) {
+            if (isFavorite) {
+                MenuItem(
+                    icon = Icons.Filled.Favorite,
+                    text = stringResource(id = R.string.episode_controller_mark_not_favorite),
+                    onClick = {
+                        onToggleMenu()
+                        onNotFavoriteClicked()
+                    },
+                )
+            } else {
+                MenuItem(
+                    icon = Icons.Filled.FavoriteBorder,
+                    text = stringResource(id = R.string.episode_controller_mark_favorite),
+                    onClick = {
+                        onToggleMenu()
+                        onFavoriteClicked()
+                    },
+                )
+            }
             if (episodeCompleted) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(id = R.string.episode_controller_mark_not_played)) },
+                MenuItem(
+                    icon = Icons.Filled.Check,
+                    text = stringResource(id = R.string.episode_controller_mark_not_played),
                     onClick = {
                         onToggleMenu()
                         onNotPlayedClicked()
                     },
                 )
             } else {
-                DropdownMenuItem(
-                    text = { Text(stringResource(id = R.string.episode_controller_mark_played)) },
+                MenuItem(
+                    icon = Icons.Filled.Check,
+                    text = stringResource(id = R.string.episode_controller_mark_played),
                     onClick = {
                         onToggleMenu()
                         onPlayedClicked()
                     },
                 )
             }
-            DropdownMenuItem(
-                text = {
-                    Row(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .clickable(
-                                    onClick = {
-                                        context.startActivity(shareIntent)
-                                    },
-                                ),
-                    ) {
-                        Icon(imageVector = Icons.Filled.Share, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(id = R.string.episode_controller_mark_played))
-                    }
-                },
+            MenuItem(
+                icon = Icons.Filled.Share,
+                text = stringResource(id = R.string.episode_controller_share),
                 onClick = {
                     onToggleMenu()
-                    onPlayedClicked()
+                    context.startActivity(shareIntent)
                 },
             )
         }
     }
+}
+
+@Composable
+private fun MenuItem(icon: ImageVector, text: String, onClick: () -> Unit) {
+    DropdownMenuItem(
+        text = {
+            Row(
+                modifier =
+                Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(imageVector = icon, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text)
+            }
+        },
+        onClick = onClick,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

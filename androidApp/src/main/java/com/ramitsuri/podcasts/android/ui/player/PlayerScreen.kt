@@ -65,6 +65,7 @@ import com.ramitsuri.podcasts.model.ui.PlayerViewState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
 import kotlinx.datetime.Clock
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -96,20 +97,20 @@ fun PlayerScreen(
     val alphaNotExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 0f else 1f, label = "player visibility")
     Box(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(if (isExpanded) 16.dp else 0.dp),
+        modifier
+            .fillMaxWidth()
+            .padding(if (isExpanded) 16.dp else 0.dp),
         contentAlignment = Alignment.TopCenter,
     ) {
         if (!isExpanded) {
             if (state.hasEverBeenPlayed) {
                 PlayerScreenNotExpanded(
                     modifier =
-                        Modifier
-                            .onGloballyPositioned {
-                                onNotExpandedHeightKnown(it.size.height)
-                            }
-                            .alpha(alphaNotExpandedPlayer),
+                    Modifier
+                        .onGloballyPositioned {
+                            onNotExpandedHeightKnown(it.size.height)
+                        }
+                        .alpha(alphaNotExpandedPlayer),
                     episodeTitle = state.episodeTitle,
                     episodeArtwork = state.episodeArtworkUrl,
                     playingState = state.playingState,
@@ -203,16 +204,16 @@ private fun PlayerScreenExpanded(
             contentDescription = episodeTitle,
             contentScale = ContentScale.FillBounds,
             modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(360.dp),
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .size(360.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onEpisodeTitleClicked),
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onEpisodeTitleClicked),
             horizontalArrangement = Arrangement.Center,
         ) {
             Text(
@@ -605,7 +606,7 @@ private fun Seekbar(
         ) {
             Text(text = playedDuration.formatted(), style = MaterialTheme.typography.bodySmall)
             if (remainingDuration != null) {
-                Text(text = remainingDuration.formatted(), style = MaterialTheme.typography.bodySmall)
+                Text(text = "-${remainingDuration.formatted()}", style = MaterialTheme.typography.bodySmall)
             }
         }
     }
