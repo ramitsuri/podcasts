@@ -117,11 +117,8 @@ class PlayerViewModel(
         longLivingScope.launch {
             val episode = episodesRepository.getCurrentEpisode().firstOrNull()
             if (episode != null) {
-                // Episode is no longer completed, if it was because it's being played
-                episodesRepository.updateCompletedAt(episode.id, null)
                 if (episode.isCompleted) {
-                    // If episode was completed but play is requested again, start from beginning
-                    episodesRepository.updatePlayProgress(episode.id, 0)
+                    episodesRepository.markNotPlayed(episode.id)
                 }
                 playerController.play(episode)
             }

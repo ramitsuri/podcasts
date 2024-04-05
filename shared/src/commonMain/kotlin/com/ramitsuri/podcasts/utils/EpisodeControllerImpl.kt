@@ -17,11 +17,8 @@ internal class EpisodeControllerImpl(
     override fun onEpisodePlayClicked(episode: Episode) {
         longLivingScope.launch {
             episodesRepository.setCurrentlyPlayingEpisodeId(episode.id)
-            // Episode is no longer completed (if it ever was) because it's being played now
-            episodesRepository.updateCompletedAt(episode.id, null)
             if (episode.isCompleted) {
-                // If episode was completed but play is requested again, start from beginning
-                episodesRepository.updatePlayProgress(episode.id, 0)
+                episodesRepository.markNotPlayed(episode.id)
             }
             playerController.play(episode)
         }
