@@ -167,7 +167,7 @@ class EpisodesRepository internal constructor(
         updateQueuePositions(mapOf(id to Episode.NOT_IN_QUEUE))
     }
 
-    private suspend fun updateCompletedAt(
+    suspend fun updateCompletedAt(
         id: String,
         completedAt: Instant? = Clock.System.now(),
     ) {

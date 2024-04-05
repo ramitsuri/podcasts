@@ -5,6 +5,7 @@ import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 internal class EpisodeControllerImpl(
@@ -16,6 +17,12 @@ internal class EpisodeControllerImpl(
     override fun onEpisodePlayClicked(episode: Episode) {
         longLivingScope.launch {
             episodesRepository.setCurrentlyPlayingEpisodeId(episode.id)
+            // Episode is no longer completed (if it ever was) because it's being played now
+            episodesRepository.updateCompletedAt(episode.id, null)
+            if (episode.isCompleted) {
+                // If episode was completed but play is requested again, start from beginning
+                episodesRepository.updatePlayProgress(episode.id, 0)
+            }
             playerController.play(episode)
         }
     }
@@ -50,6 +57,10 @@ internal class EpisodeControllerImpl(
 
     override fun onEpisodePlayedClicked(episodeId: String) {
         longLivingScope.launch {
+            val currentlyPlayingEpisode = episodesRepository.getCurrentEpisode().first()
+            if (currentlyPlayingEpisode?.id == episodeId) {
+                playerController.pause()
+            }
             episodesRepository.markPlayed(episodeId)
         }
     }
