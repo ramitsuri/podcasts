@@ -70,15 +70,16 @@ class PlayerViewModel(
                     if (episode != null) {
                         val duration = episode.duration
                         val durationForProgress = (duration?.toFloat() ?: 1f).coerceAtLeast(1f)
-                        val progressPercent = if (episode.isCompleted) {
-                            1f
-                        } else {
-                            episode
-                                .progressInSeconds
-                                .toFloat()
-                                .div(durationForProgress)
-                                .coerceIn(0f, 1f)
-                        }
+                        val progressPercent =
+                            if (episode.isCompleted) {
+                                1f
+                            } else {
+                                episode
+                                    .progressInSeconds
+                                    .toFloat()
+                                    .div(durationForProgress)
+                                    .coerceIn(0f, 1f)
+                            }
                         _state.update {
                             it.copy(
                                 episodeId = episode.id,
@@ -89,16 +90,18 @@ class PlayerViewModel(
                                 sleepTimer = sleepTimer,
                                 isCasting = false,
                                 progress = progressPercent,
-                                playedDuration = if (episode.isCompleted) {
-                                    duration?.seconds ?: ZERO
-                                } else {
-                                    episode.progressInSeconds.seconds
-                                },
-                                remainingDuration = if (episode.isCompleted) {
-                                    ZERO
-                                } else {
-                                    episode.remainingDuration
-                                },
+                                playedDuration =
+                                    if (episode.isCompleted) {
+                                        duration?.seconds ?: ZERO
+                                    } else {
+                                        episode.progressInSeconds.seconds
+                                    },
+                                remainingDuration =
+                                    if (episode.isCompleted) {
+                                        ZERO
+                                    } else {
+                                        episode.remainingDuration
+                                    },
                                 totalDuration = duration?.seconds,
                                 trimSilence = trimSilence,
                                 isFavorite = episode.isFavorite,

@@ -94,7 +94,7 @@ fun PlayStateButton(
 @Composable
 private fun Completed() {
     Icon(imageVector = Icons.Filled.Check, contentDescription = "", tint = greenColor)
-        Spacer(modifier = Modifier.width(8.dp))
+    Spacer(modifier = Modifier.width(8.dp))
     Text(
         text = stringResource(id = R.string.play_state_button_completed),
         style = MaterialTheme.typography.bodySmall,
