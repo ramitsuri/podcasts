@@ -167,8 +167,8 @@ private fun EpisodeMenu(
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                Modifier
-                    .size(24.dp),
+                    Modifier
+                        .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
             )
         }
@@ -227,13 +227,17 @@ private fun EpisodeMenu(
 }
 
 @Composable
-private fun MenuItem(icon: ImageVector, text: String, onClick: () -> Unit) {
+private fun MenuItem(
+    icon: ImageVector,
+    text: String,
+    onClick: () -> Unit,
+) {
     DropdownMenuItem(
         text = {
             Row(
                 modifier =
-                Modifier
-                    .fillMaxWidth(),
+                    Modifier
+                        .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(imageVector = icon, contentDescription = null)
