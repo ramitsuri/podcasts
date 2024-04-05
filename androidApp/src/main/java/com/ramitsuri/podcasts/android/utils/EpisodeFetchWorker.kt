@@ -44,7 +44,7 @@ class EpisodeFetchWorker(
 
     companion object : KoinComponent {
         private const val WORK_NAME_PERIODIC = "EpisodeFetchWorker"
-        private const val REPEAT_HOURS: Long = 4
+        private const val REPEAT_HOURS: Long = 24
         private const val NOTIFICATION_ID = NotificationId.EPISODE_FETCH_WORKER
 
         fun enqueuePeriodic(context: Context) {
