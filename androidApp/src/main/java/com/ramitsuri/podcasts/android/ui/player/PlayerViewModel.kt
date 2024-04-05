@@ -23,6 +23,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import kotlin.math.roundToInt
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -70,11 +71,15 @@ class PlayerViewModel(
                         val duration = episode.duration
                         val durationForProgress = (duration?.toFloat() ?: 1f).coerceAtLeast(1f)
                         val progressPercent =
-                            episode
-                                .progressInSeconds
-                                .toFloat()
-                                .div(durationForProgress)
-                                .coerceIn(0f, 1f)
+                            if (episode.isCompleted) {
+                                1f
+                            } else {
+                                episode
+                                    .progressInSeconds
+                                    .toFloat()
+                                    .div(durationForProgress)
+                                    .coerceIn(0f, 1f)
+                            }
                         _state.update {
                             it.copy(
                                 episodeId = episode.id,
@@ -85,8 +90,18 @@ class PlayerViewModel(
                                 sleepTimer = sleepTimer,
                                 isCasting = false,
                                 progress = progressPercent,
-                                playedDuration = episode.progressInSeconds.seconds,
-                                remainingDuration = episode.remainingDuration,
+                                playedDuration =
+                                    if (episode.isCompleted) {
+                                        duration?.seconds ?: ZERO
+                                    } else {
+                                        episode.progressInSeconds.seconds
+                                    },
+                                remainingDuration =
+                                    if (episode.isCompleted) {
+                                        ZERO
+                                    } else {
+                                        episode.remainingDuration
+                                    },
                                 totalDuration = duration?.seconds,
                                 trimSilence = trimSilence,
                                 isFavorite = episode.isFavorite,
@@ -102,6 +117,9 @@ class PlayerViewModel(
         longLivingScope.launch {
             val episode = episodesRepository.getCurrentEpisode().firstOrNull()
             if (episode != null) {
+                if (episode.isCompleted) {
+                    episodesRepository.markNotPlayed(episode.id)
+                }
                 playerController.play(episode)
             }
         }

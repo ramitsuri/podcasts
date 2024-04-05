@@ -111,6 +111,7 @@
     <!-- Play state button -->
     <string name="play_state_button_loading">Loading</string>
     <string name="play_state_button_playing">Playing</string>
+    <string name="play_state_button_completed">Completed</string>
     <string name="play_state_button_min">%1$s min</string>
     <string name="play_state_button_hour">%1$s hr</string>
     <string name="play_state_button_hour_and_min">%1$s hr %2$s min</string>

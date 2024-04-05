@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.PlayCircleOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.greenColor
 import com.ramitsuri.podcasts.android.utils.minutesFormatted
 import com.ramitsuri.podcasts.model.PlayingState
 import kotlin.time.Duration
@@ -48,6 +50,7 @@ import kotlin.time.Duration.Companion.minutes
 @Composable
 fun PlayStateButton(
     playingState: PlayingState,
+    isCompleted: Boolean,
     hasBeenPlayed: Boolean,
     remainingDuration: Duration?,
     onClick: () -> Unit,
@@ -71,7 +74,14 @@ fun PlayStateButton(
             }
 
             PlayingState.NOT_PLAYING -> {
-                Paused(hasBeenPlayed = hasBeenPlayed, remainingDuration = remainingDuration)
+                if (isCompleted) {
+                    Completed()
+                } else {
+                    Paused(
+                        hasBeenPlayed = hasBeenPlayed,
+                        remainingDuration = remainingDuration,
+                    )
+                }
             }
 
             PlayingState.LOADING -> {
@@ -79,6 +89,16 @@ fun PlayStateButton(
             }
         }
     }
+}
+
+@Composable
+private fun Completed() {
+    Icon(imageVector = Icons.Filled.Check, contentDescription = "", tint = greenColor)
+    Spacer(modifier = Modifier.width(8.dp))
+    Text(
+        text = stringResource(id = R.string.play_state_button_completed),
+        style = MaterialTheme.typography.bodySmall,
+    )
 }
 
 @Composable
@@ -219,6 +239,7 @@ private fun PlayStateButtonPreview_Playing() {
                 playingState = PlayingState.PLAYING,
                 hasBeenPlayed = false,
                 remainingDuration = 5.minutes,
+                isCompleted = false,
                 onClick = { },
             )
         }
@@ -234,6 +255,7 @@ private fun PlayStateButtonPreview_Loading() {
                 playingState = PlayingState.LOADING,
                 hasBeenPlayed = false,
                 remainingDuration = 5.minutes,
+                isCompleted = false,
                 onClick = { },
             )
         }
@@ -249,6 +271,7 @@ private fun PausedPreview_HasBeenPlayed() {
                 playingState = PlayingState.NOT_PLAYING,
                 hasBeenPlayed = true,
                 remainingDuration = 65.minutes,
+                isCompleted = false,
                 onClick = { },
             )
         }
@@ -264,6 +287,7 @@ private fun PausedPreview_HasNotBeenPlayed() {
                 playingState = PlayingState.NOT_PLAYING,
                 hasBeenPlayed = false,
                 remainingDuration = 65.minutes,
+                isCompleted = false,
                 onClick = { },
             )
         }
@@ -279,6 +303,7 @@ private fun PausedPreview_HasBeenPlayed_JustMinutes() {
                 playingState = PlayingState.NOT_PLAYING,
                 hasBeenPlayed = true,
                 remainingDuration = 32.minutes,
+                isCompleted = false,
                 onClick = { },
             )
         }
@@ -294,6 +319,7 @@ private fun PausedPreview_HasNotBeenPlayed_JustMinutes() {
                 playingState = PlayingState.NOT_PLAYING,
                 hasBeenPlayed = false,
                 remainingDuration = 32.minutes,
+                isCompleted = false,
                 onClick = { },
             )
         }
@@ -309,6 +335,7 @@ private fun PausedPreview_DurationNull() {
                 playingState = PlayingState.NOT_PLAYING,
                 hasBeenPlayed = false,
                 remainingDuration = null,
+                isCompleted = false,
                 onClick = { },
             )
         }
@@ -317,7 +344,7 @@ private fun PausedPreview_DurationNull() {
 
 @ThemePreview
 @Composable
-private fun PausedPreview_DurationNull_() {
+private fun CompletedPreview() {
     PreviewTheme {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -325,9 +352,10 @@ private fun PausedPreview_DurationNull_() {
             verticalArrangement = Arrangement.Center,
         ) {
             PlayStateButton(
-                playingState = PlayingState.PLAYING,
+                playingState = PlayingState.NOT_PLAYING,
                 hasBeenPlayed = false,
                 remainingDuration = null,
+                isCompleted = true,
                 onClick = { },
             )
         }

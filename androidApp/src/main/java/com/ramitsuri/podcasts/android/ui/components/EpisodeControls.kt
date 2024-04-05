@@ -74,6 +74,7 @@ fun EpisodeControls(
             playingState = playingState,
             hasBeenPlayed = episode.progressInSeconds > 0,
             remainingDuration = episode.remainingDuration,
+            isCompleted = episode.isCompleted,
             onClick = {
                 when (playingState) {
                     PlayingState.PLAYING -> onPauseClicked()
