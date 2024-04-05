@@ -605,7 +605,7 @@ private fun Seekbar(
         ) {
             Text(text = playedDuration.formatted(), style = MaterialTheme.typography.bodySmall)
             if (remainingDuration != null) {
-                Text(text = remainingDuration.formatted(), style = MaterialTheme.typography.bodySmall)
+                Text(text = "-${remainingDuration.formatted()}", style = MaterialTheme.typography.bodySmall)
             }
         }
     }

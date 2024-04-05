@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -54,11 +55,12 @@ fun PlayStateButton(
     Row(
         modifier =
             Modifier
-                .clickable(onClick = onClick)
+                .clip(RoundedCornerShape(8.dp))
                 .border(
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)),
                     shape = RoundedCornerShape(8.dp),
                 )
+                .clickable(onClick = onClick)
                 .padding(vertical = 4.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
