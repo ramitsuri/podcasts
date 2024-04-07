@@ -75,8 +75,9 @@ fun NavGraph(
     var navBarHeight by remember { mutableIntStateOf(0) }
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier =
+            Modifier
+                .fillMaxSize(),
         bottomBar = {
             AnimatedVisibility(
                 scaffoldSheetState.bottomSheetState.currentValue != SheetValue.Expanded,
@@ -236,9 +237,10 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -254,9 +256,10 @@ fun NavGraph(
                         onSearchTermUpdated = viewModel::onSearchTermUpdated,
                         onSearchRequested = viewModel::search,
                         onSearchCleared = viewModel::clearSearch,
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -267,9 +270,10 @@ fun NavGraph(
                         onDownloadsClicked = { navController.navigate(Route.DOWNLOADS.value) },
                         onHistoryClicked = { /*TODO*/ },
                         onFavoritesClicked = { navController.navigate(Route.FAVORITES.value) },
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -286,9 +290,10 @@ fun NavGraph(
                         onSubscribeAllPodcasts = viewModel::subscribeAllPodcasts,
                         onSuggestionAccepted = viewModel::onSuggestionAccepted,
                         onBack = { navController.popBackStack() },
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -322,9 +327,10 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -358,9 +364,10 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -386,9 +393,10 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -402,9 +410,10 @@ fun NavGraph(
                         onPodcastClicked = {
                             navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(it.toString()))
                         },
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -430,9 +439,10 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -458,9 +468,10 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
             }
