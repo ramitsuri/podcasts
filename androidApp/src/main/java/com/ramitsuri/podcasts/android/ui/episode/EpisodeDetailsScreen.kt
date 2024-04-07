@@ -127,7 +127,7 @@ private fun EpisodeDetails(
                         Modifier
                             .fillMaxWidth()
                             .clickable(onClick = onPodcastNameClicked),
-                    horizontalArrangement = Arrangement.Center,
+                    horizontalArrangement = Arrangement.Start,
                 ) {
                     Text(
                         style = MaterialTheme.typography.bodyLarge,

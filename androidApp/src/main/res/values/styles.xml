@@ -1,3 +1,15 @@
 <resources>
-    <style name="AppTheme" parent="android:Theme.Material.NoActionBar"/>
+    <style name="NightAdjusted.Theme.Podcasts" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.Podcasts" parent="NightAdjusted.Theme.Podcasts" />
+
+    <style name="NightAdjusted.Theme.Splash" parent="Theme.SplashScreen">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+
+    <style name="Theme.Podcasts.Splash" parent="NightAdjusted.Theme.Splash">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.Podcasts</item>
+    </style>
 </resources>

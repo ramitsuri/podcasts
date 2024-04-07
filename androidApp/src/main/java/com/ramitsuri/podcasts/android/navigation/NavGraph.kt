@@ -5,7 +5,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.displayCutoutPadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -70,6 +74,10 @@ fun NavGraph(
     val scaffoldSheetState = rememberBottomSheetScaffoldState()
     var navBarHeight by remember { mutableIntStateOf(0) }
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier =
+            Modifier
+                .fillMaxSize(),
         bottomBar = {
             AnimatedVisibility(
                 scaffoldSheetState.bottomSheetState.currentValue != SheetValue.Expanded,
@@ -229,6 +237,10 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -244,6 +256,10 @@ fun NavGraph(
                         onSearchTermUpdated = viewModel::onSearchTermUpdated,
                         onSearchRequested = viewModel::search,
                         onSearchCleared = viewModel::clearSearch,
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -254,6 +270,10 @@ fun NavGraph(
                         onDownloadsClicked = { navController.navigate(Route.DOWNLOADS.value) },
                         onHistoryClicked = { /*TODO*/ },
                         onFavoritesClicked = { navController.navigate(Route.FAVORITES.value) },
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -270,6 +290,10 @@ fun NavGraph(
                         onSubscribeAllPodcasts = viewModel::subscribeAllPodcasts,
                         onSuggestionAccepted = viewModel::onSuggestionAccepted,
                         onBack = { navController.popBackStack() },
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -303,6 +327,10 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -336,6 +364,10 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -361,6 +393,10 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -374,6 +410,10 @@ fun NavGraph(
                         onPodcastClicked = {
                             navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(it.toString()))
                         },
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -399,6 +439,10 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -424,6 +468,10 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
             }
