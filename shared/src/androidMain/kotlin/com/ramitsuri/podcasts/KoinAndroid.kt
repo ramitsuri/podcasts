@@ -6,6 +6,7 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
+import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.AndroidForegroundStateObserver
 import com.ramitsuri.podcasts.utils.DispatcherProvider
@@ -13,6 +14,7 @@ import com.ramitsuri.podcasts.utils.EpisodeController
 import com.ramitsuri.podcasts.utils.ForegroundStateObserver
 import com.ramitsuri.podcasts.viewmodel.DownloadsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
+import com.ramitsuri.podcasts.viewmodel.EpisodeHistoryViewModel
 import com.ramitsuri.podcasts.viewmodel.FavoritesViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
@@ -22,6 +24,7 @@ import com.ramitsuri.podcasts.viewmodel.SubscriptionsViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.android.Android
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.datetime.TimeZone
 import okio.Path
 import okio.Path.Companion.toPath
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -112,6 +115,16 @@ actual val platformModule =
                 episodeController = get<EpisodeController>(),
                 episodesRepository = get<EpisodesRepository>(),
                 settings = get<Settings>(),
+            )
+        }
+
+        viewModel<EpisodeHistoryViewModel> {
+            EpisodeHistoryViewModel(
+                episodeController = get<EpisodeController>(),
+                episodesRepository = get<EpisodesRepository>(),
+                repository = get<SessionHistoryRepository>(),
+                settings = get<Settings>(),
+                timeZone = get<TimeZone>(),
             )
         }
 

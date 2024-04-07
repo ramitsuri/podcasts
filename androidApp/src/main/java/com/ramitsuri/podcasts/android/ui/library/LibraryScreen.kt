@@ -66,14 +66,12 @@ fun LibraryScreen(
             onClick = onFavoritesClicked,
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
-        if (false) {
-            Item(
-                icon = Icons.Default.History,
-                labelResId = R.string.library_history,
-                onClick = onHistoryClicked,
-            )
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-        }
+        Item(
+            icon = Icons.Default.History,
+            labelResId = R.string.library_history,
+            onClick = onHistoryClicked,
+        )
+        HorizontalDivider(modifier = Modifier.fillMaxWidth())
     }
 }
 
