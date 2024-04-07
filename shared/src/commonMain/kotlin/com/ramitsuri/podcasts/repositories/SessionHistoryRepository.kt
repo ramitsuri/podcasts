@@ -142,17 +142,12 @@ class SessionHistoryRepository internal constructor(
     }
 
     fun getEpisodeHistory(): Flow<List<EpisodeHistory>> {
-        val episodeCache = mutableMapOf<String, Episode>()
         return sessionActionDao
             .getSessionActionEntities()
             .map { sessionActionEntities ->
                 sessionActionEntities.mapNotNull { sessionActionEntity ->
-                    (
-                        episodeCache[sessionActionEntity.episodeId]
-                            ?: episodesRepository.getEpisode(sessionActionEntity.episodeId)
-                    )
+                    episodesRepository.getEpisode(sessionActionEntity.episodeId)
                         ?.let { episode ->
-                            episodeCache[episode.id] = episode
                             EpisodeHistory(episode, sessionActionEntity.time)
                         }
                 }
