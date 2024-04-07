@@ -39,9 +39,10 @@ fun TopAppBar(
 ) {
     var showMenu by remember { mutableStateOf(false) }
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (onBack != null) {
@@ -73,15 +74,15 @@ fun TopAppBar(
 private fun Menu(
     showMenu: Boolean,
     onToggleMenu: () -> Unit,
-    menuItems: List<AppBarMenuItem>
+    menuItems: List<AppBarMenuItem>,
 ) {
     Box {
         IconButton(onClick = { onToggleMenu() }) {
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                Modifier
-                    .size(24.dp),
+                    Modifier
+                        .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
             )
         }
@@ -113,8 +114,8 @@ private fun MenuItem(
         text = {
             Row(
                 modifier =
-                Modifier
-                    .fillMaxWidth(),
+                    Modifier
+                        .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(imageVector = icon, contentDescription = null)
@@ -141,13 +142,14 @@ private fun TopAppBarPreview_WithTitle_WithMenu() {
         TopAppBar(
             onBack = {},
             label = "Queue",
-            menuItems = listOf(
-                AppBarMenuItem(
-                    title = "Settings",
-                    icon = Icons.Filled.Settings,
-                    onClick = { },
+            menuItems =
+                listOf(
+                    AppBarMenuItem(
+                        title = "Settings",
+                        icon = Icons.Filled.Settings,
+                        onClick = { },
+                    ),
                 ),
-            ),
         )
     }
 }
@@ -158,13 +160,14 @@ private fun TopAppBarPreview_WithoutTitle_WithMenu() {
     PreviewTheme {
         TopAppBar(
             onBack = {},
-            menuItems = listOf(
-                AppBarMenuItem(
-                    title = "Settings",
-                    icon = Icons.Filled.Settings,
-                    onClick = { },
+            menuItems =
+                listOf(
+                    AppBarMenuItem(
+                        title = "Settings",
+                        icon = Icons.Filled.Settings,
+                        onClick = { },
+                    ),
                 ),
-            ),
         )
     }
 }
@@ -175,13 +178,14 @@ private fun TopAppBarPreview_WithoutBack_WithoutTitle_WithMenu() {
     PreviewTheme {
         TopAppBar(
             onBack = null,
-            menuItems = listOf(
-                AppBarMenuItem(
-                    title = "Settings",
-                    icon = Icons.Filled.Settings,
-                    onClick = { },
+            menuItems =
+                listOf(
+                    AppBarMenuItem(
+                        title = "Settings",
+                        icon = Icons.Filled.Settings,
+                        onClick = { },
+                    ),
                 ),
-            ),
         )
     }
 }
