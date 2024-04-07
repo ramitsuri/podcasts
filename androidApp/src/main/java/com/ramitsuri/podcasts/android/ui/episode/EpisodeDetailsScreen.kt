@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -158,9 +159,10 @@ private fun EpisodeDetails(
         )
         Spacer(modifier = Modifier.height(8.dp))
         val convertedText = remember(episode.description) { htmlToAnnotatedString(episode.description) }
+        val color = LocalContentColor.current
         val uriHandler = LocalUriHandler.current
         ClickableText(
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyMedium.copy(color = color),
             text = convertedText,
             modifier = Modifier.fillMaxWidth(),
             onClick = { position ->
