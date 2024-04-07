@@ -142,6 +142,15 @@ fun NavGraph(
                                     navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
                                 }
                             },
+                            onPodcastNameClicked = {
+                                coroutineScope.launch {
+                                    scaffoldSheetState.bottomSheetState.partialExpand()
+                                }
+                                val id = playerState.podcastId
+                                if (id != null) {
+                                    navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(id.toString()))
+                                }
+                            },
                             onGoToQueueClicked = {
                                 coroutineScope.launch {
                                     scaffoldSheetState.bottomSheetState.partialExpand()
@@ -280,6 +289,9 @@ fun NavGraph(
                     EpisodeDetailsScreen(
                         state = state,
                         onBack = { navController.navigateUp() },
+                        onPodcastNameClicked = { podcastId ->
+                            navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(podcastId.toString()))
+                        },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                         onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
                         onEpisodeAddToQueueClicked = viewModel::onEpisodeAddToQueueClicked,

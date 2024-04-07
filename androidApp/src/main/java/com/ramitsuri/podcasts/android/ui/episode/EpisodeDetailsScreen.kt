@@ -1,5 +1,7 @@
 package com.ramitsuri.podcasts.android.ui.episode
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,6 +43,7 @@ import com.ramitsuri.podcasts.model.ui.EpisodeDetailsViewState
 fun EpisodeDetailsScreen(
     state: EpisodeDetailsViewState,
     onBack: () -> Unit,
+    onPodcastNameClicked: (podcastId: Long) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
     onEpisodePauseClicked: () -> Unit,
     onEpisodeAddToQueueClicked: (episode: Episode) -> Unit,
@@ -61,6 +64,7 @@ fun EpisodeDetailsScreen(
             EpisodeDetails(
                 episode,
                 playingState = state.playingState,
+                onPodcastNameClicked = { onPodcastNameClicked(episode.podcastId) },
                 onPlayClicked = { onEpisodePlayClicked(episode) },
                 onPauseClicked = onEpisodePauseClicked,
                 onAddToQueueClicked = { onEpisodeAddToQueueClicked(episode) },
@@ -82,6 +86,7 @@ fun EpisodeDetailsScreen(
 private fun EpisodeDetails(
     episode: Episode,
     playingState: PlayingState,
+    onPodcastNameClicked: () -> Unit,
     onPlayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
     onAddToQueueClicked: () -> Unit,
@@ -117,12 +122,20 @@ private fun EpisodeDetails(
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
-                Text(
-                    style = MaterialTheme.typography.bodyLarge,
-                    text = episode.podcastName,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 2,
-                )
+                Row(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onPodcastNameClicked),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        style = MaterialTheme.typography.bodyLarge,
+                        text = episode.podcastName,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 2,
+                    )
+                }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     style = MaterialTheme.typography.bodySmall,
@@ -184,6 +197,7 @@ private fun EpisodeDetailsPreview() {
         EpisodeDetailsScreen(
             state = EpisodeDetailsViewState(episode()),
             onBack = { },
+            onPodcastNameClicked = { },
             onEpisodePlayClicked = { },
             onEpisodePauseClicked = { },
             onEpisodeAddToQueueClicked = { },

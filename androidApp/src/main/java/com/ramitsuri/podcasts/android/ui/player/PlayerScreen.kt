@@ -76,6 +76,7 @@ fun PlayerScreen(
     onNotExpandedHeightKnown: (Int) -> Unit,
     onGoToQueueClicked: () -> Unit,
     onEpisodeTitleClicked: () -> Unit,
+    onPodcastNameClicked: () -> Unit,
     onReplayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
     onPlayClicked: () -> Unit,
@@ -137,6 +138,7 @@ fun PlayerScreen(
                 isCasting = state.isCasting,
                 isFavorite = state.isFavorite,
                 onEpisodeTitleClicked = onEpisodeTitleClicked,
+                onPodcastNameClicked = onPodcastNameClicked,
                 onGoToQueueClicked = onGoToQueueClicked,
                 onReplayClicked = onReplayClicked,
                 onPauseClicked = onPauseClicked,
@@ -174,6 +176,7 @@ private fun PlayerScreenExpanded(
     isCasting: Boolean,
     isFavorite: Boolean,
     onEpisodeTitleClicked: () -> Unit,
+    onPodcastNameClicked: () -> Unit,
     onGoToQueueClicked: () -> Unit,
     onReplayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
@@ -224,14 +227,22 @@ private fun PlayerScreenExpanded(
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = podcastName,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(8.dp),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium,
-        )
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onPodcastNameClicked),
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = podcastName,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(8.dp),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
         Seekbar(
             playedDuration = playedDuration,
@@ -751,6 +762,7 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
                     ),
                 onNotExpandedHeightKnown = { },
                 onEpisodeTitleClicked = { },
+                onPodcastNameClicked = { },
                 onGoToQueueClicked = { },
                 onReplayClicked = { },
                 onPauseClicked = { },
@@ -795,6 +807,7 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
                     ),
                 onNotExpandedHeightKnown = { },
                 onEpisodeTitleClicked = { },
+                onPodcastNameClicked = { },
                 onGoToQueueClicked = { },
                 onReplayClicked = { },
                 onPauseClicked = { },
@@ -840,6 +853,7 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
                     ),
                 onNotExpandedHeightKnown = { },
                 onEpisodeTitleClicked = { },
+                onPodcastNameClicked = { },
                 onGoToQueueClicked = { },
                 onReplayClicked = { },
                 onPauseClicked = { },
@@ -883,6 +897,7 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
                 ),
             onNotExpandedHeightKnown = { },
             onEpisodeTitleClicked = { },
+            onPodcastNameClicked = { },
             onGoToQueueClicked = { },
             onReplayClicked = { },
             onPauseClicked = { },
