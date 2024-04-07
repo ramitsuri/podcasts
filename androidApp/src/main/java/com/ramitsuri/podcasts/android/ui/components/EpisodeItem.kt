@@ -43,11 +43,11 @@ fun EpisodeItem(
 ) {
     Row(
         modifier =
-        Modifier
-            .background(MaterialTheme.colorScheme.background)
-            .fillMaxWidth()
-            .clickable(onClick = onClicked)
-            .padding(vertical = 8.dp, horizontal = 16.dp),
+            Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxWidth()
+                .clickable(onClick = onClicked)
+                .padding(vertical = 8.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column {
@@ -76,16 +76,16 @@ private fun EpisodeInfo(episode: Episode) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(episode.podcastImageUrl)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(episode.podcastImageUrl)
+                    .crossfade(true)
+                    .build(),
             contentDescription = episode.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(56.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(56.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
