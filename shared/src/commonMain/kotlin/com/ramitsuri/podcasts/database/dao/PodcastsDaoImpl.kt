@@ -118,7 +118,10 @@ internal class PodcastsDaoImpl(
         }
     }
 
-    override suspend fun updateAutoAddToQueueEpisodes(id: Long, autoAddToQueue: Boolean) {
+    override suspend fun updateAutoAddToQueueEpisodes(
+        id: Long,
+        autoAddToQueue: Boolean,
+    ) {
         withContext(ioDispatcher) {
             podcastAdditionalInfoEntityQueries.updateAutoAddToQueue(
                 id = id,
