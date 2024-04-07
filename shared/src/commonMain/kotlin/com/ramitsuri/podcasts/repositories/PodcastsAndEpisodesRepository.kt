@@ -32,7 +32,7 @@ class PodcastsAndEpisodesRepository internal constructor(
         return withContext(ioDispatcher) {
             val subscribed = podcastsRepository.getAllSubscribed()
             val autoDownloadableEpisodes = mutableListOf<Episode>()
-            val otherEpisodes = mutableListOf<Episode>()
+            val autoAddToQueueEpisodes = mutableListOf<Episode>()
             val failures = mutableListOf<PodcastResult.Failure>()
             subscribed.map { podcast ->
                 launch {
@@ -44,8 +44,9 @@ class PodcastsAndEpisodesRepository internal constructor(
                         is PodcastResult.Success -> {
                             if (podcast.autoDownloadEpisodes) {
                                 autoDownloadableEpisodes.addAll(refreshResult.data)
-                            } else {
-                                otherEpisodes.addAll(refreshResult.data)
+                            }
+                            if (podcast.autoAddToQueue) {
+                                autoAddToQueueEpisodes.addAll(refreshResult.data)
                             }
                         }
                     }
@@ -56,7 +57,7 @@ class PodcastsAndEpisodesRepository internal constructor(
                 PodcastResult.Success(
                     PodcastRefreshResult(
                         autoDownloadableEpisodes = autoDownloadableEpisodes,
-                        otherEpisodes = otherEpisodes,
+                        autoAddToQueueEpisodes = autoAddToQueueEpisodes,
                     ),
                 )
             } else {

@@ -65,4 +65,5 @@ fun podcast(hasNewEpisodes: Boolean = false) =
         newEpisodeNotifications = false,
         subscribedDate = null,
         hasNewEpisodes = hasNewEpisodes,
+        autoAddToQueue = false,
     )

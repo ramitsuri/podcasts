@@ -162,6 +162,7 @@ private val coreModule =
                 foregroundStateObserver = get<ForegroundStateObserver>(),
                 longLivingScope = get<CoroutineScope>(),
                 episodeDownloader = get<EpisodeDownloader>(),
+                episodesRepository = get<EpisodesRepository>(),
             )
         }
 
