@@ -28,6 +28,8 @@ internal class SessionActionDaoImpl(
     }
 
     override fun getSessionActionEntities(): Flow<List<SessionActionEntity>> {
+        // Gets unique groups of (sessionId, podcastId, episodeId) and then gets the first row
+        // from each of those groups. Idea being, get the first entry of an episode for a session.
         return sessionHistoryQueries
             .getGroupSelectors()
             .asFlow()
