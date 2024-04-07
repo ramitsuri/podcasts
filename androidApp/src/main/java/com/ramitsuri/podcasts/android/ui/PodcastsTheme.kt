@@ -61,7 +61,7 @@ fun AppTheme(
 private val primaryDark = Color(0xFFBB86FC)
 private val secondaryDark = Color(0xFF03DAC5)
 private val tertiaryDark = Color(0xFF3700B3)
-private val greenDark = Color(0xFF18de43)
+private val greenDark = Color(0xFF64a880)
 
 private val primaryLight = Color(0xFF6200EE)
 private val secondaryLight = Color(0xFF03DAC5)
