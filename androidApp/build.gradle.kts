@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.media3.exoplayer.workmanager)
     implementation(libs.media3.session)
     implementation(libs.reorderable)
+    implementation(libs.splash)
     implementation(libs.work)
     debugImplementation(libs.compose.ui.tooling)
 }
