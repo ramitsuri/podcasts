@@ -7,12 +7,13 @@ CREATE TABLE IF NOT EXISTS PodcastAdditionalInfoEntity (
     autoDownloadEpisodes INTEGER AS Boolean NOT NULL,
     newEpisodeNotification INTEGER AS Boolean NOT NULL,
     subscribedDate INTEGER AS Instant,
-    hasNewEpisodes INTEGER AS Boolean NOT NULL DEFAULT 0
+    hasNewEpisodes INTEGER AS Boolean NOT NULL DEFAULT 0,
+    autoAddToQueue INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
 insertOrIgnore:
 INSERT OR IGNORE INTO
-PodcastAdditionalInfoEntity(id, subscribed, autoDownloadEpisodes, newEpisodeNotification, subscribedDate, hasNewEpisodes)
+PodcastAdditionalInfoEntity(id, subscribed, autoDownloadEpisodes, newEpisodeNotification, subscribedDate, hasNewEpisodes, autoAddToQueue)
 VALUES ?;
 
 updateSubscribed:
@@ -33,6 +34,11 @@ WHERE id = :id;
 updateHasNewEpisodes:
 UPDATE PodcastAdditionalInfoEntity
 SET hasNewEpisodes = :hasNewEpisodes
+WHERE id = :id;
+
+updateAutoAddToQueue:
+UPDATE PodcastAdditionalInfoEntity
+SET autoAddToQueue = :autoAddToQueue
 WHERE id = :id;
 
 updateSubscribedDate:

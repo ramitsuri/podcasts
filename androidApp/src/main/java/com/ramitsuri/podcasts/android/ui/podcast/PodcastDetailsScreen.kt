@@ -15,8 +15,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -24,8 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -64,6 +62,7 @@ fun PodcastDetailsScreen(
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
     toggleAutoDownloadClicked: () -> Unit,
+    toggleAutoAddToQueueClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
     onEpisodePauseClicked: () -> Unit,
@@ -89,6 +88,7 @@ fun PodcastDetailsScreen(
                 onSubscribeClicked = onSubscribeClicked,
                 onUnsubscribeClicked = onUnsubscribeClicked,
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,
+                toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
                 onEpisodeClicked = onEpisodeClicked,
                 onEpisodePlayClicked = onEpisodePlayClicked,
                 onEpisodePauseClicked = onEpisodePauseClicked,
@@ -114,6 +114,7 @@ private fun PodcastDetails(
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
     toggleAutoDownloadClicked: () -> Unit,
+    toggleAutoAddToQueueClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
     onEpisodePauseClicked: () -> Unit,
@@ -135,6 +136,7 @@ private fun PodcastDetails(
                 onSubscribeClicked = onSubscribeClicked,
                 onUnsubscribeClicked = onUnsubscribeClicked,
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,
+                toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
             )
         }
         items(podcastWithEpisodes.episodes) {
@@ -171,6 +173,7 @@ private fun PodcastDetails(
 private fun PodcastHeader(
     podcast: Podcast,
     toggleAutoDownloadClicked: () -> Unit,
+    toggleAutoAddToQueueClicked: () -> Unit,
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
 ) {
@@ -181,9 +184,11 @@ private fun PodcastHeader(
         PodcastControls(
             subscribed = podcast.subscribed,
             autoDownloadNewEpisodes = podcast.autoDownloadEpisodes,
+            autoAddToQueueNewEpisodes = podcast.autoAddToQueue,
             onSubscribeClicked = onSubscribeClicked,
             onUnsubscribeClicked = onUnsubscribeClicked,
             toggleAutoDownloadClicked = toggleAutoDownloadClicked,
+            toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = remember(podcast.description) { htmlToString(podcast.description) })
@@ -229,9 +234,11 @@ private fun TitleAndImage(podcast: Podcast) {
 private fun PodcastControls(
     subscribed: Boolean,
     autoDownloadNewEpisodes: Boolean,
+    autoAddToQueueNewEpisodes: Boolean,
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
     toggleAutoDownloadClicked: () -> Unit,
+    toggleAutoAddToQueueClicked: () -> Unit,
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
@@ -244,7 +251,9 @@ private fun PodcastControls(
                 showMenu = showMenu,
                 onToggleMenu = { showMenu = !showMenu },
                 autoDownloadNewEpisodes = autoDownloadNewEpisodes,
+                autoAddToQueueNewEpisodes = autoAddToQueueNewEpisodes,
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,
+                toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
             )
         }
     }
@@ -255,7 +264,9 @@ private fun PodcastMenu(
     showMenu: Boolean,
     onToggleMenu: () -> Unit,
     autoDownloadNewEpisodes: Boolean,
+    autoAddToQueueNewEpisodes: Boolean,
     toggleAutoDownloadClicked: () -> Unit,
+    toggleAutoAddToQueueClicked: () -> Unit,
 ) {
     Box {
         IconButton(onClick = { onToggleMenu() }) {
@@ -276,28 +287,27 @@ private fun PodcastMenu(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(stringResource(id = R.string.auto_download_new_episodes))
+                        Checkbox(checked = autoDownloadNewEpisodes, onCheckedChange = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Switch(
-                            checked = autoDownloadNewEpisodes,
-                            onCheckedChange = null,
-                            thumbContent =
-                                if (autoDownloadNewEpisodes) {
-                                    {
-                                        Icon(
-                                            imageVector = Icons.Filled.Check,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                                        )
-                                    }
-                                } else {
-                                    null
-                                },
-                        )
+                        Text(stringResource(id = R.string.auto_download_new_episodes))
                     }
                 },
                 onClick = {
                     toggleAutoDownloadClicked()
+                },
+            )
+            DropdownMenuItem(
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(checked = autoAddToQueueNewEpisodes, onCheckedChange = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(id = R.string.auto_add_to_queue_new_episodes))
+                    }
+                },
+                onClick = {
+                    toggleAutoAddToQueueClicked()
                 },
             )
         }
@@ -386,6 +396,7 @@ private fun PodcastDetailsPreview() {
             onSubscribeClicked = { },
             onUnsubscribeClicked = { },
             toggleAutoDownloadClicked = { },
+            toggleAutoAddToQueueClicked = { },
             onEpisodeClicked = { },
             onEpisodePlayClicked = { },
             onEpisodePauseClicked = { },

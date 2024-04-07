@@ -17,7 +17,8 @@
     <string name="subscribe">Subscribe</string>
     <string name="unsubscribe">Unsubscribe</string>
     <string name="more">More</string>
-    <string name="auto_download_new_episodes">Auto download new episodes</string>
+    <string name="auto_download_new_episodes">Auto download</string>
+    <string name="auto_add_to_queue_new_episodes">Auto add to queue</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>

@@ -138,4 +138,11 @@ class PodcastsRepository internal constructor(
     ) {
         podcastsDao.updateHasNewEpisodes(id, hasNewEpisodes)
     }
+
+    suspend fun updateAutoAddToQueueEpisodes(
+        id: Long,
+        autoAddToQueue: Boolean,
+    ) {
+        podcastsDao.updateAutoAddToQueueEpisodes(id, autoAddToQueue)
+    }
 }

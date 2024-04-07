@@ -118,6 +118,18 @@ internal class PodcastsDaoImpl(
         }
     }
 
+    override suspend fun updateAutoAddToQueueEpisodes(
+        id: Long,
+        autoAddToQueue: Boolean,
+    ) {
+        withContext(ioDispatcher) {
+            podcastAdditionalInfoEntityQueries.updateAutoAddToQueue(
+                id = id,
+                autoAddToQueue = autoAddToQueue,
+            )
+        }
+    }
+
     private fun insert(podcast: Podcast) {
         podcastEntityQueries.insertOrReplace(
             PodcastEntity(
@@ -144,6 +156,7 @@ internal class PodcastsDaoImpl(
                 newEpisodeNotification = podcast.newEpisodeNotifications,
                 subscribedDate = podcast.subscribedDate,
                 hasNewEpisodes = podcast.hasNewEpisodes,
+                autoAddToQueue = podcast.autoAddToQueue,
             ),
         )
     }

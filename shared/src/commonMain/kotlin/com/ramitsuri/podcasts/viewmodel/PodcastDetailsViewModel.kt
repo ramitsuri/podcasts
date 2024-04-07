@@ -95,6 +95,18 @@ class PodcastDetailsViewModel(
         }
     }
 
+    fun toggleAutoAddToQueueClicked() {
+        val podcast = _state.value.podcastWithEpisodes?.podcast
+        if (podcast == null) {
+            LogHelper.v(TAG, "Podcast toggle auto add to queue requested but podcast is null")
+            return
+        }
+        longLivingScope.launch {
+            val currentAutoAddToQueue = podcast.autoAddToQueue
+            repository.updateAutoAddToQueueEpisodes(id = podcast.id, autoAddToQueue = !currentAutoAddToQueue)
+        }
+    }
+
     companion object {
         private const val TAG = "PodcastDetails"
     }
