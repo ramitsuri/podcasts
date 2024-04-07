@@ -229,9 +229,9 @@ private fun PlayerScreenExpanded(
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onPodcastNameClicked),
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onPodcastNameClicked),
             horizontalArrangement = Arrangement.Center,
         ) {
             Text(
