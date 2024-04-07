@@ -25,28 +25,31 @@ fun AppTheme(
     content: @Composable () -> Unit,
 ) {
     val dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    val colors = when {
-        dynamicColor && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
-        dynamicColor && !darkTheme -> dynamicLightColorScheme(LocalContext.current)
-        darkTheme -> darkColorScheme(
-            primary = primaryDark,
-            secondary = secondaryDark,
-            tertiary = tertiaryDark,
-        )
-        else ->  lightColorScheme(
-            primary = primaryLight,
-            secondary = secondaryLight,
-            tertiary = tertiaryLight,
-        )
-    }
+    val colors =
+        when {
+            dynamicColor && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
+            dynamicColor && !darkTheme -> dynamicLightColorScheme(LocalContext.current)
+            darkTheme ->
+                darkColorScheme(
+                    primary = primaryDark,
+                    secondary = secondaryDark,
+                    tertiary = tertiaryDark,
+                )
+            else ->
+                lightColorScheme(
+                    primary = primaryLight,
+                    secondary = secondaryLight,
+                    tertiary = tertiaryLight,
+                )
+        }
     val typography =
         Typography(
             bodyMedium =
-            TextStyle(
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-            ),
+                TextStyle(
+                    fontFamily = FontFamily.Default,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp,
+                ),
         )
     val shapes =
         Shapes(
