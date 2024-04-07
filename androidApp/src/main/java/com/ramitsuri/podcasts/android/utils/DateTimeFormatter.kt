@@ -5,12 +5,18 @@ import androidx.compose.ui.res.stringResource
 import com.ramitsuri.podcasts.android.R
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
+import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
+import java.time.Duration
+import java.time.temporal.ChronoUnit
 
 @Composable
 fun friendlyPublishDate(
@@ -77,6 +83,46 @@ fun minutesFormatted(
             }
         }
     return formatted + suffix
+}
+
+@Composable
+fun dateFormatted(
+    toFormat: LocalDate,
+    now: Instant = Clock.System.now(),
+    timeZone: TimeZone = TimeZone.currentSystemDefault(),
+): String {
+    val nowLocalDateTime = LocalDateTime(now.toLocalDateTime(timeZone).date, LocalTime(0, 0))
+    val toFormatDateTime = toFormat.atTime(0, 0)
+    val daysBetweenNowAndToFormat = Duration.between(
+        nowLocalDateTime.toJavaLocalDateTime().truncatedTo(ChronoUnit.DAYS),
+        toFormatDateTime.toJavaLocalDateTime().truncatedTo(ChronoUnit.DAYS),
+    ).toDays()
+    return when (daysBetweenNowAndToFormat) {
+        0L -> {
+            stringResource(id = R.string.episode_history_today)
+        }
+
+        -1L -> {
+            stringResource(id = R.string.episode_history_yesterday)
+        }
+
+        else -> {
+            val monthNames = monthNames
+            val format =
+                LocalDateTime.Format {
+                    monthName(monthNames)
+                    char(' ')
+                    dayOfMonth()
+                    if (nowLocalDateTime.year != toFormatDateTime.year) {
+                        char(',')
+                        char(' ')
+                        year()
+                    }
+                }
+            return toFormatDateTime
+                .format(format)
+        }
+    }
 }
 
 private val monthNames: MonthNames

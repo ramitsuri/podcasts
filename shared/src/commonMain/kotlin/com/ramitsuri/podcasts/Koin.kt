@@ -34,6 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
 import okio.Path
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
@@ -98,6 +99,7 @@ private val coreModule =
         single<SessionHistoryRepository> {
             SessionHistoryRepository(
                 sessionActionDao = get(),
+                episodesRepository = get(),
             )
         }
 
@@ -133,6 +135,10 @@ private val coreModule =
 
         single<Clock> {
             Clock.System
+        }
+
+        single<TimeZone> {
+            TimeZone.currentSystemDefault()
         }
 
         single<Settings> {

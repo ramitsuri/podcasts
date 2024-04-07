@@ -21,7 +21,8 @@ getGroupSelectors:
 SELECT sessionId, podcastId, episodeId FROM SessionActionEntity
 GROUP BY sessionId, podcastId, episodeId;
 
-getGroups:
+get:
 SELECT * FROM SessionActionEntity
 WHERE sessionId = :sessionId AND podcastId = :podcastId AND episodeId = :episodeId
-ORDER BY time ASC;
+ORDER BY time ASC
+LIMIT 1;

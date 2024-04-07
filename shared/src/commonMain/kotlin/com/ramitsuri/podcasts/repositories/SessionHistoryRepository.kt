@@ -3,13 +3,17 @@ package com.ramitsuri.podcasts.repositories
 import com.ramitsuri.podcasts.database.dao.interfaces.SessionActionDao
 import com.ramitsuri.podcasts.model.Action
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.EpisodeHistory
 import com.ramitsuri.podcasts.model.SessionAction
 import com.ramitsuri.podcasts.utils.LogHelper
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class SessionHistoryRepository internal constructor(
     private val sessionActionDao: SessionActionDao,
+    private val episodesRepository: EpisodesRepository,
 ) {
     private val mutex = Mutex()
     private var previousEpisode: Episode? = null
@@ -135,6 +139,22 @@ class SessionHistoryRepository internal constructor(
             previousIsPlaying = true
             previousSpeed = speed
         }
+    }
+
+    fun getEpisodeHistory(): Flow<List<EpisodeHistory>> {
+        val episodeCache = mutableMapOf<String, Episode>()
+        return sessionActionDao
+            .getSessionActionEntities()
+            .map { sessionActionEntities ->
+                sessionActionEntities.mapNotNull { sessionActionEntity ->
+                    (episodeCache[sessionActionEntity.episodeId]
+                        ?: episodesRepository.getEpisode(sessionActionEntity.episodeId))
+                        ?.let { episode ->
+                            episodeCache[episode.id] = episode
+                            EpisodeHistory(episode, sessionActionEntity.time)
+                        }
+                }
+            }
     }
 
     private suspend fun insert(action: SessionAction) {
