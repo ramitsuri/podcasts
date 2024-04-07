@@ -84,18 +84,18 @@ private fun Item(
 ) {
     Row(
         modifier =
-        modifier
-            .clickable(role = Role.Button, onClick = onClick)
-            .fillMaxWidth()
-            .padding(16.dp),
+            modifier
+                .clickable(role = Role.Button, onClick = onClick)
+                .fillMaxWidth()
+                .padding(16.dp),
     ) {
         Icon(imageVector = icon, contentDescription = null)
         Text(
             text = stringResource(id = labelResId),
             modifier =
-            Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp),
+                Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp),
         )
         Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
     }

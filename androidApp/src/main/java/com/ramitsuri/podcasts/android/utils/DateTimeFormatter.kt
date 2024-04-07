@@ -93,10 +93,11 @@ fun dateFormatted(
 ): String {
     val nowLocalDateTime = LocalDateTime(now.toLocalDateTime(timeZone).date, LocalTime(0, 0))
     val toFormatDateTime = toFormat.atTime(0, 0)
-    val daysBetweenNowAndToFormat = Duration.between(
-        nowLocalDateTime.toJavaLocalDateTime().truncatedTo(ChronoUnit.DAYS),
-        toFormatDateTime.toJavaLocalDateTime().truncatedTo(ChronoUnit.DAYS),
-    ).toDays()
+    val daysBetweenNowAndToFormat =
+        Duration.between(
+            nowLocalDateTime.toJavaLocalDateTime().truncatedTo(ChronoUnit.DAYS),
+            toFormatDateTime.toJavaLocalDateTime().truncatedTo(ChronoUnit.DAYS),
+        ).toDays()
     return when (daysBetweenNowAndToFormat) {
         0L -> {
             stringResource(id = R.string.episode_history_today)

@@ -147,8 +147,10 @@ class SessionHistoryRepository internal constructor(
             .getSessionActionEntities()
             .map { sessionActionEntities ->
                 sessionActionEntities.mapNotNull { sessionActionEntity ->
-                    (episodeCache[sessionActionEntity.episodeId]
-                        ?: episodesRepository.getEpisode(sessionActionEntity.episodeId))
+                    (
+                        episodeCache[sessionActionEntity.episodeId]
+                            ?: episodesRepository.getEpisode(sessionActionEntity.episodeId)
+                    )
                         ?.let { episode ->
                             episodeCache[episode.id] = episode
                             EpisodeHistory(episode, sessionActionEntity.time)

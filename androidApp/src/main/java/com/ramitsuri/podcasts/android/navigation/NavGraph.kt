@@ -500,9 +500,9 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
-                        Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
             }
