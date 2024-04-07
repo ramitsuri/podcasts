@@ -8,6 +8,7 @@ data class PlayerViewState(
     val playingState: PlayingState = PlayingState.NOT_PLAYING,
     val episodeTitle: String = "",
     val episodeArtworkUrl: String = "",
+    val podcastId: Long? = null,
     val podcastName: String = "",
     val sleepTimer: SleepTimer = SleepTimer.None,
     val sleepTimerDuration: Duration? = null,

@@ -85,6 +85,7 @@ class PlayerViewModel(
                                 episodeId = episode.id,
                                 episodeTitle = episode.title,
                                 episodeArtworkUrl = episode.podcastImageUrl,
+                                podcastId = episode.podcastId,
                                 podcastName = episode.podcastName,
                                 playbackSpeed = speed,
                                 sleepTimer = sleepTimer,
