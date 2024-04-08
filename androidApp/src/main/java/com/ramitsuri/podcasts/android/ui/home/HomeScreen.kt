@@ -149,9 +149,10 @@ private fun TopAppBar(
     onSettingsClicked: () -> Unit,
 ) {
     CenterAlignedTopAppBar(
-        colors = TopAppBarDefaults
-            .centerAlignedTopAppBarColors()
-            .copy(scrolledContainerColor = MaterialTheme.colorScheme.background),
+        colors =
+            TopAppBarDefaults
+                .centerAlignedTopAppBarColors()
+                .copy(scrolledContainerColor = MaterialTheme.colorScheme.background),
         title = {
             Text(
                 stringResource(id = R.string.app_name),
@@ -184,9 +185,9 @@ private fun Subscriptions(
     ) {
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -239,19 +240,19 @@ private fun SubscribedPodcastItem(
             contentDescription = title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(80.dp)
-                .padding(4.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(80.dp)
+                    .padding(4.dp),
         )
         if (hasNewEpisodes) {
             Badge(
                 modifier =
-                Modifier
-                    .size(16.dp)
-                    .border(4.dp, color = MaterialTheme.colorScheme.background, shape = CircleShape)
-                    .align(Alignment.TopEnd)
-                    .clip(CircleShape),
+                    Modifier
+                        .size(16.dp)
+                        .border(4.dp, color = MaterialTheme.colorScheme.background, shape = CircleShape)
+                        .align(Alignment.TopEnd)
+                        .clip(CircleShape),
             )
         }
     }
@@ -276,10 +277,10 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-        Modifier
-            .clickable(onClick = onClicked)
-            .padding(top = 12.dp, bottom = 4.dp)
-            .padding(horizontal = 16.dp),
+            Modifier
+                .clickable(onClick = onClicked)
+                .padding(top = 12.dp, bottom = 4.dp)
+                .padding(horizontal = 16.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
@@ -291,9 +292,9 @@ private fun EpisodeItem(
                 contentDescription = episode.title,
                 contentScale = ContentScale.FillBounds,
                 modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(56.dp),
+                    Modifier
+                        .clip(MaterialTheme.shapes.small)
+                        .size(56.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
