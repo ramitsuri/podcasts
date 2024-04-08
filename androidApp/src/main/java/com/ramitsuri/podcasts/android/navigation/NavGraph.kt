@@ -52,6 +52,7 @@ import com.ramitsuri.podcasts.android.ui.player.PlayerScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerViewModel
 import com.ramitsuri.podcasts.android.ui.podcast.PodcastDetailsScreen
 import com.ramitsuri.podcasts.android.ui.search.SearchScreen
+import com.ramitsuri.podcasts.android.ui.settings.SettingsScreen
 import com.ramitsuri.podcasts.android.ui.subscriptions.SubscriptionsScreen
 import com.ramitsuri.podcasts.viewmodel.DownloadsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
@@ -61,6 +62,7 @@ import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.QueueViewModel
 import com.ramitsuri.podcasts.viewmodel.SearchViewModel
+import com.ramitsuri.podcasts.viewmodel.SettingsViewModel
 import com.ramitsuri.podcasts.viewmodel.SubscriptionsViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -219,6 +221,9 @@ fun NavGraph(
 
                     HomeScreen(
                         state = state,
+                        onSettingsClicked = {
+                            navController.navigate(Route.SETTINGS.value)
+                        },
                         onImportSubscriptionsClicked = {
                             navController.navigate(Route.IMPORT_SUBSCRIPTIONS.value)
                         },
@@ -521,6 +526,21 @@ fun NavGraph(
                         onEpisodeNotPlayedClicked = viewModel::onEpisodeNotPlayedClicked,
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
+                    )
+                }
+
+                composable(route = Route.SETTINGS.value) {
+                    val viewModel = koinViewModel<SettingsViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    SettingsScreen(
+                        state = state,
+                        onBack = { navController.popBackStack() },
+                        toggleAutoPlayNextInQueue = viewModel::toggleAutoPlayNextInQueue,
                         modifier =
                             Modifier
                                 .statusBarsPadding()
