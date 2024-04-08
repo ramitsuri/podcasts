@@ -29,6 +29,13 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("../signing/android-debug.keystore")
+        }
+    }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
