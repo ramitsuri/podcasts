@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingsViewModel internal constructor(
-    private val settings: Settings
+    private val settings: Settings,
 ) : ViewModel() {
     private val _state = MutableStateFlow(SettingsViewState())
     val state = _state.asStateFlow()

@@ -58,10 +58,11 @@ private fun PlaybackSettings(
             modifier = Modifier.padding(16.dp),
         )
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = toggleAutoPlayNextInQueue)
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = toggleAutoPlayNextInQueue)
+                    .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(text = stringResource(id = R.string.settings_auto_play_next_in_queue))
@@ -70,22 +71,21 @@ private fun PlaybackSettings(
                 checked = autoPlayNextInQueue,
                 onCheckedChange = null,
                 thumbContent =
-                if (autoPlayNextInQueue) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
-                    }
-                } else {
-                    null
-                },
+                    if (autoPlayNextInQueue) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        }
+                    } else {
+                        null
+                    },
             )
         }
     }
 }
-
 
 @ThemePreview
 @Composable

@@ -84,13 +84,14 @@ fun HomeScreen(
     ) {
         TopAppBar(
             onBack = null,
-            menuItems = listOf(
-                AppBarMenuItem(
-                    title = stringResource(id = R.string.settings),
-                    icon = Icons.Filled.Settings,
-                    onClick = onSettingsClicked,
+            menuItems =
+                listOf(
+                    AppBarMenuItem(
+                        title = stringResource(id = R.string.settings),
+                        icon = Icons.Filled.Settings,
+                        onClick = onSettingsClicked,
+                    ),
                 ),
-            ),
         )
         LazyColumn {
             if (state.subscribedPodcasts.isNotEmpty()) {
@@ -146,13 +147,14 @@ private fun Subscriptions(
 ) {
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth(),
+            Modifier
+                .fillMaxWidth(),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
