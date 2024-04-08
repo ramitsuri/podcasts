@@ -18,8 +18,6 @@ class EpisodeFetcher(
     private val clock: Clock,
     private val foregroundStateObserver: ForegroundStateObserver,
     private val longLivingScope: CoroutineScope,
-    private val episodeDownloader: EpisodeDownloader,
-    private val episodesRepository: EpisodesRepository,
 ) {
     private val refreshPodcastsMutex = Mutex()
 
@@ -47,14 +45,7 @@ class EpisodeFetcher(
                     LogHelper.v(TAG, "Failed to refresh podcasts: ${result.error}")
                     return
                 }
-                result as PodcastResult.Success
                 settings.setLastEpisodeFetchTime()
-                result.data.autoDownloadableEpisodes.forEach { episode ->
-                    episodeDownloader.add(episode)
-                }
-                result.data.autoAddToQueueEpisodes.forEach { episode ->
-                    episodesRepository.addToQueue(episode.id)
-                }
             } else {
                 LogHelper.d(TAG, "Last fetched less than 5 minutes ago and not forced, skipping")
             }

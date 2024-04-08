@@ -86,6 +86,7 @@ actual val platformModule =
 
         viewModel<PodcastDetailsViewModel> { parameters ->
             PodcastDetailsViewModel(
+                shouldRefreshPodcast = parameters.get(),
                 podcastId = parameters.get(),
                 podcastsAndEpisodesRepository = get<PodcastsAndEpisodesRepository>(),
                 episodesRepository = get<EpisodesRepository>(),
