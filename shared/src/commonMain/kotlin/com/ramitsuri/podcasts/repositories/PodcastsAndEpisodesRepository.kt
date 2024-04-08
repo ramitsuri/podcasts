@@ -25,7 +25,7 @@ class PodcastsAndEpisodesRepository internal constructor(
     suspend fun refreshPodcast(
         podcastId: Long,
         autoDownloadEpisodes: Boolean = false,
-        autoAddToQueueEpisodes: Boolean = false
+        autoAddToQueueEpisodes: Boolean = false,
     ): PodcastResult<List<Episode>> {
         val result = episodesRepository.refreshForPodcastId(podcastId)
         val episodes = (result as? PodcastResult.Success)?.data ?: listOf()
@@ -49,11 +49,14 @@ class PodcastsAndEpisodesRepository internal constructor(
             val failures = mutableListOf<PodcastResult.Failure>()
             subscribed.map { podcast ->
                 launch {
-                    when (val refreshResult = refreshPodcast(
-                        podcastId = podcast.id,
-                        autoDownloadEpisodes = podcast.autoDownloadEpisodes,
-                        autoAddToQueueEpisodes = podcast.autoAddToQueue,
-                    )) {
+                    when (
+                        val refreshResult =
+                            refreshPodcast(
+                                podcastId = podcast.id,
+                                autoDownloadEpisodes = podcast.autoDownloadEpisodes,
+                                autoAddToQueueEpisodes = podcast.autoAddToQueue,
+                            )
+                    ) {
                         is PodcastResult.Failure -> {
                             failures.add(refreshResult)
                         }

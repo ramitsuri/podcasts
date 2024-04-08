@@ -93,7 +93,7 @@ private val coreModule =
                 podcastsRepository = get(),
                 episodesRepository = get(),
                 ioDispatcher = get<DispatcherProvider>().io,
-                episodeDownloader = get<EpisodeDownloader>()
+                episodeDownloader = get<EpisodeDownloader>(),
             )
         }
 

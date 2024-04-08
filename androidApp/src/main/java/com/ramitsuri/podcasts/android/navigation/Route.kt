@@ -69,7 +69,10 @@ enum class Route(val value: String) {
             return EPISODE_DETAILS.routeWithArgValue(mapOf(RouteArgs.EPISODE_ID to encoded))
         }
 
-        fun podcastDetails(podcastId: Long, refreshPodcast: Boolean): String {
+        fun podcastDetails(
+            podcastId: Long,
+            refreshPodcast: Boolean,
+        ): String {
             return PODCAST_DETAILS.routeWithArgValue(
                 mapOf(
                     RouteArgs.PODCAST_ID to podcastId.toString(),

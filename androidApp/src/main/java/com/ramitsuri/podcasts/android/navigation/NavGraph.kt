@@ -161,7 +161,7 @@ fun NavGraph(
                                         Route.podcastDetails(
                                             podcastId = id,
                                             refreshPodcast = false,
-                                        )
+                                        ),
                                     )
                                 }
                             },
@@ -226,8 +226,8 @@ fun NavGraph(
                             navController.navigate(
                                 Route.podcastDetails(
                                     podcastId = it,
-                                    refreshPodcast = false
-                                )
+                                    refreshPodcast = false,
+                                ),
                             )
                         },
                         onMorePodcastsClicked = {
@@ -264,8 +264,8 @@ fun NavGraph(
                             navController.navigate(
                                 Route.podcastDetails(
                                     podcastId = it,
-                                    refreshPodcast = true
-                                )
+                                    refreshPodcast = true,
+                                ),
                             )
                         },
                         onSearchTermUpdated = viewModel::onSearchTermUpdated,
@@ -332,8 +332,8 @@ fun NavGraph(
                             navController.navigate(
                                 Route.podcastDetails(
                                     podcastId = podcastId,
-                                    refreshPodcast = false
-                                )
+                                    refreshPodcast = false,
+                                ),
                             )
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
@@ -360,9 +360,10 @@ fun NavGraph(
                 ) { backStackEntry ->
                     val podcastId = backStackEntry.arguments?.getLong(RouteArgs.PODCAST_ID.value)
                     val refreshPodcast = backStackEntry.arguments?.getBoolean(RouteArgs.REFRESH_PODCAST.value)
-                    val viewModel = koinViewModel<PodcastDetailsViewModel>(
-                        parameters = { parametersOf(refreshPodcast, podcastId) }
-                    )
+                    val viewModel =
+                        koinViewModel<PodcastDetailsViewModel>(
+                            parameters = { parametersOf(refreshPodcast, podcastId) },
+                        )
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     PodcastDetailsScreen(
@@ -432,8 +433,8 @@ fun NavGraph(
                             navController.navigate(
                                 Route.podcastDetails(
                                     podcastId = it,
-                                    refreshPodcast = false
-                                )
+                                    refreshPodcast = false,
+                                ),
                             )
                         },
                         modifier =

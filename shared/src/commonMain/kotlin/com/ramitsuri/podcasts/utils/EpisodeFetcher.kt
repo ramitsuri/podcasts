@@ -1,8 +1,6 @@
 package com.ramitsuri.podcasts.utils
 
-import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.model.PodcastResult
-import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import kotlinx.coroutines.CoroutineScope
