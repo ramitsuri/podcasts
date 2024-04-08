@@ -93,6 +93,7 @@ private val coreModule =
                 podcastsRepository = get(),
                 episodesRepository = get(),
                 ioDispatcher = get<DispatcherProvider>().io,
+                episodeDownloader = get<EpisodeDownloader>(),
             )
         }
 
@@ -167,8 +168,6 @@ private val coreModule =
                 clock = get<Clock>(),
                 foregroundStateObserver = get<ForegroundStateObserver>(),
                 longLivingScope = get<CoroutineScope>(),
-                episodeDownloader = get<EpisodeDownloader>(),
-                episodesRepository = get<EpisodesRepository>(),
             )
         }
 

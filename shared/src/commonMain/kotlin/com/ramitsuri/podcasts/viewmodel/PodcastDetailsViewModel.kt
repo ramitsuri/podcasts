@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PodcastDetailsViewModel(
+    shouldRefreshPodcast: Boolean,
     podcastId: Long?,
     podcastsAndEpisodesRepository: PodcastsAndEpisodesRepository,
     episodesRepository: EpisodesRepository,
@@ -31,8 +32,10 @@ class PodcastDetailsViewModel(
             LogHelper.v(TAG, "Podcast id is null")
         } else {
             viewModelScope.launch {
-                launch {
-                    podcastsAndEpisodesRepository.refreshPodcast(podcastId)
+                if (shouldRefreshPodcast) {
+                    launch {
+                        podcastsAndEpisodesRepository.refreshPodcast(podcastId)
+                    }
                 }
 
                 launch {

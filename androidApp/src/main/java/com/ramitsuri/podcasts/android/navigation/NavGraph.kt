@@ -148,8 +148,7 @@ fun NavGraph(
                                 }
                                 val episodeId = playerState.episodeId
                                 if (episodeId != null) {
-                                    val encoded = Uri.encode(episodeId)
-                                    navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
+                                    navController.navigate(Route.episodeDetails(episodeId))
                                 }
                             },
                             onPodcastNameClicked = {
@@ -158,7 +157,12 @@ fun NavGraph(
                                 }
                                 val id = playerState.podcastId
                                 if (id != null) {
-                                    navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(id.toString()))
+                                    navController.navigate(
+                                        Route.podcastDetails(
+                                            podcastId = id,
+                                            refreshPodcast = false,
+                                        ),
+                                    )
                                 }
                             },
                             onGoToQueueClicked = {
@@ -219,14 +223,18 @@ fun NavGraph(
                             navController.navigate(Route.IMPORT_SUBSCRIPTIONS.value)
                         },
                         onPodcastClicked = {
-                            navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(it.toString()))
+                            navController.navigate(
+                                Route.podcastDetails(
+                                    podcastId = it,
+                                    refreshPodcast = false,
+                                ),
+                            )
                         },
                         onMorePodcastsClicked = {
                             navController.navigate(Route.SUBSCRIPTIONS.value)
                         },
                         onEpisodeClicked = {
-                            val encoded = Uri.encode(it)
-                            navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
+                            navController.navigate(Route.episodeDetails(episodeId = it))
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                         onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
@@ -253,7 +261,12 @@ fun NavGraph(
                     SearchScreen(
                         state = state,
                         onPodcastClicked = {
-                            navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(it.toString()))
+                            navController.navigate(
+                                Route.podcastDetails(
+                                    podcastId = it,
+                                    refreshPodcast = true,
+                                ),
+                            )
                         },
                         onSearchTermUpdated = viewModel::onSearchTermUpdated,
                         onSearchRequested = viewModel::search,
@@ -316,7 +329,12 @@ fun NavGraph(
                         state = state,
                         onBack = { navController.navigateUp() },
                         onPodcastNameClicked = { podcastId ->
-                            navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(podcastId.toString()))
+                            navController.navigate(
+                                Route.podcastDetails(
+                                    podcastId = podcastId,
+                                    refreshPodcast = false,
+                                ),
+                            )
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                         onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
@@ -341,7 +359,11 @@ fun NavGraph(
                     arguments = Route.PODCAST_DETAILS.navArgs(),
                 ) { backStackEntry ->
                     val podcastId = backStackEntry.arguments?.getLong(RouteArgs.PODCAST_ID.value)
-                    val viewModel = koinViewModel<PodcastDetailsViewModel>(parameters = { parametersOf(podcastId) })
+                    val refreshPodcast = backStackEntry.arguments?.getBoolean(RouteArgs.REFRESH_PODCAST.value)
+                    val viewModel =
+                        koinViewModel<PodcastDetailsViewModel>(
+                            parameters = { parametersOf(refreshPodcast, podcastId) },
+                        )
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     PodcastDetailsScreen(
@@ -352,8 +374,7 @@ fun NavGraph(
                         toggleAutoDownloadClicked = viewModel::toggleAutoDownloadClicked,
                         toggleAutoAddToQueueClicked = viewModel::toggleAutoAddToQueueClicked,
                         onEpisodeClicked = {
-                            val encoded = Uri.encode(it)
-                            navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
+                            navController.navigate(Route.episodeDetails(episodeId = it))
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                         onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
@@ -382,8 +403,7 @@ fun NavGraph(
                         onBack = { navController.popBackStack() },
                         onEpisodesRearranged = viewModel::onEpisodeRearrangementRequested,
                         onEpisodeClicked = {
-                            val encoded = Uri.encode(it)
-                            navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
+                            navController.navigate(Route.episodeDetails(episodeId = it))
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                         onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
@@ -410,7 +430,12 @@ fun NavGraph(
                         state = state,
                         onBack = { navController.popBackStack() },
                         onPodcastClicked = {
-                            navController.navigate(Route.PODCAST_DETAILS.routeWithArgValue(it.toString()))
+                            navController.navigate(
+                                Route.podcastDetails(
+                                    podcastId = it,
+                                    refreshPodcast = false,
+                                ),
+                            )
                         },
                         modifier =
                             Modifier
@@ -427,8 +452,7 @@ fun NavGraph(
                         state = state,
                         onBack = { navController.popBackStack() },
                         onEpisodeClicked = {
-                            val encoded = Uri.encode(it)
-                            navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
+                            navController.navigate(Route.episodeDetails(episodeId = it))
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                         onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
@@ -456,8 +480,7 @@ fun NavGraph(
                         state = state,
                         onBack = { navController.popBackStack() },
                         onEpisodeClicked = {
-                            val encoded = Uri.encode(it)
-                            navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
+                            navController.navigate(Route.episodeDetails(episodeId = it))
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                         onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
@@ -485,8 +508,7 @@ fun NavGraph(
                         state = state,
                         onBack = { navController.popBackStack() },
                         onEpisodeClicked = {
-                            val encoded = Uri.encode(it)
-                            navController.navigate(Route.EPISODE_DETAILS.routeWithArgValue(encoded))
+                            navController.navigate(Route.episodeDetails(episodeId = it))
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                         onEpisodePauseClicked = viewModel::onEpisodePauseClicked,

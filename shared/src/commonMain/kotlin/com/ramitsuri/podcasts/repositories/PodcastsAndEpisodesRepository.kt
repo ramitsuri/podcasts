@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.repositories
 
+import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.PodcastRefreshResult
@@ -19,11 +20,23 @@ class PodcastsAndEpisodesRepository internal constructor(
     private val podcastsRepository: PodcastsRepository,
     private val episodesRepository: EpisodesRepository,
     private val ioDispatcher: CoroutineDispatcher,
+    private val episodeDownloader: EpisodeDownloader,
 ) {
-    suspend fun refreshPodcast(podcastId: Long): PodcastResult<List<Episode>> {
+    suspend fun refreshPodcast(
+        podcastId: Long,
+        autoDownloadEpisodes: Boolean = false,
+        autoAddToQueueEpisodes: Boolean = false,
+    ): PodcastResult<List<Episode>> {
         val result = episodesRepository.refreshForPodcastId(podcastId)
-        if ((result as? PodcastResult.Success)?.data?.isNotEmpty() == true) {
-            podcastsRepository.updateHasNewEpisodes(podcastId, true)
+        val episodes = (result as? PodcastResult.Success)?.data ?: listOf()
+        podcastsRepository.updateHasNewEpisodes(podcastId, episodes.isNotEmpty())
+        episodes.forEach { episode ->
+            if (autoDownloadEpisodes) {
+                episodeDownloader.add(episode)
+            }
+            if (autoAddToQueueEpisodes) {
+                episodesRepository.addToQueue(episode.id)
+            }
         }
         return result
     }
@@ -36,7 +49,14 @@ class PodcastsAndEpisodesRepository internal constructor(
             val failures = mutableListOf<PodcastResult.Failure>()
             subscribed.map { podcast ->
                 launch {
-                    when (val refreshResult = refreshPodcast(podcastId = podcast.id)) {
+                    when (
+                        val refreshResult =
+                            refreshPodcast(
+                                podcastId = podcast.id,
+                                autoDownloadEpisodes = podcast.autoDownloadEpisodes,
+                                autoAddToQueueEpisodes = podcast.autoAddToQueue,
+                            )
+                    ) {
                         is PodcastResult.Failure -> {
                             failures.add(refreshResult)
                         }
