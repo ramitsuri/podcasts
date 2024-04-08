@@ -32,7 +32,7 @@ android {
 
     signingConfigs {
         getByName("debug") {
-            storeFile  = file("../signing/android-debug.keystore")
+            storeFile = file("../signing/android-debug.keystore")
         }
     }
 
