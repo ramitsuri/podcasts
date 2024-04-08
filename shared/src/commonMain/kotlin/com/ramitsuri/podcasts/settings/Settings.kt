@@ -102,4 +102,12 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
     suspend fun setLastEpisodeFetchTime(time: Instant = Clock.System.now()) {
         keyValueStore.putString(Key.LAST_EPISODE_FETCH_TIME, time.toString())
     }
+
+    fun autoPlayNextInQueue(): Flow<Boolean> {
+        return keyValueStore.getBooleanFlow(Key.AUTO_PLAY_NEXT_IN_QUEUE, true)
+    }
+
+    suspend fun setAutoPlayNextInQueue(autoPlayNextInQueue: Boolean) {
+        keyValueStore.putBoolean(Key.AUTO_PLAY_NEXT_IN_QUEUE, autoPlayNextInQueue)
+    }
 }

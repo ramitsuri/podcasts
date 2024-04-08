@@ -19,6 +19,7 @@
     <string name="more">More</string>
     <string name="auto_download_new_episodes">Auto download</string>
     <string name="auto_add_to_queue_new_episodes">Auto add to queue</string>
+    <string name="settings">Settings</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>
@@ -127,4 +128,8 @@
     <string name="episode_history_yesterday">Yesterday</string>
     <string name="episode_history_empty_title">No history yet</string>
     <string name="episode_history_empty_info">Listen to episodes and they will show up here</string>
+
+    <!-- Settings screen -->
+    <string name="settings_playback">Playback</string>
+    <string name="settings_auto_play_next_in_queue">Auto play next in queue</string>
 </resources>

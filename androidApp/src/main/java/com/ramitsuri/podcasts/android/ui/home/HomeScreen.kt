@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Badge
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
@@ -41,7 +43,9 @@ import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.components.AppBarMenuItem
 import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
+import com.ramitsuri.podcasts.android.ui.components.TopAppBar
 import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.android.ui.components.podcast
 import com.ramitsuri.podcasts.android.utils.friendlyPublishDate
@@ -53,6 +57,7 @@ import com.ramitsuri.podcasts.model.ui.HomeViewState
 @Composable
 fun HomeScreen(
     state: HomeViewState,
+    onSettingsClicked: () -> Unit,
     onImportSubscriptionsClicked: () -> Unit,
     onPodcastClicked: (podcastId: Long) -> Unit,
     onMorePodcastsClicked: () -> Unit,
@@ -77,6 +82,17 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        TopAppBar(
+            onBack = null,
+            menuItems =
+                listOf(
+                    AppBarMenuItem(
+                        title = stringResource(id = R.string.settings),
+                        icon = Icons.Filled.Settings,
+                        onClick = onSettingsClicked,
+                    ),
+                ),
+        )
         LazyColumn {
             if (state.subscribedPodcasts.isNotEmpty()) {
                 item {
@@ -132,11 +148,13 @@ private fun Subscriptions(
     Column(
         modifier =
             Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                .fillMaxWidth(),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -148,10 +166,12 @@ private fun Subscriptions(
                 Text(text = stringResource(id = R.string.more))
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
         ) {
+            item {
+                Spacer(modifier = Modifier.width(8.dp))
+            }
             items(podcasts) {
                 SubscribedPodcastItem(
                     title = it.title,
@@ -160,7 +180,11 @@ private fun Subscriptions(
                     onClicked = { onPodcastClicked(it) },
                 )
             }
+            item {
+                Spacer(modifier = Modifier.width(8.dp))
+            }
         }
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 

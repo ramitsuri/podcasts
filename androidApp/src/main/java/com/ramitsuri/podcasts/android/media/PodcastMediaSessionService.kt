@@ -429,6 +429,12 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         attemptingToPlayNextMedia = true
         launchSuspend {
             delay(500)
+            val autoPlayNextInQueue = settings.autoPlayNextInQueue().first()
+            if (!autoPlayNextInQueue) {
+                LogHelper.d(TAG, "Auto play next in queue is false")
+                attemptingToPlayNextMedia = false
+                return@launchSuspend
+            }
             val sleepTimer = settings.getSleepTimerFlow().first()
             if (sleepTimer is SleepTimer.EndOfEpisode) {
                 LogHelper.d(TAG, "Sleep timer is set to end of episode")

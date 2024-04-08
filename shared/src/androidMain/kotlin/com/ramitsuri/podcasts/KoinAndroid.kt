@@ -20,6 +20,7 @@ import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.QueueViewModel
 import com.ramitsuri.podcasts.viewmodel.SearchViewModel
+import com.ramitsuri.podcasts.viewmodel.SettingsViewModel
 import com.ramitsuri.podcasts.viewmodel.SubscriptionsViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.android.Android
@@ -126,6 +127,12 @@ actual val platformModule =
                 repository = get<SessionHistoryRepository>(),
                 settings = get<Settings>(),
                 timeZone = get<TimeZone>(),
+            )
+        }
+
+        viewModel<SettingsViewModel> {
+            SettingsViewModel(
+                settings = get<Settings>(),
             )
         }
 
