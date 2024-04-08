@@ -20,16 +20,24 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Badge
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -43,9 +51,7 @@ import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
-import com.ramitsuri.podcasts.android.ui.components.AppBarMenuItem
 import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
-import com.ramitsuri.podcasts.android.ui.components.TopAppBar
 import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.android.ui.components.podcast
 import com.ramitsuri.podcasts.android.utils.friendlyPublishDate
@@ -54,6 +60,7 @@ import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.ui.HomeViewState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     state: HomeViewState,
@@ -82,18 +89,14 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        TopAppBar(
-            onBack = null,
-            menuItems =
-                listOf(
-                    AppBarMenuItem(
-                        title = stringResource(id = R.string.settings),
-                        icon = Icons.Filled.Settings,
-                        onClick = onSettingsClicked,
-                    ),
-                ),
-        )
-        LazyColumn {
+        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+        if (state.subscribedPodcasts.isNotEmpty()) {
+            TopAppBar(
+                scrollBehavior = scrollBehavior,
+                onSettingsClicked = onSettingsClicked,
+            )
+        }
+        LazyColumn(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)) {
             if (state.subscribedPodcasts.isNotEmpty()) {
                 item {
                     Subscriptions(
@@ -139,6 +142,35 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopAppBar(
+    scrollBehavior: TopAppBarScrollBehavior,
+    onSettingsClicked: () -> Unit,
+) {
+    CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults
+            .centerAlignedTopAppBarColors()
+            .copy(scrolledContainerColor = MaterialTheme.colorScheme.background),
+        title = {
+            Text(
+                stringResource(id = R.string.app_name),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        actions = {
+            IconButton(onClick = onSettingsClicked) {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = stringResource(id = R.string.settings),
+                )
+            }
+        },
+        scrollBehavior = scrollBehavior,
+    )
+}
+
 @Composable
 private fun Subscriptions(
     podcasts: List<Podcast>,
@@ -152,9 +184,9 @@ private fun Subscriptions(
     ) {
         Row(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -207,19 +239,19 @@ private fun SubscribedPodcastItem(
             contentDescription = title,
             contentScale = ContentScale.FillBounds,
             modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(80.dp)
-                    .padding(4.dp),
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .size(80.dp)
+                .padding(4.dp),
         )
         if (hasNewEpisodes) {
             Badge(
                 modifier =
-                    Modifier
-                        .size(16.dp)
-                        .border(4.dp, color = MaterialTheme.colorScheme.background, shape = CircleShape)
-                        .align(Alignment.TopEnd)
-                        .clip(CircleShape),
+                Modifier
+                    .size(16.dp)
+                    .border(4.dp, color = MaterialTheme.colorScheme.background, shape = CircleShape)
+                    .align(Alignment.TopEnd)
+                    .clip(CircleShape),
             )
         }
     }
@@ -244,10 +276,10 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-            Modifier
-                .clickable(onClick = onClicked)
-                .padding(top = 12.dp, bottom = 4.dp)
-                .padding(horizontal = 16.dp),
+        Modifier
+            .clickable(onClick = onClicked)
+            .padding(top = 12.dp, bottom = 4.dp)
+            .padding(horizontal = 16.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
@@ -259,9 +291,9 @@ private fun EpisodeItem(
                 contentDescription = episode.title,
                 contentScale = ContentScale.FillBounds,
                 modifier =
-                    Modifier
-                        .clip(MaterialTheme.shapes.small)
-                        .size(56.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(56.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
