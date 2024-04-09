@@ -119,7 +119,7 @@ private fun PlayingIndicator() {
                 .size(24.dp)
                 .padding(horizontal = 4.dp),
     ) {
-        val color = MaterialTheme.colorScheme.onBackground
+        val color =  MaterialTheme.colorScheme.primary
         val infiniteTransition = rememberInfiniteTransition(label = "playing indicator")
         val density = LocalDensity.current
         val firstLineHeight by infiniteTransition.animateFloat(
@@ -192,7 +192,11 @@ private fun Paused(
             remainingDuration?.inWholeMinutes
         }
     }
-    Icon(imageVector = Icons.Filled.PlayCircleOutline, contentDescription = "")
+    Icon(
+        imageVector = Icons.Filled.PlayCircleOutline,
+        contentDescription = "",
+        tint = MaterialTheme.colorScheme.primary,
+    )
     minutes?.let {
         Spacer(modifier = Modifier.width(8.dp))
         val suffix =
@@ -219,8 +223,8 @@ private fun Loading() {
                 Modifier
                     .width(16.dp)
                     .height(2.dp),
-            color = MaterialTheme.colorScheme.onBackground,
-            trackColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f),
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
         )
     }
     Spacer(modifier = Modifier.width(8.dp))

@@ -716,8 +716,8 @@ private fun PlayerScreenNotExpanded(
 
 @Composable
 private fun PlayProgressNotExpanded(playProgress: Float) {
-    val color1 = MaterialTheme.colorScheme.onSurface
-    val color2 = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+    val playedTrackColor = MaterialTheme.colorScheme.primary
+    val notPlayedTrackColor = playedTrackColor.copy(alpha = 0.2f)
     val thickness = 1.dp
     Canvas(
         Modifier
@@ -725,13 +725,13 @@ private fun PlayProgressNotExpanded(playProgress: Float) {
             .height(thickness),
     ) {
         drawLine(
-            color = color1,
+            color = playedTrackColor,
             strokeWidth = thickness.toPx(),
             start = Offset(0f, thickness.toPx() / 2),
             end = Offset(size.width * playProgress, thickness.toPx() / 2),
         )
         drawLine(
-            color = color2,
+            color = notPlayedTrackColor,
             strokeWidth = thickness.toPx(),
             start = Offset(size.width * playProgress, thickness.toPx() / 2),
             end = Offset(size.width, thickness.toPx() / 2),
