@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
+import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.EpisodeItem
 import com.ramitsuri.podcasts.android.ui.components.TopAppBar
 import com.ramitsuri.podcasts.model.Episode
@@ -55,7 +55,7 @@ fun FavoritesScreen(
         TopAppBar(onBack = onBack, label = stringResource(id = R.string.library_favorites))
         LazyColumn {
             items(state.episodes, key = { it.id }) {
-                HorizontalDivider()
+                ColoredHorizontalDivider()
                 EpisodeItem(
                     episode = it,
                     playingState =

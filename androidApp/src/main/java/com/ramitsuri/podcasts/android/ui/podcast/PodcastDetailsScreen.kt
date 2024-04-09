@@ -44,6 +44,7 @@ import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
 import com.ramitsuri.podcasts.android.ui.components.TopAppBar
 import com.ramitsuri.podcasts.android.ui.components.episode
@@ -140,7 +141,7 @@ private fun PodcastDetails(
             )
         }
         items(podcastWithEpisodes.episodes) {
-            HorizontalDivider()
+            ColoredHorizontalDivider()
             EpisodeItem(
                 episode = it,
                 playingState =

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -27,8 +26,8 @@ import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.TopAppBar
-import com.ramitsuri.podcasts.android.ui.dividerColor
 import com.ramitsuri.podcasts.android.utils.friendlyFetchDateTime
 import com.ramitsuri.podcasts.model.ui.SettingsViewState
 import com.ramitsuri.podcasts.utils.Constants
@@ -54,7 +53,7 @@ fun SettingsScreen(
             autoPlayNextInQueue = state.autoPlayNextInQueue,
             toggleAutoPlayNextInQueue = toggleAutoPlayNextInQueue,
         )
-        HorizontalDivider(color = dividerColor)
+        ColoredHorizontalDivider()
         FetchSettings(
             fetching = state.fetching,
             lastFetchTime = state.lastFetchTime,

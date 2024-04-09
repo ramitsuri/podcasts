@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -30,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.PodcastInfo
 import com.ramitsuri.podcasts.android.ui.components.PodcastInfoItem
 import com.ramitsuri.podcasts.android.ui.components.podcast
@@ -81,10 +81,10 @@ fun ImportSubscriptionsScreen(
                     Header(text = stringResource(id = R.string.import_subscriptions_failed_to_import_but_found))
                 }
                 itemsIndexed(viewState.failedToImportWithSuggestion) { index, item ->
-                    HorizontalDivider()
+                    ColoredHorizontalDivider()
                     FailedToImportWithSuggestionItem(failed = item, onSuggestionAccepted = onSuggestionAccepted)
                     if (index == viewState.failedToImportWithSuggestion.lastIndex) {
-                        HorizontalDivider()
+                        ColoredHorizontalDivider()
                     }
                 }
             }
@@ -93,10 +93,10 @@ fun ImportSubscriptionsScreen(
                     Header(text = stringResource(id = R.string.import_subscriptions_failed_to_import))
                 }
                 itemsIndexed(viewState.failedToImport) { index, item ->
-                    HorizontalDivider()
+                    ColoredHorizontalDivider()
                     FailedToImportItem(text = item)
                     if (index == viewState.failedToImport.lastIndex) {
-                        HorizontalDivider()
+                        ColoredHorizontalDivider()
                     }
                 }
             }
@@ -105,10 +105,10 @@ fun ImportSubscriptionsScreen(
                     Header(text = stringResource(id = R.string.import_subscriptions_imported))
                 }
                 itemsIndexed(viewState.imported) { index, item ->
-                    HorizontalDivider()
+                    ColoredHorizontalDivider()
                     PodcastInfoItem(podcast = item)
                     if (index == viewState.imported.lastIndex) {
-                        HorizontalDivider()
+                        ColoredHorizontalDivider()
                     }
                 }
             }

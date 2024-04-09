@@ -79,7 +79,3 @@ private val greenLight = Color(0xFF578a4f)
 val greenColor: Color
     @Composable
     get() = if (isSystemInDarkTheme()) greenDark else greenLight
-
-val dividerColor: Color
-    @Composable
-    get() = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)

@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -47,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.PodcastInfoItem
 import com.ramitsuri.podcasts.android.ui.components.podcast
 import com.ramitsuri.podcasts.model.Podcast
@@ -238,7 +238,7 @@ private fun SearchResults(
                 Spacer(modifier = Modifier.height(16.dp))
             }
             items(podcasts) {
-                HorizontalDivider()
+                ColoredHorizontalDivider()
                 PodcastInfoItem(it, onClick = onPodcastClicked)
             }
             item {
