@@ -33,7 +33,8 @@ paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.su
 FROM PodcastEntity AS pe
 INNER JOIN PodcastAdditionalInfoEntity AS paie
     ON pe.id == paie.id
-WHERE paie.subscribed = 1;
+WHERE paie.subscribed = 1
+ORDER BY paie.hasNewEpisodes DESC, paie.subscribedDate ASC;
 
 getPodcast:
 SELECT
