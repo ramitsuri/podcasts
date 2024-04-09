@@ -22,7 +22,6 @@ class EpisodeFetchWorker(
     context: Context,
     workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
-
     override suspend fun doWork(): Result {
         LogHelper.d(TAG, "Starting work")
         episodeFetcher.fetchPodcastsIfNecessary(forced = true)
