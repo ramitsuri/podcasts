@@ -42,11 +42,11 @@ import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-fun initKoin(appModule: Module): KoinApplication {
+fun initKoin(appModule: KoinApplication.() -> Module): KoinApplication {
     val koinApplication =
         startKoin {
             modules(
-                appModule,
+                appModule(),
                 platformModule,
                 coreModule,
             )
@@ -168,6 +168,7 @@ private val coreModule =
                 clock = get<Clock>(),
                 foregroundStateObserver = get<ForegroundStateObserver>(),
                 longLivingScope = get<CoroutineScope>(),
+                isDebug = get<AppInfo>().isDebug,
             )
         }
 

@@ -82,6 +82,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.koin.android)
     implementation(libs.koin.android.compose)
+    implementation(libs.koin.workmanager)
     implementation(libs.kotlin.datetime)
     implementation(libs.media3.common)
     implementation(libs.media3.exoplayer)
