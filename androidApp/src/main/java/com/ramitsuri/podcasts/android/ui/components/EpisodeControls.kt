@@ -23,6 +23,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
@@ -171,6 +172,7 @@ private fun EpisodeMenu(
                     Modifier
                         .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
+                tint = MaterialTheme.colorScheme.primary,
             )
         }
         DropdownMenu(
@@ -269,11 +271,13 @@ private fun ControlWithTooltip(
         state = state,
     ) {
         IconButton(onClick = onClicked) {
-            if (useTint) {
-                Icon(imageVector = icon, contentDescription = "", tint = greenColor)
-            } else {
-                Icon(imageVector = icon, contentDescription = "")
-            }
+            val color =
+                if (useTint) {
+                    greenColor
+                } else {
+                    MaterialTheme.colorScheme.primary
+                }
+            Icon(imageVector = icon, contentDescription = "", tint = color)
         }
     }
 }
