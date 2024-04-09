@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -19,29 +22,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.TopAppBar
+import com.ramitsuri.podcasts.android.ui.dividerColor
+import com.ramitsuri.podcasts.android.utils.friendlyFetchDateTime
 import com.ramitsuri.podcasts.model.ui.SettingsViewState
+import com.ramitsuri.podcasts.utils.Constants
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlin.time.Duration.Companion.minutes
 
 @Composable
 fun SettingsScreen(
     state: SettingsViewState,
     onBack: () -> Unit,
     toggleAutoPlayNextInQueue: () -> Unit,
+    onFetchRequested: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier =
-            modifier
-                .fillMaxSize(),
+        modifier
+            .fillMaxSize(),
     ) {
         TopAppBar(onBack = onBack, label = stringResource(id = R.string.settings))
         PlaybackSettings(
             autoPlayNextInQueue = state.autoPlayNextInQueue,
             toggleAutoPlayNextInQueue = toggleAutoPlayNextInQueue,
+        )
+        HorizontalDivider(color = dividerColor)
+        FetchSettings(
+            fetching = state.fetching,
+            lastFetchTime = state.lastFetchTime,
+            onFetchRequested = onFetchRequested,
         )
     }
 }
@@ -51,50 +68,150 @@ private fun PlaybackSettings(
     autoPlayNextInQueue: Boolean,
     toggleAutoPlayNextInQueue: () -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(id = R.string.settings_playback),
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(16.dp),
-        )
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+    ) {
+        CategoryTitle(text = stringResource(id = R.string.settings_playback))
         Row(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = toggleAutoPlayNextInQueue)
-                    .padding(16.dp),
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = toggleAutoPlayNextInQueue)
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = stringResource(id = R.string.settings_auto_play_next_in_queue))
+            Title(text = stringResource(id = R.string.settings_auto_play_next_in_queue))
             Spacer(modifier = Modifier.weight(1f))
             Switch(
                 checked = autoPlayNextInQueue,
                 onCheckedChange = null,
                 thumbContent =
-                    if (autoPlayNextInQueue) {
-                        {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        }
-                    } else {
-                        null
-                    },
+                if (autoPlayNextInQueue) {
+                    {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
+                    }
+                } else {
+                    null
+                },
             )
         }
     }
 }
 
+@Composable
+private fun FetchSettings(
+    fetching: Boolean,
+    lastFetchTime: Instant,
+    onFetchRequested: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+    ) {
+        CategoryTitle(text = stringResource(id = R.string.settings_fetch))
+        Column(
+            modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(
+                    enabled = !fetching,
+                    onClick = onFetchRequested,
+                )
+                .padding(16.dp),
+        ) {
+            Title(text = stringResource(id = R.string.settings_fetch_now))
+            if (fetching) {
+                Spacer(modifier = Modifier.height(8.dp))
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            } else {
+                val text = if (lastFetchTime == Constants.NEVER_FETCHED_TIME) {
+                    stringResource(id = R.string.settings_last_fetched_never)
+                } else {
+                    stringResource(
+                        id = R.string.settings_last_fetched_at_time_format,
+                        friendlyFetchDateTime(
+                            fetchDateTime = lastFetchTime,
+                        ),
+                    )
+                }
+                Subtitle(text = text)
+            }
+        }
+    }
+}
+
+@Composable
+private fun CategoryTitle(text: String) {
+    Text(
+        text = text,
+        fontWeight = FontWeight.Bold,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(16.dp),
+    )
+}
+
+@Composable
+private fun Title(text: String) {
+    Text(
+        text = text,
+        fontWeight = FontWeight.Medium,
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier.padding(vertical = 4.dp),
+    )
+}
+
+@Composable
+private fun Subtitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        modifier = Modifier.padding(vertical = 4.dp),
+    )
+}
+
 @ThemePreview
 @Composable
-private fun SettingsPreview() {
+private fun SettingsPreview_LastFetchTimeNever() {
     PreviewTheme {
         SettingsScreen(
             state = SettingsViewState(autoPlayNextInQueue = true),
             onBack = { },
             toggleAutoPlayNextInQueue = { },
+            onFetchRequested = { },
+        )
+    }
+}
+
+@ThemePreview
+@Composable
+private fun SettingsPreview_LastFetchTimeMinutesAgo() {
+    PreviewTheme {
+        SettingsScreen(
+            state = SettingsViewState(autoPlayNextInQueue = true, lastFetchTime = Clock.System.now().minus(1.minutes)),
+            onBack = { },
+            toggleAutoPlayNextInQueue = { },
+            onFetchRequested = { },
+        )
+    }
+}
+
+@ThemePreview
+@Composable
+private fun SettingsPreview_Fetching() {
+    PreviewTheme {
+        SettingsScreen(
+            state = SettingsViewState(autoPlayNextInQueue = true, fetching = true),
+            onBack = { },
+            toggleAutoPlayNextInQueue = { },
+            onFetchRequested = { },
         )
     }
 }

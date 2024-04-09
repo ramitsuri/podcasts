@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.settings
 
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
+import com.ramitsuri.podcasts.utils.Constants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -93,9 +94,9 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
     suspend fun getLastEpisodeFetchTime(): Instant {
         val stringTime = keyValueStore.getStringFlow(Key.LAST_EPISODE_FETCH_TIME, null).first()
         return if (stringTime == null) {
-            Instant.DISTANT_PAST
+            Constants.NEVER_FETCHED_TIME
         } else {
-            runCatching { Instant.parse(stringTime) }.getOrNull() ?: Instant.DISTANT_PAST
+            runCatching { Instant.parse(stringTime) }.getOrNull() ?: Constants.NEVER_FETCHED_TIME
         }
     }
 

@@ -62,6 +62,37 @@ fun friendlyPublishDate(
 }
 
 @Composable
+fun friendlyFetchDateTime(
+    fetchDateTime: Instant,
+    now: Instant = Clock.System.now(),
+    timeZone: TimeZone = TimeZone.currentSystemDefault(),
+): String {
+    val monthNames = monthNames
+    val am = stringResource(id = R.string.am)
+    val pm = stringResource(id = R.string.pm)
+    val format =
+        LocalDateTime.Format {
+            amPmHour()
+            char(':')
+            minute()
+            char(' ')
+            amPmMarker(am = am, pm = pm)
+            char(' ')
+            monthName(monthNames)
+            char(' ')
+            dayOfMonth()
+            if (now.toLocalDateTime(timeZone).year != fetchDateTime.toLocalDateTime(timeZone).year) {
+                char(',')
+                char(' ')
+                year()
+            }
+        }
+    return fetchDateTime
+        .toLocalDateTime(timeZone)
+        .format(format)
+}
+
+@Composable
 fun minutesFormatted(
     minutes: Long,
     suffix: String,
