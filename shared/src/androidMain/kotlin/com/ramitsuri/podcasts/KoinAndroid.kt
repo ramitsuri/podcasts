@@ -11,6 +11,7 @@ import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.AndroidForegroundStateObserver
 import com.ramitsuri.podcasts.utils.DispatcherProvider
 import com.ramitsuri.podcasts.utils.EpisodeController
+import com.ramitsuri.podcasts.utils.EpisodeFetcher
 import com.ramitsuri.podcasts.utils.ForegroundStateObserver
 import com.ramitsuri.podcasts.viewmodel.DownloadsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
@@ -133,6 +134,8 @@ actual val platformModule =
         viewModel<SettingsViewModel> {
             SettingsViewModel(
                 settings = get<Settings>(),
+                episodeFetcher = get<EpisodeFetcher>(),
+                longLivingScope = get<CoroutineScope>(),
             )
         }
 

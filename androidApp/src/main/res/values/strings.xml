@@ -20,6 +20,8 @@
     <string name="auto_download_new_episodes">Auto download</string>
     <string name="auto_add_to_queue_new_episodes">Auto add to queue</string>
     <string name="settings">Settings</string>
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>
@@ -132,4 +134,8 @@
     <!-- Settings screen -->
     <string name="settings_playback">Playback</string>
     <string name="settings_auto_play_next_in_queue">Auto play next in queue</string>
+    <string name="settings_fetch">Downloads</string>
+    <string name="settings_fetch_now">Download now</string>
+    <string name="settings_last_fetched_never">Never downloaded</string>
+    <string name="settings_last_fetched_at_time_format">Last downloaded %1$s</string>
 </resources>

@@ -541,6 +541,7 @@ fun NavGraph(
                         state = state,
                         onBack = { navController.popBackStack() },
                         toggleAutoPlayNextInQueue = viewModel::toggleAutoPlayNextInQueue,
+                        onFetchRequested = viewModel::fetch,
                         modifier =
                             Modifier
                                 .statusBarsPadding()
