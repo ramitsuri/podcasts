@@ -10,19 +10,20 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.ramitsuri.podcasts.android.BuildConfig
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.utils.EpisodeFetcher
+import com.ramitsuri.podcasts.utils.LogHelper
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import java.util.concurrent.TimeUnit
 
 class EpisodeFetchWorker(
+    private val episodeFetcher: EpisodeFetcher,
     context: Context,
     workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
-    private val episodeFetcher by inject<EpisodeFetcher>()
-
     override suspend fun doWork(): Result {
+        LogHelper.d(TAG, "Starting work")
         episodeFetcher.fetchPodcastsIfNecessary(forced = true)
         return Result.success()
     }
@@ -43,11 +44,16 @@ class EpisodeFetchWorker(
     }
 
     companion object : KoinComponent {
+        private const val TAG = "EpisodeFetchWorker"
         private const val WORK_NAME_PERIODIC = "EpisodeFetchWorker"
         private const val REPEAT_HOURS: Long = 12
         private const val NOTIFICATION_ID = NotificationId.EPISODE_FETCH_WORKER
 
         fun enqueuePeriodic(context: Context) {
+            if (BuildConfig.DEBUG) {
+                LogHelper.d(TAG, "Skipping in debug build")
+                return
+            }
             val builder =
                 PeriodicWorkRequest
                     .Builder(EpisodeFetchWorker::class.java, REPEAT_HOURS, TimeUnit.HOURS)

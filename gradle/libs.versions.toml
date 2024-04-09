@@ -64,6 +64,7 @@ html-converter = { group = "be.digitalia.compose.htmlconverter", name = "htmlcon
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-android-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+koin-workmanager = { group = "io.insert-koin", name = "koin-androidx-workmanager", version.ref = "koin" }
 koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
 
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }

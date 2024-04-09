@@ -16,10 +16,15 @@ class EpisodeFetcher(
     private val clock: Clock,
     private val foregroundStateObserver: ForegroundStateObserver,
     private val longLivingScope: CoroutineScope,
+    private val isDebug: Boolean,
 ) {
     private val refreshPodcastsMutex = Mutex()
 
     fun startForegroundStateBasedFetcher() {
+        if (isDebug) {
+            LogHelper.d(TAG, "Skipping in debug build")
+            return
+        }
         longLivingScope.launch {
             foregroundStateObserver.state.collect { foregroundState ->
                 if (!foregroundState.isInForeground) {
