@@ -429,6 +429,10 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         attemptingToPlayNextMedia = true
         launchSuspend {
             delay(500)
+            val currentlyPlayingEpisode = currentlyPlayingEpisode.value
+            if (currentlyPlayingEpisode != null) {
+                episodesRepository.markPlayed(currentlyPlayingEpisode.id)
+            }
             val autoPlayNextInQueue = settings.autoPlayNextInQueue().first()
             if (!autoPlayNextInQueue) {
                 LogHelper.d(TAG, "Auto play next in queue is false")
@@ -443,10 +447,6 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 return@launchSuspend
             }
             val queue = episodesRepository.getQueue()
-            val currentlyPlayingEpisode = currentlyPlayingEpisode.value
-            if (currentlyPlayingEpisode != null) {
-                episodesRepository.markPlayed(currentlyPlayingEpisode.id)
-            }
             val currentEpisodeIndex = queue.indexOfFirst { it.id == currentlyPlayingEpisode?.id }
             if (currentEpisodeIndex == -1) {
                 LogHelper.v(TAG, "current episode not found")
