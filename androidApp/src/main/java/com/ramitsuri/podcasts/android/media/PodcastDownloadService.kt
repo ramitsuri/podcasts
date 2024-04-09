@@ -10,15 +10,15 @@ import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.Scheduler
 import androidx.media3.exoplayer.workmanager.WorkManagerScheduler
 import com.ramitsuri.podcasts.android.R
-import com.ramitsuri.podcasts.android.utils.Constants
 import com.ramitsuri.podcasts.android.utils.NotificationChannel
+import com.ramitsuri.podcasts.android.utils.NotificationId
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 @UnstableApi
 class PodcastDownloadService :
     DownloadService(
-        Constants.DOWNLOADER_FOREGROUND_NOTIFICATION_ID,
+        NotificationId.DOWNLOADER,
         DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
         NotificationChannel.Download.id,
         NotificationChannel.Download.nameRes,

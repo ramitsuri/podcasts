@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.hours
 
 class EpisodeFetcher(
     private val repository: PodcastsAndEpisodesRepository,
@@ -36,22 +36,22 @@ class EpisodeFetcher(
         refreshPodcastsMutex.withLock {
             val lastFetchTime = settings.getLastEpisodeFetchTime()
             val now = clock.now()
-            if (forced || now.minus(lastFetchTime) > FETCH_THRESHOLD_MINUTES.minutes) {
-                LogHelper.d(TAG, "Last fetched more than 5 minutes ago, fetching now")
+            if (forced || now.minus(lastFetchTime) > FETCH_THRESHOLD_HOURS.hours) {
+                LogHelper.d(TAG, "Fetch threshold met, fetching now")
                 val result = repository.refreshPodcasts()
                 if (result is PodcastResult.Failure) {
-                    LogHelper.v(TAG, "Failed to refresh podcasts: ${result.error}")
+                    LogHelper.v(TAG, "Failed to fetch podcasts: ${result.error}")
                     return
                 }
                 settings.setLastEpisodeFetchTime()
             } else {
-                LogHelper.d(TAG, "Last fetched less than 5 minutes ago and not forced, skipping")
+                LogHelper.d(TAG, "Fetch threshold not met and not forced, skipping")
             }
         }
     }
 
     companion object {
         private const val TAG = "EpisodeFetcher"
-        private const val FETCH_THRESHOLD_MINUTES = 5
+        private const val FETCH_THRESHOLD_HOURS = 6
     }
 }
