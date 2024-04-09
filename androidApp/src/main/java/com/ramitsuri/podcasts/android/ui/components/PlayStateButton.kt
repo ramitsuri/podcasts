@@ -119,7 +119,7 @@ private fun PlayingIndicator() {
                 .size(24.dp)
                 .padding(horizontal = 4.dp),
     ) {
-        val color =  MaterialTheme.colorScheme.primary
+        val color = MaterialTheme.colorScheme.primary
         val infiniteTransition = rememberInfiniteTransition(label = "playing indicator")
         val density = LocalDensity.current
         val firstLineHeight by infiniteTransition.animateFloat(

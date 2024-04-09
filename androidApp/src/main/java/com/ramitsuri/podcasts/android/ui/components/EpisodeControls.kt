@@ -271,11 +271,12 @@ private fun ControlWithTooltip(
         state = state,
     ) {
         IconButton(onClick = onClicked) {
-            val color = if (useTint) {
-                greenColor
-            } else {
-                MaterialTheme.colorScheme.primary
-            }
+            val color =
+                if (useTint) {
+                    greenColor
+                } else {
+                    MaterialTheme.colorScheme.primary
+                }
             Icon(imageVector = icon, contentDescription = "", tint = color)
         }
     }
