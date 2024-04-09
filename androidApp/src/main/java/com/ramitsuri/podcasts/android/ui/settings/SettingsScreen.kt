@@ -46,8 +46,8 @@ fun SettingsScreen(
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
     ) {
         TopAppBar(onBack = onBack, label = stringResource(id = R.string.settings))
         PlaybackSettings(
@@ -69,17 +69,18 @@ private fun PlaybackSettings(
     toggleAutoPlayNextInQueue: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
     ) {
         CategoryTitle(text = stringResource(id = R.string.settings_playback))
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable(onClick = toggleAutoPlayNextInQueue)
-                .padding(16.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = toggleAutoPlayNextInQueue)
+                    .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Title(text = stringResource(id = R.string.settings_auto_play_next_in_queue))
@@ -88,17 +89,17 @@ private fun PlaybackSettings(
                 checked = autoPlayNextInQueue,
                 onCheckedChange = null,
                 thumbContent =
-                if (autoPlayNextInQueue) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
-                    }
-                } else {
-                    null
-                },
+                    if (autoPlayNextInQueue) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        }
+                    } else {
+                        null
+                    },
             )
         }
     }
@@ -108,39 +109,41 @@ private fun PlaybackSettings(
 private fun FetchSettings(
     fetching: Boolean,
     lastFetchTime: Instant,
-    onFetchRequested: () -> Unit
+    onFetchRequested: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
     ) {
         CategoryTitle(text = stringResource(id = R.string.settings_fetch))
         Column(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable(
-                    enabled = !fetching,
-                    onClick = onFetchRequested,
-                )
-                .padding(16.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        enabled = !fetching,
+                        onClick = onFetchRequested,
+                    )
+                    .padding(16.dp),
         ) {
             Title(text = stringResource(id = R.string.settings_fetch_now))
             if (fetching) {
                 Spacer(modifier = Modifier.height(8.dp))
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             } else {
-                val text = if (lastFetchTime == Constants.NEVER_FETCHED_TIME) {
-                    stringResource(id = R.string.settings_last_fetched_never)
-                } else {
-                    stringResource(
-                        id = R.string.settings_last_fetched_at_time_format,
-                        friendlyFetchDateTime(
-                            fetchDateTime = lastFetchTime,
-                        ),
-                    )
-                }
+                val text =
+                    if (lastFetchTime == Constants.NEVER_FETCHED_TIME) {
+                        stringResource(id = R.string.settings_last_fetched_never)
+                    } else {
+                        stringResource(
+                            id = R.string.settings_last_fetched_at_time_format,
+                            friendlyFetchDateTime(
+                                fetchDateTime = lastFetchTime,
+                            ),
+                        )
+                    }
                 Subtitle(text = text)
             }
         }
