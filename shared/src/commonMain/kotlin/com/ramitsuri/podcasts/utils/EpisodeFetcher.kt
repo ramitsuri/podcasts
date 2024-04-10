@@ -4,6 +4,7 @@ import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -39,7 +40,7 @@ class EpisodeFetcher(
 
     suspend fun fetchPodcastsIfNecessary(forced: Boolean = false) {
         refreshPodcastsMutex.withLock {
-            val lastFetchTime = settings.getLastEpisodeFetchTime()
+            val lastFetchTime = settings.getLastEpisodeFetchTime().first()
             val now = clock.now()
             if (forced || now.minus(lastFetchTime) > FETCH_THRESHOLD_HOURS.hours) {
                 LogHelper.d(TAG, "Fetch threshold met, fetching now")

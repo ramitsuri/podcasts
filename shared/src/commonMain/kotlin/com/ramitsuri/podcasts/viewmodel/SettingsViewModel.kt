@@ -6,6 +6,7 @@ import com.ramitsuri.podcasts.utils.EpisodeFetcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -19,9 +20,14 @@ class SettingsViewModel internal constructor(
 
     init {
         viewModelScope.launch {
-            settings.autoPlayNextInQueue().collect { autoPlayNextInQueue ->
+            combine(
+                settings.autoPlayNextInQueue(),
+                settings.getLastEpisodeFetchTime(),
+            ) { autoPlayNextInQueue, lastFetchTime ->
+                Pair(autoPlayNextInQueue, lastFetchTime)
+            }.collect { (autoPlayNextInQueue, lastFetchTime) ->
                 _state.update {
-                    it.copy(autoPlayNextInQueue = autoPlayNextInQueue)
+                    it.copy(autoPlayNextInQueue = autoPlayNextInQueue, lastFetchTime = lastFetchTime)
                 }
             }
         }
@@ -38,8 +44,7 @@ class SettingsViewModel internal constructor(
         longLivingScope.launch {
             _state.update { it.copy(fetching = true) }
             episodeFetcher.fetchPodcastsIfNecessary(forced = true)
-            val fetchTime = settings.getLastEpisodeFetchTime()
-            _state.update { it.copy(lastFetchTime = fetchTime, fetching = false) }
+            _state.update { it.copy(fetching = false) }
         }
     }
 }
