@@ -6,7 +6,6 @@ import com.ramitsuri.podcasts.utils.Constants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Clock
@@ -91,13 +90,15 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
         }
     }
 
-    suspend fun getLastEpisodeFetchTime(): Instant {
-        val stringTime = keyValueStore.getStringFlow(Key.LAST_EPISODE_FETCH_TIME, null).first()
-        return if (stringTime == null) {
-            Constants.NEVER_FETCHED_TIME
-        } else {
-            runCatching { Instant.parse(stringTime) }.getOrNull() ?: Constants.NEVER_FETCHED_TIME
-        }
+    fun getLastEpisodeFetchTime(): Flow<Instant> {
+        return keyValueStore.getStringFlow(Key.LAST_EPISODE_FETCH_TIME, null)
+            .map { stringTime ->
+                if (stringTime == null) {
+                    Constants.NEVER_FETCHED_TIME
+                } else {
+                    runCatching { Instant.parse(stringTime) }.getOrNull() ?: Constants.NEVER_FETCHED_TIME
+                }
+            }
     }
 
     suspend fun setLastEpisodeFetchTime(time: Instant = Clock.System.now()) {
