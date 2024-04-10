@@ -98,20 +98,20 @@ fun PlayerScreen(
     val alphaNotExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 0f else 1f, label = "player visibility")
     Box(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .padding(if (isExpanded) 16.dp else 0.dp),
+            modifier
+                .fillMaxWidth()
+                .padding(if (isExpanded) 16.dp else 0.dp),
         contentAlignment = Alignment.TopCenter,
     ) {
         if (!isExpanded) {
             if (state.hasEverBeenPlayed) {
                 PlayerScreenNotExpanded(
                     modifier =
-                    Modifier
-                        .onGloballyPositioned {
-                            onNotExpandedHeightKnown(it.size.height)
-                        }
-                        .alpha(alphaNotExpandedPlayer),
+                        Modifier
+                            .onGloballyPositioned {
+                                onNotExpandedHeightKnown(it.size.height)
+                            }
+                            .alpha(alphaNotExpandedPlayer),
                     episodeTitle = state.episodeTitle,
                     episodeArtwork = state.episodeArtworkUrl,
                     playingState = state.playingState,

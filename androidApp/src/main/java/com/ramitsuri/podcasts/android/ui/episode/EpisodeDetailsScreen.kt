@@ -104,32 +104,32 @@ private fun EpisodeDetails(
 ) {
     Column(
         modifier =
-        Modifier
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState()),
+            Modifier
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState()),
     ) {
         Spacer(modifier = Modifier.height(8.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
             AsyncImage(
                 model =
-                ImageRequest.Builder(LocalContext.current)
-                    .data(episode.podcastImageUrl)
-                    .crossfade(true)
-                    .build(),
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(episode.podcastImageUrl)
+                        .crossfade(true)
+                        .build(),
                 contentDescription = episode.title,
                 contentScale = ContentScale.FillBounds,
                 modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(64.dp),
+                    Modifier
+                        .clip(MaterialTheme.shapes.small)
+                        .size(64.dp),
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Row(
                     modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = onPodcastNameClicked),
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onPodcastNameClicked),
                     horizontalArrangement = Arrangement.Start,
                 ) {
                     Text(
@@ -174,15 +174,18 @@ private fun EpisodeDetails(
             onNotFavoriteClicked = onNotFavoriteClicked,
         )
         Spacer(modifier = Modifier.height(8.dp))
-        val htmlStyle = HtmlStyle.DEFAULT.copy(
-            linkSpanStyle = SpanStyle(
-                color = MaterialTheme.colorScheme.primary,
-                textDecoration = TextDecoration.Underline,
-            ),
-        )
-        val convertedText = remember(episode.description) {
-            htmlToAnnotatedString(html = episode.description, style = htmlStyle)
-        }
+        val htmlStyle =
+            HtmlStyle.DEFAULT.copy(
+                linkSpanStyle =
+                    SpanStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        textDecoration = TextDecoration.Underline,
+                    ),
+            )
+        val convertedText =
+            remember(episode.description) {
+                htmlToAnnotatedString(html = episode.description, style = htmlStyle)
+            }
         val color = LocalContentColor.current
         val uriHandler = LocalUriHandler.current
         ClickableText(

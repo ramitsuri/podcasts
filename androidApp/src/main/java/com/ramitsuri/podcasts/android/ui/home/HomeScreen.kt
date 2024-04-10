@@ -201,7 +201,7 @@ private fun Subscriptions(
         }
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item {
                 Spacer(modifier = Modifier.width(8.dp))
