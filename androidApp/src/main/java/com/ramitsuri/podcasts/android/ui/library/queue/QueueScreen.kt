@@ -121,9 +121,9 @@ fun QueueScreen(
 private fun QueueEmpty() {
     Column(
         modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+        Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -171,11 +171,11 @@ private fun LazyItemScope.EpisodeItem(
         val interactionSource = remember { MutableInteractionSource() }
         Row(
             modifier =
-                Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .fillMaxWidth()
-                    .clickable(onClick = onClicked)
-                    .padding(8.dp),
+            Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxWidth()
+                .clickable(onClick = onClicked)
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(
@@ -186,6 +186,7 @@ private fun LazyItemScope.EpisodeItem(
             }
             Column {
                 EpisodeInfo(episode)
+                Spacer(modifier = Modifier.height(8.dp))
                 EpisodeControls(
                     episode = episode,
                     playingState = playingState,
@@ -218,9 +219,9 @@ private fun EpisodeInfo(episode: Episode) {
             contentDescription = episode.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(56.dp),
+            Modifier
+                .clip(MaterialTheme.shapes.extraSmall)
+                .size(40.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {

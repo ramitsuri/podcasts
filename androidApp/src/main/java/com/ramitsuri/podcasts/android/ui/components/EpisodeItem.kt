@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -52,6 +53,7 @@ fun EpisodeItem(
     ) {
         Column {
             EpisodeInfo(episode)
+            Spacer(modifier = Modifier.height(8.dp))
             EpisodeControls(
                 episode = episode,
                 playingState = playingState,
@@ -84,8 +86,8 @@ private fun EpisodeInfo(episode: Episode) {
             contentScale = ContentScale.FillBounds,
             modifier =
                 Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(56.dp),
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .size(40.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
