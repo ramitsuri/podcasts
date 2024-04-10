@@ -57,12 +57,14 @@ class DownloadManagerListener(
             if (state != null) {
                 val episodeId = download.request.id
                 episodesRepository.updateDownloadStatus(episodeId, state)
-                episodesRepository.updateDownloadProgress(
-                    episodeId,
-                    download.percentDownloaded.div(100.0).coerceIn(0.0, 1.0),
-                )
                 if (state == DownloadStatus.DOWNLOADED) {
                     episodesRepository.updateDownloadedAt(episodeId)
+                    episodesRepository.updateDownloadProgress(episodeId, 1.0)
+                } else {
+                    episodesRepository.updateDownloadProgress(
+                        episodeId,
+                        download.percentDownloaded.div(100.0).coerceIn(0.0, 1.0),
+                    )
                 }
             }
         }
