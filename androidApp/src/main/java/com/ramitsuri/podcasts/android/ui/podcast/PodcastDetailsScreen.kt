@@ -359,6 +359,7 @@ private fun EpisodeItem(
             text = remember(episode.description) { htmlToString(episode.description) },
             modifier = Modifier.fillMaxWidth(),
         )
+        Spacer(modifier = Modifier.height(8.dp))
         EpisodeControls(
             episode = episode,
             playingState = playingState,

@@ -24,8 +24,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import be.digitalia.compose.htmlconverter.HtmlStyle
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -171,7 +174,18 @@ private fun EpisodeDetails(
             onNotFavoriteClicked = onNotFavoriteClicked,
         )
         Spacer(modifier = Modifier.height(8.dp))
-        val convertedText = remember(episode.description) { htmlToAnnotatedString(episode.description) }
+        val htmlStyle =
+            HtmlStyle.DEFAULT.copy(
+                linkSpanStyle =
+                    SpanStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        textDecoration = TextDecoration.Underline,
+                    ),
+            )
+        val convertedText =
+            remember(episode.description) {
+                htmlToAnnotatedString(html = episode.description, style = htmlStyle)
+            }
         val color = LocalContentColor.current
         val uriHandler = LocalUriHandler.current
         ClickableText(

@@ -186,6 +186,7 @@ private fun LazyItemScope.EpisodeItem(
             }
             Column {
                 EpisodeInfo(episode)
+                Spacer(modifier = Modifier.height(8.dp))
                 EpisodeControls(
                     episode = episode,
                     playingState = playingState,
@@ -219,8 +220,8 @@ private fun EpisodeInfo(episode: Episode) {
             contentScale = ContentScale.FillBounds,
             modifier =
                 Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(56.dp),
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .size(40.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {

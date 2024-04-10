@@ -201,6 +201,7 @@ private fun Subscriptions(
         }
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item {
                 Spacer(modifier = Modifier.width(8.dp))
@@ -241,9 +242,8 @@ private fun SubscribedPodcastItem(
             contentScale = ContentScale.FillBounds,
             modifier =
                 Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(80.dp)
-                    .padding(4.dp),
+                    .size(88.dp)
+                    .clip(MaterialTheme.shapes.small),
         )
         if (hasNewEpisodes) {
             Badge(
@@ -293,8 +293,8 @@ private fun EpisodeItem(
                 contentScale = ContentScale.FillBounds,
                 modifier =
                     Modifier
-                        .clip(MaterialTheme.shapes.small)
-                        .size(56.dp),
+                        .clip(MaterialTheme.shapes.extraSmall)
+                        .size(40.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
@@ -326,6 +326,7 @@ private fun EpisodeItem(
             modifier = Modifier.fillMaxWidth(),
             overflow = TextOverflow.Ellipsis,
         )
+        Spacer(modifier = Modifier.height(8.dp))
         EpisodeControls(
             episode = episode,
             playingState = playingState,

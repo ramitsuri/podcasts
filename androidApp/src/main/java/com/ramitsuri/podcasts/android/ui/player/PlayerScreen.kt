@@ -64,6 +64,7 @@ import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.PlayerViewState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
 import kotlinx.datetime.Clock
+import java.util.Locale
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -197,6 +198,7 @@ private fun PlayerScreenExpanded(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
         AsyncImage(
             model =
                 ImageRequest.Builder(LocalContext.current)
@@ -207,8 +209,8 @@ private fun PlayerScreenExpanded(
             contentScale = ContentScale.FillBounds,
             modifier =
                 Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(360.dp),
+                    .clip(MaterialTheme.shapes.medium)
+                    .size(328.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(
@@ -226,7 +228,6 @@ private fun PlayerScreenExpanded(
                 textAlign = TextAlign.Center,
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier =
                 Modifier
@@ -240,7 +241,7 @@ private fun PlayerScreenExpanded(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(8.dp),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -277,6 +278,7 @@ private fun PlayerScreenExpanded(
             onSleepTimerIncrease = onSleepTimerIncrease,
             onSleepTimerDecrease = onSleepTimerDecrease,
         )
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -626,12 +628,14 @@ private fun Duration.formatted(): String {
     val hours = inWholeHours % 24
     return if (hours == 0L) {
         String.format(
+            Locale.getDefault(),
             "%02d:%02d",
             inWholeMinutes % 60,
             inWholeSeconds % 60,
         )
     } else {
         String.format(
+            Locale.getDefault(),
             "%02d:%02d:%02d",
             hours,
             inWholeMinutes % 60,
@@ -661,7 +665,7 @@ private fun PlayerScreenNotExpanded(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(4.dp),
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
@@ -674,8 +678,8 @@ private fun PlayerScreenNotExpanded(
                 contentScale = ContentScale.FillBounds,
                 modifier =
                     Modifier
-                        .clip(MaterialTheme.shapes.small)
-                        .size(48.dp),
+                        .clip(MaterialTheme.shapes.extraSmall)
+                        .size(40.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
