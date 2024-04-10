@@ -22,11 +22,21 @@ to replicate the UI and functionality here.
 
 ## Screenshots
 <p align="center">
-<img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/1.png" width="25%"  alt="1.png"/>
-<img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/2.png" width="25%"  alt="2.png"/>
-<img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/3.png" width="25%"  alt="3.png"/>
-<img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/4.png" width="25%"  alt="4.png"/>
-<img src="https://github.com/ramitsuri/podcasts/blob/13b254bef54712c712ef835cc60bbc07ced6c3a7/images/5.png" width="25%"  alt="5.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/main/images/1.png" width="25%"  alt="1.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/main/images/2.png" width="25%"  alt="2.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/main/images/3.png" width="25%"  alt="3.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/main/images/4.png" width="25%"  alt="4.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/main/images/5.png" width="25%"  alt="5.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/main/images/6.png" width="25%"  alt="6.png"/>
+</p>
+
+<p align="center">
+<img src="https://github.com/ramitsuri/podcasts/blob/main/images/1-dark.png" width="25%"  alt="1-dark.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/main/images/2-dark.png" width="25%"  alt="2-dark.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/main/images/3-dark.png" width="25%"  alt="3-dark.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/main/images/4-dark.png" width="25%"  alt="4-dark.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/main/images/5-dark.png" width="25%"  alt="5-dark.png"/>
+<img src="https://github.com/ramitsuri/podcasts/blob/main/images/6-dark.png" width="25%"  alt="6-dark.png"/>
 </p>
 
 > [!NOTE]
