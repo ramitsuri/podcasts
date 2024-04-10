@@ -201,7 +201,7 @@ private fun Subscriptions(
         }
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             item {
                 Spacer(modifier = Modifier.width(8.dp))
@@ -230,7 +230,10 @@ private fun SubscribedPodcastItem(
     onClicked: () -> Unit,
 ) {
     Box(
-        modifier = Modifier.clickable(onClick = onClicked),
+        modifier =
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .clickable(onClick = onClicked),
     ) {
         AsyncImage(
             model =
@@ -243,6 +246,7 @@ private fun SubscribedPodcastItem(
             modifier =
                 Modifier
                     .size(88.dp)
+                    .padding(4.dp)
                     .clip(MaterialTheme.shapes.small),
         )
         if (hasNewEpisodes) {
@@ -252,7 +256,7 @@ private fun SubscribedPodcastItem(
                         .size(16.dp)
                         .border(4.dp, color = MaterialTheme.colorScheme.background, shape = CircleShape)
                         .align(Alignment.TopEnd)
-                        .clip(CircleShape),
+                        .clip(MaterialTheme.shapes.small),
             )
         }
     }
