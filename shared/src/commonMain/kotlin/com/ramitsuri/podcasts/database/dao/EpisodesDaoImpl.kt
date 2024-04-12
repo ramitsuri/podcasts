@@ -3,16 +3,11 @@ package com.ramitsuri.podcasts.database.dao
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
+import com.ramitsuri.podcasts.DbEpisode
 import com.ramitsuri.podcasts.EpisodeAdditionalInfoEntity
 import com.ramitsuri.podcasts.EpisodeAdditionalInfoEntityQueries
 import com.ramitsuri.podcasts.EpisodeEntity
 import com.ramitsuri.podcasts.EpisodeEntityQueries
-import com.ramitsuri.podcasts.GetDownloadedEpisodes
-import com.ramitsuri.podcasts.GetEpisode
-import com.ramitsuri.podcasts.GetEpisodesForPodcast
-import com.ramitsuri.podcasts.GetEpisodesForPodcasts
-import com.ramitsuri.podcasts.GetEpisodesInQueue
-import com.ramitsuri.podcasts.GetFavoriteEpisodes
 import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
@@ -42,21 +37,21 @@ internal class EpisodesDaoImpl(
         }
     }
 
-    override fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<GetEpisodesForPodcasts>> {
+    override fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<DbEpisode>> {
         return episodeEntityQueries
             .getEpisodesForPodcasts(podcastIds)
             .asFlow()
             .mapToList(ioDispatcher)
     }
 
-    override fun getEpisodesForPodcastFlow(podcastId: Long): Flow<List<GetEpisodesForPodcast>> {
+    override fun getEpisodesForPodcastFlow(podcastId: Long): Flow<List<DbEpisode>> {
         return episodeEntityQueries
             .getEpisodesForPodcast(podcastId)
             .asFlow()
             .mapToList(ioDispatcher)
     }
 
-    override suspend fun getEpisodesForPodcast(podcastId: Long): List<GetEpisodesForPodcast> {
+    override suspend fun getEpisodesForPodcast(podcastId: Long): List<DbEpisode> {
         return withContext(ioDispatcher) {
             episodeEntityQueries
                 .getEpisodesForPodcast(podcastId)
@@ -64,14 +59,14 @@ internal class EpisodesDaoImpl(
         }
     }
 
-    override fun getEpisodeFlow(id: String): Flow<GetEpisode?> {
+    override fun getEpisodeFlow(id: String): Flow<DbEpisode?> {
         return episodeEntityQueries
             .getEpisode(id)
             .asFlow()
             .mapToOneOrNull(ioDispatcher)
     }
 
-    override suspend fun getEpisode(id: String): GetEpisode? {
+    override suspend fun getEpisode(id: String): DbEpisode? {
         return withContext(ioDispatcher) {
             episodeEntityQueries
                 .getEpisode(id)
@@ -79,28 +74,28 @@ internal class EpisodesDaoImpl(
         }
     }
 
-    override fun getQueueFlow(): Flow<List<GetEpisodesInQueue>> {
+    override fun getQueueFlow(): Flow<List<DbEpisode>> {
         return episodeEntityQueries
             .getEpisodesInQueue()
             .asFlow()
             .mapToList(ioDispatcher)
     }
 
-    override fun getDownloadedFlow(): Flow<List<GetDownloadedEpisodes>> {
+    override fun getDownloadedFlow(): Flow<List<DbEpisode>> {
         return episodeEntityQueries
             .getDownloadedEpisodes()
             .asFlow()
             .mapToList(ioDispatcher)
     }
 
-    override fun getFavoritesFlow(): Flow<List<GetFavoriteEpisodes>> {
+    override fun getFavoritesFlow(): Flow<List<DbEpisode>> {
         return episodeEntityQueries
             .getFavoriteEpisodes()
             .asFlow()
             .mapToList(ioDispatcher)
     }
 
-    override suspend fun getQueue(): List<GetEpisodesInQueue> {
+    override suspend fun getQueue(): List<DbEpisode> {
         return withContext(ioDispatcher) {
             episodeEntityQueries
                 .getEpisodesInQueue()

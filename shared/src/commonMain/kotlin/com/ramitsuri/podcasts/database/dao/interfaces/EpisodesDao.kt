@@ -1,11 +1,6 @@
 package com.ramitsuri.podcasts.database.dao.interfaces
 
-import com.ramitsuri.podcasts.GetDownloadedEpisodes
-import com.ramitsuri.podcasts.GetEpisode
-import com.ramitsuri.podcasts.GetEpisodesForPodcast
-import com.ramitsuri.podcasts.GetEpisodesForPodcasts
-import com.ramitsuri.podcasts.GetEpisodesInQueue
-import com.ramitsuri.podcasts.GetFavoriteEpisodes
+import com.ramitsuri.podcasts.DbEpisode
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import kotlinx.coroutines.flow.Flow
@@ -18,23 +13,23 @@ internal interface EpisodesDao {
      */
     suspend fun insert(episodes: List<Episode>): List<Episode>
 
-    fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<GetEpisodesForPodcasts>>
+    fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<DbEpisode>>
 
-    fun getEpisodesForPodcastFlow(podcastId: Long): Flow<List<GetEpisodesForPodcast>>
+    fun getEpisodesForPodcastFlow(podcastId: Long): Flow<List<DbEpisode>>
 
-    suspend fun getEpisodesForPodcast(podcastId: Long): List<GetEpisodesForPodcast>
+    suspend fun getEpisodesForPodcast(podcastId: Long): List<DbEpisode>
 
-    fun getEpisodeFlow(id: String): Flow<GetEpisode?>
+    fun getEpisodeFlow(id: String): Flow<DbEpisode?>
 
-    suspend fun getEpisode(id: String): GetEpisode?
+    suspend fun getEpisode(id: String): DbEpisode?
 
-    fun getQueueFlow(): Flow<List<GetEpisodesInQueue>>
+    fun getQueueFlow(): Flow<List<DbEpisode>>
 
-    fun getDownloadedFlow(): Flow<List<GetDownloadedEpisodes>>
+    fun getDownloadedFlow(): Flow<List<DbEpisode>>
 
-    fun getFavoritesFlow(): Flow<List<GetFavoriteEpisodes>>
+    fun getFavoritesFlow(): Flow<List<DbEpisode>>
 
-    suspend fun getQueue(): List<GetEpisodesInQueue>
+    suspend fun getQueue(): List<DbEpisode>
 
     suspend fun updatePlayProgress(
         id: String,

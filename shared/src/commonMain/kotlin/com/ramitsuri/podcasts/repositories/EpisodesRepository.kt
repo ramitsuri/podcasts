@@ -50,8 +50,8 @@ class EpisodesRepository internal constructor(
         return episodesDao
             .getEpisodesForPodcastFlow(podcastId)
             .map { list ->
-                list.map { getEpisodesForPodcast ->
-                    Episode(getEpisodesForPodcast)
+                list.map { dbEpisode ->
+                    Episode(dbEpisode)
                 }
             }
     }
@@ -60,8 +60,8 @@ class EpisodesRepository internal constructor(
         return episodesDao
             .getEpisodesForPodcastsFlow(podcastIds)
             .map { list ->
-                list.map { getEpisodesForPodcast ->
-                    Episode(getEpisodesForPodcast)
+                list.map { dbEpisode ->
+                    Episode(dbEpisode)
                 }
             }
     }
@@ -69,8 +69,8 @@ class EpisodesRepository internal constructor(
     fun getEpisodeFlow(id: String): Flow<Episode?> {
         return episodesDao
             .getEpisodeFlow(id)
-            .map { getEpisode ->
-                getEpisode?.let { Episode(it) }
+            .map { dbEpisode ->
+                dbEpisode?.let { Episode(it) }
             }
     }
 
@@ -86,8 +86,8 @@ class EpisodesRepository internal constructor(
         return episodesDao
             .getQueueFlow()
             .map { list ->
-                list.map { getEpisodesInQueue ->
-                    Episode(getEpisodesInQueue)
+                list.map { dbEpisode ->
+                    Episode(dbEpisode)
                 }
             }
     }
@@ -95,8 +95,8 @@ class EpisodesRepository internal constructor(
     suspend fun getQueue(): List<Episode> {
         return episodesDao
             .getQueue()
-            .map { getEpisodesInQueue ->
-                Episode(getEpisodesInQueue)
+            .map { dbEpisode ->
+                Episode(dbEpisode)
             }
     }
 
@@ -104,8 +104,8 @@ class EpisodesRepository internal constructor(
         return episodesDao
             .getDownloadedFlow()
             .map { list ->
-                list.map { getDownloadedEpisodes ->
-                    Episode(getDownloadedEpisodes)
+                list.map { dbEpisode ->
+                    Episode(dbEpisode)
                 }
             }
     }
@@ -114,8 +114,8 @@ class EpisodesRepository internal constructor(
         return episodesDao
             .getFavoritesFlow()
             .map { list ->
-                list.map { getFavoriteEpisodes ->
-                    Episode(getFavoriteEpisodes)
+                list.map { dbEpisode ->
+                    Episode(dbEpisode)
                 }
             }
     }

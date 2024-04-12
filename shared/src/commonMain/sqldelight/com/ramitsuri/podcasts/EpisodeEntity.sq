@@ -15,76 +15,44 @@ CREATE TABLE IF NOT EXISTS EpisodeEntity (
     season INTEGER AS Int
 );
 
-getEpisode:
-SELECT
-ee.*,
+dbEpisode:
+CREATE VIEW dbEpisode AS
+SELECT ee.*,
 eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite,
 pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink, pe.url AS podcastUrl
 FROM EpisodeEntity AS ee
 INNER JOIN PodcastEntity AS pe
     ON ee.podcastId == pe.id
 INNER JOIN EpisodeAdditionalInfoEntity AS eaie
-    ON ee.id == eaie.id
-WHERE ee.id == :id;
+    ON ee.id == eaie.id;
+
+getEpisode:
+SELECT * FROM dbEpisode
+WHERE id == :id;
 
 getEpisodesForPodcast:
-SELECT ee.*,
-eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite,
-pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink, pe.url AS podcastUrl
-FROM EpisodeEntity AS ee
-INNER JOIN PodcastEntity AS pe
-    ON ee.podcastId == pe.id
-INNER JOIN EpisodeAdditionalInfoEntity AS eaie
-    ON ee.id == eaie.id
-WHERE ee.podcastId == :podcastId
-ORDER BY ee.datePublished DESC;
+SELECT * FROM dbEpisode
+WHERE podcastId == :podcastId
+ORDER BY datePublished DESC;
 
 getEpisodesForPodcasts:
-SELECT ee.*,
-eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite,
-pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink, pe.url AS podcastUrl
-FROM EpisodeEntity AS ee
-INNER JOIN PodcastEntity AS pe
-    ON ee.podcastId == pe.id
-INNER JOIN EpisodeAdditionalInfoEntity AS eaie
-    ON ee.id == eaie.id
-WHERE ee.podcastId IN :podcastIds
-ORDER BY ee.datePublished DESC;
+SELECT * FROM dbEpisode
+WHERE podcastId IN :podcastIds
+ORDER BY datePublished DESC;
 
 getEpisodesInQueue:
-SELECT ee.*,
-eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite,
-pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink, pe.url AS podcastUrl
-FROM EpisodeEntity AS ee
-INNER JOIN PodcastEntity AS pe
-    ON ee.podcastId == pe.id
-INNER JOIN EpisodeAdditionalInfoEntity AS eaie
-    ON ee.id == eaie.id
-WHERE eaie.queuePosition != -1
-ORDER BY eaie.queuePosition ASC;
+SELECT * FROM dbEpisode
+WHERE queuePosition != -1
+ORDER BY queuePosition ASC;
 
 getDownloadedEpisodes:
-SELECT ee.*,
-eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite,
-pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink, pe.url AS podcastUrl
-FROM EpisodeEntity AS ee
-INNER JOIN PodcastEntity AS pe
-    ON ee.podcastId == pe.id
-INNER JOIN EpisodeAdditionalInfoEntity AS eaie
-    ON ee.id == eaie.id
-WHERE eaie.downloadStatus == "downloaded"
-ORDER BY eaie.downloadedAt DESC;
+SELECT * FROM dbEpisode
+WHERE downloadStatus == "downloaded"
+ORDER BY downloadedAt DESC;
 
 getFavoriteEpisodes:
-SELECT ee.*,
-eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite,
-pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink, pe.url AS podcastUrl
-FROM EpisodeEntity AS ee
-INNER JOIN PodcastEntity AS pe
-    ON ee.podcastId == pe.id
-INNER JOIN EpisodeAdditionalInfoEntity AS eaie
-    ON ee.id == eaie.id
-WHERE eaie.isFavorite == 1;
+SELECT * FROM dbEpisode
+WHERE isFavorite == 1;
 
 insertOrReplace:
 INSERT OR REPLACE INTO
