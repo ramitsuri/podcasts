@@ -3,7 +3,6 @@ package com.ramitsuri.podcasts.repositories
 import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.Podcast
-import com.ramitsuri.podcasts.model.PodcastRefreshResult
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.model.PodcastWithEpisodes
 import kotlinx.coroutines.CoroutineDispatcher
@@ -24,62 +23,64 @@ class PodcastsAndEpisodesRepository internal constructor(
 ) {
     suspend fun refreshPodcast(
         podcastId: Long,
-        autoDownloadEpisodes: Boolean = false,
-        autoAddToQueueEpisodes: Boolean = false,
-    ): PodcastResult<List<Episode>> {
-        val result = episodesRepository.refreshForPodcastId(podcastId)
-        val episodes = (result as? PodcastResult.Success)?.data ?: listOf()
-        podcastsRepository.updateHasNewEpisodes(podcastId, episodes.isNotEmpty())
-        episodes.forEach { episode ->
-            if (autoDownloadEpisodes) {
-                episodeDownloader.add(episode)
+        podcastAllowsAutoDownload: Boolean = false,
+        podcastAllowsAutoAddToQueue: Boolean = false,
+    ): PodcastResult<Unit> {
+        return when (val result = episodesRepository.refreshForPodcastId(podcastId)) {
+            is PodcastResult.Failure -> {
+                result
             }
-            if (autoAddToQueueEpisodes) {
-                episodesRepository.addToQueue(episode.id)
+
+            is PodcastResult.Success -> {
+                val episodes = result.data
+                podcastsRepository.updateHasNewEpisodes(podcastId, episodes.isNotEmpty())
+                if (podcastAllowsAutoDownload) {
+                    episodes.forEach { episode ->
+                        episodesRepository.updateNeedsDownload(id = episode.id, needsDownload = true)
+                    }
+                }
+                if (podcastAllowsAutoAddToQueue) {
+                    episodes.forEach { episode ->
+                        episodesRepository.addToQueue(episode.id)
+                    }
+                }
+                PodcastResult.Success(Unit)
             }
         }
-        return result
     }
 
-    suspend fun refreshPodcasts(): PodcastResult<PodcastRefreshResult> {
+    suspend fun refreshPodcasts(
+        fetchFromNetwork: Boolean,
+        systemAllowsAutoDownload: Boolean = false,
+    ): PodcastResult<Unit> {
         return withContext(ioDispatcher) {
-            val subscribed = podcastsRepository.getAllSubscribed()
-            val autoDownloadableEpisodes = mutableListOf<Episode>()
-            val autoAddToQueueEpisodes = mutableListOf<Episode>()
             val failures = mutableListOf<PodcastResult.Failure>()
-            subscribed.map { podcast ->
-                launch {
-                    when (
+            if (fetchFromNetwork) {
+                val subscribed = podcastsRepository.getAllSubscribed()
+                subscribed.map { podcast ->
+                    launch {
                         val refreshResult =
                             refreshPodcast(
                                 podcastId = podcast.id,
-                                autoDownloadEpisodes = podcast.autoDownloadEpisodes,
-                                autoAddToQueueEpisodes = podcast.autoAddToQueue,
+                                podcastAllowsAutoDownload = podcast.autoDownloadEpisodes,
+                                podcastAllowsAutoAddToQueue = podcast.autoAddToQueue,
                             )
-                    ) {
-                        is PodcastResult.Failure -> {
+                        if (refreshResult is PodcastResult.Failure) {
                             failures.add(refreshResult)
                         }
-
-                        is PodcastResult.Success -> {
-                            if (podcast.autoDownloadEpisodes) {
-                                autoDownloadableEpisodes.addAll(refreshResult.data)
-                            }
-                            if (podcast.autoAddToQueue) {
-                                autoAddToQueueEpisodes.addAll(refreshResult.data)
-                            }
-                        }
                     }
-                }
-            }.joinAll()
+                }.joinAll()
+            }
+            if (systemAllowsAutoDownload) {
+                episodesRepository
+                    .getNeedDownloadEpisodes()
+                    .forEach { episode ->
+                        episodeDownloader.add(episode)
+                    }
+            }
             val failure = failures.firstOrNull()
             if (failure == null) {
-                PodcastResult.Success(
-                    PodcastRefreshResult(
-                        autoDownloadableEpisodes = autoDownloadableEpisodes,
-                        autoAddToQueueEpisodes = autoAddToQueueEpisodes,
-                    ),
-                )
+                PodcastResult.Success(Unit)
             } else {
                 PodcastResult.Failure(failure.error)
             }
