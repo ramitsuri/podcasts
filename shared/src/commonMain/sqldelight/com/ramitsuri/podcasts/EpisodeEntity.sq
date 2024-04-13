@@ -15,7 +15,6 @@ CREATE TABLE IF NOT EXISTS EpisodeEntity (
     season INTEGER AS Int
 );
 
-dbEpisode:
 CREATE VIEW dbEpisode AS
 SELECT ee.*,
 eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite, eaie.needsDownload,
