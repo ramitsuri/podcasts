@@ -46,10 +46,11 @@ class EpisodeFetcher(
             val lastFetchTime = settings.getLastEpisodeFetchTime().first()
             val now = clock.now()
             val fetchFromNetwork = forced || now.minus(lastFetchTime) > FETCH_THRESHOLD_HOURS.hours
-            val result = repository.refreshPodcasts(
-                fetchFromNetwork = fetchFromNetwork,
-                systemAllowsAutoDownload = systemAllowsAutoDownload,
-            )
+            val result =
+                repository.refreshPodcasts(
+                    fetchFromNetwork = fetchFromNetwork,
+                    systemAllowsAutoDownload = systemAllowsAutoDownload,
+                )
             if (result is PodcastResult.Failure) {
                 LogHelper.v(TAG, "Failed to fetch podcasts: ${result.error}")
             } else {
