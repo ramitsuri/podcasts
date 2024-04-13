@@ -31,6 +31,7 @@ data class Episode(
     val queuePosition: Int,
     val completedAt: Instant?,
     val isFavorite: Boolean,
+    val needsDownload: Boolean,
 ) {
     val isCompleted = completedAt != null
 
@@ -64,6 +65,7 @@ data class Episode(
         queuePosition = NOT_IN_QUEUE,
         completedAt = null,
         isFavorite = false,
+        needsDownload = false,
     )
 
     internal constructor(dbEpisode: DbEpisode) : this(
@@ -91,6 +93,7 @@ data class Episode(
         queuePosition = dbEpisode.queuePosition,
         completedAt = dbEpisode.completedAt,
         isFavorite = dbEpisode.isFavorite,
+        needsDownload = dbEpisode.needsDownload,
     )
 
     companion object {

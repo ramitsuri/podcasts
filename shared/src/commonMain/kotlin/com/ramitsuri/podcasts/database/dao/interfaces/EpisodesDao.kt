@@ -31,6 +31,8 @@ internal interface EpisodesDao {
 
     suspend fun getQueue(): List<DbEpisode>
 
+    suspend fun getNeedDownloadEpisodes(): List<DbEpisode>
+
     suspend fun updatePlayProgress(
         id: String,
         playProgressInSeconds: Int,
@@ -73,5 +75,10 @@ internal interface EpisodesDao {
     suspend fun updateDuration(
         id: String,
         duration: Int,
+    )
+
+    suspend fun updateNeedsDownload(
+        id: String,
+        needsDownload: Boolean,
     )
 }

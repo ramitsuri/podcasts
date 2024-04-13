@@ -120,6 +120,14 @@ class EpisodesRepository internal constructor(
             }
     }
 
+    suspend fun getNeedDownloadEpisodes(): List<Episode> {
+        return episodesDao
+            .getNeedDownloadEpisodes()
+            .map { dbEpisode ->
+                Episode(dbEpisode)
+            }
+    }
+
     suspend fun updatePlayProgress(
         id: String,
         playProgressInSeconds: Int,
@@ -186,6 +194,13 @@ class EpisodesRepository internal constructor(
         isFavorite: Boolean,
     ) {
         episodesDao.updateFavorite(id, isFavorite)
+    }
+
+    suspend fun updateNeedsDownload(
+        id: String,
+        needsDownload: Boolean,
+    ) {
+        episodesDao.updateNeedsDownload(id, needsDownload)
     }
 
     suspend fun markPlayed(id: String) {
