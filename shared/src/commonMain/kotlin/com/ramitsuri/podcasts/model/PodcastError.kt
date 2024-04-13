@@ -1,9 +1,13 @@
 package com.ramitsuri.podcasts.model
 
-sealed interface PodcastError {
-    data class NoInternet(val throwable: Throwable) : PodcastError
+sealed class PodcastError(private val throwable: Throwable? = null) {
+    data object NoInternet : PodcastError()
 
-    data class Unknown(val throwable: Throwable?) : PodcastError
+    class Unknown(throwable: Throwable?) : PodcastError(throwable)
 
-    data class BadRequest(val throwable: Throwable? = null) : PodcastError
+    class BadRequest(throwable: Throwable? = null) : PodcastError(throwable)
+
+    fun exceptionMessage(): String? {
+        return throwable?.message
+    }
 }

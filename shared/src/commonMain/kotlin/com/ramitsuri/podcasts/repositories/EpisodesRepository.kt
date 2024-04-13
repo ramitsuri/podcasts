@@ -7,6 +7,7 @@ import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.network.api.interfaces.EpisodesApi
 import com.ramitsuri.podcasts.network.model.GetEpisodesRequest
 import com.ramitsuri.podcasts.settings.Settings
+import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
@@ -41,6 +42,7 @@ class EpisodesRepository internal constructor(
             }
 
             is PodcastResult.Failure -> {
+                LogHelper.v(TAG, "Failed to refresh podcast: ${result.error.exceptionMessage()}")
                 PodcastResult.Failure(result.error)
             }
         }
@@ -222,5 +224,9 @@ class EpisodesRepository internal constructor(
 
     suspend fun setCurrentlyPlayingEpisodeId(episodeId: String?) {
         settings.setCurrentlyPlayingEpisodeId(episodeId)
+    }
+
+    companion object {
+        private const val TAG = "EpisodesRepo"
     }
 }
