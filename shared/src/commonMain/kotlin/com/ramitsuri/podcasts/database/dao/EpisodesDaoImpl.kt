@@ -216,7 +216,7 @@ internal class EpisodesDaoImpl(
 
     override suspend fun updateNeedsDownload(
         id: String,
-        needsDownload: Boolean
+        needsDownload: Boolean,
     ) {
         episodeAdditionalInfoEntityQueries.updateNeedsDownload(id = id, needsDownload = needsDownload)
     }
