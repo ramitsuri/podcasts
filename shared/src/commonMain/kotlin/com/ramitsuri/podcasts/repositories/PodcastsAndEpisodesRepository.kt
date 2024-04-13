@@ -25,28 +25,21 @@ class PodcastsAndEpisodesRepository internal constructor(
         podcastId: Long,
         podcastAllowsAutoDownload: Boolean = false,
         podcastAllowsAutoAddToQueue: Boolean = false,
-    ): PodcastResult<Unit> {
-        return when (val result = episodesRepository.refreshForPodcastId(podcastId)) {
-            is PodcastResult.Failure -> {
-                result
-            }
-
-            is PodcastResult.Success -> {
-                val episodes = result.data
-                podcastsRepository.updateHasNewEpisodes(podcastId, episodes.isNotEmpty())
-                if (podcastAllowsAutoDownload) {
-                    episodes.forEach { episode ->
-                        episodesRepository.updateNeedsDownload(id = episode.id, needsDownload = true)
-                    }
-                }
-                if (podcastAllowsAutoAddToQueue) {
-                    episodes.forEach { episode ->
-                        episodesRepository.addToQueue(episode.id)
-                    }
-                }
-                PodcastResult.Success(Unit)
+    ): PodcastResult<List<Episode>> {
+        val result = episodesRepository.refreshForPodcastId(podcastId)
+        val episodes = (result as? PodcastResult.Success)?.data ?: listOf()
+        podcastsRepository.updateHasNewEpisodes(podcastId, episodes.isNotEmpty())
+        if (podcastAllowsAutoDownload) {
+            episodes.forEach { episode ->
+                episodesRepository.updateNeedsDownload(id = episode.id, needsDownload = true)
             }
         }
+        if (podcastAllowsAutoAddToQueue) {
+            episodes.forEach { episode ->
+                episodesRepository.addToQueue(episode.id)
+            }
+        }
+        return result
     }
 
     suspend fun refreshPodcasts(
