@@ -24,7 +24,9 @@ class EpisodeFetchWorker(
 ) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result {
         LogHelper.d(TAG, "Starting work")
-        episodeFetcher.fetchPodcastsIfNecessary(forced = true)
+        // Cannot auto download episodes from a worker because of restriction on starting foreground service (which
+        // episode downloader starts) from background (which a worker is)
+        episodeFetcher.fetchPodcastsIfNecessary(forced = true, episodeDownloadAllowed = false)
         return Result.success()
     }
 

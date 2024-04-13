@@ -33,25 +33,30 @@ class EpisodeFetcher(
                     return@collect
                 }
                 LogHelper.d(TAG, "App in foreground, will fetch episodes if necessary")
-                fetchPodcastsIfNecessary()
+                fetchPodcastsIfNecessary(forced = false, episodeDownloadAllowed = true)
             }
         }
     }
 
-    suspend fun fetchPodcastsIfNecessary(forced: Boolean = false) {
+    suspend fun fetchPodcastsIfNecessary(
+        forced: Boolean,
+        episodeDownloadAllowed: Boolean,
+    ) {
         refreshPodcastsMutex.withLock {
             val lastFetchTime = settings.getLastEpisodeFetchTime().first()
             val now = clock.now()
-            if (forced || now.minus(lastFetchTime) > FETCH_THRESHOLD_HOURS.hours) {
-                LogHelper.d(TAG, "Fetch threshold met, fetching now")
-                val result = repository.refreshPodcasts()
-                if (result is PodcastResult.Failure) {
-                    LogHelper.v(TAG, "Failed to fetch podcasts: ${result.error}")
-                    return
-                }
-                settings.setLastEpisodeFetchTime()
+            val fetchFromNetwork = forced || now.minus(lastFetchTime) > FETCH_THRESHOLD_HOURS.hours
+            val result =
+                repository.refreshPodcasts(
+                    fetchFromNetwork = fetchFromNetwork,
+                    episodeDownloadAllowed = episodeDownloadAllowed,
+                )
+            if (result is PodcastResult.Failure) {
+                LogHelper.v(TAG, "Failed to fetch podcasts: ${result.error}")
             } else {
-                LogHelper.d(TAG, "Fetch threshold not met and not forced, skipping")
+                if (fetchFromNetwork) {
+                    settings.setLastEpisodeFetchTime()
+                }
             }
         }
     }
