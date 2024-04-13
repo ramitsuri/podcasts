@@ -1,1 +1,11 @@
 ALTER TABLE EpisodeAdditionalInfoEntity ADD COLUMN needsDownload INTEGER NOT NULL DEFAULT 0;
+
+CREATE VIEW dbEpisode AS
+SELECT ee.*,
+eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite, eaie.needsDownload,
+pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink, pe.url AS podcastUrl
+FROM EpisodeEntity AS ee
+INNER JOIN PodcastEntity AS pe
+    ON ee.podcastId == pe.id
+INNER JOIN EpisodeAdditionalInfoEntity AS eaie
+    ON ee.id == eaie.id;
