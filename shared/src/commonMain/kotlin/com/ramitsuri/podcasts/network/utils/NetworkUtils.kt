@@ -32,7 +32,7 @@ internal suspend inline fun <reified T> apiRequest(
                 }
 
                 exception is IOException -> {
-                    PodcastResult.Failure(PodcastError.NoInternet(exception))
+                    PodcastResult.Failure(PodcastError.NoInternet)
                 }
 
                 else -> {
