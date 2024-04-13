@@ -13,12 +13,13 @@ CREATE TABLE IF NOT EXISTS EpisodeAdditionalInfoEntity (
     downloadedAt INTEGER AS Instant,
     queuePosition INTEGER AS Int NOT NULL,
     completedAt INTEGER AS Instant,
-    isFavorite INTEGER AS Boolean NOT NULL
+    isFavorite INTEGER AS Boolean NOT NULL,
+    needsDownload INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
 insertOrIgnore:
 INSERT OR IGNORE INTO
-EpisodeAdditionalInfoEntity(id, playProgress, downloadStatus, downloadProgress, downloadBlocked, downloadedAt, queuePosition, completedAt, isFavorite)
+EpisodeAdditionalInfoEntity(id, playProgress, downloadStatus, downloadProgress, downloadBlocked, downloadedAt, queuePosition, completedAt, isFavorite, needsDownload)
 VALUES ?;
 
 hasId:
@@ -68,4 +69,9 @@ FROM EpisodeAdditionalInfoEntity;
 updateCompletedAt:
 UPDATE EpisodeAdditionalInfoEntity
 SET completedAt = :completedAt
+WHERE id = :id;
+
+updateNeedsDownload:
+UPDATE EpisodeAdditionalInfoEntity
+SET needsDownload = :needsDownload
 WHERE id = :id;

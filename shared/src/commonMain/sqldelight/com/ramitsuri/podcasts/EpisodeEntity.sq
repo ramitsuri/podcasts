@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS EpisodeEntity (
 dbEpisode:
 CREATE VIEW dbEpisode AS
 SELECT ee.*,
-eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite,
+eaie.playProgress, eaie.downloadStatus, eaie.downloadProgress, eaie.downloadBlocked, eaie.queuePosition, eaie.completedAt, eaie.downloadedAt, eaie.isFavorite, eaie.needsDownload,
 pe.title AS podcastTitle, pe.author AS podcastAuthor, pe.artwork AS podcastImageUrl, pe.link AS podcastLink, pe.url AS podcastUrl
 FROM EpisodeEntity AS ee
 INNER JOIN PodcastEntity AS pe
@@ -53,6 +53,10 @@ ORDER BY downloadedAt DESC;
 getFavoriteEpisodes:
 SELECT * FROM dbEpisode
 WHERE isFavorite == 1;
+
+getNeedDownloadEpisodes:
+SELECT * FROM dbEpisode
+WHERE needsDownload == 1;
 
 insertOrReplace:
 INSERT OR REPLACE INTO

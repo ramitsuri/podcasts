@@ -103,6 +103,14 @@ internal class EpisodesDaoImpl(
         }
     }
 
+    override suspend fun getNeedDownloadEpisodes(): List<DbEpisode> {
+        return withContext(ioDispatcher) {
+            episodeEntityQueries
+                .getNeedDownloadEpisodes()
+                .executeAsList()
+        }
+    }
+
     override suspend fun updatePlayProgress(
         id: String,
         playProgressInSeconds: Int,
@@ -206,6 +214,13 @@ internal class EpisodesDaoImpl(
         episodeAdditionalInfoEntityQueries.updateQueuePosition(id = id, queuePosition = position)
     }
 
+    override suspend fun updateNeedsDownload(
+        id: String,
+        needsDownload: Boolean
+    ) {
+        episodeAdditionalInfoEntityQueries.updateNeedsDownload(id = id, needsDownload = needsDownload)
+    }
+
     private fun insert(episode: Episode): Boolean {
         // Always insert episode data because something might have changed
         episodeEntityQueries.insertOrReplace(
@@ -239,6 +254,7 @@ internal class EpisodesDaoImpl(
                 queuePosition = episode.queuePosition,
                 completedAt = episode.completedAt,
                 isFavorite = episode.isFavorite,
+                needsDownload = episode.needsDownload,
             ),
         )
         return true
