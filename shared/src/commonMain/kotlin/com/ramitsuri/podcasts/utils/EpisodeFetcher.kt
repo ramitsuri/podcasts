@@ -33,14 +33,14 @@ class EpisodeFetcher(
                     return@collect
                 }
                 LogHelper.d(TAG, "App in foreground, will fetch episodes if necessary")
-                fetchPodcastsIfNecessary(forced = false, systemAllowsAutoDownload = true)
+                fetchPodcastsIfNecessary(forced = false, episodeDownloadAllowed = true)
             }
         }
     }
 
     suspend fun fetchPodcastsIfNecessary(
         forced: Boolean,
-        systemAllowsAutoDownload: Boolean,
+        episodeDownloadAllowed: Boolean,
     ) {
         refreshPodcastsMutex.withLock {
             val lastFetchTime = settings.getLastEpisodeFetchTime().first()
@@ -49,7 +49,7 @@ class EpisodeFetcher(
             val result =
                 repository.refreshPodcasts(
                     fetchFromNetwork = fetchFromNetwork,
-                    systemAllowsAutoDownload = systemAllowsAutoDownload,
+                    episodeDownloadAllowed = episodeDownloadAllowed,
                 )
             if (result is PodcastResult.Failure) {
                 LogHelper.v(TAG, "Failed to fetch podcasts: ${result.error}")

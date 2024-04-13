@@ -43,7 +43,7 @@ class SettingsViewModel internal constructor(
     fun fetch() {
         longLivingScope.launch {
             _state.update { it.copy(fetching = true) }
-            episodeFetcher.fetchPodcastsIfNecessary(forced = true, systemAllowsAutoDownload = true)
+            episodeFetcher.fetchPodcastsIfNecessary(forced = true, episodeDownloadAllowed = true)
             _state.update { it.copy(fetching = false) }
         }
     }

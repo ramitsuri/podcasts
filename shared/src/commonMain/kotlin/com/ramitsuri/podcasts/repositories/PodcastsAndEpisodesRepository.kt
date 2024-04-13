@@ -44,7 +44,7 @@ class PodcastsAndEpisodesRepository internal constructor(
 
     suspend fun refreshPodcasts(
         fetchFromNetwork: Boolean,
-        systemAllowsAutoDownload: Boolean = false,
+        episodeDownloadAllowed: Boolean = false,
     ): PodcastResult<Unit> {
         return withContext(ioDispatcher) {
             val failures = mutableListOf<PodcastResult.Failure>()
@@ -64,7 +64,7 @@ class PodcastsAndEpisodesRepository internal constructor(
                     }
                 }.joinAll()
             }
-            if (systemAllowsAutoDownload) {
+            if (episodeDownloadAllowed) {
                 episodesRepository
                     .getNeedDownloadEpisodes()
                     .forEach { episode ->
