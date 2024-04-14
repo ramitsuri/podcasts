@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.android.media
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.annotation.OptIn
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
@@ -267,6 +268,25 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             }
         }
 
+        override fun onMediaButtonEvent(
+            session: MediaSession,
+            controllerInfo: MediaSession.ControllerInfo,
+            intent: Intent,
+        ): Boolean {
+            val keyEvent = intent.extras?.getParcelable<KeyEvent>(Intent.EXTRA_KEY_EVENT)
+            if (keyEvent?.keyCode == KeyEvent.KEYCODE_MEDIA_NEXT) {
+                val currentPosition = session.player.currentPosition
+                session.player.seekTo(currentPosition + 30_000)
+                return true
+            }
+            if (keyEvent?.keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS) {
+                val currentPosition = session.player.currentPosition
+                session.player.seekTo(currentPosition - 10_000)
+                return true
+            }
+            return super.onMediaButtonEvent(session, controllerInfo, intent)
+        }
+
         override fun onCustomCommand(
             session: MediaSession,
             controller: MediaSession.ControllerInfo,
@@ -274,16 +294,12 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             args: Bundle,
         ): ListenableFuture<SessionResult> {
             if (customCommand.customAction == ACTION_SKIP_30) {
-                val currentPosition = mediaSession?.player?.currentPosition
-                if (currentPosition != null) {
-                    mediaSession?.player?.seekTo(currentPosition + 30_000)
-                }
+                val currentPosition = session.player.currentPosition
+                session.player.seekTo(currentPosition + 30_000)
             }
             if (customCommand.customAction == ACTION_REPLAY_10) {
-                val currentPosition = mediaSession?.player?.currentPosition
-                if (currentPosition != null) {
-                    mediaSession?.player?.seekTo(currentPosition - 10_000)
-                }
+                val currentPosition = session.player.currentPosition
+                session.player.seekTo(currentPosition - 10_000)
             }
             if (customCommand.customAction == ACTION_SAVE_TO_FAVORITES) {
                 // TODO handle
