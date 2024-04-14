@@ -266,6 +266,9 @@ fun NavGraph(
 
                     SearchScreen(
                         state = state,
+                        onSettingsClicked = {
+                            navController.navigate(Route.SETTINGS.value)
+                        },
                         onPodcastClicked = {
                             navController.navigate(
                                 Route.podcastDetails(
@@ -286,6 +289,9 @@ fun NavGraph(
 
                 composable(route = BottomNavItem.LIBRARY.route.value) {
                     LibraryScreen(
+                        onSettingsClicked = {
+                            navController.navigate(Route.SETTINGS.value)
+                        },
                         onSubscriptionsClicked = { navController.navigate(Route.SUBSCRIPTIONS.value) },
                         onQueueClicked = { navController.navigate(Route.QUEUE.value) },
                         onDownloadsClicked = { navController.navigate(Route.DOWNLOADS.value) },

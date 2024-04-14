@@ -17,12 +17,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -46,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.components.CenteredTitleTopAppBar
 import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.PodcastInfoItem
 import com.ramitsuri.podcasts.android.ui.components.podcast
@@ -54,10 +60,12 @@ import com.ramitsuri.podcasts.model.ui.SearchResult
 import com.ramitsuri.podcasts.model.ui.SearchViewState
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     state: SearchViewState,
     modifier: Modifier = Modifier,
+    onSettingsClicked: () -> Unit,
     onPodcastClicked: (Long) -> Unit,
     onSearchTermUpdated: (String) -> Unit,
     onSearchRequested: () -> Unit,
@@ -69,6 +77,11 @@ fun SearchScreen(
                 .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+        CenteredTitleTopAppBar(
+            scrollBehavior = scrollBehavior,
+            onSettingsClicked = onSettingsClicked,
+        )
         if (state.result !is SearchResult.Searching) {
             Spacer(modifier = Modifier.height(16.dp))
             SearchInput(
@@ -80,6 +93,7 @@ fun SearchScreen(
             )
         }
         SearchOutput(
+            scrollBehavior = scrollBehavior,
             searchResult = state.result,
             onPodcastClicked = onPodcastClicked,
         )
@@ -160,8 +174,10 @@ private fun SearchInput(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchOutput(
+    scrollBehavior: TopAppBarScrollBehavior?,
     searchResult: SearchResult,
     onPodcastClicked: (Long) -> Unit,
 ) {
@@ -184,6 +200,7 @@ private fun SearchOutput(
 
         is SearchResult.Success -> {
             SearchResults(
+                scrollBehavior = scrollBehavior,
                 podcasts = searchResult.podcasts,
                 onPodcastClicked = onPodcastClicked,
             )
@@ -223,15 +240,22 @@ private fun SearchLoading() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchResults(
+    scrollBehavior: TopAppBarScrollBehavior?,
     podcasts: List<Podcast>,
     onPodcastClicked: (Long) -> Unit,
 ) {
+    val modifier = if (scrollBehavior == null) {
+        Modifier
+    } else {
+        Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    }
     if (podcasts.isNotEmpty()) {
         LazyColumn(
             modifier =
-                Modifier
+                modifier
                     .fillMaxWidth(),
         ) {
             item {
@@ -277,6 +301,7 @@ private fun SearchScreenPreview_Default() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = ""),
+            onSettingsClicked = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
             onSearchCleared = { },
@@ -291,6 +316,7 @@ private fun SearchScreenPreview_Default_SearchTermNotEmpty() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = "Science Vs"),
+            onSettingsClicked = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
             onSearchCleared = { },
@@ -305,6 +331,7 @@ private fun SearchScreenPreview_Loading() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = "", result = SearchResult.Searching),
+            onSettingsClicked = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
             onSearchCleared = { },
@@ -319,6 +346,7 @@ private fun SearchScreenPreview_Error() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = "", result = SearchResult.Error),
+            onSettingsClicked = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
             onSearchCleared = { },
@@ -333,6 +361,7 @@ private fun SearchScreenPreview_Success_Empty() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = "", result = SearchResult.Success(listOf())),
+            onSettingsClicked = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
             onSearchCleared = { },
@@ -361,6 +390,7 @@ private fun SearchScreenPreview_Success_NotEmpty() {
                             ),
                         ),
                 ),
+            onSettingsClicked = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
             onSearchCleared = { },

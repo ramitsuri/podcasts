@@ -52,6 +52,7 @@ import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.components.CenteredTitleTopAppBar
 import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
 import com.ramitsuri.podcasts.android.ui.components.episode
@@ -94,7 +95,7 @@ fun HomeScreen(
     ) {
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
         if (state.subscribedPodcasts.isNotEmpty()) {
-            TopAppBar(
+            CenteredTitleTopAppBar(
                 scrollBehavior = scrollBehavior,
                 onSettingsClicked = onSettingsClicked,
             )
@@ -144,36 +145,6 @@ fun HomeScreen(
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TopAppBar(
-    scrollBehavior: TopAppBarScrollBehavior,
-    onSettingsClicked: () -> Unit,
-) {
-    CenterAlignedTopAppBar(
-        colors =
-            TopAppBarDefaults
-                .centerAlignedTopAppBarColors()
-                .copy(scrolledContainerColor = MaterialTheme.colorScheme.background),
-        title = {
-            Text(
-                stringResource(id = R.string.app_name),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
-        actions = {
-            IconButton(onClick = onSettingsClicked) {
-                Icon(
-                    imageVector = Icons.Filled.Settings,
-                    contentDescription = stringResource(id = R.string.settings),
-                )
-            }
-        },
-        scrollBehavior = scrollBehavior,
-    )
 }
 
 @Composable
