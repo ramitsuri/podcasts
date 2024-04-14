@@ -13,13 +13,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -42,6 +46,7 @@ import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.EpisodeDetailsViewState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EpisodeDetailsScreen(
     state: EpisodeDetailsViewState,
@@ -61,11 +66,13 @@ fun EpisodeDetailsScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        TopAppBar(onBack = onBack)
+        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+        TopAppBar(onBack = onBack, scrollBehavior = scrollBehavior)
         val episode = state.episode
         if (episode != null) {
             EpisodeDetails(
-                episode,
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                episode = episode,
                 playingState = state.playingState,
                 onPodcastNameClicked = { onPodcastNameClicked(episode.podcastId) },
                 onPlayClicked = { onEpisodePlayClicked(episode) },
@@ -87,6 +94,7 @@ fun EpisodeDetailsScreen(
 @OptIn(ExperimentalTextApi::class)
 @Composable
 private fun EpisodeDetails(
+    modifier: Modifier = Modifier,
     episode: Episode,
     playingState: PlayingState,
     onPodcastNameClicked: () -> Unit,
@@ -104,7 +112,7 @@ private fun EpisodeDetails(
 ) {
     Column(
         modifier =
-            Modifier
+            modifier
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState()),
     ) {

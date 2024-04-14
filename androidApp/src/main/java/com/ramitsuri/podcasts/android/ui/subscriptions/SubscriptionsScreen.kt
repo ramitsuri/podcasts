@@ -15,13 +15,17 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Subscriptions
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -38,6 +42,7 @@ import com.ramitsuri.podcasts.android.ui.components.podcast
 import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.ui.SubscriptionsViewState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubscriptionsScreen(
     state: SubscriptionsViewState,
@@ -50,12 +55,20 @@ fun SubscriptionsScreen(
             modifier
                 .fillMaxSize(),
     ) {
-        TopAppBar(onBack = onBack, label = stringResource(id = R.string.subscriptions))
+        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+        TopAppBar(
+            onBack = onBack,
+            label = stringResource(id = R.string.subscriptions),
+            scrollBehavior = scrollBehavior,
+        )
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 112.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
+                    .padding(horizontal = 16.dp),
         ) {
             fullWidthSpacer()
             items(state.subscribedPodcasts) { podcast ->

@@ -21,15 +21,19 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.rounded.DragHandle
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -53,6 +57,7 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyColumnState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QueueScreen(
     state: QueueViewState,
@@ -76,13 +81,21 @@ fun QueueScreen(
             modifier
                 .fillMaxSize(),
     ) {
-        TopAppBar(onBack = onBack, label = stringResource(id = R.string.library_queue))
+        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+        TopAppBar(
+            onBack = onBack,
+            label = stringResource(id = R.string.library_queue),
+            scrollBehavior = scrollBehavior,
+        )
         val lazyListState = rememberLazyListState()
         val reorderableLazyColumnState =
             rememberReorderableLazyColumnState(lazyListState) { from, to ->
                 onEpisodesRearranged(from.index, to.index)
             }
-        LazyColumn(state = lazyListState) {
+        LazyColumn(
+            state = lazyListState,
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        ) {
             items(state.episodes, key = { it.id }) {
                 ColoredHorizontalDivider()
                 EpisodeItem(
