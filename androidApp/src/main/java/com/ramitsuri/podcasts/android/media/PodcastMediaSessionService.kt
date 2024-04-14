@@ -271,7 +271,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         override fun onMediaButtonEvent(
             session: MediaSession,
             controllerInfo: MediaSession.ControllerInfo,
-            intent: Intent
+            intent: Intent,
         ): Boolean {
             val keyEvent = intent.extras?.getParcelable<KeyEvent>(Intent.EXTRA_KEY_EVENT)
             if (keyEvent?.keyCode == KeyEvent.KEYCODE_MEDIA_NEXT) {
