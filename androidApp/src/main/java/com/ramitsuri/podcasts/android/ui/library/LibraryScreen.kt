@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.outlined.ArrowCircleDown
 import androidx.compose.material.icons.outlined.Subscriptions
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,11 +26,14 @@ import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.components.CenteredTitleTopAppBar
 import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryScreen(
     modifier: Modifier = Modifier,
+    onSettingsClicked: () -> Unit,
     onSubscriptionsClicked: () -> Unit,
     onQueueClicked: () -> Unit,
     onDownloadsClicked: () -> Unit,
@@ -41,6 +45,9 @@ fun LibraryScreen(
             modifier
                 .fillMaxSize(),
     ) {
+        CenteredTitleTopAppBar(
+            onSettingsClicked = onSettingsClicked,
+        )
         ColoredHorizontalDivider()
         Item(
             icon = Icons.Outlined.Subscriptions,
@@ -106,6 +113,7 @@ private fun Item(
 private fun LibraryScreenPreview() {
     PreviewTheme {
         LibraryScreen(
+            onSettingsClicked = { },
             onSubscriptionsClicked = { },
             onQueueClicked = { },
             onDownloadsClicked = { },
