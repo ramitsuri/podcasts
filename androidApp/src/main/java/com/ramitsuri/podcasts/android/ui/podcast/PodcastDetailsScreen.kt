@@ -19,11 +19,14 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -55,6 +59,7 @@ import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.PodcastWithEpisodes
 import com.ramitsuri.podcasts.model.ui.PodcastDetailsViewState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PodcastDetailsScreen(
     state: PodcastDetailsViewState,
@@ -78,10 +83,12 @@ fun PodcastDetailsScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        TopAppBar(onBack = onBack)
+        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+        TopAppBar(onBack = onBack, scrollBehavior = scrollBehavior)
         val podcastWithEpisodes = state.podcastWithEpisodes
         if (podcastWithEpisodes != null) {
             PodcastDetails(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 podcastWithEpisodes = podcastWithEpisodes,
                 currentlyPlayingEpisodeId = state.currentlyPlayingEpisodeId,
                 currentlyPlayingEpisodeState = state.playingState,
@@ -108,6 +115,7 @@ fun PodcastDetailsScreen(
 
 @Composable
 private fun PodcastDetails(
+    modifier: Modifier = Modifier,
     podcastWithEpisodes: PodcastWithEpisodes,
     currentlyPlayingEpisodeId: String?,
     currentlyPlayingEpisodeState: PlayingState,
@@ -129,7 +137,7 @@ private fun PodcastDetails(
     onEpisodeNotFavoriteClicked: (episodeId: String) -> Unit,
 ) {
     val podcast = podcastWithEpisodes.podcast
-    LazyColumn {
+    LazyColumn(modifier = modifier) {
         item {
             PodcastHeader(
                 podcast = podcast,

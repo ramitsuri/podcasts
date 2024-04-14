@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -13,9 +12,14 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,49 +29,58 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar(
     onBack: (() -> Unit)?,
-    modifier: Modifier = Modifier,
     label: String = "",
     menuItems: List<AppBarMenuItem> = listOf(),
+    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    Row(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (onBack != null) {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier.size(56.dp),
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(id = R.string.back),
+    TopAppBar(
+        colors =
+            TopAppBarDefaults
+                .topAppBarColors()
+                .copy(scrolledContainerColor = MaterialTheme.colorScheme.background),
+        title = {
+            if (label.isNotEmpty()) {
+                Text(
+                    label,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
-        }
-        if (label.isNotEmpty()) {
-            Text(text = label)
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        if (menuItems.isNotEmpty()) {
-            Menu(
-                showMenu = showMenu,
-                onToggleMenu = { showMenu = !showMenu },
-                menuItems = menuItems,
-            )
-        }
-    }
+        },
+        navigationIcon = {
+            if (onBack != null) {
+                IconButton(
+                    onClick = onBack,
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(id = R.string.back),
+                    )
+                }
+            }
+        },
+        actions = {
+            if (menuItems.isNotEmpty()) {
+                Menu(
+                    showMenu = showMenu,
+                    onToggleMenu = { showMenu = !showMenu },
+                    menuItems = menuItems,
+                )
+            }
+        },
+        scrollBehavior = scrollBehavior,
+    )
 }
 
 @Composable
@@ -127,6 +140,7 @@ private fun MenuItem(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ThemePreview
 @Composable
 private fun TopAppBarPreview_WithTitle() {
@@ -135,6 +149,7 @@ private fun TopAppBarPreview_WithTitle() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ThemePreview
 @Composable
 private fun TopAppBarPreview_WithTitle_WithMenu() {
@@ -154,6 +169,7 @@ private fun TopAppBarPreview_WithTitle_WithMenu() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ThemePreview
 @Composable
 private fun TopAppBarPreview_WithoutTitle_WithMenu() {
@@ -172,6 +188,7 @@ private fun TopAppBarPreview_WithoutTitle_WithMenu() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ThemePreview
 @Composable
 private fun TopAppBarPreview_WithoutBack_WithoutTitle_WithMenu() {

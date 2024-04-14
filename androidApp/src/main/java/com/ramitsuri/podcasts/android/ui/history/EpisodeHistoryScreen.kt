@@ -15,12 +15,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,7 +38,7 @@ import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.EpisodeHistoryViewState
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun EpisodeHistoryScreen(
     state: EpisodeHistoryViewState,
@@ -58,8 +62,13 @@ fun EpisodeHistoryScreen(
             modifier
                 .fillMaxSize(),
     ) {
-        TopAppBar(onBack = onBack, label = stringResource(id = R.string.library_history))
-        LazyColumn {
+        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+        TopAppBar(
+            onBack = onBack,
+            label = stringResource(id = R.string.library_history),
+            scrollBehavior = scrollBehavior,
+        )
+        LazyColumn(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)) {
             state.episodesByDate.forEach { (date, episodes) ->
                 stickyHeader {
                     HeaderItem(text = dateFormatted(date))
