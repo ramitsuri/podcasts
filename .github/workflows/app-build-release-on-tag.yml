@@ -1,4 +1,4 @@
-name: Create App Release
+name: Create Release
 
 on:
   push:
@@ -15,6 +15,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
 
       - name: Generate Release bundle
         run: ./gradlew androidApp:bundleRelease
