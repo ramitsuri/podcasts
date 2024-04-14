@@ -60,6 +60,7 @@ actual val platformModule =
                 episodeController = get<EpisodeController>(),
                 episodesRepository = get<EpisodesRepository>(),
                 settings = get<Settings>(),
+                podcastsRepository = get<PodcastsRepository>(),
             )
         }
 

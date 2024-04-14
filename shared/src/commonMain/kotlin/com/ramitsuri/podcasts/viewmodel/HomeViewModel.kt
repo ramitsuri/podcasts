@@ -6,6 +6,7 @@ import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.ui.HomeViewState
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
+import com.ramitsuri.podcasts.repositories.PodcastsRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.EpisodeController
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ class HomeViewModel internal constructor(
     episodeController: EpisodeController,
     episodesRepository: EpisodesRepository,
     settings: Settings,
+    private val podcastsRepository: PodcastsRepository,
 ) : ViewModel(), EpisodeController by episodeController {
     private val _state = MutableStateFlow(HomeViewState())
     val state = _state.asStateFlow()
@@ -48,6 +50,12 @@ class HomeViewModel internal constructor(
                     )
                 }
             }
+        }
+    }
+
+    fun markPodcastHasNewSeen(podcastId: Long) {
+        viewModelScope.launch {
+            podcastsRepository.updateHasNewEpisodes(podcastId, false)
         }
     }
 
