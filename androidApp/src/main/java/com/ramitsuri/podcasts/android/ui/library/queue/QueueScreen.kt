@@ -94,7 +94,7 @@ fun QueueScreen(
             }
         LazyColumn(
             state = lazyListState,
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         ) {
             items(state.episodes, key = { it.id }) {
                 ColoredHorizontalDivider()

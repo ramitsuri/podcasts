@@ -94,8 +94,8 @@ private fun Menu(
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                Modifier
-                    .size(24.dp),
+                    Modifier
+                        .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
             )
         }
@@ -127,8 +127,8 @@ private fun MenuItem(
         text = {
             Row(
                 modifier =
-                Modifier
-                    .fillMaxWidth(),
+                    Modifier
+                        .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(imageVector = icon, contentDescription = null)
@@ -158,13 +158,13 @@ private fun TopAppBarPreview_WithTitle_WithMenu() {
             onBack = {},
             label = "Queue",
             menuItems =
-            listOf(
-                AppBarMenuItem(
-                    title = "Settings",
-                    icon = Icons.Filled.Settings,
-                    onClick = { },
+                listOf(
+                    AppBarMenuItem(
+                        title = "Settings",
+                        icon = Icons.Filled.Settings,
+                        onClick = { },
+                    ),
                 ),
-            ),
         )
     }
 }
@@ -177,13 +177,13 @@ private fun TopAppBarPreview_WithoutTitle_WithMenu() {
         TopAppBar(
             onBack = {},
             menuItems =
-            listOf(
-                AppBarMenuItem(
-                    title = "Settings",
-                    icon = Icons.Filled.Settings,
-                    onClick = { },
+                listOf(
+                    AppBarMenuItem(
+                        title = "Settings",
+                        icon = Icons.Filled.Settings,
+                        onClick = { },
+                    ),
                 ),
-            ),
         )
     }
 }
@@ -196,13 +196,13 @@ private fun TopAppBarPreview_WithoutBack_WithoutTitle_WithMenu() {
         TopAppBar(
             onBack = null,
             menuItems =
-            listOf(
-                AppBarMenuItem(
-                    title = "Settings",
-                    icon = Icons.Filled.Settings,
-                    onClick = { },
+                listOf(
+                    AppBarMenuItem(
+                        title = "Settings",
+                        icon = Icons.Filled.Settings,
+                        onClick = { },
+                    ),
                 ),
-            ),
         )
     }
 }
