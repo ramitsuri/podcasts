@@ -23,9 +23,9 @@ fun CenteredTitleTopAppBar(
 ) {
     CenterAlignedTopAppBar(
         colors =
-        TopAppBarDefaults
-            .centerAlignedTopAppBarColors()
-            .copy(scrolledContainerColor = MaterialTheme.colorScheme.background),
+            TopAppBarDefaults
+                .centerAlignedTopAppBarColors()
+                .copy(scrolledContainerColor = MaterialTheme.colorScheme.background),
         title = {
             Text(
                 stringResource(id = R.string.app_name),

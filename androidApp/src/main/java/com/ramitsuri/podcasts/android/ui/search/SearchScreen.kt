@@ -247,11 +247,12 @@ private fun SearchResults(
     podcasts: List<Podcast>,
     onPodcastClicked: (Long) -> Unit,
 ) {
-    val modifier = if (scrollBehavior == null) {
-        Modifier
-    } else {
-        Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
-    }
+    val modifier =
+        if (scrollBehavior == null) {
+            Modifier
+        } else {
+            Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        }
     if (podcasts.isNotEmpty()) {
         LazyColumn(
             modifier =
