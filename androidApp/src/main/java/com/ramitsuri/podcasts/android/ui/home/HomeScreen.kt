@@ -1,7 +1,9 @@
 package com.ramitsuri.podcasts.android.ui.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -67,6 +69,7 @@ fun HomeScreen(
     onSettingsClicked: () -> Unit,
     onImportSubscriptionsClicked: () -> Unit,
     onPodcastClicked: (podcastId: Long) -> Unit,
+    onPodcastHasNewSeen: (podcastId: Long) -> Unit,
     onMorePodcastsClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
@@ -102,6 +105,7 @@ fun HomeScreen(
                     Subscriptions(
                         podcasts = state.subscribedPodcasts,
                         onPodcastClicked = { onPodcastClicked(it.id) },
+                        onPodcastLongClicked = { onPodcastHasNewSeen(it.id) },
                         onMoreClicked = onMorePodcastsClicked,
                     )
                 }
@@ -176,6 +180,7 @@ private fun TopAppBar(
 private fun Subscriptions(
     podcasts: List<Podcast>,
     onPodcastClicked: (Podcast) -> Unit,
+    onPodcastLongClicked: (Podcast) -> Unit,
     onMoreClicked: () -> Unit,
 ) {
     Column(
@@ -212,6 +217,7 @@ private fun Subscriptions(
                     artwork = it.artwork,
                     hasNewEpisodes = it.hasNewEpisodes,
                     onClicked = { onPodcastClicked(it) },
+                    onLongClicked = { onPodcastLongClicked(it) },
                 )
             }
             item {
@@ -222,18 +228,23 @@ private fun Subscriptions(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SubscribedPodcastItem(
     title: String,
     artwork: String,
     hasNewEpisodes: Boolean,
     onClicked: () -> Unit,
+    onLongClicked: () -> Unit,
 ) {
     Box(
         modifier =
             Modifier
                 .clip(MaterialTheme.shapes.small)
-                .clickable(onClick = onClicked),
+                .combinedClickable(
+                    onClick = onClicked,
+                    onLongClick = onLongClicked,
+                ),
     ) {
         AsyncImage(
             model =
@@ -382,6 +393,7 @@ private fun SubscribedPodcastItemPreview_HasNewEpisodes() {
             hasNewEpisodes = podcast.hasNewEpisodes,
             artwork = "",
             onClicked = { },
+            onLongClicked = { },
         )
     }
 }
@@ -396,6 +408,7 @@ private fun SubscribedPodcastItemPreview() {
             hasNewEpisodes = podcast.hasNewEpisodes,
             artwork = "",
             onClicked = { },
+            onLongClicked = { },
         )
     }
 }

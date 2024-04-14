@@ -235,6 +235,7 @@ fun NavGraph(
                                 ),
                             )
                         },
+                        onPodcastHasNewSeen = viewModel::markPodcastHasNewSeen,
                         onMorePodcastsClicked = {
                             navController.navigate(Route.SUBSCRIPTIONS.value)
                         },
