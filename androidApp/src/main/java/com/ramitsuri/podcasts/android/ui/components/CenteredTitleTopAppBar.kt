@@ -15,7 +15,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.ramitsuri.podcasts.android.R
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CenteredTitleTopAppBar(
