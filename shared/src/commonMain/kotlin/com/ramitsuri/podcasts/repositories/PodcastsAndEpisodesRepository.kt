@@ -28,7 +28,9 @@ class PodcastsAndEpisodesRepository internal constructor(
     ): PodcastResult<List<Episode>> {
         val result = episodesRepository.refreshForPodcastId(podcastId)
         val episodes = (result as? PodcastResult.Success)?.data ?: listOf()
-        podcastsRepository.updateHasNewEpisodes(podcastId, episodes.isNotEmpty())
+        if (episodes.isNotEmpty()) {
+            podcastsRepository.updateHasNewEpisodes(podcastId, true)
+        }
         if (podcastAllowsAutoDownload) {
             episodes.forEach { episode ->
                 episodesRepository.updateNeedsDownload(id = episode.id, needsDownload = true)
