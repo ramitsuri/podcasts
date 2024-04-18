@@ -24,6 +24,7 @@ class DownloadManagerListener(
             episodesRepository.updateDownloadStatus(episodeId, DownloadStatus.NOT_DOWNLOADED)
             episodesRepository.updateDownloadProgress(episodeId, 0.0)
             episodesRepository.updateDownloadedAt(episodeId, null)
+            episodesRepository.updateNeedsDownload(episodeId, false)
         }
     }
 
@@ -60,6 +61,7 @@ class DownloadManagerListener(
                 if (state == DownloadStatus.DOWNLOADED) {
                     episodesRepository.updateDownloadedAt(episodeId)
                     episodesRepository.updateDownloadProgress(episodeId, 1.0)
+                    episodesRepository.updateNeedsDownload(episodeId, false)
                 } else {
                     episodesRepository.updateDownloadProgress(
                         episodeId,
