@@ -446,33 +446,44 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         launchSuspend {
             delay(500)
             val currentlyPlayingEpisode = currentlyPlayingEpisode.value
-            if (currentlyPlayingEpisode != null) {
-                episodesRepository.markPlayed(currentlyPlayingEpisode.id)
-            }
-            val autoPlayNextInQueue = settings.autoPlayNextInQueue().first()
-            if (!autoPlayNextInQueue) {
-                LogHelper.d(TAG, "Auto play next in queue is false")
+            if (currentlyPlayingEpisode == null) {
+                LogHelper.d(TAG, "Currently playing episode is null")
                 attemptingToPlayNextMedia = false
                 return@launchSuspend
             }
+
+            suspend fun onDone() {
+                attemptingToPlayNextMedia = false
+                episodesRepository.markPlayed(currentlyPlayingEpisode.id)
+            }
+
+            val autoPlayNextInQueue = settings.autoPlayNextInQueue().first()
+            if (!autoPlayNextInQueue) {
+                LogHelper.d(TAG, "Auto play next in queue is false")
+                onDone()
+                return@launchSuspend
+            }
+
             val sleepTimer = settings.getSleepTimerFlow().first()
             if (sleepTimer is SleepTimer.EndOfEpisode) {
                 LogHelper.d(TAG, "Sleep timer is set to end of episode")
                 settings.setSleepTimer(SleepTimer.None)
-                attemptingToPlayNextMedia = false
+                onDone()
                 return@launchSuspend
             }
+
             val queue = episodesRepository.getQueue()
-            val currentEpisodeIndex = queue.indexOfFirst { it.id == currentlyPlayingEpisode?.id }
+            val currentEpisodeIndex = queue.indexOfFirst { it.id == currentlyPlayingEpisode.id }
             if (currentEpisodeIndex == -1) {
                 LogHelper.v(TAG, "current episode not found")
-                attemptingToPlayNextMedia = false
+                onDone()
                 return@launchSuspend
             }
+
             val nextEpisode = queue.getOrNull(currentEpisodeIndex + 1)
             if (nextEpisode == null) {
                 LogHelper.v(TAG, "next episode is null")
-                attemptingToPlayNextMedia = false
+                onDone()
                 return@launchSuspend
             }
 
@@ -480,7 +491,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             val position = nextEpisode.progressInSeconds.times(1000L)
             player.setMediaItem(nextEpisode.asMediaItem(), position)
             episodesRepository.setCurrentlyPlayingEpisodeId(nextEpisode.id)
-            attemptingToPlayNextMedia = false
+            onDone()
         }
     }
 
