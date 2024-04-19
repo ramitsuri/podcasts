@@ -45,7 +45,10 @@ internal class EpisodesDaoImpl(
             .mapToList(ioDispatcher)
     }
 
-    override fun getEpisodesForPodcastFlow(podcastId: Long, sortOrder: EpisodeSortOrder): Flow<List<DbEpisode>> {
+    override fun getEpisodesForPodcastFlow(
+        podcastId: Long,
+        sortOrder: EpisodeSortOrder,
+    ): Flow<List<DbEpisode>> {
         return when (sortOrder) {
             EpisodeSortOrder.DATE_PUBLISHED_DESC -> {
                 episodeEntityQueries

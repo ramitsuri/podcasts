@@ -81,7 +81,10 @@ internal class DataStoreKeyValueStore(
         }
     }
 
-    override fun getIntFlow(key: Key, defaultValue: Int): Flow<Int> {
+    override fun getIntFlow(
+        key: Key,
+        defaultValue: Int,
+    ): Flow<Int> {
         return dataStore
             .data
             .map {
@@ -89,7 +92,10 @@ internal class DataStoreKeyValueStore(
             }
     }
 
-    override suspend fun putInt(key: Key, value: Int) {
+    override suspend fun putInt(
+        key: Key,
+        value: Int,
+    ) {
         dataStore.edit {
             it[intPreferencesKey(key.value)] = value
         }

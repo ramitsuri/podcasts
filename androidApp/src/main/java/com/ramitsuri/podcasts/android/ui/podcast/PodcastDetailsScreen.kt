@@ -202,18 +202,20 @@ private fun EpisodeCountAndMenu(
     var showMenu by remember { mutableStateOf(false) }
 
     Row(
-        modifier = Modifier
-            .padding(vertical = 8.dp, horizontal = 16.dp)
-            .fillMaxWidth(),
+        modifier =
+            Modifier
+                .padding(vertical = 8.dp, horizontal = 16.dp)
+                .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = pluralStringResource(
-                id = R.plurals.podcast_details_episode_count,
-                count = count,
-                count,
-            ),
-            style = MaterialTheme.typography.bodyLarge
+            text =
+                pluralStringResource(
+                    id = R.plurals.podcast_details_episode_count,
+                    count = count,
+                    count,
+                ),
+            style = MaterialTheme.typography.bodyLarge,
         )
         Spacer(modifier = Modifier.weight(1f))
         EpisodesMenu(
@@ -237,8 +239,8 @@ private fun EpisodesMenu(
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                Modifier
-                    .size(24.dp),
+                    Modifier
+                        .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
             )
         }
@@ -246,10 +248,11 @@ private fun EpisodesMenu(
             expanded = showMenu,
             onDismissRequest = onToggleMenu,
         ) {
-            val sortTextResId = when (sortOrder) {
-                EpisodeSortOrder.DATE_PUBLISHED_DESC -> R.string.podcast_details_sort_by_publish_asc
-                EpisodeSortOrder.DATE_PUBLISHED_ASC -> R.string.podcast_details_sort_by_publish_desc
-            }
+            val sortTextResId =
+                when (sortOrder) {
+                    EpisodeSortOrder.DATE_PUBLISHED_DESC -> R.string.podcast_details_sort_by_publish_asc
+                    EpisodeSortOrder.DATE_PUBLISHED_ASC -> R.string.podcast_details_sort_by_publish_desc
+                }
             DropdownMenuItem(
                 text = { Text(stringResource(id = sortTextResId)) },
                 onClick = {
