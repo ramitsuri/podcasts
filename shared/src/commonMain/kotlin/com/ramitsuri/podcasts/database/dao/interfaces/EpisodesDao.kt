@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.database.dao.interfaces
 import com.ramitsuri.podcasts.DbEpisode
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
 
@@ -15,7 +16,10 @@ internal interface EpisodesDao {
 
     fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<DbEpisode>>
 
-    fun getEpisodesForPodcastFlow(podcastId: Long): Flow<List<DbEpisode>>
+    fun getEpisodesForPodcastFlow(
+        podcastId: Long,
+        sortOrder: EpisodeSortOrder,
+    ): Flow<List<DbEpisode>>
 
     suspend fun getEpisodesForPodcast(podcastId: Long): List<DbEpisode>
 

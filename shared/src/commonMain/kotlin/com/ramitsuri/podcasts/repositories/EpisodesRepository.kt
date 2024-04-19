@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.repositories
 import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.network.api.interfaces.EpisodesApi
 import com.ramitsuri.podcasts.network.model.GetEpisodesRequest
@@ -48,9 +49,12 @@ class EpisodesRepository internal constructor(
         }
     }
 
-    fun getEpisodesForPodcastFlow(podcastId: Long): Flow<List<Episode>> {
+    fun getEpisodesForPodcastFlow(
+        podcastId: Long,
+        sortOrder: EpisodeSortOrder,
+    ): Flow<List<Episode>> {
         return episodesDao
-            .getEpisodesForPodcastFlow(podcastId)
+            .getEpisodesForPodcastFlow(podcastId, sortOrder)
             .map { list ->
                 list.map { dbEpisode ->
                     Episode(dbEpisode)

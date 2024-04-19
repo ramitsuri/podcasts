@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.viewmodel
 
+import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.ui.PodcastDetailsViewState
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
@@ -8,6 +9,7 @@ import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.EpisodeController
 import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -16,16 +18,18 @@ import kotlinx.coroutines.launch
 
 class PodcastDetailsViewModel(
     shouldRefreshPodcast: Boolean,
-    podcastId: Long?,
-    podcastsAndEpisodesRepository: PodcastsAndEpisodesRepository,
-    episodesRepository: EpisodesRepository,
+    private val podcastId: Long?,
+    private val podcastsAndEpisodesRepository: PodcastsAndEpisodesRepository,
+    private val episodesRepository: EpisodesRepository,
     episodeController: EpisodeController,
-    settings: Settings,
+    private val settings: Settings,
     private val repository: PodcastsRepository,
     private val longLivingScope: CoroutineScope,
 ) : ViewModel(), EpisodeController by episodeController {
     private val _state = MutableStateFlow(PodcastDetailsViewState())
     val state = _state.asStateFlow()
+
+    private var updatePodcastAndEpisodesJob: Job? = null
 
     init {
         if (podcastId == null) {
@@ -39,20 +43,9 @@ class PodcastDetailsViewModel(
                 }
 
                 launch {
-                    combine(
-                        podcastsAndEpisodesRepository.getPodcastWithEpisodesFlow(podcastId),
-                        episodesRepository.getCurrentEpisode(),
-                        settings.getPlayingStateFlow(),
-                    ) { podcastWithEpisodes, currentlyPlayingEpisode, playingState ->
-                        Triple(podcastWithEpisodes, currentlyPlayingEpisode, playingState)
-                    }.collect { (podcastWithEpisodes, currentlyPlayingEpisode, playingState) ->
-                        _state.update {
-                            it.copy(
-                                podcastWithEpisodes = podcastWithEpisodes,
-                                currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
-                                playingState = playingState,
-                            )
-                        }
+                    settings.getPodcastDetailsEpisodeSortOrder().collect { sortOrder ->
+                        _state.update { it.copy(episodeSortOrder = sortOrder) }
+                        updatePodcastAndEpisodes(sortOrder)
                     }
                 }
 
@@ -108,6 +101,41 @@ class PodcastDetailsViewModel(
             val currentAutoAddToQueue = podcast.autoAddToQueue
             repository.updateAutoAddToQueueEpisodes(id = podcast.id, autoAddToQueue = !currentAutoAddToQueue)
         }
+    }
+
+    fun onSortOrderClicked() {
+        longLivingScope.launch {
+            val currentSortOrder = _state.value.episodeSortOrder
+            val newSortOrder =
+                when (currentSortOrder) {
+                    EpisodeSortOrder.DATE_PUBLISHED_DESC -> EpisodeSortOrder.DATE_PUBLISHED_ASC
+                    EpisodeSortOrder.DATE_PUBLISHED_ASC -> EpisodeSortOrder.DATE_PUBLISHED_DESC
+                }
+            settings.setPodcastDetailsEpisodeSortOrder(newSortOrder)
+        }
+    }
+
+    private fun updatePodcastAndEpisodes(sortOrder: EpisodeSortOrder) {
+        val podcastId = podcastId ?: return
+        updatePodcastAndEpisodesJob?.cancel()
+        updatePodcastAndEpisodesJob =
+            viewModelScope.launch {
+                combine(
+                    podcastsAndEpisodesRepository.getPodcastWithEpisodesFlow(podcastId, sortOrder),
+                    episodesRepository.getCurrentEpisode(),
+                    settings.getPlayingStateFlow(),
+                ) { podcastWithEpisodes, currentlyPlayingEpisode, playingState ->
+                    Triple(podcastWithEpisodes, currentlyPlayingEpisode, playingState)
+                }.collect { (podcastWithEpisodes, currentlyPlayingEpisode, playingState) ->
+                    _state.update {
+                        it.copy(
+                            podcastWithEpisodes = podcastWithEpisodes,
+                            currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
+                            playingState = playingState,
+                        )
+                    }
+                }
+            }
     }
 
     companion object {

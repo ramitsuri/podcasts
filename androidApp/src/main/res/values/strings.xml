@@ -138,4 +138,12 @@
     <string name="settings_fetch_now">Download now</string>
     <string name="settings_last_fetched_never">Never downloaded</string>
     <string name="settings_last_fetched_at_time_format">Last downloaded %1$s</string>
+
+    <!-- Podcast details -->
+    <string name="podcast_details_sort_by_publish_desc">Newest first</string>
+    <string name="podcast_details_sort_by_publish_asc">Oldest first</string>
+    <plurals name="podcast_details_episode_count">
+        <item quantity="one">%1$s Episode</item>
+        <item quantity="other">%1$s Episodes</item>
+    </plurals>
 </resources>

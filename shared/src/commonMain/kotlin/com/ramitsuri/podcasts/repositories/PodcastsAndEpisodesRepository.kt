@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.repositories
 
 import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.model.PodcastWithEpisodes
@@ -95,11 +96,14 @@ class PodcastsAndEpisodesRepository internal constructor(
         }
     }
 
-    suspend fun getPodcastWithEpisodesFlow(podcastId: Long): Flow<PodcastWithEpisodes?> {
+    suspend fun getPodcastWithEpisodesFlow(
+        podcastId: Long,
+        sortOrder: EpisodeSortOrder,
+    ): Flow<PodcastWithEpisodes?> {
         return withContext(ioDispatcher) {
             return@withContext combine(
                 podcastsRepository.getFlow(podcastId),
-                episodesRepository.getEpisodesForPodcastFlow(podcastId),
+                episodesRepository.getEpisodesForPodcastFlow(podcastId, sortOrder),
             ) { podcast, episodes ->
                 if (podcast == null) {
                     null

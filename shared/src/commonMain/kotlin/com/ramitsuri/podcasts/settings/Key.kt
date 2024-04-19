@@ -8,4 +8,5 @@ internal enum class Key(val value: String) {
     STOP_AT_TIME("stop_at_time"),
     LAST_EPISODE_FETCH_TIME("last_episode_fetch_time"),
     AUTO_PLAY_NEXT_IN_QUEUE("auto_play_next_in_queue"),
+    PODCAST_DETAILS_EPISODE_SORT_ORDER("podcast_details_episode_sort_order"),
 }
