@@ -11,6 +11,7 @@ import com.ramitsuri.podcasts.EpisodeEntityQueries
 import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.joinAll
@@ -44,9 +45,18 @@ internal class EpisodesDaoImpl(
             .mapToList(ioDispatcher)
     }
 
-    override fun getEpisodesForPodcastFlow(podcastId: Long): Flow<List<DbEpisode>> {
-        return episodeEntityQueries
-            .getEpisodesForPodcast(podcastId)
+    override fun getEpisodesForPodcastFlow(podcastId: Long, sortOrder: EpisodeSortOrder): Flow<List<DbEpisode>> {
+        return when (sortOrder) {
+            EpisodeSortOrder.DATE_PUBLISHED_DESC -> {
+                episodeEntityQueries
+                    .getEpisodesForPodcast(podcastId)
+            }
+
+            EpisodeSortOrder.DATE_PUBLISHED_ASC -> {
+                episodeEntityQueries
+                    .getEpisodesForPodcastAsc(podcastId)
+            }
+        }
             .asFlow()
             .mapToList(ioDispatcher)
     }

@@ -32,4 +32,14 @@ internal interface KeyValueStore {
         key: Key,
         value: Boolean,
     )
+
+    fun getIntFlow(
+        key: Key,
+        defaultValue: Int,
+    ): Flow<Int>
+
+    suspend fun putInt(
+        key: Key,
+        value: Int,
+    )
 }

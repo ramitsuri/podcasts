@@ -34,6 +34,11 @@ SELECT * FROM dbEpisode
 WHERE podcastId == :podcastId
 ORDER BY datePublished DESC;
 
+getEpisodesForPodcastAsc:
+SELECT * FROM dbEpisode
+WHERE podcastId == :podcastId
+ORDER BY datePublished ASC;
+
 getEpisodesForPodcasts:
 SELECT * FROM dbEpisode
 WHERE podcastId IN :podcastIds

@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -77,6 +78,20 @@ internal class DataStoreKeyValueStore(
     ) {
         dataStore.edit {
             it[booleanPreferencesKey(key.value)] = value
+        }
+    }
+
+    override fun getIntFlow(key: Key, defaultValue: Int): Flow<Int> {
+        return dataStore
+            .data
+            .map {
+                it[intPreferencesKey(key.value)] ?: defaultValue
+            }
+    }
+
+    override suspend fun putInt(key: Key, value: Int) {
+        dataStore.edit {
+            it[intPreferencesKey(key.value)] = value
         }
     }
 

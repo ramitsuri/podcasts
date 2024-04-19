@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,7 @@ import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.android.ui.components.podcast
 import com.ramitsuri.podcasts.android.utils.friendlyPublishDate
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.PodcastWithEpisodes
@@ -80,6 +82,7 @@ fun PodcastDetailsScreen(
     onEpisodeNotPlayedClicked: (episodeId: String) -> Unit,
     onEpisodeFavoriteClicked: (episodeId: String) -> Unit,
     onEpisodeNotFavoriteClicked: (episodeId: String) -> Unit,
+    onEpisodeSortOrderClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -92,6 +95,7 @@ fun PodcastDetailsScreen(
                 podcastWithEpisodes = podcastWithEpisodes,
                 currentlyPlayingEpisodeId = state.currentlyPlayingEpisodeId,
                 currentlyPlayingEpisodeState = state.playingState,
+                episodeSortOrder = state.episodeSortOrder,
                 onSubscribeClicked = onSubscribeClicked,
                 onUnsubscribeClicked = onUnsubscribeClicked,
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,
@@ -108,6 +112,7 @@ fun PodcastDetailsScreen(
                 onEpisodeNotPlayedClicked = onEpisodeNotPlayedClicked,
                 onEpisodeFavoriteClicked = onEpisodeFavoriteClicked,
                 onEpisodeNotFavoriteClicked = onEpisodeNotFavoriteClicked,
+                onEpisodeSortOrderClicked = onEpisodeSortOrderClicked,
             )
         }
     }
@@ -119,6 +124,7 @@ private fun PodcastDetails(
     podcastWithEpisodes: PodcastWithEpisodes,
     currentlyPlayingEpisodeId: String?,
     currentlyPlayingEpisodeState: PlayingState,
+    episodeSortOrder: EpisodeSortOrder,
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
     toggleAutoDownloadClicked: () -> Unit,
@@ -135,6 +141,7 @@ private fun PodcastDetails(
     onEpisodeNotPlayedClicked: (episodeId: String) -> Unit,
     onEpisodeFavoriteClicked: (episodeId: String) -> Unit,
     onEpisodeNotFavoriteClicked: (episodeId: String) -> Unit,
+    onEpisodeSortOrderClicked: () -> Unit,
 ) {
     val podcast = podcastWithEpisodes.podcast
     LazyColumn(modifier = modifier) {
@@ -146,6 +153,15 @@ private fun PodcastDetails(
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,
                 toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
             )
+        }
+        if (podcastWithEpisodes.episodes.isNotEmpty()) {
+            item {
+                EpisodeCountAndMenu(
+                    count = podcastWithEpisodes.episodes.size,
+                    sortOrder = episodeSortOrder,
+                    onSortOrderClicked = onEpisodeSortOrderClicked,
+                )
+            }
         }
         items(podcastWithEpisodes.episodes) {
             ColoredHorizontalDivider()
@@ -173,6 +189,74 @@ private fun PodcastDetails(
         }
         item {
             Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+private fun EpisodeCountAndMenu(
+    count: Int,
+    sortOrder: EpisodeSortOrder,
+    onSortOrderClicked: () -> Unit,
+) {
+    var showMenu by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .padding(vertical = 8.dp, horizontal = 16.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = pluralStringResource(
+                id = R.plurals.podcast_details_episode_count,
+                count = count,
+                count,
+            ),
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        EpisodesMenu(
+            showMenu = showMenu,
+            onToggleMenu = { showMenu = !showMenu },
+            sortOrder = sortOrder,
+            onSortOrderClicked = onSortOrderClicked,
+        )
+    }
+}
+
+@Composable
+private fun EpisodesMenu(
+    showMenu: Boolean,
+    onToggleMenu: () -> Unit,
+    sortOrder: EpisodeSortOrder,
+    onSortOrderClicked: () -> Unit,
+) {
+    Box {
+        IconButton(onClick = { onToggleMenu() }) {
+            Icon(
+                imageVector = Icons.Filled.MoreVert,
+                modifier =
+                Modifier
+                    .size(24.dp),
+                contentDescription = stringResource(id = R.string.menu),
+            )
+        }
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = onToggleMenu,
+        ) {
+            val sortTextResId = when (sortOrder) {
+                EpisodeSortOrder.DATE_PUBLISHED_DESC -> R.string.podcast_details_sort_by_publish_asc
+                EpisodeSortOrder.DATE_PUBLISHED_ASC -> R.string.podcast_details_sort_by_publish_desc
+            }
+            DropdownMenuItem(
+                text = { Text(stringResource(id = sortTextResId)) },
+                onClick = {
+                    onSortOrderClicked()
+                    onToggleMenu()
+                },
+            )
         }
     }
 }
@@ -418,6 +502,7 @@ private fun PodcastDetailsPreview() {
             onEpisodeNotPlayedClicked = { },
             onEpisodeFavoriteClicked = { },
             onEpisodeNotFavoriteClicked = { },
+            onEpisodeSortOrderClicked = { },
         )
     }
 }
