@@ -18,7 +18,7 @@ internal interface EpisodesDao {
 
     fun getEpisodesForPodcastFlow(
         podcastId: Long,
-        sortOrder: EpisodeSortOrder = EpisodeSortOrder.DATE_PUBLISHED_DESC,
+        sortOrder: EpisodeSortOrder,
     ): Flow<List<DbEpisode>>
 
     suspend fun getEpisodesForPodcast(podcastId: Long): List<DbEpisode>

@@ -98,7 +98,7 @@ class PodcastsAndEpisodesRepository internal constructor(
 
     suspend fun getPodcastWithEpisodesFlow(
         podcastId: Long,
-        sortOrder: EpisodeSortOrder = EpisodeSortOrder.DATE_PUBLISHED_DESC,
+        sortOrder: EpisodeSortOrder,
     ): Flow<PodcastWithEpisodes?> {
         return withContext(ioDispatcher) {
             return@withContext combine(

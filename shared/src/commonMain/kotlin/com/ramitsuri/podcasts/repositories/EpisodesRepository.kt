@@ -51,7 +51,7 @@ class EpisodesRepository internal constructor(
 
     fun getEpisodesForPodcastFlow(
         podcastId: Long,
-        sortOrder: EpisodeSortOrder = EpisodeSortOrder.DATE_PUBLISHED_DESC,
+        sortOrder: EpisodeSortOrder,
     ): Flow<List<Episode>> {
         return episodesDao
             .getEpisodesForPodcastFlow(podcastId, sortOrder)
