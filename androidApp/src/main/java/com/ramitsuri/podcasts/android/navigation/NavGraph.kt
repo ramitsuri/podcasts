@@ -403,6 +403,8 @@ fun NavGraph(
                         onEpisodeSortOrderClicked = viewModel::onSortOrderClicked,
                         onSelectAllEpisodesClicked = viewModel::onSelectAllEpisodes,
                         onUnselectAllEpisodesClicked = viewModel::onUnselectAllEpisodes,
+                        onMarkSelectedEpisodesAsPlayed = viewModel::onMarkSelectedAsPlayed,
+                        onMarkSelectedEpisodesAsNotPlayed = viewModel::onMarkSelectedAsNotPlayed,
                         modifier =
                             Modifier
                                 .statusBarsPadding()

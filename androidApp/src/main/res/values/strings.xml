@@ -149,4 +149,6 @@
     <string name="podcast_details_selected_episode_count">" (%1$s selected)"</string>
     <string name="podcast_details_select_all_episodes">Select all</string>
     <string name="podcast_details_unselect_all_episodes">Unselect all</string>
+    <string name="podcast_details_mark_selected_as_played">Mark played</string>
+    <string name="podcast_details_mark_selected_as_not_played">Mark not played</string>
 </resources>
