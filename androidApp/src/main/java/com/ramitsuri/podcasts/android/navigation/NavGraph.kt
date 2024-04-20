@@ -388,6 +388,7 @@ fun NavGraph(
                         onEpisodeClicked = {
                             navController.navigate(Route.episodeDetails(episodeId = it))
                         },
+                        onEpisodeSelectionChanged = viewModel::onEpisodeSelectionChanged,
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                         onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
                         onEpisodeAddToQueueClicked = viewModel::onEpisodeAddToQueueClicked,

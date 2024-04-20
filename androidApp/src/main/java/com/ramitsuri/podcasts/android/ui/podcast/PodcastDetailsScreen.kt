@@ -1,12 +1,17 @@
 package com.ramitsuri.podcasts.android.ui.podcast
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,6 +21,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -60,6 +67,8 @@ import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.PodcastWithEpisodes
 import com.ramitsuri.podcasts.model.ui.PodcastDetailsViewState
+import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes
+import com.ramitsuri.podcasts.model.ui.SelectableEpisode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,6 +80,7 @@ fun PodcastDetailsScreen(
     toggleAutoDownloadClicked: () -> Unit,
     toggleAutoAddToQueueClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
+    onEpisodeSelectionChanged: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
     onEpisodePauseClicked: () -> Unit,
     onEpisodeAddToQueueClicked: (episode: Episode) -> Unit,
@@ -101,6 +111,7 @@ fun PodcastDetailsScreen(
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,
                 toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
                 onEpisodeClicked = onEpisodeClicked,
+                onEpisodeSelectionChanged = onEpisodeSelectionChanged,
                 onEpisodePlayClicked = onEpisodePlayClicked,
                 onEpisodePauseClicked = onEpisodePauseClicked,
                 onEpisodeAddToQueueClicked = onEpisodeAddToQueueClicked,
@@ -121,7 +132,7 @@ fun PodcastDetailsScreen(
 @Composable
 private fun PodcastDetails(
     modifier: Modifier = Modifier,
-    podcastWithEpisodes: PodcastWithEpisodes,
+    podcastWithEpisodes: PodcastWithSelectableEpisodes,
     currentlyPlayingEpisodeId: String?,
     currentlyPlayingEpisodeState: PlayingState,
     episodeSortOrder: EpisodeSortOrder,
@@ -130,6 +141,7 @@ private fun PodcastDetails(
     toggleAutoDownloadClicked: () -> Unit,
     toggleAutoAddToQueueClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
+    onEpisodeSelectionChanged: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
     onEpisodePauseClicked: () -> Unit,
     onEpisodeAddToQueueClicked: (episode: Episode) -> Unit,
@@ -164,27 +176,31 @@ private fun PodcastDetails(
             }
         }
         items(podcastWithEpisodes.episodes) {
+            val episode = it.episode
             ColoredHorizontalDivider()
             EpisodeItem(
-                episode = it,
+                episode = episode,
                 playingState =
-                    if (currentlyPlayingEpisodeId == it.id) {
-                        currentlyPlayingEpisodeState
-                    } else {
-                        PlayingState.NOT_PLAYING
-                    },
-                onClicked = { onEpisodeClicked(it.id) },
-                onPlayClicked = { onEpisodePlayClicked(it) },
+                if (currentlyPlayingEpisodeId == episode.id) {
+                    currentlyPlayingEpisodeState
+                } else {
+                    PlayingState.NOT_PLAYING
+                },
+                inSelectionState = podcastWithEpisodes.inSelectionState,
+                selected = it.selected,
+                onClicked = { onEpisodeClicked(episode.id) },
+                onSelectionChanged = { onEpisodeSelectionChanged(episode.id) },
+                onPlayClicked = { onEpisodePlayClicked(episode) },
                 onPauseClicked = onEpisodePauseClicked,
-                onAddToQueueClicked = { onEpisodeAddToQueueClicked(it) },
-                onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(it) },
-                onDownloadClicked = { onEpisodeDownloadClicked(it) },
-                onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(it) },
-                onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(it) },
-                onPlayedClicked = { onEpisodePlayedClicked(it.id) },
-                onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
-                onFavoriteClicked = { onEpisodeFavoriteClicked(it.id) },
-                onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(it.id) },
+                onAddToQueueClicked = { onEpisodeAddToQueueClicked(episode) },
+                onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(episode) },
+                onDownloadClicked = { onEpisodeDownloadClicked(episode) },
+                onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(episode) },
+                onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(episode) },
+                onPlayedClicked = { onEpisodePlayedClicked(episode.id) },
+                onNotPlayedClicked = { onEpisodeNotPlayedClicked(episode.id) },
+                onFavoriteClicked = { onEpisodeFavoriteClicked(episode.id) },
+                onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(episode.id) },
             )
         }
         item {
@@ -203,18 +219,18 @@ private fun EpisodeCountAndMenu(
 
     Row(
         modifier =
-            Modifier
-                .padding(vertical = 8.dp, horizontal = 16.dp)
-                .fillMaxWidth(),
+        Modifier
+            .padding(vertical = 8.dp, horizontal = 16.dp)
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text =
-                pluralStringResource(
-                    id = R.plurals.podcast_details_episode_count,
-                    count = count,
-                    count,
-                ),
+            pluralStringResource(
+                id = R.plurals.podcast_details_episode_count,
+                count = count,
+                count,
+            ),
             style = MaterialTheme.typography.bodyLarge,
         )
         Spacer(modifier = Modifier.weight(1f))
@@ -239,8 +255,8 @@ private fun EpisodesMenu(
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                    Modifier
-                        .size(24.dp),
+                Modifier
+                    .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
             )
         }
@@ -296,16 +312,16 @@ private fun TitleAndImage(podcast: Podcast) {
     Row(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
             model =
-                ImageRequest.Builder(LocalContext.current)
-                    .data(podcast.artwork)
-                    .crossfade(true)
-                    .build(),
+            ImageRequest.Builder(LocalContext.current)
+                .data(podcast.artwork)
+                .crossfade(true)
+                .build(),
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(64.dp),
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .size(64.dp),
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column {
@@ -368,8 +384,8 @@ private fun PodcastMenu(
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                    Modifier
-                        .size(24.dp),
+                Modifier
+                    .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
             )
         }
@@ -409,11 +425,15 @@ private fun PodcastMenu(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun EpisodeItem(
     episode: Episode,
     playingState: PlayingState,
+    inSelectionState: Boolean,
+    selected: Boolean,
     onClicked: () -> Unit,
+    onSelectionChanged: () -> Unit,
     onPlayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
     onAddToQueueClicked: () -> Unit,
@@ -428,10 +448,24 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-            Modifier
-                .clickable(onClick = onClicked)
-                .padding(top = 12.dp, bottom = 4.dp)
-                .padding(horizontal = 16.dp),
+        Modifier
+            .combinedClickable(
+                onClick = if (inSelectionState) {
+                    onSelectionChanged
+                } else {
+                    onClicked
+                },
+                onLongClick = onSelectionChanged,
+            )
+            .background(
+                color = if (inSelectionState && selected) {
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                } else {
+                    MaterialTheme.colorScheme.background
+                },
+            )
+            .padding(top = 12.dp, bottom = 4.dp)
+            .padding(horizontal = 16.dp),
     ) {
         val datePublished = episode.datePublishedInstant
         if (datePublished != null) {
@@ -455,21 +489,40 @@ private fun EpisodeItem(
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(modifier = Modifier.height(8.dp))
-        EpisodeControls(
-            episode = episode,
-            playingState = playingState,
-            onPlayClicked = onPlayClicked,
-            onPauseClicked = onPauseClicked,
-            onAddToQueueClicked = onAddToQueueClicked,
-            onRemoveFromQueueClicked = onRemoveFromQueueClicked,
-            onDownloadClicked = onDownloadClicked,
-            onRemoveDownloadClicked = onRemoveDownloadClicked,
-            onCancelDownloadClicked = onCancelDownloadClicked,
-            onPlayedClicked = onPlayedClicked,
-            onNotPlayedClicked = onNotPlayedClicked,
-            onFavoriteClicked = onFavoriteClicked,
-            onNotFavoriteClicked = onNotFavoriteClicked,
-        )
+        Crossfade(
+            targetState = inSelectionState,
+            label = "EpisodeControlSelectionStateTransition",
+        ) { isSelectionState ->
+            if (isSelectionState) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    val icon = if (selected) {
+                        Icons.Rounded.CheckCircle
+                    } else {
+                        Icons.Rounded.Circle
+                    }
+                    IconButton(onClick = onSelectionChanged) {
+                        Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    }
+                }
+            } else {
+                EpisodeControls(
+                    episode = episode,
+                    playingState = playingState,
+                    onPlayClicked = onPlayClicked,
+                    onPauseClicked = onPauseClicked,
+                    onAddToQueueClicked = onAddToQueueClicked,
+                    onRemoveFromQueueClicked = onRemoveFromQueueClicked,
+                    onDownloadClicked = onDownloadClicked,
+                    onRemoveDownloadClicked = onRemoveDownloadClicked,
+                    onCancelDownloadClicked = onCancelDownloadClicked,
+                    onPlayedClicked = onPlayedClicked,
+                    onNotPlayedClicked = onNotPlayedClicked,
+                    onFavoriteClicked = onFavoriteClicked,
+                    onNotFavoriteClicked = onNotFavoriteClicked,
+                )
+            }
+        }
     }
 }
 
@@ -479,21 +532,27 @@ private fun PodcastDetailsPreview() {
     PreviewTheme {
         PodcastDetailsScreen(
             state =
-                PodcastDetailsViewState(
-                    podcastWithEpisodes =
-                        PodcastWithEpisodes(
-                            podcast = podcast(),
-                            episodes = listOf(episode(), episode(), episode(), episode()),
-                        ),
-                    currentlyPlayingEpisodeId = null,
-                    playingState = PlayingState.NOT_PLAYING,
+            PodcastDetailsViewState(
+                podcastWithEpisodes =
+                PodcastWithSelectableEpisodes(
+                    podcast = podcast(),
+                    episodes = listOf(
+                        SelectableEpisode(true, episode()),
+                        SelectableEpisode(false, episode()),
+                        SelectableEpisode(true, episode()),
+                        SelectableEpisode(false, episode()),
+                    ),
                 ),
+                currentlyPlayingEpisodeId = null,
+                playingState = PlayingState.NOT_PLAYING,
+            ),
             onBack = { },
             onSubscribeClicked = { },
             onUnsubscribeClicked = { },
             toggleAutoDownloadClicked = { },
             toggleAutoAddToQueueClicked = { },
             onEpisodeClicked = { },
+            onEpisodeSelectionChanged = { },
             onEpisodePlayClicked = { },
             onEpisodePauseClicked = { },
             onEpisodeAddToQueueClicked = { },
