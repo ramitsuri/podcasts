@@ -229,25 +229,28 @@ private fun EpisodeCountAndMenu(
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
-    val countText = pluralStringResource(
-        id = R.plurals.podcast_details_episode_count,
-        count = count,
-        count,
-    )
-    val selectedCountText = if (selectedCount == 0) {
-        ""
-    } else {
-        stringResource(
-            id = R.string.podcast_details_selected_episode_count,
-            selectedCount,
+    val countText =
+        pluralStringResource(
+            id = R.plurals.podcast_details_episode_count,
+            count = count,
+            count,
         )
-    }
-    val text = buildAnnotatedString {
+    val selectedCountText =
+        if (selectedCount == 0) {
+            ""
+        } else {
+            stringResource(
+                id = R.string.podcast_details_selected_episode_count,
+                selectedCount,
+            )
+        }
+    val text =
+        buildAnnotatedString {
             append(countText)
             withStyle(SpanStyle(fontSize = MaterialTheme.typography.bodySmall.fontSize)) {
-            append(selectedCountText)
+                append(selectedCountText)
+            }
         }
-    }
     Row(
         modifier =
             Modifier
