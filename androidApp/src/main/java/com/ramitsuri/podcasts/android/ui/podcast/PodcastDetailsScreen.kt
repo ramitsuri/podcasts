@@ -338,7 +338,7 @@ private fun EpisodesMenu(
             }
 
             // Mark Played
-            if (showMarkAsPlayed){
+            if (showMarkAsPlayed) {
                 DropdownMenuItem(
                     text = { Text(stringResource(id = R.string.podcast_details_mark_selected_as_played)) },
                     onClick = {
@@ -349,7 +349,7 @@ private fun EpisodesMenu(
             }
 
             // Mark Not Played
-            if (showMarkAsNotPlayed){
+            if (showMarkAsNotPlayed) {
                 DropdownMenuItem(
                     text = { Text(stringResource(id = R.string.podcast_details_mark_selected_as_not_played)) },
                     onClick = {
