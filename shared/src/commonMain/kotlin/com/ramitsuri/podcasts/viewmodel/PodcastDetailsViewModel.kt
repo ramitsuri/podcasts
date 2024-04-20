@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.viewmodel
 
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.ui.PodcastDetailsViewState
+import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
@@ -115,6 +116,43 @@ class PodcastDetailsViewModel(
         }
     }
 
+    fun onEpisodeSelectionChanged(episodeId: String) {
+        val newEpisodes =
+            _state.value.podcastWithEpisodes?.episodes
+                ?.map {
+                    if (it.episode.id == episodeId) {
+                        it.copy(selected = !it.selected)
+                    } else {
+                        it
+                    }
+                } ?: return
+        _state.update { previousState ->
+            previousState.copy(podcastWithEpisodes = previousState.podcastWithEpisodes?.copy(episodes = newEpisodes))
+        }
+    }
+
+    fun onSelectAllEpisodes() {
+        val newEpisodes =
+            _state.value.podcastWithEpisodes?.episodes
+                ?.map {
+                    it.copy(selected = true)
+                } ?: return
+        _state.update { previousState ->
+            previousState.copy(podcastWithEpisodes = previousState.podcastWithEpisodes?.copy(episodes = newEpisodes))
+        }
+    }
+
+    fun onUnselectAllEpisodes() {
+        val newEpisodes =
+            _state.value.podcastWithEpisodes?.episodes
+                ?.map {
+                    it.copy(selected = false)
+                } ?: return
+        _state.update { previousState ->
+            previousState.copy(podcastWithEpisodes = previousState.podcastWithEpisodes?.copy(episodes = newEpisodes))
+        }
+    }
+
     private fun updatePodcastAndEpisodes(sortOrder: EpisodeSortOrder) {
         val podcastId = podcastId ?: return
         updatePodcastAndEpisodesJob?.cancel()
@@ -127,9 +165,9 @@ class PodcastDetailsViewModel(
                 ) { podcastWithEpisodes, currentlyPlayingEpisode, playingState ->
                     Triple(podcastWithEpisodes, currentlyPlayingEpisode, playingState)
                 }.collect { (podcastWithEpisodes, currentlyPlayingEpisode, playingState) ->
-                    _state.update {
-                        it.copy(
-                            podcastWithEpisodes = podcastWithEpisodes,
+                    _state.update { previousState ->
+                        previousState.copy(
+                            podcastWithEpisodes = podcastWithEpisodes?.let { PodcastWithSelectableEpisodes(it) },
                             currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
                             playingState = playingState,
                         )

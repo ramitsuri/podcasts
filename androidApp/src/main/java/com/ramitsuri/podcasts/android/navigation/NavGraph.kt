@@ -388,6 +388,7 @@ fun NavGraph(
                         onEpisodeClicked = {
                             navController.navigate(Route.episodeDetails(episodeId = it))
                         },
+                        onEpisodeSelectionChanged = viewModel::onEpisodeSelectionChanged,
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                         onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
                         onEpisodeAddToQueueClicked = viewModel::onEpisodeAddToQueueClicked,
@@ -400,6 +401,8 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         onEpisodeSortOrderClicked = viewModel::onSortOrderClicked,
+                        onSelectAllEpisodesClicked = viewModel::onSelectAllEpisodes,
+                        onUnselectAllEpisodesClicked = viewModel::onUnselectAllEpisodes,
                         modifier =
                             Modifier
                                 .statusBarsPadding()

@@ -146,4 +146,7 @@
         <item quantity="one">%1$s Episode</item>
         <item quantity="other">%1$s Episodes</item>
     </plurals>
+    <string name="podcast_details_selected_episode_count">" (%1$s selected)"</string>
+    <string name="podcast_details_select_all_episodes">Select all</string>
+    <string name="podcast_details_unselect_all_episodes">Unselect all</string>
 </resources>
