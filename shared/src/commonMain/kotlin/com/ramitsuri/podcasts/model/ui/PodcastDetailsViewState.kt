@@ -17,11 +17,9 @@ data class PodcastWithSelectableEpisodes(
     val podcast: Podcast,
     val episodes: List<SelectableEpisode>,
 ) {
-    val allSelected = episodes.all { it.selected }
-
     val inSelectionState = episodes.any { it.selected }
 
-    val allUnselected = episodes.all { !it.selected }
+    val selectedCount = episodes.count { it.selected }
 
     constructor(podcastWithEpisodes: PodcastWithEpisodes) : this(
         podcast = podcastWithEpisodes.podcast,

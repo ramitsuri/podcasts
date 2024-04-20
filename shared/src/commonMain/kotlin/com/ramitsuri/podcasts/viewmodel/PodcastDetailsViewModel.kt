@@ -131,6 +131,28 @@ class PodcastDetailsViewModel(
         }
     }
 
+    fun onSelectAllEpisodes() {
+        val newEpisodes =
+            _state.value.podcastWithEpisodes?.episodes
+                ?.map {
+                    it.copy(selected = true)
+                } ?: return
+        _state.update { previousState ->
+            previousState.copy(podcastWithEpisodes = previousState.podcastWithEpisodes?.copy(episodes = newEpisodes))
+        }
+    }
+
+    fun onUnselectAllEpisodes() {
+        val newEpisodes =
+            _state.value.podcastWithEpisodes?.episodes
+                ?.map {
+                    it.copy(selected = false)
+                } ?: return
+        _state.update { previousState ->
+            previousState.copy(podcastWithEpisodes = previousState.podcastWithEpisodes?.copy(episodes = newEpisodes))
+        }
+    }
+
     private fun updatePodcastAndEpisodes(sortOrder: EpisodeSortOrder) {
         val podcastId = podcastId ?: return
         updatePodcastAndEpisodesJob?.cancel()

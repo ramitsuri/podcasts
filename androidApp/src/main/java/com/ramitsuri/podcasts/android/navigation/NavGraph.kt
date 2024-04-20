@@ -401,6 +401,8 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         onEpisodeSortOrderClicked = viewModel::onSortOrderClicked,
+                        onSelectAllEpisodesClicked = viewModel::onSelectAllEpisodes,
+                        onUnselectAllEpisodesClicked = viewModel::onUnselectAllEpisodes,
                         modifier =
                             Modifier
                                 .statusBarsPadding()
