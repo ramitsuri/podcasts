@@ -117,14 +117,15 @@ class PodcastDetailsViewModel(
     }
 
     fun onEpisodeSelectionChanged(episodeId: String) {
-        val newEpisodes = _state.value.podcastWithEpisodes?.episodes
-            ?.map {
-                if (it.episode.id == episodeId) {
-                    it.copy(selected = !it.selected)
-                } else {
-                    it
-                }
-            } ?: return
+        val newEpisodes =
+            _state.value.podcastWithEpisodes?.episodes
+                ?.map {
+                    if (it.episode.id == episodeId) {
+                        it.copy(selected = !it.selected)
+                    } else {
+                        it
+                    }
+                } ?: return
         _state.update { previousState ->
             previousState.copy(podcastWithEpisodes = previousState.podcastWithEpisodes?.copy(episodes = newEpisodes))
         }
