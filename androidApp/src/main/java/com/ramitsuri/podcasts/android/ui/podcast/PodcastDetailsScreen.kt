@@ -415,16 +415,18 @@ private fun PodcastHeader(
             toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Box(modifier =
-            Modifier
-                .clickable(clickable) {
-                    isExpanded = !isExpanded
-                }
+        Box(
+            modifier =
+                Modifier
+                    .clickable(clickable) {
+                        isExpanded = !isExpanded
+                    },
         ) {
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .animateContentSize(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .animateContentSize(),
                 text = html,
                 overflow = TextOverflow.Visible,
                 maxLines = if (isExpanded) Int.MAX_VALUE else collapsedMaxLine,
