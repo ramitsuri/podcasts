@@ -2,8 +2,10 @@ package com.ramitsuri.podcasts.android.ui.podcast
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,8 +50,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import be.digitalia.compose.htmlconverter.htmlToString
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -392,6 +396,11 @@ private fun PodcastHeader(
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
 ) {
+    val html = remember(podcast.description) { htmlToAnnotatedString(podcast.description) }
+    val collapsedMaxLine = 3
+    var isExpanded by remember { mutableStateOf(false) }
+    var clickable by remember { mutableStateOf(false) }
+
     Column(modifier = Modifier.padding(16.dp)) {
         Spacer(modifier = Modifier.height(8.dp))
         TitleAndImage(podcast = podcast)
@@ -406,8 +415,28 @@ private fun PodcastHeader(
             toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = remember(podcast.description) { htmlToString(podcast.description) })
-        Spacer(modifier = Modifier.height(16.dp))
+        Box(
+            modifier =
+                Modifier
+                    .clickable(clickable) {
+                        isExpanded = !isExpanded
+                    },
+        ) {
+            Text(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .animateContentSize(),
+                text = html,
+                overflow = TextOverflow.Visible,
+                maxLines = if (isExpanded) Int.MAX_VALUE else collapsedMaxLine,
+                onTextLayout = { textLayoutResult ->
+                    if (!isExpanded && textLayoutResult.hasVisualOverflow) {
+                        clickable = true
+                    }
+                },
+            )
+        }
     }
 }
 
