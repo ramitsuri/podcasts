@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 
 class PodcastDetailsViewModel(
@@ -150,6 +151,30 @@ class PodcastDetailsViewModel(
                 } ?: return
         _state.update { previousState ->
             previousState.copy(podcastWithEpisodes = previousState.podcastWithEpisodes?.copy(episodes = newEpisodes))
+        }
+    }
+
+    fun onMarkSelectedAsPlayed() {
+        val selected = _state.value.podcastWithEpisodes?.episodes?.filter { it.selected } ?: return
+        longLivingScope.launch {
+            selected.map { selectableEpisode ->
+                launch {
+                    episodesRepository.markPlayed(selectableEpisode.episode.id)
+                }
+            }.joinAll()
+            onUnselectAllEpisodes()
+        }
+    }
+
+    fun onMarkSelectedAsNotPlayed() {
+        val selected = _state.value.podcastWithEpisodes?.episodes?.filter { it.selected } ?: return
+        longLivingScope.launch {
+            selected.map { selectableEpisode ->
+                launch {
+                    episodesRepository.markNotPlayed(selectableEpisode.episode.id)
+                }
+            }.joinAll()
+            onUnselectAllEpisodes()
         }
     }
 

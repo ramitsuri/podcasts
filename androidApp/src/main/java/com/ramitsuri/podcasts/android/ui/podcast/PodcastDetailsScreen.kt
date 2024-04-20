@@ -95,6 +95,8 @@ fun PodcastDetailsScreen(
     onEpisodeSortOrderClicked: () -> Unit,
     onSelectAllEpisodesClicked: () -> Unit,
     onUnselectAllEpisodesClicked: () -> Unit,
+    onMarkSelectedEpisodesAsPlayed: () -> Unit,
+    onMarkSelectedEpisodesAsNotPlayed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -128,6 +130,8 @@ fun PodcastDetailsScreen(
                 onEpisodeSortOrderClicked = onEpisodeSortOrderClicked,
                 onSelectAllEpisodesClicked = onSelectAllEpisodesClicked,
                 onUnselectAllEpisodesClicked = onUnselectAllEpisodesClicked,
+                onMarkSelectedEpisodesAsPlayed = onMarkSelectedEpisodesAsPlayed,
+                onMarkSelectedEpisodesAsNotPlayed = onMarkSelectedEpisodesAsNotPlayed,
             )
         }
     }
@@ -160,6 +164,8 @@ private fun PodcastDetails(
     onEpisodeSortOrderClicked: () -> Unit,
     onSelectAllEpisodesClicked: () -> Unit,
     onUnselectAllEpisodesClicked: () -> Unit,
+    onMarkSelectedEpisodesAsPlayed: () -> Unit,
+    onMarkSelectedEpisodesAsNotPlayed: () -> Unit,
 ) {
     val podcast = podcastWithEpisodes.podcast
     LazyColumn(modifier = modifier) {
@@ -181,6 +187,8 @@ private fun PodcastDetails(
                     onSortOrderClicked = onEpisodeSortOrderClicked,
                     onSelectAllClicked = onSelectAllEpisodesClicked,
                     onUnselectAllClicked = onUnselectAllEpisodesClicked,
+                    onMarkSelectedAsPlayed = onMarkSelectedEpisodesAsPlayed,
+                    onMarkSelectedAsNotPlayed = onMarkSelectedEpisodesAsNotPlayed,
                 )
             }
         }
@@ -226,6 +234,8 @@ private fun EpisodeCountAndMenu(
     onSortOrderClicked: () -> Unit,
     onSelectAllClicked: () -> Unit,
     onUnselectAllClicked: () -> Unit,
+    onMarkSelectedAsPlayed: () -> Unit,
+    onMarkSelectedAsNotPlayed: () -> Unit,
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
@@ -270,9 +280,13 @@ private fun EpisodeCountAndMenu(
             sortOrder = sortOrder,
             showSelectAll = selectedCount != count,
             showUnselectAll = selectedCount != 0,
+            showMarkAsPlayed = selectedCount != 0,
+            showMarkAsNotPlayed = selectedCount != 0,
             onSortOrderClicked = onSortOrderClicked,
             onSelectAllClicked = onSelectAllClicked,
             onUnselectAllClicked = onUnselectAllClicked,
+            onMarkSelectedAsPlayed = onMarkSelectedAsPlayed,
+            onMarkSelectedAsNotPlayed = onMarkSelectedAsNotPlayed,
         )
     }
 }
@@ -285,9 +299,13 @@ private fun EpisodesMenu(
     sortOrder: EpisodeSortOrder,
     showSelectAll: Boolean,
     showUnselectAll: Boolean,
+    showMarkAsPlayed: Boolean,
+    showMarkAsNotPlayed: Boolean,
     onSortOrderClicked: () -> Unit,
     onSelectAllClicked: () -> Unit,
     onUnselectAllClicked: () -> Unit,
+    onMarkSelectedAsPlayed: () -> Unit,
+    onMarkSelectedAsNotPlayed: () -> Unit,
 ) {
     Box {
         IconButton(onClick = { onToggleMenu() }) {
@@ -314,6 +332,28 @@ private fun EpisodesMenu(
                     text = { Text(stringResource(id = sortTextResId)) },
                     onClick = {
                         onSortOrderClicked()
+                        onToggleMenu()
+                    },
+                )
+            }
+
+            // Mark Played
+            if (showMarkAsPlayed) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.podcast_details_mark_selected_as_played)) },
+                    onClick = {
+                        onMarkSelectedAsPlayed()
+                        onToggleMenu()
+                    },
+                )
+            }
+
+            // Mark Not Played
+            if (showMarkAsNotPlayed) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.podcast_details_mark_selected_as_not_played)) },
+                    onClick = {
+                        onMarkSelectedAsNotPlayed()
                         onToggleMenu()
                     },
                 )
@@ -635,6 +675,8 @@ private fun PodcastDetailsPreview() {
             onEpisodeSortOrderClicked = { },
             onSelectAllEpisodesClicked = { },
             onUnselectAllEpisodesClicked = { },
+            onMarkSelectedEpisodesAsPlayed = { },
+            onMarkSelectedEpisodesAsNotPlayed = { },
         )
     }
 }
@@ -681,6 +723,8 @@ private fun PodcastDetails_WithSelectionPreview() {
             onEpisodeSortOrderClicked = { },
             onSelectAllEpisodesClicked = { },
             onUnselectAllEpisodesClicked = { },
+            onMarkSelectedEpisodesAsPlayed = { },
+            onMarkSelectedEpisodesAsNotPlayed = { },
         )
     }
 }
