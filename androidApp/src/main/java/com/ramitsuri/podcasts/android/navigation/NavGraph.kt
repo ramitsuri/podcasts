@@ -1,7 +1,9 @@
 package com.ramitsuri.podcasts.android.navigation
 
 import android.net.Uri
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -304,7 +307,13 @@ fun NavGraph(
                     )
                 }
 
-                composable(route = Route.IMPORT_SUBSCRIPTIONS.value) {
+                composable(
+                    route = Route.IMPORT_SUBSCRIPTIONS.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel =
                         viewModel<ImportSubscriptionsViewModel>(
                             factory = ImportSubscriptionsViewModel.factory(),
@@ -327,6 +336,10 @@ fun NavGraph(
                 composable(
                     route = Route.EPISODE_DETAILS.routeWithArgName(),
                     arguments = Route.EPISODE_DETAILS.navArgs(),
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
                 ) { backStackEntry ->
                     val episodeId = backStackEntry.arguments?.getString(RouteArgs.EPISODE_ID.value)
                     val decoded =
@@ -369,6 +382,10 @@ fun NavGraph(
                 composable(
                     route = Route.PODCAST_DETAILS.routeWithArgName(),
                     arguments = Route.PODCAST_DETAILS.navArgs(),
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
                 ) { backStackEntry ->
                     val podcastId = backStackEntry.arguments?.getLong(RouteArgs.PODCAST_ID.value)
                     val refreshPodcast = backStackEntry.arguments?.getBoolean(RouteArgs.REFRESH_PODCAST.value)
@@ -413,7 +430,13 @@ fun NavGraph(
                     )
                 }
 
-                composable(route = Route.QUEUE.value) {
+                composable(
+                    route = Route.QUEUE.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel = koinViewModel<QueueViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -441,7 +464,13 @@ fun NavGraph(
                     )
                 }
 
-                composable(route = Route.SUBSCRIPTIONS.value) {
+                composable(
+                    route = Route.SUBSCRIPTIONS.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel = koinViewModel<SubscriptionsViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -463,7 +492,13 @@ fun NavGraph(
                     )
                 }
 
-                composable(route = Route.DOWNLOADS.value) {
+                composable(
+                    route = Route.DOWNLOADS.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel = koinViewModel<DownloadsViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -491,7 +526,13 @@ fun NavGraph(
                     )
                 }
 
-                composable(route = Route.FAVORITES.value) {
+                composable(
+                    route = Route.FAVORITES.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel = koinViewModel<FavoritesViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -519,7 +560,13 @@ fun NavGraph(
                     )
                 }
 
-                composable(route = Route.EPISODE_HISTORY.value) {
+                composable(
+                    route = Route.EPISODE_HISTORY.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel = koinViewModel<EpisodeHistoryViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -547,7 +594,13 @@ fun NavGraph(
                     )
                 }
 
-                composable(route = Route.SETTINGS.value) {
+                composable(
+                    route = Route.SETTINGS.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel = koinViewModel<SettingsViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -566,6 +619,30 @@ fun NavGraph(
         }
     }
 }
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition() =
+    slideIntoContainer(
+        AnimatedContentTransitionScope.SlideDirection.Start,
+        tween(300),
+    )
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() =
+    slideOutOfContainer(
+        AnimatedContentTransitionScope.SlideDirection.Start,
+        tween(300),
+    )
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition() =
+    slideIntoContainer(
+        AnimatedContentTransitionScope.SlideDirection.End,
+        tween(300),
+    )
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition() =
+    slideOutOfContainer(
+        AnimatedContentTransitionScope.SlideDirection.End,
+        tween(300),
+    )
 
 @Composable
 private fun BottomNavBar(
