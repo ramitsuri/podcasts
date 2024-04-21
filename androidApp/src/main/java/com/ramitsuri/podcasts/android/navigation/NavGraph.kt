@@ -83,8 +83,8 @@ fun NavGraph(
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier =
-        Modifier
-            .fillMaxSize(),
+            Modifier
+                .fillMaxSize(),
         bottomBar = {
             AnimatedVisibility(
                 scaffoldSheetState.bottomSheetState.currentValue != SheetValue.Expanded,
@@ -93,10 +93,10 @@ fun NavGraph(
             ) {
                 BottomNavBar(
                     modifier =
-                    Modifier
-                        .onGloballyPositioned {
-                            navBarHeight = it.size.height
-                        },
+                        Modifier
+                            .onGloballyPositioned {
+                                navBarHeight = it.size.height
+                            },
                     selectedTabRoute = currentDestination,
                     onHomeTabClicked = {
                         navController.navigateToMainDestination(BottomNavItem.HOME)
@@ -133,90 +133,90 @@ fun NavGraph(
             modifier = Modifier.padding(if (bottomSheetVisible) innerPadding else PaddingValues(bottom = 0.dp)),
             sheetDragHandle = { },
             sheetShape =
-            if (scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded) {
-                RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-            } else {
-                RoundedCornerShape(0.dp)
-            },
+                if (scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded) {
+                    RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                } else {
+                    RoundedCornerShape(0.dp)
+                },
             sheetContent =
-            if (bottomSheetVisible) {
-                {
-                    PlayerScreen(
-                        isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
-                        state = playerState,
-                        onNotExpandedHeightKnown = {
-                            peekHeightPx = it
-                        },
-                        onEpisodeTitleClicked = {
-                            coroutineScope.launch {
-                                scaffoldSheetState.bottomSheetState.partialExpand()
-                            }
-                            val episodeId = playerState.episodeId
-                            if (episodeId != null) {
-                                navController.navigate(Route.episodeDetails(episodeId))
-                            }
-                        },
-                        onPodcastNameClicked = {
-                            coroutineScope.launch {
-                                scaffoldSheetState.bottomSheetState.partialExpand()
-                            }
-                            val id = playerState.podcastId
-                            if (id != null) {
-                                navController.navigate(
-                                    Route.podcastDetails(
-                                        podcastId = id,
-                                        refreshPodcast = false,
-                                    ),
-                                )
-                            }
-                        },
-                        onGoToQueueClicked = {
-                            coroutineScope.launch {
-                                scaffoldSheetState.bottomSheetState.partialExpand()
-                            }
-                            navController.navigate(Route.QUEUE.value)
-                        },
-                        onReplayClicked = playerViewModel::onReplayRequested,
-                        onPauseClicked = playerViewModel::onPauseClicked,
-                        onPlayClicked = playerViewModel::onPlayClicked,
-                        onSkipClicked = playerViewModel::onSkipRequested,
-                        onSeekValueChange = playerViewModel::onSeekRequested,
-                        onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
-                        onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
-                        onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
-                        onToggleTrimSilence = playerViewModel::toggleTrimSilence,
-                        onSleepTimer = playerViewModel::onSleepTimerRequested,
-                        onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
-                        onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
-                        onNotExpandedPlayerClicked = {
-                            coroutineScope.launch {
-                                scaffoldSheetState.bottomSheetState.expand()
-                            }
-                        },
-                        onFavoriteClicked = playerViewModel::onFavoriteClicked,
-                        onNotFavoriteClicked = playerViewModel::onNotFavoriteClicked,
-                    )
-                }
-            } else {
-                { }
-            },
+                if (bottomSheetVisible) {
+                    {
+                        PlayerScreen(
+                            isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
+                            state = playerState,
+                            onNotExpandedHeightKnown = {
+                                peekHeightPx = it
+                            },
+                            onEpisodeTitleClicked = {
+                                coroutineScope.launch {
+                                    scaffoldSheetState.bottomSheetState.partialExpand()
+                                }
+                                val episodeId = playerState.episodeId
+                                if (episodeId != null) {
+                                    navController.navigate(Route.episodeDetails(episodeId))
+                                }
+                            },
+                            onPodcastNameClicked = {
+                                coroutineScope.launch {
+                                    scaffoldSheetState.bottomSheetState.partialExpand()
+                                }
+                                val id = playerState.podcastId
+                                if (id != null) {
+                                    navController.navigate(
+                                        Route.podcastDetails(
+                                            podcastId = id,
+                                            refreshPodcast = false,
+                                        ),
+                                    )
+                                }
+                            },
+                            onGoToQueueClicked = {
+                                coroutineScope.launch {
+                                    scaffoldSheetState.bottomSheetState.partialExpand()
+                                }
+                                navController.navigate(Route.QUEUE.value)
+                            },
+                            onReplayClicked = playerViewModel::onReplayRequested,
+                            onPauseClicked = playerViewModel::onPauseClicked,
+                            onPlayClicked = playerViewModel::onPlayClicked,
+                            onSkipClicked = playerViewModel::onSkipRequested,
+                            onSeekValueChange = playerViewModel::onSeekRequested,
+                            onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
+                            onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
+                            onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
+                            onToggleTrimSilence = playerViewModel::toggleTrimSilence,
+                            onSleepTimer = playerViewModel::onSleepTimerRequested,
+                            onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
+                            onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
+                            onNotExpandedPlayerClicked = {
+                                coroutineScope.launch {
+                                    scaffoldSheetState.bottomSheetState.expand()
+                                }
+                            },
+                            onFavoriteClicked = playerViewModel::onFavoriteClicked,
+                            onNotFavoriteClicked = playerViewModel::onNotFavoriteClicked,
+                        )
+                    }
+                } else {
+                    { }
+                },
         ) {
             NavHost(
                 navController = navController,
                 startDestination = BottomNavItem.HOME.route.value,
                 modifier =
-                modifier
-                    .padding(
-                        top = innerPadding.calculateTopPadding(),
-                        bottom =
-                        if (bottomSheetVisible) {
-                            with(LocalDensity.current) {
-                                peekHeightPx.toDp()
-                            }
-                        } else {
-                            innerPadding.calculateBottomPadding()
-                        },
-                    ),
+                    modifier
+                        .padding(
+                            top = innerPadding.calculateTopPadding(),
+                            bottom =
+                                if (bottomSheetVisible) {
+                                    with(LocalDensity.current) {
+                                        peekHeightPx.toDp()
+                                    }
+                                } else {
+                                    innerPadding.calculateBottomPadding()
+                                },
+                        ),
             ) {
                 composable(route = BottomNavItem.HOME.route.value) {
                     val viewModel = koinViewModel<HomeViewModel>()
@@ -257,9 +257,9 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
-                        Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -284,9 +284,9 @@ fun NavGraph(
                         onSearchRequested = viewModel::search,
                         onSearchCleared = viewModel::clearSearch,
                         modifier =
-                        Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -301,9 +301,9 @@ fun NavGraph(
                         onHistoryClicked = { navController.navigate(Route.EPISODE_HISTORY.value) },
                         onFavoritesClicked = { navController.navigate(Route.FAVORITES.value) },
                         modifier =
-                        Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -327,9 +327,9 @@ fun NavGraph(
                         onSuggestionAccepted = viewModel::onSuggestionAccepted,
                         onBack = { navController.popBackStack() },
                         modifier =
-                        Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -373,9 +373,9 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
-                        Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -424,9 +424,9 @@ fun NavGraph(
                         onMarkSelectedEpisodesAsPlayed = viewModel::onMarkSelectedAsPlayed,
                         onMarkSelectedEpisodesAsNotPlayed = viewModel::onMarkSelectedAsNotPlayed,
                         modifier =
-                        Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -458,9 +458,9 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
-                        Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -486,9 +486,9 @@ fun NavGraph(
                             )
                         },
                         modifier =
-                        Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -520,9 +520,9 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
-                        Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -554,9 +554,9 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
-                        Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -588,9 +588,9 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
-                        Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
 
@@ -610,9 +610,9 @@ fun NavGraph(
                         toggleAutoPlayNextInQueue = viewModel::toggleAutoPlayNextInQueue,
                         onFetchRequested = viewModel::fetch,
                         modifier =
-                        Modifier
-                            .statusBarsPadding()
-                            .displayCutoutPadding(),
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
                     )
                 }
             }
@@ -622,22 +622,26 @@ fun NavGraph(
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition() =
     slideIntoContainer(
-        AnimatedContentTransitionScope.SlideDirection.Start, tween(300),
+        AnimatedContentTransitionScope.SlideDirection.Start,
+        tween(300),
     )
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() =
     slideOutOfContainer(
-        AnimatedContentTransitionScope.SlideDirection.Start, tween(300),
+        AnimatedContentTransitionScope.SlideDirection.Start,
+        tween(300),
     )
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition() =
     slideIntoContainer(
-        AnimatedContentTransitionScope.SlideDirection.End, tween(300),
+        AnimatedContentTransitionScope.SlideDirection.End,
+        tween(300),
     )
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition() =
     slideOutOfContainer(
-        AnimatedContentTransitionScope.SlideDirection.End, tween(300),
+        AnimatedContentTransitionScope.SlideDirection.End,
+        tween(300),
     )
 
 @Composable
