@@ -144,7 +144,7 @@ fun NavGraph(
             }
         val roundedCornerDp by animateDpAsState(
             targetValue = if (isExpanded) 16.dp else 0.dp,
-            label = "rounded_corner_animation"
+            label = "rounded_corner_animation",
         )
         val coroutineScope = rememberCoroutineScope()
         BottomSheetScaffold(
