@@ -385,6 +385,7 @@ fun NavGraph(
                         onUnsubscribeClicked = viewModel::onUnsubscribeClicked,
                         toggleAutoDownloadClicked = viewModel::toggleAutoDownloadClicked,
                         toggleAutoAddToQueueClicked = viewModel::toggleAutoAddToQueueClicked,
+                        toggleShowCompletedEpisodesClicked = viewModel::toggleShowCompletedEpisodes,
                         onEpisodeClicked = {
                             navController.navigate(Route.episodeDetails(episodeId = it))
                         },

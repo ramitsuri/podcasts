@@ -130,6 +130,18 @@ internal class PodcastsDaoImpl(
         }
     }
 
+    override suspend fun updateShowCompletedEpisodes(
+        id: Long,
+        showCompletedEpisodes: Boolean
+    ) {
+        withContext(ioDispatcher){
+            podcastAdditionalInfoEntityQueries.updateShowCompletedEpisodes(
+                id = id,
+                showCompletedEpisodes = showCompletedEpisodes,
+            )
+        }
+    }
+
     private fun insert(podcast: Podcast) {
         podcastEntityQueries.insertOrReplace(
             PodcastEntity(
@@ -157,6 +169,7 @@ internal class PodcastsDaoImpl(
                 subscribedDate = podcast.subscribedDate,
                 hasNewEpisodes = podcast.hasNewEpisodes,
                 autoAddToQueue = podcast.autoAddToQueue,
+                showCompletedEpisodes = podcast.showCompletedEpisodes,
             ),
         )
     }

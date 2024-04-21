@@ -178,6 +178,18 @@ class PodcastDetailsViewModel(
         }
     }
 
+    fun toggleShowCompletedEpisodes() {
+        val podcast = _state.value.podcastWithEpisodes?.podcast
+        if (podcast == null) {
+            LogHelper.v(TAG, "Podcast toggle show completed episodes requested but podcast is null")
+            return
+        }
+        longLivingScope.launch {
+            val showCompletedEpisodes = podcast.showCompletedEpisodes
+            repository.updateShowCompletedEpisodes(id = podcast.id, showCompletedEpisodes = !showCompletedEpisodes)
+        }
+    }
+
     private fun updatePodcastAndEpisodes(sortOrder: EpisodeSortOrder) {
         val podcastId = podcastId ?: return
         updatePodcastAndEpisodesJob?.cancel()
