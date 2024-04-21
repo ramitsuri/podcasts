@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.android.navigation
 import android.net.Uri
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -23,6 +24,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -79,6 +81,20 @@ fun NavGraph(
 ) {
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
     val scaffoldSheetState = rememberBottomSheetScaffoldState()
+    val isExpanded by remember(scaffoldSheetState.bottomSheetState) {
+        derivedStateOf {
+            val currentValue = scaffoldSheetState.bottomSheetState.currentValue
+            val targetValue = scaffoldSheetState.bottomSheetState.targetValue
+
+            if (currentValue == targetValue) {
+                currentValue == SheetValue.Expanded
+            } else if (currentValue == SheetValue.Expanded && targetValue == SheetValue.PartiallyExpanded) {
+                false
+            } else {
+                true
+            }
+        }
+    }
     var navBarHeight by remember { mutableIntStateOf(0) }
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -87,7 +103,7 @@ fun NavGraph(
                 .fillMaxSize(),
         bottomBar = {
             AnimatedVisibility(
-                scaffoldSheetState.bottomSheetState.currentValue != SheetValue.Expanded,
+                visible = !isExpanded,
                 enter = slideInVertically { navBarHeight },
                 exit = slideOutVertically { navBarHeight },
             ) {
@@ -126,23 +142,22 @@ fun NavGraph(
             } else {
                 0.dp
             }
+        val roundedCornerDp by animateDpAsState(
+            targetValue = if (isExpanded) 16.dp else 0.dp,
+            label = "rounded_corner_animation",
+        )
         val coroutineScope = rememberCoroutineScope()
         BottomSheetScaffold(
             scaffoldState = scaffoldSheetState,
             sheetPeekHeight = bottomPadding,
             modifier = Modifier.padding(if (bottomSheetVisible) innerPadding else PaddingValues(bottom = 0.dp)),
             sheetDragHandle = { },
-            sheetShape =
-                if (scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded) {
-                    RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                } else {
-                    RoundedCornerShape(0.dp)
-                },
+            sheetShape = RoundedCornerShape(topStart = roundedCornerDp, topEnd = roundedCornerDp),
             sheetContent =
                 if (bottomSheetVisible) {
                     {
                         PlayerScreen(
-                            isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
+                            isExpanded = isExpanded,
                             state = playerState,
                             onNotExpandedHeightKnown = {
                                 peekHeightPx = it
