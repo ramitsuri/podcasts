@@ -616,11 +616,12 @@ private fun Seekbar(
             onValueChange = onSeekValueChange,
             textStart = playedDuration.formatted(),
             textEnd = if (remainingDuration != null) "-${remainingDuration.formatted()}" else "",
-            squigglesSpec = if (playing) {
-                SquigglySlider.SquigglesSpec()
-            } else {
-                SquigglySlider.SquigglesSpec(amplitude = 0.dp)
-            },
+            squigglesSpec =
+                if (playing) {
+                    SquigglySlider.SquigglesSpec()
+                } else {
+                    SquigglySlider.SquigglesSpec(amplitude = 0.dp)
+                },
         )
     }
 }

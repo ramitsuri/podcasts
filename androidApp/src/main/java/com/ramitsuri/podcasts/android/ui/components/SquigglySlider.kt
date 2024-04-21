@@ -93,10 +93,11 @@ fun SquigglySlider(
                 SquigglySlider.Thumb(
                     interactionSource = interactionSource,
                     colors = colors,
-                    thumbSize = DpSize(
-                        width = squigglesSpec.strokeWidth.coerceAtLeast(4.dp),
-                        height = sliderHeight,
-                    ),
+                    thumbSize =
+                        DpSize(
+                            width = squigglesSpec.strokeWidth.coerceAtLeast(4.dp),
+                            height = sliderHeight,
+                        ),
                 )
             },
             track = { sliderState ->
@@ -152,7 +153,7 @@ object SquigglySlider {
 
     @Stable
     class SquigglesAnimator internal constructor(
-        val animationProgress: State<Float>
+        val animationProgress: State<Float>,
     )
 
     @Composable
@@ -173,10 +174,11 @@ object SquigglySlider {
                     .size(thumbSize)
                     .indication(
                         interactionSource = interactionSource,
-                        indication = rememberRipple(
-                            bounded = false,
-                            radius = maxOf(thumbSize.width, thumbSize.height) + 4.dp,
-                        ),
+                        indication =
+                            rememberRipple(
+                                bounded = false,
+                                radius = maxOf(thumbSize.width, thumbSize.height) + 4.dp,
+                            ),
                     )
                     .hoverable(interactionSource = interactionSource)
                     .background(colors.thumbColor(enabled), shape),
@@ -211,25 +213,28 @@ object SquigglySlider {
                 .height(sliderHeight)
                 .drawWithCache {
                     val path = Path()
-                    val pathStyle = Stroke(
-                        width = squigglesSpec.strokeWidth.toPx(),
-                        join = StrokeJoin.Round,
-                        cap = StrokeCap.Round,
-                        pathEffect = PathEffect.cornerPathEffect(
-                            // For slightly smoother waves.
-                            radius = squigglesSpec.wavelength.toPx(),
-                        ),
-                    )
+                    val pathStyle =
+                        Stroke(
+                            width = squigglesSpec.strokeWidth.toPx(),
+                            join = StrokeJoin.Round,
+                            cap = StrokeCap.Round,
+                            pathEffect =
+                                PathEffect.cornerPathEffect(
+                                    // For slightly smoother waves.
+                                    radius = squigglesSpec.wavelength.toPx(),
+                                ),
+                        )
                     onDrawBehind {
                         val isRtl = layoutDirection == LayoutDirection.Rtl
                         val sliderLeft = Offset(0f, center.y)
                         val sliderRight = Offset(size.width, center.y)
                         val sliderStart = if (isRtl) sliderRight else sliderLeft
                         val sliderEnd = if (isRtl) sliderLeft else sliderRight
-                        val sliderValueEnd = Offset(
-                            x = sliderStart.x + (sliderEnd.x - sliderStart.x) * sliderState.coercedValueAsFraction,
-                            y = center.y,
-                        )
+                        val sliderValueEnd =
+                            Offset(
+                                x = sliderStart.x + (sliderEnd.x - sliderStart.x) * sliderState.coercedValueAsFraction,
+                                y = center.y,
+                            )
                         drawLine(
                             color = inactiveTrackColor,
                             start = sliderValueEnd,
@@ -260,15 +265,17 @@ object SquigglySlider {
 
     @Composable
     fun rememberSquigglesAnimator(duration: Duration = 4.seconds): SquigglesAnimator {
-        val animationProgress = rememberInfiniteTransition(label = "Infinite squiggles").animateFloat(
-            initialValue = 0f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = duration.inWholeMilliseconds.toInt(), easing = LinearEasing),
-                repeatMode = RepeatMode.Restart,
-            ),
-            label = "Squiggles",
-        )
+        val animationProgress =
+            rememberInfiniteTransition(label = "Infinite squiggles").animateFloat(
+                initialValue = 0f,
+                targetValue = 1f,
+                animationSpec =
+                    infiniteRepeatable(
+                        animation = tween(durationMillis = duration.inWholeMilliseconds.toInt(), easing = LinearEasing),
+                        repeatMode = RepeatMode.Restart,
+                    ),
+                label = "Squiggles",
+            )
         return remember {
             SquigglesAnimator(animationProgress)
         }
@@ -321,7 +328,7 @@ private fun SquigglySlider.SquigglesSpec.copy(amplitude: Dp): SquigglySlider.Squ
 private inline fun <R> fastMapRange(
     start: Int,
     end: Int,
-    transform: (Int) -> R
+    transform: (Int) -> R,
 ): List<R> {
     contract { callsInPlace(transform) }
     val destination = ArrayList<R>(end - start + 1)
@@ -331,10 +338,12 @@ private inline fun <R> fastMapRange(
     return destination
 }
 
-private fun SliderColors.thumbColor(enabled: Boolean): Color =
-    if (enabled) thumbColor else disabledThumbColor
+private fun SliderColors.thumbColor(enabled: Boolean): Color = if (enabled) thumbColor else disabledThumbColor
 
-private fun SliderColors.trackColor(enabled: Boolean, active: Boolean): Color =
+private fun SliderColors.trackColor(
+    enabled: Boolean,
+    active: Boolean,
+): Color =
     if (enabled) {
         if (active) activeTrackColor else inactiveTrackColor
     } else {
@@ -343,16 +352,19 @@ private fun SliderColors.trackColor(enabled: Boolean, active: Boolean): Color =
 
 @ExperimentalMaterial3Api
 private val SliderState.coercedValueAsFraction
-    get() = calcFraction(
-        valueRange.start,
-        valueRange.endInclusive,
-        value.coerceIn(valueRange.start, valueRange.endInclusive),
-    )
+    get() =
+        calcFraction(
+            valueRange.start,
+            valueRange.endInclusive,
+            value.coerceIn(valueRange.start, valueRange.endInclusive),
+        )
 
 // Calculate the 0..1 fraction that `pos` value represents between `a` and `b`
-private fun calcFraction(a: Float, b: Float, pos: Float) =
-    (if (b - a == 0f) 0f else (pos - a) / (b - a)).coerceIn(0f, 1f)
-
+private fun calcFraction(
+    a: Float,
+    b: Float,
+    pos: Float,
+) = (if (b - a == 0f) 0f else (pos - a) / (b - a)).coerceIn(0f, 1f)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
