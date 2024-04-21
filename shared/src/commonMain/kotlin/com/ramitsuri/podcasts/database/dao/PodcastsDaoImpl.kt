@@ -132,9 +132,9 @@ internal class PodcastsDaoImpl(
 
     override suspend fun updateShowCompletedEpisodes(
         id: Long,
-        showCompletedEpisodes: Boolean
+        showCompletedEpisodes: Boolean,
     ) {
-        withContext(ioDispatcher){
+        withContext(ioDispatcher) {
             podcastAdditionalInfoEntityQueries.updateShowCompletedEpisodes(
                 id = id,
                 showCompletedEpisodes = showCompletedEpisodes,

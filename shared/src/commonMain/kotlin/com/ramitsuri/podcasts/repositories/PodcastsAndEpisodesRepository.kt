@@ -108,11 +108,12 @@ class PodcastsAndEpisodesRepository internal constructor(
                 if (podcast == null) {
                     null
                 } else {
-                    val filteredEpisodes = if (podcast.showCompletedEpisodes) {
-                        episodes
-                    } else {
-                        episodes.filter { !it.isCompleted }
-                    }
+                    val filteredEpisodes =
+                        if (podcast.showCompletedEpisodes) {
+                            episodes
+                        } else {
+                            episodes.filter { !it.isCompleted }
+                        }
                     PodcastWithEpisodes(podcast, filteredEpisodes)
                 }
             }
