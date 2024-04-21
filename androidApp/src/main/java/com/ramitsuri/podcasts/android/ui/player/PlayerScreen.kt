@@ -29,11 +29,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -59,6 +59,7 @@ import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.components.SquigglySlider
 import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.PlayerViewState
@@ -246,6 +247,7 @@ private fun PlayerScreenExpanded(
         }
         Spacer(modifier = Modifier.height(16.dp))
         Seekbar(
+            playing = playingState == PlayingState.PLAYING,
             playedDuration = playedDuration,
             remainingDuration = remainingDuration,
             playProgress = playProgress,
@@ -598,8 +600,10 @@ fun SleepTimerControl(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Seekbar(
+    playing: Boolean,
     playedDuration: Duration,
     remainingDuration: Duration?,
     playProgress: Float,
@@ -607,20 +611,17 @@ private fun Seekbar(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        Slider(
+        SquigglySlider(
             value = playProgress,
             onValueChange = onSeekValueChange,
-            modifier = Modifier.fillMaxWidth(),
+            textStart = playedDuration.formatted(),
+            textEnd = if (remainingDuration != null) "-${remainingDuration.formatted()}" else "",
+            squigglesSpec = if (playing) {
+                SquigglySlider.SquigglesSpec()
+            } else {
+                SquigglySlider.SquigglesSpec(amplitude = 0.dp)
+            },
         )
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(text = playedDuration.formatted(), style = MaterialTheme.typography.bodySmall)
-            if (remainingDuration != null) {
-                Text(text = "-${remainingDuration.formatted()}", style = MaterialTheme.typography.bodySmall)
-            }
-        }
     }
 }
 

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
     //trick: for the same plugin versions in all sub-modules
     alias(libs.plugins.android.application).apply(false)
@@ -6,4 +8,14 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform).apply(false)
     alias(libs.plugins.google.services).apply(false)
     alias(libs.plugins.firebase.crashlytics).apply(false)
+}
+
+allprojects {
+    tasks.withType<KotlinJvmCompile>().configureEach {
+        compilerOptions {
+            freeCompilerArgs.addAll(
+                "-Xcontext-receivers",
+            )
+        }
+    }
 }
