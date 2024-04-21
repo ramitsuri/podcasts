@@ -1,7 +1,9 @@
 package com.ramitsuri.podcasts.android.navigation
 
 import android.net.Uri
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -80,8 +83,8 @@ fun NavGraph(
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier =
-            Modifier
-                .fillMaxSize(),
+        Modifier
+            .fillMaxSize(),
         bottomBar = {
             AnimatedVisibility(
                 scaffoldSheetState.bottomSheetState.currentValue != SheetValue.Expanded,
@@ -90,10 +93,10 @@ fun NavGraph(
             ) {
                 BottomNavBar(
                     modifier =
-                        Modifier
-                            .onGloballyPositioned {
-                                navBarHeight = it.size.height
-                            },
+                    Modifier
+                        .onGloballyPositioned {
+                            navBarHeight = it.size.height
+                        },
                     selectedTabRoute = currentDestination,
                     onHomeTabClicked = {
                         navController.navigateToMainDestination(BottomNavItem.HOME)
@@ -130,90 +133,90 @@ fun NavGraph(
             modifier = Modifier.padding(if (bottomSheetVisible) innerPadding else PaddingValues(bottom = 0.dp)),
             sheetDragHandle = { },
             sheetShape =
-                if (scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded) {
-                    RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                } else {
-                    RoundedCornerShape(0.dp)
-                },
+            if (scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded) {
+                RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            } else {
+                RoundedCornerShape(0.dp)
+            },
             sheetContent =
-                if (bottomSheetVisible) {
-                    {
-                        PlayerScreen(
-                            isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
-                            state = playerState,
-                            onNotExpandedHeightKnown = {
-                                peekHeightPx = it
-                            },
-                            onEpisodeTitleClicked = {
-                                coroutineScope.launch {
-                                    scaffoldSheetState.bottomSheetState.partialExpand()
-                                }
-                                val episodeId = playerState.episodeId
-                                if (episodeId != null) {
-                                    navController.navigate(Route.episodeDetails(episodeId))
-                                }
-                            },
-                            onPodcastNameClicked = {
-                                coroutineScope.launch {
-                                    scaffoldSheetState.bottomSheetState.partialExpand()
-                                }
-                                val id = playerState.podcastId
-                                if (id != null) {
-                                    navController.navigate(
-                                        Route.podcastDetails(
-                                            podcastId = id,
-                                            refreshPodcast = false,
-                                        ),
-                                    )
-                                }
-                            },
-                            onGoToQueueClicked = {
-                                coroutineScope.launch {
-                                    scaffoldSheetState.bottomSheetState.partialExpand()
-                                }
-                                navController.navigate(Route.QUEUE.value)
-                            },
-                            onReplayClicked = playerViewModel::onReplayRequested,
-                            onPauseClicked = playerViewModel::onPauseClicked,
-                            onPlayClicked = playerViewModel::onPlayClicked,
-                            onSkipClicked = playerViewModel::onSkipRequested,
-                            onSeekValueChange = playerViewModel::onSeekRequested,
-                            onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
-                            onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
-                            onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
-                            onToggleTrimSilence = playerViewModel::toggleTrimSilence,
-                            onSleepTimer = playerViewModel::onSleepTimerRequested,
-                            onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
-                            onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
-                            onNotExpandedPlayerClicked = {
-                                coroutineScope.launch {
-                                    scaffoldSheetState.bottomSheetState.expand()
-                                }
-                            },
-                            onFavoriteClicked = playerViewModel::onFavoriteClicked,
-                            onNotFavoriteClicked = playerViewModel::onNotFavoriteClicked,
-                        )
-                    }
-                } else {
-                    { }
-                },
+            if (bottomSheetVisible) {
+                {
+                    PlayerScreen(
+                        isExpanded = scaffoldSheetState.bottomSheetState.currentValue == SheetValue.Expanded,
+                        state = playerState,
+                        onNotExpandedHeightKnown = {
+                            peekHeightPx = it
+                        },
+                        onEpisodeTitleClicked = {
+                            coroutineScope.launch {
+                                scaffoldSheetState.bottomSheetState.partialExpand()
+                            }
+                            val episodeId = playerState.episodeId
+                            if (episodeId != null) {
+                                navController.navigate(Route.episodeDetails(episodeId))
+                            }
+                        },
+                        onPodcastNameClicked = {
+                            coroutineScope.launch {
+                                scaffoldSheetState.bottomSheetState.partialExpand()
+                            }
+                            val id = playerState.podcastId
+                            if (id != null) {
+                                navController.navigate(
+                                    Route.podcastDetails(
+                                        podcastId = id,
+                                        refreshPodcast = false,
+                                    ),
+                                )
+                            }
+                        },
+                        onGoToQueueClicked = {
+                            coroutineScope.launch {
+                                scaffoldSheetState.bottomSheetState.partialExpand()
+                            }
+                            navController.navigate(Route.QUEUE.value)
+                        },
+                        onReplayClicked = playerViewModel::onReplayRequested,
+                        onPauseClicked = playerViewModel::onPauseClicked,
+                        onPlayClicked = playerViewModel::onPlayClicked,
+                        onSkipClicked = playerViewModel::onSkipRequested,
+                        onSeekValueChange = playerViewModel::onSeekRequested,
+                        onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
+                        onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
+                        onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
+                        onToggleTrimSilence = playerViewModel::toggleTrimSilence,
+                        onSleepTimer = playerViewModel::onSleepTimerRequested,
+                        onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
+                        onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
+                        onNotExpandedPlayerClicked = {
+                            coroutineScope.launch {
+                                scaffoldSheetState.bottomSheetState.expand()
+                            }
+                        },
+                        onFavoriteClicked = playerViewModel::onFavoriteClicked,
+                        onNotFavoriteClicked = playerViewModel::onNotFavoriteClicked,
+                    )
+                }
+            } else {
+                { }
+            },
         ) {
             NavHost(
                 navController = navController,
                 startDestination = BottomNavItem.HOME.route.value,
                 modifier =
-                    modifier
-                        .padding(
-                            top = innerPadding.calculateTopPadding(),
-                            bottom =
-                                if (bottomSheetVisible) {
-                                    with(LocalDensity.current) {
-                                        peekHeightPx.toDp()
-                                    }
-                                } else {
-                                    innerPadding.calculateBottomPadding()
-                                },
-                        ),
+                modifier
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom =
+                        if (bottomSheetVisible) {
+                            with(LocalDensity.current) {
+                                peekHeightPx.toDp()
+                            }
+                        } else {
+                            innerPadding.calculateBottomPadding()
+                        },
+                    ),
             ) {
                 composable(route = BottomNavItem.HOME.route.value) {
                     val viewModel = koinViewModel<HomeViewModel>()
@@ -254,9 +257,9 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
-                            Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                        Modifier
+                            .statusBarsPadding()
+                            .displayCutoutPadding(),
                     )
                 }
 
@@ -281,9 +284,9 @@ fun NavGraph(
                         onSearchRequested = viewModel::search,
                         onSearchCleared = viewModel::clearSearch,
                         modifier =
-                            Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                        Modifier
+                            .statusBarsPadding()
+                            .displayCutoutPadding(),
                     )
                 }
 
@@ -298,13 +301,19 @@ fun NavGraph(
                         onHistoryClicked = { navController.navigate(Route.EPISODE_HISTORY.value) },
                         onFavoritesClicked = { navController.navigate(Route.FAVORITES.value) },
                         modifier =
-                            Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                        Modifier
+                            .statusBarsPadding()
+                            .displayCutoutPadding(),
                     )
                 }
 
-                composable(route = Route.IMPORT_SUBSCRIPTIONS.value) {
+                composable(
+                    route = Route.IMPORT_SUBSCRIPTIONS.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel =
                         viewModel<ImportSubscriptionsViewModel>(
                             factory = ImportSubscriptionsViewModel.factory(),
@@ -318,15 +327,19 @@ fun NavGraph(
                         onSuggestionAccepted = viewModel::onSuggestionAccepted,
                         onBack = { navController.popBackStack() },
                         modifier =
-                            Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                        Modifier
+                            .statusBarsPadding()
+                            .displayCutoutPadding(),
                     )
                 }
 
                 composable(
                     route = Route.EPISODE_DETAILS.routeWithArgName(),
                     arguments = Route.EPISODE_DETAILS.navArgs(),
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
                 ) { backStackEntry ->
                     val episodeId = backStackEntry.arguments?.getString(RouteArgs.EPISODE_ID.value)
                     val decoded =
@@ -360,15 +373,19 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
-                            Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                        Modifier
+                            .statusBarsPadding()
+                            .displayCutoutPadding(),
                     )
                 }
 
                 composable(
                     route = Route.PODCAST_DETAILS.routeWithArgName(),
                     arguments = Route.PODCAST_DETAILS.navArgs(),
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
                 ) { backStackEntry ->
                     val podcastId = backStackEntry.arguments?.getLong(RouteArgs.PODCAST_ID.value)
                     val refreshPodcast = backStackEntry.arguments?.getBoolean(RouteArgs.REFRESH_PODCAST.value)
@@ -407,13 +424,19 @@ fun NavGraph(
                         onMarkSelectedEpisodesAsPlayed = viewModel::onMarkSelectedAsPlayed,
                         onMarkSelectedEpisodesAsNotPlayed = viewModel::onMarkSelectedAsNotPlayed,
                         modifier =
-                            Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                        Modifier
+                            .statusBarsPadding()
+                            .displayCutoutPadding(),
                     )
                 }
 
-                composable(route = Route.QUEUE.value) {
+                composable(
+                    route = Route.QUEUE.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel = koinViewModel<QueueViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -435,13 +458,19 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
-                            Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                        Modifier
+                            .statusBarsPadding()
+                            .displayCutoutPadding(),
                     )
                 }
 
-                composable(route = Route.SUBSCRIPTIONS.value) {
+                composable(
+                    route = Route.SUBSCRIPTIONS.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel = koinViewModel<SubscriptionsViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -457,13 +486,19 @@ fun NavGraph(
                             )
                         },
                         modifier =
-                            Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                        Modifier
+                            .statusBarsPadding()
+                            .displayCutoutPadding(),
                     )
                 }
 
-                composable(route = Route.DOWNLOADS.value) {
+                composable(
+                    route = Route.DOWNLOADS.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel = koinViewModel<DownloadsViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -485,13 +520,19 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
-                            Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                        Modifier
+                            .statusBarsPadding()
+                            .displayCutoutPadding(),
                     )
                 }
 
-                composable(route = Route.FAVORITES.value) {
+                composable(
+                    route = Route.FAVORITES.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel = koinViewModel<FavoritesViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -513,13 +554,19 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
-                            Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                        Modifier
+                            .statusBarsPadding()
+                            .displayCutoutPadding(),
                     )
                 }
 
-                composable(route = Route.EPISODE_HISTORY.value) {
+                composable(
+                    route = Route.EPISODE_HISTORY.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel = koinViewModel<EpisodeHistoryViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -541,13 +588,19 @@ fun NavGraph(
                         onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
-                            Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                        Modifier
+                            .statusBarsPadding()
+                            .displayCutoutPadding(),
                     )
                 }
 
-                composable(route = Route.SETTINGS.value) {
+                composable(
+                    route = Route.SETTINGS.value,
+                    enterTransition = { enterTransition() },
+                    exitTransition = { exitTransition() },
+                    popEnterTransition = { popEnterTransition() },
+                    popExitTransition = { popExitTransition() },
+                ) {
                     val viewModel = koinViewModel<SettingsViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -557,15 +610,35 @@ fun NavGraph(
                         toggleAutoPlayNextInQueue = viewModel::toggleAutoPlayNextInQueue,
                         onFetchRequested = viewModel::fetch,
                         modifier =
-                            Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                        Modifier
+                            .statusBarsPadding()
+                            .displayCutoutPadding(),
                     )
                 }
             }
         }
     }
 }
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition() =
+    slideIntoContainer(
+        AnimatedContentTransitionScope.SlideDirection.Start, tween(300),
+    )
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() =
+    slideOutOfContainer(
+        AnimatedContentTransitionScope.SlideDirection.Start, tween(300),
+    )
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition() =
+    slideIntoContainer(
+        AnimatedContentTransitionScope.SlideDirection.End, tween(300),
+    )
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition() =
+    slideOutOfContainer(
+        AnimatedContentTransitionScope.SlideDirection.End, tween(300),
+    )
 
 @Composable
 private fun BottomNavBar(
