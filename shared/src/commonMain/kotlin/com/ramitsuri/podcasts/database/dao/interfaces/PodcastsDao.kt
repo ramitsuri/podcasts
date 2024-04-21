@@ -46,4 +46,9 @@ internal interface PodcastsDao {
         id: Long,
         autoAddToQueue: Boolean,
     )
+
+    suspend fun updateShowCompletedEpisodes(
+        id: Long,
+        showCompletedEpisodes: Boolean,
+    )
 }

@@ -8,12 +8,13 @@ CREATE TABLE IF NOT EXISTS PodcastAdditionalInfoEntity (
     newEpisodeNotification INTEGER AS Boolean NOT NULL,
     subscribedDate INTEGER AS Instant,
     hasNewEpisodes INTEGER AS Boolean NOT NULL DEFAULT 0,
-    autoAddToQueue INTEGER AS Boolean NOT NULL DEFAULT 0
+    autoAddToQueue INTEGER AS Boolean NOT NULL DEFAULT 0,
+    showCompletedEpisodes INTEGER AS Boolean NOT NULL DEFAULT 1
 );
 
 insertOrIgnore:
 INSERT OR IGNORE INTO
-PodcastAdditionalInfoEntity(id, subscribed, autoDownloadEpisodes, newEpisodeNotification, subscribedDate, hasNewEpisodes, autoAddToQueue)
+PodcastAdditionalInfoEntity(id, subscribed, autoDownloadEpisodes, newEpisodeNotification, subscribedDate, hasNewEpisodes, autoAddToQueue, showCompletedEpisodes)
 VALUES ?;
 
 updateSubscribed:
@@ -44,4 +45,9 @@ WHERE id = :id;
 updateSubscribedDate:
 UPDATE PodcastAdditionalInfoEntity
 SET subscribedDate = :subscribedDate
+WHERE id = :id;
+
+updateShowCompletedEpisodes:
+UPDATE PodcastAdditionalInfoEntity
+SET showCompletedEpisodes = :showCompletedEpisodes
 WHERE id = :id;

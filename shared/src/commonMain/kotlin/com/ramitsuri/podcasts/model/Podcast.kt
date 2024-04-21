@@ -26,6 +26,7 @@ data class Podcast(
     val subscribedDate: Instant?,
     val hasNewEpisodes: Boolean,
     val autoAddToQueue: Boolean,
+    val showCompletedEpisodes: Boolean,
 ) {
     internal constructor(dto: PodcastDto) : this(
         id = dto.id,
@@ -47,6 +48,7 @@ data class Podcast(
         subscribedDate = null,
         hasNewEpisodes = false,
         autoAddToQueue = false,
+        showCompletedEpisodes = true,
     )
 
     internal constructor(getPodcast: GetPodcast, categories: List<Category>) : this(
@@ -69,6 +71,7 @@ data class Podcast(
         subscribedDate = getPodcast.subscribedDate,
         hasNewEpisodes = getPodcast.hasNewEpisodes,
         autoAddToQueue = getPodcast.autoAddToQueue,
+        showCompletedEpisodes = getPodcast.showCompletedEpisodes,
     )
 
     internal constructor(getAllPodcasts: GetAllPodcasts, categories: List<Category>) : this(
@@ -91,6 +94,7 @@ data class Podcast(
         subscribedDate = getAllPodcasts.subscribedDate,
         hasNewEpisodes = getAllPodcasts.hasNewEpisodes,
         autoAddToQueue = getAllPodcasts.autoAddToQueue,
+        showCompletedEpisodes = getAllPodcasts.showCompletedEpisodes,
     )
 
     internal constructor(getAllSubscribedPodcasts: GetAllSubscribedPodcasts, categories: List<Category>) : this(
@@ -113,5 +117,6 @@ data class Podcast(
         subscribedDate = getAllSubscribedPodcasts.subscribedDate,
         hasNewEpisodes = getAllSubscribedPodcasts.hasNewEpisodes,
         autoAddToQueue = getAllSubscribedPodcasts.autoAddToQueue,
+        showCompletedEpisodes = getAllSubscribedPodcasts.showCompletedEpisodes,
     )
 }

@@ -83,6 +83,7 @@ fun PodcastDetailsScreen(
     onUnsubscribeClicked: () -> Unit,
     toggleAutoDownloadClicked: () -> Unit,
     toggleAutoAddToQueueClicked: () -> Unit,
+    toggleShowCompletedEpisodesClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
     onEpisodeSelectionChanged: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
@@ -118,6 +119,7 @@ fun PodcastDetailsScreen(
                 onUnsubscribeClicked = onUnsubscribeClicked,
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,
                 toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
+                toggleShowCompletedEpisodesClicked = toggleShowCompletedEpisodesClicked,
                 onEpisodeClicked = onEpisodeClicked,
                 onEpisodeSelectionChanged = onEpisodeSelectionChanged,
                 onEpisodePlayClicked = onEpisodePlayClicked,
@@ -152,6 +154,7 @@ private fun PodcastDetails(
     onUnsubscribeClicked: () -> Unit,
     toggleAutoDownloadClicked: () -> Unit,
     toggleAutoAddToQueueClicked: () -> Unit,
+    toggleShowCompletedEpisodesClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
     onEpisodeSelectionChanged: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
@@ -180,6 +183,7 @@ private fun PodcastDetails(
                 onUnsubscribeClicked = onUnsubscribeClicked,
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,
                 toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
+                toggleShowCompletedEpisodesClicked = toggleShowCompletedEpisodesClicked,
             )
         }
         if (podcastWithEpisodes.episodes.isNotEmpty()) {
@@ -393,6 +397,7 @@ private fun PodcastHeader(
     podcast: Podcast,
     toggleAutoDownloadClicked: () -> Unit,
     toggleAutoAddToQueueClicked: () -> Unit,
+    toggleShowCompletedEpisodesClicked: () -> Unit,
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
 ) {
@@ -409,10 +414,12 @@ private fun PodcastHeader(
             subscribed = podcast.subscribed,
             autoDownloadNewEpisodes = podcast.autoDownloadEpisodes,
             autoAddToQueueNewEpisodes = podcast.autoAddToQueue,
+            showCompletedEpisodes = podcast.showCompletedEpisodes,
             onSubscribeClicked = onSubscribeClicked,
             onUnsubscribeClicked = onUnsubscribeClicked,
             toggleAutoDownloadClicked = toggleAutoDownloadClicked,
             toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
+            toggleShowCompletedEpisodesClicked = toggleShowCompletedEpisodesClicked,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Box(
@@ -479,10 +486,12 @@ private fun PodcastControls(
     subscribed: Boolean,
     autoDownloadNewEpisodes: Boolean,
     autoAddToQueueNewEpisodes: Boolean,
+    showCompletedEpisodes: Boolean,
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
     toggleAutoDownloadClicked: () -> Unit,
     toggleAutoAddToQueueClicked: () -> Unit,
+    toggleShowCompletedEpisodesClicked: () -> Unit,
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
@@ -496,8 +505,10 @@ private fun PodcastControls(
                 onToggleMenu = { showMenu = !showMenu },
                 autoDownloadNewEpisodes = autoDownloadNewEpisodes,
                 autoAddToQueueNewEpisodes = autoAddToQueueNewEpisodes,
+                showCompletedEpisodes = showCompletedEpisodes,
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,
                 toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
+                toggleShowCompletedEpisodesClicked = toggleShowCompletedEpisodesClicked,
             )
         }
     }
@@ -509,8 +520,10 @@ private fun PodcastMenu(
     onToggleMenu: () -> Unit,
     autoDownloadNewEpisodes: Boolean,
     autoAddToQueueNewEpisodes: Boolean,
+    showCompletedEpisodes: Boolean,
     toggleAutoDownloadClicked: () -> Unit,
     toggleAutoAddToQueueClicked: () -> Unit,
+    toggleShowCompletedEpisodesClicked: () -> Unit,
 ) {
     Box {
         IconButton(onClick = { onToggleMenu() }) {
@@ -552,6 +565,20 @@ private fun PodcastMenu(
                 },
                 onClick = {
                     toggleAutoAddToQueueClicked()
+                },
+            )
+            DropdownMenuItem(
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(checked = showCompletedEpisodes, onCheckedChange = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(id = R.string.podcast_details_show_completed_episodes))
+                    }
+                },
+                onClick = {
+                    toggleShowCompletedEpisodesClicked()
                 },
             )
         }
@@ -688,6 +715,7 @@ private fun PodcastDetailsPreview() {
             onUnsubscribeClicked = { },
             toggleAutoDownloadClicked = { },
             toggleAutoAddToQueueClicked = { },
+            toggleShowCompletedEpisodesClicked = { },
             onEpisodeClicked = { },
             onEpisodeSelectionChanged = { },
             onEpisodePlayClicked = { },
@@ -736,6 +764,7 @@ private fun PodcastDetails_WithSelectionPreview() {
             onUnsubscribeClicked = { },
             toggleAutoDownloadClicked = { },
             toggleAutoAddToQueueClicked = { },
+            toggleShowCompletedEpisodesClicked = { },
             onEpisodeClicked = { },
             onEpisodeSelectionChanged = { },
             onEpisodePlayClicked = { },

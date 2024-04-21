@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS PodcastEntity (
 getAllPodcasts:
 SELECT
 pe.*,
-paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.subscribedDate, paie.hasNewEpisodes, paie.autoAddToQueue
+paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.subscribedDate, paie.hasNewEpisodes, paie.autoAddToQueue, paie.showCompletedEpisodes
 FROM PodcastEntity AS pe
 INNER JOIN PodcastAdditionalInfoEntity AS paie
     ON pe.id == paie.id;
@@ -29,7 +29,7 @@ INNER JOIN PodcastAdditionalInfoEntity AS paie
 getAllSubscribedPodcasts:
 SELECT
 pe.*,
-paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.subscribedDate, paie.hasNewEpisodes, paie.autoAddToQueue
+paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.subscribedDate, paie.hasNewEpisodes, paie.autoAddToQueue, paie.showCompletedEpisodes
 FROM PodcastEntity AS pe
 INNER JOIN PodcastAdditionalInfoEntity AS paie
     ON pe.id == paie.id
@@ -39,7 +39,7 @@ ORDER BY paie.hasNewEpisodes DESC, paie.subscribedDate ASC;
 getPodcast:
 SELECT
 pe.*,
-paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.subscribedDate, paie.hasNewEpisodes, paie.autoAddToQueue
+paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.subscribedDate, paie.hasNewEpisodes, paie.autoAddToQueue, paie.showCompletedEpisodes
 FROM PodcastEntity AS pe
 INNER JOIN PodcastAdditionalInfoEntity AS paie
     ON pe.id == paie.id

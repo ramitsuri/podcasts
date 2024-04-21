@@ -151,4 +151,5 @@
     <string name="podcast_details_unselect_all_episodes">Unselect all</string>
     <string name="podcast_details_mark_selected_as_played">Mark played</string>
     <string name="podcast_details_mark_selected_as_not_played">Mark not played</string>
+    <string name="podcast_details_show_completed_episodes">Show completed</string>
 </resources>
