@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.android.media
 
+import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
@@ -29,6 +30,7 @@ import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import com.ramitsuri.podcasts.android.MainActivity
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
@@ -122,6 +124,14 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 .setId(UUID.randomUUID().toString())
                 .setCallback(MediaSessionCallback())
                 .setCustomLayout(customLayout)
+                .setSessionActivity(
+                    PendingIntent.getActivity(
+                        this,
+                        0,
+                        Intent(this, MainActivity::class.java),
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+                    ),
+                )
                 .build()
 
         launchSuspend {
