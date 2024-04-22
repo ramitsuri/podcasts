@@ -5,6 +5,8 @@ simplicity and basically complete feature set but sadly it is getting shut down 
 We tried several other apps but didn't find the same appeal in any of them which is why I decided 
 to replicate the UI and functionality here.
 
+[Get it on Google Play Store](https://play.google.com/store/apps/details?id=com.ramitsuri.podcasts.android)
+
 ## Features
 - Offline first 
 - Allows import from Google Podcasts
