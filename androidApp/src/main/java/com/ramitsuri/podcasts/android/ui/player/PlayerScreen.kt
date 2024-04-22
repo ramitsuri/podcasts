@@ -100,8 +100,7 @@ fun PlayerScreen(
     Box(
         modifier =
             modifier
-                .fillMaxWidth()
-                .padding(if (isExpanded) 16.dp else 0.dp),
+                .fillMaxWidth(),
         contentAlignment = Alignment.TopCenter,
     ) {
         if (!isExpanded) {
@@ -125,7 +124,10 @@ fun PlayerScreen(
         }
         if (state.hasEverBeenPlayed) {
             PlayerScreenExpanded(
-                modifier = Modifier.alpha(alphaExpandedPlayer),
+                modifier =
+                    Modifier
+                        .padding(16.dp)
+                        .alpha(alphaExpandedPlayer),
                 episodeTitle = state.episodeTitle,
                 episodeArtwork = state.episodeArtworkUrl,
                 podcastName = state.podcastName,
