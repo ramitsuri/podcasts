@@ -138,6 +138,9 @@
     <string name="settings_fetch_now">Download now</string>
     <string name="settings_last_fetched_never">Never downloaded</string>
     <string name="settings_last_fetched_at_time_format">Last downloaded %1$s</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_view_source">View source</string>
 
     <!-- Podcast details -->
     <string name="podcast_details_sort_by_publish_desc">Newest first</string>
