@@ -198,18 +198,18 @@ private fun AboutApp() {
     val appVersion = context.packageManager.getPackageInfo(context.packageName, 0)?.versionName ?: ""
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
     ) {
         CategoryTitle(text = stringResource(id = R.string.settings_about))
 
         // Version
         Column(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
         ) {
             Title(text = stringResource(id = R.string.settings_version))
             Subtitle(text = appVersion)
@@ -218,10 +218,10 @@ private fun AboutApp() {
         // View source
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable { uriHandler.openUri(AppConstants.GITHUB_LINK) }
-                .padding(16.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .clickable { uriHandler.openUri(AppConstants.GITHUB_LINK) }
+                    .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
