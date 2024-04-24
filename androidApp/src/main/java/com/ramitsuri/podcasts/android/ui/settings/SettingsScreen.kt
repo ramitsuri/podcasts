@@ -78,9 +78,10 @@ fun SettingsScreen(
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
         TopAppBar(onBack = onBack, label = stringResource(id = R.string.settings), scrollBehavior = scrollBehavior)
         Column(
-            modifier = Modifier
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .verticalScroll(rememberScrollState()),
+            modifier =
+                Modifier
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
+                    .verticalScroll(rememberScrollState()),
         ) {
             PlaybackSettings(
                 autoPlayNextInQueue = state.autoPlayNextInQueue,
@@ -213,12 +214,12 @@ private fun FetchSettings(
         // Remove unfinished episodes
         Column(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable(
-                    onClick = { showRemoveUnfinishedDialog = true },
-                )
-                .padding(16.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        onClick = { showRemoveUnfinishedDialog = true },
+                    )
+                    .padding(16.dp),
         ) {
             Title(text = stringResource(id = R.string.settings_remove_unfinished))
             Subtitle(text = removeUnfinishedAfter.text())
@@ -229,12 +230,13 @@ private fun FetchSettings(
         RemoveDownloadsAfterDialog(
             title = stringResource(id = R.string.settings_remove_completed),
             selectedOption = removeCompletedAfter,
-            selectableOptions = listOf(
-                RemoveDownloadsAfter.TWENTY_FOUR_HOURS,
-                RemoveDownloadsAfter.SEVEN_DAYS,
-                RemoveDownloadsAfter.THIRTY_DAYS,
-                RemoveDownloadsAfter.NINETY_DAYS,
-            ),
+            selectableOptions =
+                listOf(
+                    RemoveDownloadsAfter.TWENTY_FOUR_HOURS,
+                    RemoveDownloadsAfter.SEVEN_DAYS,
+                    RemoveDownloadsAfter.THIRTY_DAYS,
+                    RemoveDownloadsAfter.NINETY_DAYS,
+                ),
             onOptionSelected = onRemoveCompletedAfterSelected,
             onDismiss = { showRemoveCompletedDialog = false },
         )
@@ -244,10 +246,11 @@ private fun FetchSettings(
         RemoveDownloadsAfterDialog(
             title = stringResource(id = R.string.settings_remove_unfinished),
             selectedOption = removeUnfinishedAfter,
-            selectableOptions = listOf(
-                RemoveDownloadsAfter.THIRTY_DAYS,
-                RemoveDownloadsAfter.NINETY_DAYS,
-            ),
+            selectableOptions =
+                listOf(
+                    RemoveDownloadsAfter.THIRTY_DAYS,
+                    RemoveDownloadsAfter.NINETY_DAYS,
+                ),
             onOptionSelected = onRemoveUnfinishedAfterSelected,
             onDismiss = { showRemoveUnfinishedDialog = false },
         )
@@ -342,8 +345,9 @@ private fun RemoveDownloadsAfterDialog(
     ) {
         Card {
             Column(
-                modifier = Modifier
-                    .padding(16.dp),
+                modifier =
+                    Modifier
+                        .padding(16.dp),
             ) {
                 Text(text = title, style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(16.dp))
@@ -451,12 +455,13 @@ private fun RemoveCompletedAfterDialogPreview() {
         RemoveDownloadsAfterDialog(
             title = "Remove completed episodes",
             selectedOption = RemoveDownloadsAfter.THIRTY_DAYS,
-            selectableOptions = listOf(
-                RemoveDownloadsAfter.TWENTY_FOUR_HOURS,
-                RemoveDownloadsAfter.SEVEN_DAYS,
-                RemoveDownloadsAfter.THIRTY_DAYS,
-                RemoveDownloadsAfter.NINETY_DAYS,
-            ),
+            selectableOptions =
+                listOf(
+                    RemoveDownloadsAfter.TWENTY_FOUR_HOURS,
+                    RemoveDownloadsAfter.SEVEN_DAYS,
+                    RemoveDownloadsAfter.THIRTY_DAYS,
+                    RemoveDownloadsAfter.NINETY_DAYS,
+                ),
             onOptionSelected = { },
             onDismiss = { },
         )
