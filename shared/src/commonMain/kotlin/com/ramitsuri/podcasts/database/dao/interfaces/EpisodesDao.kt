@@ -31,6 +31,8 @@ internal interface EpisodesDao {
 
     fun getDownloadedFlow(): Flow<List<DbEpisode>>
 
+    suspend fun getDownloaded(): List<DbEpisode>
+
     fun getFavoritesFlow(): Flow<List<DbEpisode>>
 
     suspend fun getQueue(): List<DbEpisode>

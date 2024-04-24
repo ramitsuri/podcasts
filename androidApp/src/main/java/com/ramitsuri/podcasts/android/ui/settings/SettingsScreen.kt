@@ -10,32 +10,48 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.TopAppBar
 import com.ramitsuri.podcasts.android.utils.friendlyFetchDateTime
+import com.ramitsuri.podcasts.model.RemoveDownloadsAfter
 import com.ramitsuri.podcasts.model.ui.SettingsViewState
 import com.ramitsuri.podcasts.utils.Constants
 import kotlinx.datetime.Clock
@@ -50,6 +66,8 @@ fun SettingsScreen(
     onBack: () -> Unit,
     toggleAutoPlayNextInQueue: () -> Unit,
     onFetchRequested: () -> Unit,
+    onRemoveCompletedAfterSelected: (RemoveDownloadsAfter) -> Unit,
+    onRemoveUnfinishedAfterSelected: (RemoveDownloadsAfter) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -59,18 +77,29 @@ fun SettingsScreen(
     ) {
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
         TopAppBar(onBack = onBack, label = stringResource(id = R.string.settings), scrollBehavior = scrollBehavior)
-        PlaybackSettings(
-            autoPlayNextInQueue = state.autoPlayNextInQueue,
-            toggleAutoPlayNextInQueue = toggleAutoPlayNextInQueue,
-        )
-        ColoredHorizontalDivider()
-        FetchSettings(
-            fetching = state.fetching,
-            lastFetchTime = state.lastFetchTime,
-            onFetchRequested = onFetchRequested,
-        )
-        ColoredHorizontalDivider()
-        AboutApp()
+        Column(
+            modifier = Modifier
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            PlaybackSettings(
+                autoPlayNextInQueue = state.autoPlayNextInQueue,
+                toggleAutoPlayNextInQueue = toggleAutoPlayNextInQueue,
+            )
+            ColoredHorizontalDivider()
+            FetchSettings(
+                fetching = state.fetching,
+                lastFetchTime = state.lastFetchTime,
+                removeCompletedAfter = state.removeCompletedAfter,
+                removeUnfinishedAfter = state.removeUnfinishedAfter,
+                onFetchRequested = onFetchRequested,
+                onRemoveCompletedAfterSelected = onRemoveCompletedAfterSelected,
+                onRemoveUnfinishedAfterSelected = onRemoveUnfinishedAfterSelected,
+            )
+            ColoredHorizontalDivider()
+            AboutApp()
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
 
@@ -120,8 +149,15 @@ private fun PlaybackSettings(
 private fun FetchSettings(
     fetching: Boolean,
     lastFetchTime: Instant,
+    removeCompletedAfter: RemoveDownloadsAfter,
+    removeUnfinishedAfter: RemoveDownloadsAfter,
     onFetchRequested: () -> Unit,
+    onRemoveCompletedAfterSelected: (RemoveDownloadsAfter) -> Unit,
+    onRemoveUnfinishedAfterSelected: (RemoveDownloadsAfter) -> Unit,
 ) {
+    var showRemoveCompletedDialog by remember { mutableStateOf(false) }
+    var showRemoveUnfinishedDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier =
             Modifier
@@ -129,6 +165,7 @@ private fun FetchSettings(
                 .padding(8.dp),
     ) {
         CategoryTitle(text = stringResource(id = R.string.settings_fetch))
+        // Download now
         Column(
             modifier =
                 Modifier
@@ -158,6 +195,62 @@ private fun FetchSettings(
                 Subtitle(text = text)
             }
         }
+
+        // Remove completed episodes
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        onClick = { showRemoveCompletedDialog = true },
+                    )
+                    .padding(16.dp),
+        ) {
+            Title(text = stringResource(id = R.string.settings_remove_completed))
+            Subtitle(text = removeCompletedAfter.text())
+        }
+
+        // Remove unfinished episodes
+        Column(
+            modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(
+                    onClick = { showRemoveUnfinishedDialog = true },
+                )
+                .padding(16.dp),
+        ) {
+            Title(text = stringResource(id = R.string.settings_remove_unfinished))
+            Subtitle(text = removeUnfinishedAfter.text())
+        }
+    }
+
+    if (showRemoveCompletedDialog) {
+        RemoveDownloadsAfterDialog(
+            title = stringResource(id = R.string.settings_remove_completed),
+            selectedOption = removeCompletedAfter,
+            selectableOptions = listOf(
+                RemoveDownloadsAfter.TWENTY_FOUR_HOURS,
+                RemoveDownloadsAfter.SEVEN_DAYS,
+                RemoveDownloadsAfter.THIRTY_DAYS,
+                RemoveDownloadsAfter.NINETY_DAYS,
+            ),
+            onOptionSelected = onRemoveCompletedAfterSelected,
+            onDismiss = { showRemoveCompletedDialog = false },
+        )
+    }
+
+    if (showRemoveUnfinishedDialog) {
+        RemoveDownloadsAfterDialog(
+            title = stringResource(id = R.string.settings_remove_unfinished),
+            selectedOption = removeUnfinishedAfter,
+            selectableOptions = listOf(
+                RemoveDownloadsAfter.THIRTY_DAYS,
+                RemoveDownloadsAfter.NINETY_DAYS,
+            ),
+            onOptionSelected = onRemoveUnfinishedAfterSelected,
+            onDismiss = { showRemoveUnfinishedDialog = false },
+        )
     }
 }
 
@@ -234,6 +327,78 @@ private fun AboutApp() {
     }
 }
 
+@Composable
+private fun RemoveDownloadsAfterDialog(
+    title: String,
+    selectedOption: RemoveDownloadsAfter,
+    selectableOptions: List<RemoveDownloadsAfter>,
+    onOptionSelected: (RemoveDownloadsAfter) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var selection by remember(selectedOption) { mutableStateOf(selectedOption) }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+    ) {
+        Card {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp),
+            ) {
+                Text(text = title, style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(16.dp))
+                Column(modifier = Modifier.selectableGroup()) {
+                    selectableOptions.forEach {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .selectable(
+                                    selected = (selection == it),
+                                    onClick = { selection = it },
+                                    role = Role.RadioButton,
+                                )
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = (selection == it),
+                                onClick = null,
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = it.text(),
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    TextButton(
+                        onClick = {
+                            onOptionSelected(selection)
+                            onDismiss()
+                        },
+                    ) {
+                        Text(text = stringResource(id = R.string.ok))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RemoveDownloadsAfter.text(): String {
+    return when (this) {
+        RemoveDownloadsAfter.TWENTY_FOUR_HOURS -> stringResource(id = R.string.settings_remove_after_24_hours)
+        RemoveDownloadsAfter.SEVEN_DAYS -> stringResource(id = R.string.settings_remove_after_7_days)
+        RemoveDownloadsAfter.THIRTY_DAYS -> stringResource(id = R.string.settings_remove_after_30_days)
+        RemoveDownloadsAfter.NINETY_DAYS -> stringResource(id = R.string.settings_remove_after_90_days)
+    }
+}
+
 @ThemePreview
 @Composable
 private fun SettingsPreview_LastFetchTimeNever() {
@@ -243,6 +408,8 @@ private fun SettingsPreview_LastFetchTimeNever() {
             onBack = { },
             toggleAutoPlayNextInQueue = { },
             onFetchRequested = { },
+            onRemoveCompletedAfterSelected = { },
+            onRemoveUnfinishedAfterSelected = { },
         )
     }
 }
@@ -256,6 +423,8 @@ private fun SettingsPreview_LastFetchTimeMinutesAgo() {
             onBack = { },
             toggleAutoPlayNextInQueue = { },
             onFetchRequested = { },
+            onRemoveCompletedAfterSelected = { },
+            onRemoveUnfinishedAfterSelected = { },
         )
     }
 }
@@ -269,6 +438,27 @@ private fun SettingsPreview_Fetching() {
             onBack = { },
             toggleAutoPlayNextInQueue = { },
             onFetchRequested = { },
+            onRemoveCompletedAfterSelected = { },
+            onRemoveUnfinishedAfterSelected = { },
+        )
+    }
+}
+
+@ThemePreview
+@Composable
+private fun RemoveCompletedAfterDialogPreview() {
+    PreviewTheme {
+        RemoveDownloadsAfterDialog(
+            title = "Remove completed episodes",
+            selectedOption = RemoveDownloadsAfter.THIRTY_DAYS,
+            selectableOptions = listOf(
+                RemoveDownloadsAfter.TWENTY_FOUR_HOURS,
+                RemoveDownloadsAfter.SEVEN_DAYS,
+                RemoveDownloadsAfter.THIRTY_DAYS,
+                RemoveDownloadsAfter.NINETY_DAYS,
+            ),
+            onOptionSelected = { },
+            onDismiss = { },
         )
     }
 }

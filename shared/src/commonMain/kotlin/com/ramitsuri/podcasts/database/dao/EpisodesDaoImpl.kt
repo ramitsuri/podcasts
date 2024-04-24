@@ -101,6 +101,14 @@ internal class EpisodesDaoImpl(
             .mapToList(ioDispatcher)
     }
 
+    override suspend fun getDownloaded(): List<DbEpisode> {
+        return withContext(ioDispatcher) {
+            episodeEntityQueries
+                .getDownloadedEpisodes()
+                .executeAsList()
+        }
+    }
+
     override fun getFavoritesFlow(): Flow<List<DbEpisode>> {
         return episodeEntityQueries
             .getFavoriteEpisodes()

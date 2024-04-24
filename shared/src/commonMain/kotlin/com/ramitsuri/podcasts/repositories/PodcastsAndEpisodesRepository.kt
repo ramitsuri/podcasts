@@ -1,6 +1,7 @@
 package com.ramitsuri.podcasts.repositories
 
 import com.ramitsuri.podcasts.download.EpisodeDownloader
+import com.ramitsuri.podcasts.model.RemoveDownloadsAfter
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.Podcast
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
 
 class PodcastsAndEpisodesRepository internal constructor(
     private val podcastsRepository: PodcastsRepository,
@@ -47,7 +49,10 @@ class PodcastsAndEpisodesRepository internal constructor(
 
     suspend fun refreshPodcasts(
         fetchFromNetwork: Boolean,
-        episodeDownloadAllowed: Boolean = false,
+        downloaderTasksAllowed: Boolean,
+        now: Instant,
+        removeCompletedAfter: RemoveDownloadsAfter,
+        removeUnfinishedAfter: RemoveDownloadsAfter,
     ): PodcastResult<Unit> {
         return withContext(ioDispatcher) {
             val failures = mutableListOf<PodcastResult.Failure>()
@@ -67,11 +72,23 @@ class PodcastsAndEpisodesRepository internal constructor(
                     }
                 }.joinAll()
             }
-            if (episodeDownloadAllowed) {
+            if (downloaderTasksAllowed) {
+                // Download new episodes
                 episodesRepository
                     .getNeedDownloadEpisodes()
                     .forEach { episode ->
                         episodeDownloader.add(episode)
+                    }
+
+                // Delete downloaded episodes
+                episodesRepository
+                    .getEpisodesEligibleForRemoval(
+                        removeCompletedAfter = removeCompletedAfter,
+                        removeUnfinishedAfter = removeUnfinishedAfter,
+                        now = now,
+                    )
+                    .forEach { episode ->
+                        episodeDownloader.remove(episode)
                     }
             }
             val failure = failures.firstOrNull()

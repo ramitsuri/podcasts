@@ -2,11 +2,13 @@ package com.ramitsuri.podcasts.settings
 
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.PlayingState
+import com.ramitsuri.podcasts.model.RemoveDownloadsAfter
 import com.ramitsuri.podcasts.model.ui.SleepTimer
 import com.ramitsuri.podcasts.utils.Constants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Clock
@@ -126,5 +128,33 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
 
     suspend fun setPodcastDetailsEpisodeSortOrder(sortOrder: EpisodeSortOrder) {
         keyValueStore.putInt(Key.PODCAST_DETAILS_EPISODE_SORT_ORDER, sortOrder.key)
+    }
+
+    fun getRemoveCompletedEpisodesAfter(): Flow<RemoveDownloadsAfter> {
+        return keyValueStore.getIntFlow(
+            Key.REMOVE_COMPLETED_EPISODES_AFTER,
+            RemoveDownloadsAfter.THIRTY_DAYS.key,
+        )
+            .map {
+                RemoveDownloadsAfter.fromKey(it)
+            }
+    }
+
+    suspend fun setRemoveCompletedEpisodesAfter(removeDownloadsAfter: RemoveDownloadsAfter) {
+        keyValueStore.putInt(Key.REMOVE_COMPLETED_EPISODES_AFTER, removeDownloadsAfter.key)
+    }
+
+    fun getRemoveUnfinishedEpisodesAfter(): Flow<RemoveDownloadsAfter> {
+        return keyValueStore.getIntFlow(
+            Key.REMOVE_UNFINISHED_EPISODES_AFTER,
+            RemoveDownloadsAfter.THIRTY_DAYS.key,
+        )
+            .map {
+                RemoveDownloadsAfter.fromKey(it)
+            }
+    }
+
+    suspend fun setRemoveUnfinishedEpisodesAfter(removeDownloadsAfter: RemoveDownloadsAfter) {
+        keyValueStore.putInt(Key.REMOVE_UNFINISHED_EPISODES_AFTER, removeDownloadsAfter.key)
     }
 }

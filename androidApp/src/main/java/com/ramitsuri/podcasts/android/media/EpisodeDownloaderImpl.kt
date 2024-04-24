@@ -11,10 +11,12 @@ import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.utils.Constants
 import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.utils.LogHelper
 
 @OptIn(UnstableApi::class)
 class EpisodeDownloaderImpl(private val appContext: Context) : EpisodeDownloader {
     override fun add(episode: Episode) {
+        LogHelper.d(TAG, "Adding ${episode.title}")
         // Episode download
         val episodeRequest =
             DownloadRequest.Builder(
@@ -39,6 +41,7 @@ class EpisodeDownloaderImpl(private val appContext: Context) : EpisodeDownloader
     }
 
     override fun remove(episode: Episode) {
+        LogHelper.d(TAG, "Removing ${episode.title}")
         DownloadService.sendRemoveDownload(
             appContext,
             PodcastDownloadService::class.java,
@@ -48,6 +51,7 @@ class EpisodeDownloaderImpl(private val appContext: Context) : EpisodeDownloader
     }
 
     override fun cancel(episode: Episode) {
+        LogHelper.d(TAG, "Canceling ${episode.title}")
         DownloadService.sendSetStopReason(
             appContext,
             PodcastDownloadService::class.java,
@@ -55,5 +59,9 @@ class EpisodeDownloaderImpl(private val appContext: Context) : EpisodeDownloader
             Constants.DOWNLOAD_CANCELED_REASON,
             false,
         )
+    }
+
+    companion object {
+        private const val TAG = "EpisodeDownloader"
     }
 }
