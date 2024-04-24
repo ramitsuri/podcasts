@@ -33,9 +33,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
@@ -156,6 +158,13 @@ fun NavGraph(
             sheetContent =
                 if (bottomSheetVisible) {
                     {
+                        LifecycleStartEffect(LocalLifecycleOwner.current) {
+                            playerViewModel.initializePlayer()
+
+                            onStopOrDispose {
+                                playerViewModel.releasePlayer()
+                            }
+                        }
                         PlayerScreen(
                             isExpanded = isExpanded,
                             state = playerState,

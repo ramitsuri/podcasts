@@ -8,6 +8,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.player.PlayerController
+import com.ramitsuri.podcasts.utils.LogHelper
 import kotlin.time.Duration
 
 class PlayerControllerImpl(
@@ -18,6 +19,7 @@ class PlayerControllerImpl(
     private var controllerFuture: ListenableFuture<MediaController>? = null
 
     override fun initializePlayer() {
+        LogHelper.d(TAG, "Initialize player")
         val sessionToken = SessionToken(appContext, ComponentName(appContext, PodcastMediaSessionService::class.java))
         controllerFuture = MediaController.Builder(appContext, sessionToken).buildAsync()
         controllerFuture
@@ -62,6 +64,7 @@ class PlayerControllerImpl(
     }
 
     override fun releasePlayer() {
+        LogHelper.d(TAG, "Release player")
         controllerFuture?.let {
             MediaController.releaseFuture(it)
         }
@@ -69,5 +72,9 @@ class PlayerControllerImpl(
 
     private fun MediaController.setMediaItemForEpisode(episode: Episode) {
         setMediaItem(episode.asMediaItem(), episode.progressInSeconds.times(1000).toLong())
+    }
+
+    companion object {
+        private const val TAG = "PlayerController"
     }
 }
