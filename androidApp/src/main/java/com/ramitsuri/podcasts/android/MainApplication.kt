@@ -39,13 +39,11 @@ import org.koin.dsl.module
 
 @UnstableApi
 class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
-    private val playerController by inject<PlayerController>()
     private val episodeFetcher by inject<EpisodeFetcher>()
 
     override fun onCreate() {
         super.onCreate()
         initDependencyInjection()
-        playerController.initializePlayer()
         episodeFetcher.startForegroundStateBasedFetcher()
         EpisodeFetchWorker.enqueuePeriodic(this)
     }
