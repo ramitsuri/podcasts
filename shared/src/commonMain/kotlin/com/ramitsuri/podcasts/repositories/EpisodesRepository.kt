@@ -5,6 +5,7 @@ import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.PodcastResult
+import com.ramitsuri.podcasts.model.RemoveDownloadsAfter
 import com.ramitsuri.podcasts.network.api.interfaces.EpisodesApi
 import com.ramitsuri.podcasts.network.model.GetEpisodesRequest
 import com.ramitsuri.podcasts.settings.Settings
@@ -131,6 +132,26 @@ class EpisodesRepository internal constructor(
             .getNeedDownloadEpisodes()
             .map { dbEpisode ->
                 Episode(dbEpisode)
+            }
+    }
+
+    suspend fun getEpisodesEligibleForRemoval(
+        removeCompletedAfter: RemoveDownloadsAfter,
+        removeUnfinishedAfter: RemoveDownloadsAfter,
+        now: Instant,
+    ): List<Episode> {
+        return episodesDao
+            .getDownloaded()
+            .map { dbEpisode ->
+                Episode(dbEpisode)
+            }
+            .filter { episode ->
+                val downloadAtTime = episode.downloadedAt ?: return@filter false
+                if (episode.isCompleted) {
+                    now.minus(downloadAtTime) >= removeCompletedAfter.duration
+                } else {
+                    now.minus(downloadAtTime) >= removeUnfinishedAfter.duration
+                }
             }
     }
 

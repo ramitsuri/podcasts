@@ -26,7 +26,7 @@ class EpisodeFetchWorker(
         LogHelper.d(TAG, "Starting work")
         // Cannot auto download episodes from a worker because of restriction on starting foreground service (which
         // episode downloader starts) from background (which a worker is)
-        episodeFetcher.fetchPodcastsIfNecessary(forced = true, episodeDownloadAllowed = false)
+        episodeFetcher.fetchPodcastsIfNecessary(forced = true, downloaderTasksAllowed = false)
         return Result.success()
     }
 
