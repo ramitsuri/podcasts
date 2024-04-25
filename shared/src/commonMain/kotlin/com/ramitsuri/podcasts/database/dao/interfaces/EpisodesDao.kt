@@ -14,11 +14,17 @@ internal interface EpisodesDao {
      */
     suspend fun insert(episodes: List<Episode>): List<Episode>
 
-    fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<DbEpisode>>
+    fun getEpisodesForPodcastsFlow(
+        podcastIds: List<Long>,
+        page: Long,
+        pageSize: Long = PAGE_SIZE,
+    ): Flow<List<DbEpisode>>
 
     fun getEpisodesForPodcastFlow(
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
+        page: Long,
+        pageSize: Long = PAGE_SIZE,
     ): Flow<List<DbEpisode>>
 
     suspend fun getEpisodesForPodcast(podcastId: Long): List<DbEpisode>
@@ -87,4 +93,8 @@ internal interface EpisodesDao {
         id: String,
         needsDownload: Boolean,
     )
+
+    companion object {
+        private const val PAGE_SIZE: Long = 100
+    }
 }

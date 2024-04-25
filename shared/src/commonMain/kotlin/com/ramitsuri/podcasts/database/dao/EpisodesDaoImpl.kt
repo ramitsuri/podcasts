@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.database.dao
 
+import androidx.annotation.Size
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
@@ -38,26 +39,34 @@ internal class EpisodesDaoImpl(
         }
     }
 
-    override fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<DbEpisode>> {
+    // This one
+    override fun getEpisodesForPodcastsFlow(
+        podcastIds: List<Long>,
+        page: Long,
+        pageSize: Long,
+    ): Flow<List<DbEpisode>> {
         return episodeEntityQueries
-            .getEpisodesForPodcasts(podcastIds)
+            .getEpisodesForPodcasts(podcastIds = podcastIds, pageSize = pageSize, page = page)
             .asFlow()
             .mapToList(ioDispatcher)
     }
 
+    // This one
     override fun getEpisodesForPodcastFlow(
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
+        page: Long,
+        pageSize: Long,
     ): Flow<List<DbEpisode>> {
         return when (sortOrder) {
             EpisodeSortOrder.DATE_PUBLISHED_DESC -> {
                 episodeEntityQueries
-                    .getEpisodesForPodcast(podcastId)
+                    .getEpisodesForPodcast(podcastId = podcastId, pageSize = pageSize, page = page)
             }
 
             EpisodeSortOrder.DATE_PUBLISHED_ASC -> {
                 episodeEntityQueries
-                    .getEpisodesForPodcastAsc(podcastId)
+                    .getEpisodesForPodcastAsc(podcastId = podcastId, pageSize = pageSize, page = page)
             }
         }
             .asFlow()
@@ -67,7 +76,7 @@ internal class EpisodesDaoImpl(
     override suspend fun getEpisodesForPodcast(podcastId: Long): List<DbEpisode> {
         return withContext(ioDispatcher) {
             episodeEntityQueries
-                .getEpisodesForPodcast(podcastId)
+                .getAllEpisodesForPodcast(podcastId = podcastId)
                 .executeAsList()
         }
     }
@@ -196,7 +205,7 @@ internal class EpisodesDaoImpl(
                         .executeAsOneOrNull()
                         ?.currentMaxQueuePosition
                         ?: Episode.NOT_IN_QUEUE
-                ) + 1
+                    ) + 1
             updateQueuePosition(id, queuePosition)
         }
     }

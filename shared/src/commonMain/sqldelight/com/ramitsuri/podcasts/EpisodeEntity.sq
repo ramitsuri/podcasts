@@ -29,20 +29,28 @@ getEpisode:
 SELECT * FROM dbEpisode
 WHERE id == :id;
 
-getEpisodesForPodcast:
+getAllEpisodesForPodcast:
 SELECT * FROM dbEpisode
 WHERE podcastId == :podcastId
 ORDER BY datePublished DESC;
+
+getEpisodesForPodcast:
+SELECT * FROM dbEpisode
+WHERE podcastId == :podcastId
+ORDER BY datePublished DESC
+LIMIT :pageSize OFFSET :page;
 
 getEpisodesForPodcastAsc:
 SELECT * FROM dbEpisode
 WHERE podcastId == :podcastId
-ORDER BY datePublished ASC;
+ORDER BY datePublished ASC
+LIMIT :pageSize OFFSET :page;
 
 getEpisodesForPodcasts:
 SELECT * FROM dbEpisode
 WHERE podcastId IN :podcastIds
-ORDER BY datePublished DESC;
+ORDER BY datePublished DESC
+LIMIT :pageSize OFFSET :page;
 
 getEpisodesInQueue:
 SELECT * FROM dbEpisode
