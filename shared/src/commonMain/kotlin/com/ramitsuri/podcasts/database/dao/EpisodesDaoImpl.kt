@@ -43,10 +43,9 @@ internal class EpisodesDaoImpl(
     override fun getEpisodesForPodcastsFlow(
         podcastIds: List<Long>,
         page: Long,
-        pageSize: Long,
     ): Flow<List<DbEpisode>> {
         return episodeEntityQueries
-            .getEpisodesForPodcasts(podcastIds = podcastIds, pageSize = pageSize, page = page)
+            .getEpisodesForPodcasts(podcastIds = podcastIds, offset = page.offset(), limit = PAGE_SIZE)
             .asFlow()
             .mapToList(ioDispatcher)
     }
@@ -56,17 +55,16 @@ internal class EpisodesDaoImpl(
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
         page: Long,
-        pageSize: Long,
     ): Flow<List<DbEpisode>> {
         return when (sortOrder) {
             EpisodeSortOrder.DATE_PUBLISHED_DESC -> {
                 episodeEntityQueries
-                    .getEpisodesForPodcast(podcastId = podcastId, pageSize = pageSize, page = page)
+                    .getEpisodesForPodcast(podcastId = podcastId, offset = page.offset(), limit = PAGE_SIZE)
             }
 
             EpisodeSortOrder.DATE_PUBLISHED_ASC -> {
                 episodeEntityQueries
-                    .getEpisodesForPodcastAsc(podcastId = podcastId, pageSize = pageSize, page = page)
+                    .getEpisodesForPodcastAsc(podcastId = podcastId, offset = page.offset(), limit = PAGE_SIZE)
             }
         }
             .asFlow()
@@ -288,5 +286,13 @@ internal class EpisodesDaoImpl(
             ),
         )
         return true
+    }
+
+    private fun Long.offset() = (this - 1) * PAGE_SIZE
+
+    companion object {
+        // TODO
+        //private const val PAGE_SIZE: Long = 100
+        private const val PAGE_SIZE: Long = 10
     }
 }

@@ -1,8 +1,10 @@
 package com.ramitsuri.podcasts.viewmodel
 
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
+import com.ramitsuri.podcasts.model.PodcastWithEpisodes
 import com.ramitsuri.podcasts.model.ui.PodcastDetailsViewState
 import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes
+import com.ramitsuri.podcasts.model.ui.SelectableEpisode
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
@@ -47,7 +49,7 @@ class PodcastDetailsViewModel(
                 launch {
                     settings.getPodcastDetailsEpisodeSortOrder().collect { sortOrder ->
                         _state.update { it.copy(episodeSortOrder = sortOrder) }
-                        updatePodcastAndEpisodes(sortOrder)
+                        updatePodcastAndEpisodes()
                     }
                 }
 
@@ -190,13 +192,21 @@ class PodcastDetailsViewModel(
         }
     }
 
-    private fun updatePodcastAndEpisodes(sortOrder: EpisodeSortOrder) {
+    fun onNextPage() {
+        _state.update { it.copy(page = it.page + 1) }
+        updatePodcastAndEpisodes()
+    }
+
+    private fun updatePodcastAndEpisodes() {
         val podcastId = podcastId ?: return
+        val state = _state.value
+        val page = state.page
+        val sortOrder = state.episodeSortOrder
         updatePodcastAndEpisodesJob?.cancel()
         updatePodcastAndEpisodesJob =
             viewModelScope.launch {
                 combine(
-                    podcastsAndEpisodesRepository.getPodcastWithEpisodesFlow(podcastId, sortOrder),
+                    podcastsAndEpisodesRepository.getPodcastWithEpisodesFlow(podcastId, sortOrder, page),
                     episodesRepository.getCurrentEpisode(),
                     settings.getPlayingStateFlow(),
                 ) { podcastWithEpisodes, currentlyPlayingEpisode, playingState ->
@@ -204,13 +214,27 @@ class PodcastDetailsViewModel(
                 }.collect { (podcastWithEpisodes, currentlyPlayingEpisode, playingState) ->
                     _state.update { previousState ->
                         previousState.copy(
-                            podcastWithEpisodes = podcastWithEpisodes?.let { PodcastWithSelectableEpisodes(it) },
+                            podcastWithEpisodes = newEpisodes(podcastWithEpisodes),
                             currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
                             playingState = playingState,
                         )
                     }
                 }
             }
+    }
+
+    private fun newEpisodes(newPodcastWithEpisodes: PodcastWithEpisodes?): PodcastWithSelectableEpisodes? {
+        if (newPodcastWithEpisodes == null) {
+            return null
+        }
+        val state = _state.value
+        if (state.podcastWithEpisodes == null) {
+            return PodcastWithSelectableEpisodes(newPodcastWithEpisodes)
+        }
+        return PodcastWithSelectableEpisodes(
+            podcast = state.podcastWithEpisodes.podcast,
+            episodes = state.podcastWithEpisodes.episodes + newPodcastWithEpisodes.episodes.map { SelectableEpisode(it) },
+        )
     }
 
     companion object {

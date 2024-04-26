@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Circle
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -102,6 +103,7 @@ fun PodcastDetailsScreen(
     onUnselectAllEpisodesClicked: () -> Unit,
     onMarkSelectedEpisodesAsPlayed: () -> Unit,
     onMarkSelectedEpisodesAsNotPlayed: () -> Unit,
+    onNextPage: ()->Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -138,6 +140,7 @@ fun PodcastDetailsScreen(
                 onUnselectAllEpisodesClicked = onUnselectAllEpisodesClicked,
                 onMarkSelectedEpisodesAsPlayed = onMarkSelectedEpisodesAsPlayed,
                 onMarkSelectedEpisodesAsNotPlayed = onMarkSelectedEpisodesAsNotPlayed,
+                onNextPage = onNextPage,
             )
         }
     }
@@ -173,6 +176,7 @@ private fun PodcastDetails(
     onUnselectAllEpisodesClicked: () -> Unit,
     onMarkSelectedEpisodesAsPlayed: () -> Unit,
     onMarkSelectedEpisodesAsNotPlayed: () -> Unit,
+    onNextPage: ()->Unit,
 ) {
     val podcast = podcastWithEpisodes.podcast
     LazyColumn(modifier = modifier) {
@@ -229,6 +233,11 @@ private fun PodcastDetails(
             )
         }
         item {
+            Button(onClick = onNextPage) {
+                Text(text = "Load more")
+            }
+        }
+        item {
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -271,9 +280,9 @@ private fun EpisodeCountAndMenu(
         }
     Row(
         modifier =
-            Modifier
-                .padding(vertical = 8.dp, horizontal = 16.dp)
-                .fillMaxWidth(),
+        Modifier
+            .padding(vertical = 8.dp, horizontal = 16.dp)
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -431,9 +440,9 @@ private fun PodcastHeader(
         ) {
             Text(
                 modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .animateContentSize(),
+                Modifier
+                    .fillMaxWidth()
+                    .animateContentSize(),
                 text = html,
                 overflow = TextOverflow.Visible,
                 maxLines = if (isExpanded) Int.MAX_VALUE else collapsedMaxLine,
@@ -459,9 +468,9 @@ private fun TitleAndImage(podcast: Podcast) {
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .size(64.dp),
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .size(64.dp),
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column {
@@ -608,26 +617,26 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-            Modifier
-                .combinedClickable(
-                    onClick =
-                        if (inSelectionState) {
-                            onSelectionChanged
-                        } else {
-                            onClicked
-                        },
-                    onLongClick = onSelectionChanged,
-                )
-                .background(
-                    color =
-                        if (inSelectionState && selected) {
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                        } else {
-                            MaterialTheme.colorScheme.background
-                        },
-                )
-                .padding(top = 12.dp, bottom = 4.dp)
-                .padding(horizontal = 16.dp),
+        Modifier
+            .combinedClickable(
+                onClick =
+                if (inSelectionState) {
+                    onSelectionChanged
+                } else {
+                    onClicked
+                },
+                onLongClick = onSelectionChanged,
+            )
+            .background(
+                color =
+                if (inSelectionState && selected) {
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                } else {
+                    MaterialTheme.colorScheme.background
+                },
+            )
+            .padding(top = 12.dp, bottom = 4.dp)
+            .padding(horizontal = 16.dp),
     ) {
         val datePublished = episode.datePublishedInstant
         if (datePublished != null) {
@@ -734,6 +743,7 @@ private fun PodcastDetailsPreview() {
             onUnselectAllEpisodesClicked = { },
             onMarkSelectedEpisodesAsPlayed = { },
             onMarkSelectedEpisodesAsNotPlayed = { },
+            onNextPage = { },
         )
     }
 }
@@ -783,6 +793,7 @@ private fun PodcastDetails_WithSelectionPreview() {
             onUnselectAllEpisodesClicked = { },
             onMarkSelectedEpisodesAsPlayed = { },
             onMarkSelectedEpisodesAsNotPlayed = { },
+            onNextPage = { },
         )
     }
 }

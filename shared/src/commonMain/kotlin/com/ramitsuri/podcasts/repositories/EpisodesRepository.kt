@@ -53,9 +53,10 @@ class EpisodesRepository internal constructor(
     fun getEpisodesForPodcastFlow(
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
+        page: Long,
     ): Flow<List<Episode>> {
         return episodesDao
-            .getEpisodesForPodcastFlow(podcastId, sortOrder)
+            .getEpisodesForPodcastFlow(podcastId, sortOrder, page)
             .map { list ->
                 list.map { dbEpisode ->
                     Episode(dbEpisode)
@@ -64,9 +65,12 @@ class EpisodesRepository internal constructor(
     }
 
     // This one
-    fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<Episode>> {
+    fun getEpisodesForPodcastsFlow(
+        podcastIds: List<Long>,
+        page: Long,
+    ): Flow<List<Episode>> {
         return episodesDao
-            .getEpisodesForPodcastsFlow(podcastIds)
+            .getEpisodesForPodcastsFlow(podcastIds, page)
             .map { list ->
                 list.map { dbEpisode ->
                     Episode(dbEpisode)

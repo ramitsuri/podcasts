@@ -116,11 +116,12 @@ class PodcastsAndEpisodesRepository internal constructor(
     suspend fun getPodcastWithEpisodesFlow(
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
+        page: Long,
     ): Flow<PodcastWithEpisodes?> {
         return withContext(ioDispatcher) {
             return@withContext combine(
                 podcastsRepository.getFlow(podcastId),
-                episodesRepository.getEpisodesForPodcastFlow(podcastId, sortOrder),
+                episodesRepository.getEpisodesForPodcastFlow(podcastId, sortOrder, page),
             ) { podcast, episodes ->
                 if (podcast == null) {
                     null
@@ -142,12 +143,12 @@ class PodcastsAndEpisodesRepository internal constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun getSubscribedFlow(): Flow<List<Episode>> {
+    fun getSubscribedFlow(page: Long=1): Flow<List<Episode>> {
         return podcastsRepository
             .getAllSubscribedFlow()
             .flatMapLatest { podcasts ->
                 val subscribedPodcastIds = podcasts.map { it.id }
-                episodesRepository.getEpisodesForPodcastsFlow(subscribedPodcastIds).map { list ->
+                episodesRepository.getEpisodesForPodcastsFlow(subscribedPodcastIds, page).map { list ->
                     list.filter { !it.isCompleted }
                 }
             }

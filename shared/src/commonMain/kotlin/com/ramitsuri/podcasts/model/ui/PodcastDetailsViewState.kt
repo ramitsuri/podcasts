@@ -11,6 +11,7 @@ data class PodcastDetailsViewState(
     val currentlyPlayingEpisodeId: String? = null,
     val playingState: PlayingState = PlayingState.NOT_PLAYING,
     val episodeSortOrder: EpisodeSortOrder = EpisodeSortOrder.DATE_PUBLISHED_DESC,
+    val page: Long = 1,
 )
 
 data class PodcastWithSelectableEpisodes(
@@ -23,11 +24,13 @@ data class PodcastWithSelectableEpisodes(
 
     constructor(podcastWithEpisodes: PodcastWithEpisodes) : this(
         podcast = podcastWithEpisodes.podcast,
-        episodes = podcastWithEpisodes.episodes.map { SelectableEpisode(selected = false, episode = it) },
+        episodes = podcastWithEpisodes.episodes.map { SelectableEpisode(it) },
     )
 }
 
 data class SelectableEpisode(
     val selected: Boolean,
     val episode: Episode,
-)
+) {
+    constructor(episode: Episode) : this(selected = false, episode = episode)
+}

@@ -447,6 +447,7 @@ fun NavGraph(
                         onUnselectAllEpisodesClicked = viewModel::onUnselectAllEpisodes,
                         onMarkSelectedEpisodesAsPlayed = viewModel::onMarkSelectedAsPlayed,
                         onMarkSelectedEpisodesAsNotPlayed = viewModel::onMarkSelectedAsNotPlayed,
+                        onNextPage = viewModel::onNextPage,
                         modifier =
                             Modifier
                                 .statusBarsPadding()
