@@ -50,10 +50,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.view.HapticFeedbackConstantsCompat
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.R
@@ -298,6 +300,7 @@ private fun MainControls(
     onFavoriteClicked: () -> Unit,
     onNotFavoriteClicked: () -> Unit,
 ) {
+    val view = LocalView.current
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -319,7 +322,13 @@ private fun MainControls(
         }
         when (playingState) {
             PlayingState.PLAYING -> {
-                FilledIconButton(onClick = onPauseClicked, modifier = Modifier.size(56.dp)) {
+                FilledIconButton(
+                    onClick = {
+                        onPauseClicked()
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_OFF)
+                    },
+                    modifier = Modifier.size(56.dp),
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Pause,
                         modifier = Modifier.size(32.dp),
@@ -329,7 +338,13 @@ private fun MainControls(
             }
 
             PlayingState.NOT_PLAYING -> {
-                FilledIconButton(onClick = onPlayClicked, modifier = Modifier.size(56.dp)) {
+                FilledIconButton(
+                    onClick = {
+                        onPlayClicked()
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_ON)
+                    },
+                    modifier = Modifier.size(56.dp),
+                ) {
                     Icon(
                         imageVector = Icons.Filled.PlayArrow,
                         modifier = Modifier.size(32.dp),
@@ -659,6 +674,7 @@ private fun PlayerScreenNotExpanded(
     onPauseClicked: () -> Unit,
     onClicked: () -> Unit,
 ) {
+    val view = LocalView.current
     Column(
         modifier =
             modifier
@@ -696,7 +712,12 @@ private fun PlayerScreenNotExpanded(
             Spacer(modifier = Modifier.width(8.dp))
             when (playingState) {
                 PlayingState.PLAYING -> {
-                    IconButton(onClick = onPauseClicked) {
+                    IconButton(
+                        onClick = {
+                            onPauseClicked()
+                            view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_OFF)
+                        },
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.Pause,
                             contentDescription = stringResource(id = R.string.pause),
@@ -705,7 +726,12 @@ private fun PlayerScreenNotExpanded(
                 }
 
                 PlayingState.NOT_PLAYING -> {
-                    IconButton(onClick = onPlayClicked) {
+                    IconButton(
+                        onClick = {
+                            onPlayClicked()
+                            view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_ON)
+                        },
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.PlayArrow,
                             contentDescription = stringResource(id = R.string.play),
