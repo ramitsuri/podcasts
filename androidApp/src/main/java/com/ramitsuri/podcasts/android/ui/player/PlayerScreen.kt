@@ -327,7 +327,8 @@ private fun MainControls(
                         onPauseClicked()
                         view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_OFF)
                     },
-                    modifier = Modifier.size(56.dp)) {
+                    modifier = Modifier.size(56.dp),
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Pause,
                         modifier = Modifier.size(32.dp),
