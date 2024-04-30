@@ -66,7 +66,7 @@ fun HomeScreen(
     onSettingsClicked: () -> Unit,
     onImportSubscriptionsClicked: () -> Unit,
     onPodcastClicked: (podcastId: Long) -> Unit,
-    onPodcastHasNewSeen: (podcastId: Long) -> Unit,
+    onPodcastHasNewSeen: (podcastId: Long) -> Boolean,
     onMorePodcastsClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
@@ -104,8 +104,10 @@ fun HomeScreen(
                         podcasts = state.subscribedPodcasts,
                         onPodcastClicked = { onPodcastClicked(it.id) },
                         onPodcastLongClicked = {
-                            onPodcastHasNewSeen(it.id)
-                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            val hadNewEpisodes = onPodcastHasNewSeen(it.id)
+                            if (hadNewEpisodes) {
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            }
                         },
                         onMoreClicked = onMorePodcastsClicked,
                     )
