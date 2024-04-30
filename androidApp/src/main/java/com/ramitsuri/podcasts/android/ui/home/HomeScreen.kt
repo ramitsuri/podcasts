@@ -32,9 +32,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -64,7 +66,7 @@ fun HomeScreen(
     onSettingsClicked: () -> Unit,
     onImportSubscriptionsClicked: () -> Unit,
     onPodcastClicked: (podcastId: Long) -> Unit,
-    onPodcastHasNewSeen: (podcastId: Long) -> Unit,
+    onPodcastHasNewSeen: (podcastId: Long) -> Boolean,
     onMorePodcastsClicked: () -> Unit,
     onEpisodeClicked: (episodeId: String) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
@@ -87,6 +89,7 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        val hapticFeedback = LocalHapticFeedback.current
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
         if (state.subscribedPodcasts.isNotEmpty()) {
             CenteredTitleTopAppBar(
@@ -100,7 +103,12 @@ fun HomeScreen(
                     Subscriptions(
                         podcasts = state.subscribedPodcasts,
                         onPodcastClicked = { onPodcastClicked(it.id) },
-                        onPodcastLongClicked = { onPodcastHasNewSeen(it.id) },
+                        onPodcastLongClicked = {
+                            val hadNewEpisodes = onPodcastHasNewSeen(it.id)
+                            if (hadNewEpisodes) {
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            }
+                        },
                         onMoreClicked = onMorePodcastsClicked,
                     )
                 }

@@ -53,10 +53,12 @@ class HomeViewModel internal constructor(
         }
     }
 
-    fun markPodcastHasNewSeen(podcastId: Long) {
+    fun markPodcastHasNewSeen(podcastId: Long): Boolean {
+        val hadNewEpisodes = _state.value.subscribedPodcasts.firstOrNull { it.id == podcastId }?.hasNewEpisodes == true
         viewModelScope.launch {
             podcastsRepository.updateHasNewEpisodes(podcastId, false)
         }
+        return hadNewEpisodes
     }
 
     private data class Data(

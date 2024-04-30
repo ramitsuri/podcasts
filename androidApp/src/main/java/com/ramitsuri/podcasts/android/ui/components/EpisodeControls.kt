@@ -38,9 +38,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.view.HapticFeedbackConstantsCompat
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
@@ -65,6 +67,7 @@ fun EpisodeControls(
     onFavoriteClicked: () -> Unit,
     onNotFavoriteClicked: () -> Unit,
 ) {
+    val view = LocalView.current
     var showMenu by remember { mutableStateOf(false) }
 
     Row(
@@ -78,8 +81,14 @@ fun EpisodeControls(
             isCompleted = episode.isCompleted,
             onClick = {
                 when (playingState) {
-                    PlayingState.PLAYING -> onPauseClicked()
-                    PlayingState.NOT_PLAYING -> onPlayClicked()
+                    PlayingState.PLAYING -> {
+                        onPauseClicked()
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_OFF)
+                    }
+                    PlayingState.NOT_PLAYING -> {
+                        onPlayClicked()
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_ON)
+                    }
                     PlayingState.LOADING -> {}
                 }
             },
@@ -88,13 +97,19 @@ fun EpisodeControls(
             ControlWithTooltip(
                 icon = Icons.AutoMirrored.Filled.PlaylistAdd,
                 toolTipLabelRes = R.string.episode_controller_add_to_queue,
-                onClicked = onAddToQueueClicked,
+                onClicked = {
+                    onAddToQueueClicked()
+                    view.performHapticFeedback(HapticFeedbackConstantsCompat.CONFIRM)
+                },
             )
         } else {
             ControlWithTooltip(
                 icon = Icons.Filled.CheckCircle,
                 toolTipLabelRes = R.string.episode_controller_remove_from_queue,
-                onClicked = onRemoveFromQueueClicked,
+                onClicked = {
+                    onRemoveFromQueueClicked()
+                    view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
+                },
                 useTint = true,
             )
         }
@@ -103,7 +118,10 @@ fun EpisodeControls(
                 ControlWithTooltip(
                     icon = Icons.Outlined.ArrowCircleDown,
                     toolTipLabelRes = R.string.episode_controller_download,
-                    onClicked = onDownloadClicked,
+                    onClicked = {
+                        onDownloadClicked()
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.CONFIRM)
+                    },
                 )
             }
 
@@ -114,7 +132,10 @@ fun EpisodeControls(
                 ControlWithTooltip(
                     icon = Icons.Outlined.Downloading,
                     toolTipLabelRes = R.string.episode_controller_downloading,
-                    onClicked = onCancelDownloadClicked,
+                    onClicked = {
+                        onCancelDownloadClicked()
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
+                    },
                 )
             }
 
@@ -122,7 +143,10 @@ fun EpisodeControls(
                 ControlWithTooltip(
                     icon = ImageVector.vectorResource(R.drawable.ic_arrow_circle_down),
                     toolTipLabelRes = R.string.episode_controller_remove_download,
-                    onClicked = onRemoveDownloadClicked,
+                    onClicked = {
+                        onRemoveDownloadClicked()
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
+                    },
                     useTint = true,
                 )
             }

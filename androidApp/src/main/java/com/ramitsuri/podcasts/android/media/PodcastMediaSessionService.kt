@@ -42,6 +42,7 @@ import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -63,11 +64,11 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     private val cache by inject<Cache>()
     private val episodesRepository by inject<EpisodesRepository>()
     private val sessionHistoryRepository by inject<SessionHistoryRepository>()
-    private val longLivingScope by inject<CoroutineScope>()
     private val settings by inject<Settings>()
     private val clock: Clock by inject<Clock>()
 
     private var mediaSession: MediaSession? = null
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val currentlyPlayingEpisode = MutableStateFlow<Episode?>(null)
     private var attemptingToPlayNextMedia = false
 
@@ -75,6 +76,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     private var insertStopActionJob: Job? = null
 
     override fun onCreate() {
+        LogHelper.d(TAG, "onCreate")
         super.onCreate()
 
         val replay10Button =
@@ -152,6 +154,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         flags: Int,
         startId: Int,
     ): Int {
+        LogHelper.d(TAG, "onStartCommand")
         attachPlayerListener()
         startListeningForUpdates()
         return super.onStartCommand(intent, flags, startId)
@@ -218,6 +221,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
+        LogHelper.d(TAG, "onTaskRemoved")
         val player = mediaSession?.player ?: return
         if (!player.playWhenReady || player.mediaItemCount == 0) {
             stopSelf()
@@ -225,12 +229,13 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     }
 
     override fun onDestroy() {
+        LogHelper.d(TAG, "onDestroy")
         mediaSession?.run {
             player.release()
             release()
             mediaSession = null
         }
-        longLivingScope.cancel()
+        coroutineScope.cancel()
         super.onDestroy()
     }
 
@@ -263,7 +268,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             mediaSession: MediaSession,
             controller: MediaSession.ControllerInfo,
         ): ListenableFuture<MediaSession.MediaItemsWithStartPosition> {
-            return longLivingScope.future {
+            return coroutineScope.future {
                 val currentEpisode = currentlyPlayingEpisode.value
                 if (currentEpisode != null) {
                     val startingPosition = currentEpisode.progressInSeconds.times(1000).toLong()
@@ -333,7 +338,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         insertStartActionJob?.cancel()
         val speed = session.player.playbackParameters.speed
         insertStartActionJob =
-            longLivingScope.launch(Dispatchers.IO) {
+            coroutineScope.launch(Dispatchers.IO) {
                 delay(500)
                 sessionHistoryRepository.episodeStart(
                     episode = episode,
@@ -358,7 +363,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         insertStopActionJob?.cancel()
         val speed = session.player.playbackParameters.speed
         insertStopActionJob =
-            longLivingScope.launch(Dispatchers.IO) {
+            coroutineScope.launch(Dispatchers.IO) {
                 delay(500)
                 sessionHistoryRepository.episodeStop(
                     episode = episode,
@@ -437,7 +442,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             reason: Int,
         ) {
             if (mediaItem != null) {
-                longLivingScope.launch {
+                coroutineScope.launch {
                     val nextEpisode = episodesRepository.getEpisode(mediaItem.mediaId) ?: return@launch
                     val position = nextEpisode.progressInSeconds.times(1000).toLong()
                     player.seekTo(position)
@@ -506,7 +511,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     }
 
     private fun launchSuspend(block: suspend () -> Unit): Job {
-        return longLivingScope.launch {
+        return coroutineScope.launch {
             block()
         }
     }
