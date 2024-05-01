@@ -45,12 +45,6 @@ class PodcastDetailsViewModel(
                 }
 
                 launch {
-                    _state.update {
-                        it.copy(availableEpisodeCount = episodesRepository.getAvailableEpisodeCount(podcastId))
-                    }
-                }
-
-                launch {
                     settings.getPodcastDetailsEpisodeSortOrder().collect { sortOrder ->
                         _state.update { it.copy(episodeSortOrder = sortOrder) }
                         updatePodcastAndEpisodes()
@@ -198,20 +192,34 @@ class PodcastDetailsViewModel(
 
     fun onNextPageRequested() {
         val state = _state.value
-        val podcastWithEpisodes = state.podcastWithEpisodes
-        if (podcastWithEpisodes == null) {
-            LogHelper.v(TAG, "Podcast next page requested but podcast is null")
-            return
-        }
-        val availableEpisodeCount = state.availableEpisodeCount
-        if (podcastWithEpisodes.episodes.size.toLong() == availableEpisodeCount) {
-            LogHelper.v(TAG, "Podcast next page requested but no more episodes")
+        if (!state.hasMorePages) {
+            LogHelper.v(TAG, "Podcast next page requested but no more pages")
             return
         }
         val newPage = state.page + 1
         LogHelper.d(TAG, "Episodes next page requested: $newPage")
         _state.update { it.copy(page = newPage) }
         updatePodcastAndEpisodes()
+    }
+
+    fun onLoadOlderEpisodesRequested(additionalCount: Long) {
+        if (additionalCount < 0) {
+            return
+        }
+        val podcastId = podcastId
+        if (podcastId == null) {
+            LogHelper.v(TAG, "Podcast load older episodes requested but podcast id is null")
+            return
+        }
+        val currentCount = _state.value.availableEpisodeCount
+        val episodesToLoadCount = currentCount + additionalCount
+        longLivingScope.launch {
+            podcastsAndEpisodesRepository.refreshPodcast(
+                podcastId = podcastId,
+                episodesToLoad = episodesToLoadCount,
+                fetchSinceMostRecentEpisode = false,
+            )
+        }
     }
 
     private fun updatePodcastAndEpisodes() {
@@ -230,7 +238,13 @@ class PodcastDetailsViewModel(
                     Triple(podcastWithEpisodes, currentlyPlayingEpisode, playingState)
                 }.collect { (podcastWithEpisodes, currentlyPlayingEpisode, playingState) ->
                     _state.update { previousState ->
+                        val hasMorePages =
+                            previousState.podcastWithEpisodes?.episodes?.size !=
+                                podcastWithEpisodes?.episodes?.size &&
+                                podcastWithEpisodes?.episodes?.size != null
                         previousState.copy(
+                            hasMorePages = hasMorePages,
+                            availableEpisodeCount = episodesRepository.getAvailableEpisodeCount(podcastId),
                             podcastWithEpisodes = previousState.podcastWithEpisodes.mergeWithNew(podcastWithEpisodes),
                             currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
                             playingState = playingState,

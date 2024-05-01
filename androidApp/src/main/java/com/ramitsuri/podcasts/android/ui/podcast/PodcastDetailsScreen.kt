@@ -22,12 +22,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Circle
+import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -36,7 +38,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -54,8 +59,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.core.text.isDigitsOnly
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import be.digitalia.compose.htmlconverter.htmlToString
 import coil.compose.AsyncImage
@@ -108,6 +116,7 @@ fun PodcastDetailsScreen(
     onMarkSelectedEpisodesAsPlayed: () -> Unit,
     onMarkSelectedEpisodesAsNotPlayed: () -> Unit,
     onNextPageRequested: () -> Unit,
+    onLoadOlderEpisodesRequested: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (BuildConfig.DEBUG) {
@@ -126,6 +135,8 @@ fun PodcastDetailsScreen(
         if (podcastWithEpisodes != null) {
             PodcastDetails(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                hasMorePages = state.hasMorePages,
+                alreadyLoadedEpisodeCount = state.availableEpisodeCount,
                 podcastWithEpisodes = podcastWithEpisodes,
                 currentlyPlayingEpisodeId = state.currentlyPlayingEpisodeId,
                 currentlyPlayingEpisodeState = state.playingState,
@@ -154,6 +165,7 @@ fun PodcastDetailsScreen(
                 onMarkSelectedEpisodesAsPlayed = onMarkSelectedEpisodesAsPlayed,
                 onMarkSelectedEpisodesAsNotPlayed = onMarkSelectedEpisodesAsNotPlayed,
                 onNextPageRequested = onNextPageRequested,
+                onLoadOlderEpisodesRequested = onLoadOlderEpisodesRequested,
             )
         }
     }
@@ -162,6 +174,8 @@ fun PodcastDetailsScreen(
 @Composable
 private fun PodcastDetails(
     modifier: Modifier = Modifier,
+    hasMorePages: Boolean,
+    alreadyLoadedEpisodeCount: Long,
     podcastWithEpisodes: PodcastWithSelectableEpisodes,
     currentlyPlayingEpisodeId: String?,
     currentlyPlayingEpisodeState: PlayingState,
@@ -190,6 +204,7 @@ private fun PodcastDetails(
     onMarkSelectedEpisodesAsPlayed: () -> Unit,
     onMarkSelectedEpisodesAsNotPlayed: () -> Unit,
     onNextPageRequested: () -> Unit,
+    onLoadOlderEpisodesRequested: (Long) -> Unit,
 ) {
     val podcast = podcastWithEpisodes.podcast
     val lazyListState = rememberLazyListState()
@@ -255,8 +270,103 @@ private fun PodcastDetails(
                 onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(episode.id) },
             )
         }
+        if (!hasMorePages) {
+            item {
+                LoadEvenOlderEpisodesButton(
+                    alreadyLoadedCount = alreadyLoadedEpisodeCount,
+                    onLoadMoreRequested = onLoadOlderEpisodesRequested,
+                )
+            }
+        }
         item {
             Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+private fun LoadEvenOlderEpisodesButton(
+    alreadyLoadedCount: Long,
+    onLoadMoreRequested: (Long) -> Unit,
+) {
+    var showLoadEvenOlderEpisodesDialog by remember { mutableStateOf(false) }
+    var enteredLoadMoreCount by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedButton(onClick = { showLoadEvenOlderEpisodesDialog = true }) {
+            Text(text = stringResource(id = R.string.podcast_details_load_even_older_episodes))
+        }
+    }
+    if (showLoadEvenOlderEpisodesDialog) {
+        Dialog(
+            onDismissRequest = { showLoadEvenOlderEpisodesDialog = false },
+        ) {
+            Card {
+                Column(
+                    modifier =
+                        Modifier
+                            .padding(16.dp),
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.podcast_details_load_even_older_episodes_title),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text =
+                            stringResource(
+                                id = R.string.podcast_details_load_even_older_episodes_message,
+                            ),
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text =
+                            stringResource(
+                                id = R.string.podcast_details_load_even_older_episodes_message_already_loaded_count,
+                                alreadyLoadedCount,
+                            ),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = enteredLoadMoreCount,
+                        onValueChange = {
+                            if (it.isDigitsOnly()) {
+                                enteredLoadMoreCount = it
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        label = {
+                            Text(stringResource(id = R.string.podcast_details_load_even_older_episodes_text_field_hint))
+                        },
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                        TextButton(
+                            onClick = {
+                                showLoadEvenOlderEpisodesDialog = false
+                                enteredLoadMoreCount = ""
+                            },
+                        ) {
+                            Text(text = stringResource(id = R.string.cancel))
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        TextButton(
+                            onClick = {
+                                showLoadEvenOlderEpisodesDialog = false
+                                onLoadMoreRequested(enteredLoadMoreCount.toLongOrNull() ?: 0)
+                                enteredLoadMoreCount = ""
+                            },
+                        ) {
+                            Text(text = stringResource(id = R.string.podcast_details_load_even_older_episodes_load))
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -744,6 +854,7 @@ private fun PodcastDetailsPreview() {
             onMarkSelectedEpisodesAsPlayed = { },
             onMarkSelectedEpisodesAsNotPlayed = { },
             onNextPageRequested = { },
+            onLoadOlderEpisodesRequested = { },
         )
     }
 }
@@ -794,6 +905,7 @@ private fun PodcastDetails_WithSelectionPreview() {
             onMarkSelectedEpisodesAsPlayed = { },
             onMarkSelectedEpisodesAsNotPlayed = { },
             onNextPageRequested = { },
+            onLoadOlderEpisodesRequested = { },
         )
     }
 }
