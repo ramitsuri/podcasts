@@ -24,11 +24,9 @@ class EpisodesRepository internal constructor(
     // Should be called via PodcastsAndEpisodesRepository because that does other things like marking podcasts
     // having new episodes
     suspend fun refreshForPodcastId(podcastId: Long): PodcastResult<List<Episode>> {
-        val episodes = episodesDao.getEpisodesForPodcast(podcastId)
         val fetchSinceTime =
-            episodes
-                .maxByOrNull { it.datePublished }
-                ?.datePublished
+            episodesDao
+                .getMaxDatePublished(podcastId)
                 // Subtract an hour so that if podcasts were published close to each other, they don't get missed
                 ?.minus(1.hours.inWholeSeconds)
         val request =
@@ -53,9 +51,11 @@ class EpisodesRepository internal constructor(
     fun getEpisodesForPodcastFlow(
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
+        page: Long,
+        showCompleted: Boolean,
     ): Flow<List<Episode>> {
         return episodesDao
-            .getEpisodesForPodcastFlow(podcastId, sortOrder)
+            .getEpisodesForPodcastFlow(podcastId, sortOrder, page, showCompleted)
             .map { list ->
                 list.map { dbEpisode ->
                     Episode(dbEpisode)
@@ -63,9 +63,26 @@ class EpisodesRepository internal constructor(
             }
     }
 
-    fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<Episode>> {
+    suspend fun getEpisodesForPodcast(
+        podcastId: Long,
+        sortOrder: EpisodeSortOrder,
+        page: Long,
+        showCompleted: Boolean,
+    ): List<Episode> {
         return episodesDao
-            .getEpisodesForPodcastsFlow(podcastIds)
+            .getEpisodesForPodcast(podcastId, sortOrder, page, showCompleted)
+            .map { dbEpisode ->
+                Episode(dbEpisode)
+            }
+    }
+
+    fun getEpisodesForPodcastsFlow(
+        podcastIds: List<Long>,
+        page: Long,
+        showCompleted: Boolean,
+    ): Flow<List<Episode>> {
+        return episodesDao
+            .getEpisodesForPodcastsFlow(podcastIds, page, showCompleted)
             .map { list ->
                 list.map { dbEpisode ->
                     Episode(dbEpisode)
@@ -153,6 +170,14 @@ class EpisodesRepository internal constructor(
                     now.minus(downloadAtTime) >= removeUnfinishedAfter.duration
                 }
             }
+    }
+
+    suspend fun getAvailableEpisodeCount(podcastId: Long): Long {
+        return episodesDao.getEpisodeCount(podcastId)
+    }
+
+    suspend fun getAvailableEpisodeCount(podcastIds: List<Long>): Long {
+        return episodesDao.getEpisodeCount(podcastIds)
     }
 
     suspend fun updatePlayProgress(

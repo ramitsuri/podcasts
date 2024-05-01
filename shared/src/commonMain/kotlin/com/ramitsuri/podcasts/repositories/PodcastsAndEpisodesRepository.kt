@@ -116,21 +116,26 @@ class PodcastsAndEpisodesRepository internal constructor(
     suspend fun getPodcastWithEpisodesFlow(
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
+        page: Long,
     ): Flow<PodcastWithEpisodes?> {
         return withContext(ioDispatcher) {
             return@withContext combine(
                 podcastsRepository.getFlow(podcastId),
-                episodesRepository.getEpisodesForPodcastFlow(podcastId, sortOrder),
-            ) { podcast, episodes ->
+                // Use showCompleted = true to listen to any changes in episode list for podcast so that flow can
+                // trigger and then get for real value of podcast.showCompletedEpisodes. This is because we want the
+                // showCompleted filter to live in the sql layer. But we don't have access to the value here yet.
+                episodesRepository.getEpisodesForPodcastFlow(podcastId, sortOrder, page, showCompleted = true),
+            ) { podcast, _ ->
                 if (podcast == null) {
                     null
                 } else {
                     val filteredEpisodes =
-                        if (podcast.showCompletedEpisodes) {
-                            episodes
-                        } else {
-                            episodes.filter { !it.isCompleted }
-                        }
+                        episodesRepository.getEpisodesForPodcast(
+                            podcastId,
+                            sortOrder,
+                            page,
+                            podcast.showCompletedEpisodes,
+                        )
                     PodcastWithEpisodes(podcast, filteredEpisodes)
                 }
             }
@@ -142,14 +147,17 @@ class PodcastsAndEpisodesRepository internal constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun getSubscribedFlow(): Flow<List<Episode>> {
+    fun getSubscribedFlow(page: Long): Flow<List<Episode>> {
         return podcastsRepository
             .getAllSubscribedFlow()
             .flatMapLatest { podcasts ->
                 val subscribedPodcastIds = podcasts.map { it.id }
-                episodesRepository.getEpisodesForPodcastsFlow(subscribedPodcastIds).map { list ->
-                    list.filter { !it.isCompleted }
-                }
+                episodesRepository.getEpisodesForPodcastsFlow(subscribedPodcastIds, page, showCompleted = false)
             }
+    }
+
+    suspend fun getEpisodeCountForSubscribedPodcasts(): Long {
+        val subscribedPodcastIds = podcastsRepository.getAllSubscribed().map { it.id }
+        return episodesRepository.getAvailableEpisodeCount(subscribedPodcastIds)
     }
 }

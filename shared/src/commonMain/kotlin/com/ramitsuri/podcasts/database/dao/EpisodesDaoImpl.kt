@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.database.dao
 
+import app.cash.sqldelight.Query
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
@@ -38,9 +39,17 @@ internal class EpisodesDaoImpl(
         }
     }
 
-    override fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<DbEpisode>> {
+    override fun getEpisodesForPodcastsFlow(
+        podcastIds: List<Long>,
+        page: Long,
+        showCompleted: Boolean,
+    ): Flow<List<DbEpisode>> {
         return episodeEntityQueries
-            .getEpisodesForPodcasts(podcastIds)
+            .getEpisodesForPodcasts(
+                podcastIds = podcastIds,
+                limit = page.toLimit,
+                showCompleted = showCompleted.toShowCompletedLong,
+            )
             .asFlow()
             .mapToList(ioDispatcher)
     }
@@ -48,27 +57,32 @@ internal class EpisodesDaoImpl(
     override fun getEpisodesForPodcastFlow(
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
+        page: Long,
+        showCompleted: Boolean,
     ): Flow<List<DbEpisode>> {
-        return when (sortOrder) {
-            EpisodeSortOrder.DATE_PUBLISHED_DESC -> {
-                episodeEntityQueries
-                    .getEpisodesForPodcast(podcastId)
-            }
-
-            EpisodeSortOrder.DATE_PUBLISHED_ASC -> {
-                episodeEntityQueries
-                    .getEpisodesForPodcastAsc(podcastId)
-            }
-        }
+        return getForPodcast(podcastId, sortOrder, page, showCompleted)
             .asFlow()
             .mapToList(ioDispatcher)
     }
 
-    override suspend fun getEpisodesForPodcast(podcastId: Long): List<DbEpisode> {
+    override suspend fun getEpisodesForPodcast(
+        podcastId: Long,
+        sortOrder: EpisodeSortOrder,
+        page: Long,
+        showCompleted: Boolean,
+    ): List<DbEpisode> {
+        return withContext(ioDispatcher) {
+            getForPodcast(podcastId, sortOrder, page, showCompleted)
+                .executeAsList()
+        }
+    }
+
+    override suspend fun getMaxDatePublished(podcastId: Long): Long? {
         return withContext(ioDispatcher) {
             episodeEntityQueries
-                .getEpisodesForPodcast(podcastId)
-                .executeAsList()
+                .getMaxEpisodeDatePublishedForPodcast(podcastId)
+                .executeAsOneOrNull()
+                ?.maxDatePublished
         }
     }
 
@@ -129,6 +143,24 @@ internal class EpisodesDaoImpl(
             episodeEntityQueries
                 .getNeedDownloadEpisodes()
                 .executeAsList()
+        }
+    }
+
+    override suspend fun getEpisodeCount(podcastId: Long): Long {
+        return withContext(ioDispatcher) {
+            episodeEntityQueries
+                .getEpisodeCountForPodcast(podcastId)
+                .executeAsOneOrNull()
+                ?: 0
+        }
+    }
+
+    override suspend fun getEpisodeCount(podcastIds: List<Long>): Long {
+        return withContext(ioDispatcher) {
+            episodeEntityQueries
+                .getEpisodeCountForPodcasts(podcastIds)
+                .executeAsOneOrNull()
+                ?: 0
         }
     }
 
@@ -279,5 +311,42 @@ internal class EpisodesDaoImpl(
             ),
         )
         return true
+    }
+
+    private fun getForPodcast(
+        podcastId: Long,
+        sortOrder: EpisodeSortOrder,
+        page: Long,
+        showCompleted: Boolean,
+    ): Query<DbEpisode> {
+        return when (sortOrder) {
+            EpisodeSortOrder.DATE_PUBLISHED_DESC -> {
+                episodeEntityQueries
+                    .getEpisodesForPodcast(
+                        podcastId = podcastId,
+                        limit = page.toLimit,
+                        showCompleted = showCompleted.toShowCompletedLong,
+                    )
+            }
+
+            EpisodeSortOrder.DATE_PUBLISHED_ASC -> {
+                episodeEntityQueries
+                    .getEpisodesForPodcastAsc(
+                        podcastId = podcastId,
+                        limit = page.toLimit,
+                        showCompleted = showCompleted.toShowCompletedLong,
+                    )
+            }
+        }
+    }
+
+    private val Long.toLimit
+        get() = this * PAGE_SIZE
+
+    private val Boolean.toShowCompletedLong
+        get() = if (this) 1L else 0L
+
+    companion object {
+        private const val PAGE_SIZE: Long = 100
     }
 }

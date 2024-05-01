@@ -29,20 +29,31 @@ getEpisode:
 SELECT * FROM dbEpisode
 WHERE id == :id;
 
+getMaxEpisodeDatePublishedForPodcast:
+SELECT MAX(datePublished) AS maxDatePublished
+FROM dbEpisode
+WHERE podcastId == :podcastId;
+
 getEpisodesForPodcast:
 SELECT * FROM dbEpisode
 WHERE podcastId == :podcastId
-ORDER BY datePublished DESC;
+AND CASE WHEN :showCompleted = 1 THEN 1 ELSE completedAt IS NULL END
+ORDER BY datePublished DESC
+LIMIT :limit;
 
 getEpisodesForPodcastAsc:
 SELECT * FROM dbEpisode
 WHERE podcastId == :podcastId
-ORDER BY datePublished ASC;
+AND CASE WHEN :showCompleted = 1 THEN 1 ELSE completedAt IS NULL END
+ORDER BY datePublished ASC
+LIMIT :limit;
 
 getEpisodesForPodcasts:
 SELECT * FROM dbEpisode
 WHERE podcastId IN :podcastIds
-ORDER BY datePublished DESC;
+AND CASE WHEN :showCompleted = 1 THEN 1 ELSE completedAt IS NULL END
+ORDER BY datePublished DESC
+LIMIT :limit;
 
 getEpisodesInQueue:
 SELECT * FROM dbEpisode
@@ -61,6 +72,16 @@ WHERE isFavorite == 1;
 getNeedDownloadEpisodes:
 SELECT * FROM dbEpisode
 WHERE needsDownload == 1;
+
+getEpisodeCountForPodcast:
+SELECT COUNT(*) AS count
+FROM dbEpisode
+WHERE podcastId == :podcastId;
+
+getEpisodeCountForPodcasts:
+SELECT COUNT(*) AS count
+FROM dbEpisode
+WHERE podcastId IN :podcastIds;
 
 insertOrReplace:
 INSERT OR REPLACE INTO

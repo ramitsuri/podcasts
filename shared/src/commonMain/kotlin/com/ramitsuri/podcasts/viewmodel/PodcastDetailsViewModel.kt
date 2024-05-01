@@ -2,7 +2,7 @@ package com.ramitsuri.podcasts.viewmodel
 
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.ui.PodcastDetailsViewState
-import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes
+import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes.Companion.mergeWithNew
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
@@ -45,9 +45,15 @@ class PodcastDetailsViewModel(
                 }
 
                 launch {
+                    _state.update {
+                        it.copy(availableEpisodeCount = episodesRepository.getAvailableEpisodeCount(podcastId))
+                    }
+                }
+
+                launch {
                     settings.getPodcastDetailsEpisodeSortOrder().collect { sortOrder ->
                         _state.update { it.copy(episodeSortOrder = sortOrder) }
-                        updatePodcastAndEpisodes(sortOrder)
+                        updatePodcastAndEpisodes()
                     }
                 }
 
@@ -190,13 +196,34 @@ class PodcastDetailsViewModel(
         }
     }
 
-    private fun updatePodcastAndEpisodes(sortOrder: EpisodeSortOrder) {
+    fun onNextPageRequested() {
+        val state = _state.value
+        val podcastWithEpisodes = state.podcastWithEpisodes
+        if (podcastWithEpisodes == null) {
+            LogHelper.v(TAG, "Podcast next page requested but podcast is null")
+            return
+        }
+        val availableEpisodeCount = state.availableEpisodeCount
+        if (podcastWithEpisodes.episodes.size.toLong() == availableEpisodeCount) {
+            LogHelper.v(TAG, "Podcast next page requested but no more episodes")
+            return
+        }
+        val newPage = state.page + 1
+        LogHelper.d(TAG, "Episodes next page requested: $newPage")
+        _state.update { it.copy(page = newPage) }
+        updatePodcastAndEpisodes()
+    }
+
+    private fun updatePodcastAndEpisodes() {
         val podcastId = podcastId ?: return
+        val state = _state.value
+        val page = state.page
+        val sortOrder = state.episodeSortOrder
         updatePodcastAndEpisodesJob?.cancel()
         updatePodcastAndEpisodesJob =
             viewModelScope.launch {
                 combine(
-                    podcastsAndEpisodesRepository.getPodcastWithEpisodesFlow(podcastId, sortOrder),
+                    podcastsAndEpisodesRepository.getPodcastWithEpisodesFlow(podcastId, sortOrder, page),
                     episodesRepository.getCurrentEpisode(),
                     settings.getPlayingStateFlow(),
                 ) { podcastWithEpisodes, currentlyPlayingEpisode, playingState ->
@@ -204,7 +231,7 @@ class PodcastDetailsViewModel(
                 }.collect { (podcastWithEpisodes, currentlyPlayingEpisode, playingState) ->
                     _state.update { previousState ->
                         previousState.copy(
-                            podcastWithEpisodes = podcastWithEpisodes?.let { PodcastWithSelectableEpisodes(it) },
+                            podcastWithEpisodes = previousState.podcastWithEpisodes.mergeWithNew(podcastWithEpisodes),
                             currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
                             playingState = playingState,
                         )

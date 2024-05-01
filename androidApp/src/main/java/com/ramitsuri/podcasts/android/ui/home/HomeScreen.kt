@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +29,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,6 +85,7 @@ fun HomeScreen(
     onEpisodeFavoriteClicked: (episodeId: String) -> Unit,
     onEpisodeNotFavoriteClicked: (episodeId: String) -> Unit,
     modifier: Modifier = Modifier,
+    onNextPageRequested: () -> Unit,
 ) {
     Column(
         modifier =
@@ -89,6 +94,21 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        val lazyListState = rememberLazyListState()
+        val shouldLoadMoreItems by remember {
+            derivedStateOf {
+                val lastVisibleItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
+                val totalItemsCount = lazyListState.layoutInfo.totalItemsCount
+                // There is 1 other item above the list of episodes + we want to load more if second last
+                // item from the end is visible, which is why subtracting 3 (1 + 2)
+                lastVisibleItem != null && lastVisibleItem.index >= totalItemsCount - 3
+            }
+        }
+        LaunchedEffect(shouldLoadMoreItems) {
+            if (shouldLoadMoreItems) {
+                onNextPageRequested()
+            }
+        }
         val hapticFeedback = LocalHapticFeedback.current
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
         if (state.subscribedPodcasts.isNotEmpty()) {
@@ -97,7 +117,7 @@ fun HomeScreen(
                 onSettingsClicked = onSettingsClicked,
             )
         }
-        LazyColumn(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)) {
+        LazyColumn(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), state = lazyListState) {
             if (state.subscribedPodcasts.isNotEmpty()) {
                 item {
                     Subscriptions(

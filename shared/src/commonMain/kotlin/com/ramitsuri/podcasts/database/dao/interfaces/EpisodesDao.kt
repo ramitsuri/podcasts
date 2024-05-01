@@ -14,14 +14,27 @@ internal interface EpisodesDao {
      */
     suspend fun insert(episodes: List<Episode>): List<Episode>
 
-    fun getEpisodesForPodcastsFlow(podcastIds: List<Long>): Flow<List<DbEpisode>>
+    fun getEpisodesForPodcastsFlow(
+        podcastIds: List<Long>,
+        page: Long,
+        showCompleted: Boolean,
+    ): Flow<List<DbEpisode>>
 
     fun getEpisodesForPodcastFlow(
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
+        page: Long,
+        showCompleted: Boolean,
     ): Flow<List<DbEpisode>>
 
-    suspend fun getEpisodesForPodcast(podcastId: Long): List<DbEpisode>
+    suspend fun getEpisodesForPodcast(
+        podcastId: Long,
+        sortOrder: EpisodeSortOrder,
+        page: Long,
+        showCompleted: Boolean,
+    ): List<DbEpisode>
+
+    suspend fun getMaxDatePublished(podcastId: Long): Long?
 
     fun getEpisodeFlow(id: String): Flow<DbEpisode?>
 
@@ -38,6 +51,10 @@ internal interface EpisodesDao {
     suspend fun getQueue(): List<DbEpisode>
 
     suspend fun getNeedDownloadEpisodes(): List<DbEpisode>
+
+    suspend fun getEpisodeCount(podcastId: Long): Long
+
+    suspend fun getEpisodeCount(podcastIds: List<Long>): Long
 
     suspend fun updatePlayProgress(
         id: String,

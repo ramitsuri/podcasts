@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -39,6 +40,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,6 +60,7 @@ import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import be.digitalia.compose.htmlconverter.htmlToString
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.ramitsuri.podcasts.android.BuildConfig
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
@@ -73,6 +77,7 @@ import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.ui.PodcastDetailsViewState
 import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes
 import com.ramitsuri.podcasts.model.ui.SelectableEpisode
+import com.ramitsuri.podcasts.utils.LogHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,8 +107,18 @@ fun PodcastDetailsScreen(
     onUnselectAllEpisodesClicked: () -> Unit,
     onMarkSelectedEpisodesAsPlayed: () -> Unit,
     onMarkSelectedEpisodesAsNotPlayed: () -> Unit,
+    onNextPageRequested: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    if (BuildConfig.DEBUG) {
+        LaunchedEffect(key1 = state) {
+            LogHelper.d(
+                "PodcastDetails",
+                "Total: ${state.podcastWithEpisodes?.episodes?.size}, " +
+                    "selected: ${state.podcastWithEpisodes?.episodes?.count { it.selected }}",
+            )
+        }
+    }
     Column(modifier = modifier) {
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
         TopAppBar(onBack = onBack, scrollBehavior = scrollBehavior)
@@ -138,6 +153,7 @@ fun PodcastDetailsScreen(
                 onUnselectAllEpisodesClicked = onUnselectAllEpisodesClicked,
                 onMarkSelectedEpisodesAsPlayed = onMarkSelectedEpisodesAsPlayed,
                 onMarkSelectedEpisodesAsNotPlayed = onMarkSelectedEpisodesAsNotPlayed,
+                onNextPageRequested = onNextPageRequested,
             )
         }
     }
@@ -173,9 +189,25 @@ private fun PodcastDetails(
     onUnselectAllEpisodesClicked: () -> Unit,
     onMarkSelectedEpisodesAsPlayed: () -> Unit,
     onMarkSelectedEpisodesAsNotPlayed: () -> Unit,
+    onNextPageRequested: () -> Unit,
 ) {
     val podcast = podcastWithEpisodes.podcast
-    LazyColumn(modifier = modifier) {
+    val lazyListState = rememberLazyListState()
+    val shouldLoadMoreItems by remember {
+        derivedStateOf {
+            val lastVisibleItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
+            val totalItemsCount = lazyListState.layoutInfo.totalItemsCount
+            // There is 1 other items in the list above episodes (podcast header) we want to load more if second
+            // last item from the end is visible, which is why subtracting 3 (1 + 2)
+            lastVisibleItem != null && lastVisibleItem.index >= totalItemsCount - 3
+        }
+    }
+    LaunchedEffect(shouldLoadMoreItems) {
+        if (shouldLoadMoreItems) {
+            onNextPageRequested()
+        }
+    }
+    LazyColumn(modifier = modifier, state = lazyListState) {
         item {
             PodcastHeader(
                 podcast = podcast,
@@ -711,6 +743,7 @@ private fun PodcastDetailsPreview() {
             onUnselectAllEpisodesClicked = { },
             onMarkSelectedEpisodesAsPlayed = { },
             onMarkSelectedEpisodesAsNotPlayed = { },
+            onNextPageRequested = { },
         )
     }
 }
@@ -760,6 +793,7 @@ private fun PodcastDetails_WithSelectionPreview() {
             onUnselectAllEpisodesClicked = { },
             onMarkSelectedEpisodesAsPlayed = { },
             onMarkSelectedEpisodesAsNotPlayed = { },
+            onNextPageRequested = { },
         )
     }
 }
