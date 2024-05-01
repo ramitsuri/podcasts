@@ -30,7 +30,7 @@ data class PodcastWithSelectableEpisodes(
 
     companion object {
         fun PodcastWithSelectableEpisodes?.mergeWithNew(
-            newPodcastWithEpisodes: PodcastWithEpisodes?
+            newPodcastWithEpisodes: PodcastWithEpisodes?,
         ): PodcastWithSelectableEpisodes? {
             if (newPodcastWithEpisodes == null) {
                 return this
@@ -39,12 +39,13 @@ data class PodcastWithSelectableEpisodes(
                 return PodcastWithSelectableEpisodes(newPodcastWithEpisodes)
             }
             val currentEpisodes = this.episodes
-            val newEpisodes = newPodcastWithEpisodes.episodes.map { episode ->
-                SelectableEpisode(
-                    episode = episode,
-                    selected = currentEpisodes.firstOrNull { it.episode.id == episode.id }?.selected ?: false,
-                )
-            }
+            val newEpisodes =
+                newPodcastWithEpisodes.episodes.map { episode ->
+                    SelectableEpisode(
+                        episode = episode,
+                        selected = currentEpisodes.firstOrNull { it.episode.id == episode.id }?.selected ?: false,
+                    )
+                }
             return PodcastWithSelectableEpisodes(newPodcastWithEpisodes.podcast, newEpisodes)
         }
     }

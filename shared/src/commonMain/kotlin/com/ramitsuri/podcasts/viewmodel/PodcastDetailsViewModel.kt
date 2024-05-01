@@ -1,9 +1,7 @@
 package com.ramitsuri.podcasts.viewmodel
 
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
-import com.ramitsuri.podcasts.model.PodcastWithEpisodes
 import com.ramitsuri.podcasts.model.ui.PodcastDetailsViewState
-import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes
 import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes.Companion.mergeWithNew
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository

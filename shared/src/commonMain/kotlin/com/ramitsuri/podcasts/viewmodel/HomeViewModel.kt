@@ -65,32 +65,33 @@ class HomeViewModel internal constructor(
     private fun updatePodcastsAndEpisodes() {
         val page = _state.value.page
         updatePodcastsAndEpisodesJob?.cancel()
-        updatePodcastsAndEpisodesJob = viewModelScope.launch {
-            combine(
-                podcastsAndEpisodesRepository.getSubscribedPodcastsFlow(),
-                podcastsAndEpisodesRepository.getSubscribedFlow(page),
-                episodesRepository.getCurrentEpisode(),
-                settings.getPlayingStateFlow(),
-            ) { subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState ->
-                val currentlyPlaying =
-                    if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
-                        currentlyPlayingEpisode
-                    } else {
-                        null
+        updatePodcastsAndEpisodesJob =
+            viewModelScope.launch {
+                combine(
+                    podcastsAndEpisodesRepository.getSubscribedPodcastsFlow(),
+                    podcastsAndEpisodesRepository.getSubscribedFlow(page),
+                    episodesRepository.getCurrentEpisode(),
+                    settings.getPlayingStateFlow(),
+                ) { subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState ->
+                    val currentlyPlaying =
+                        if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
+                            currentlyPlayingEpisode
+                        } else {
+                            null
+                        }
+                    Data(subscribedPodcasts, subscribedEpisodes, currentlyPlaying, playingState)
+                }.collect { (subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState) ->
+                    LogHelper.d(TAG, "Total episodes being shown: ${subscribedEpisodes.size}")
+                    _state.update {
+                        it.copy(
+                            subscribedPodcasts = subscribedPodcasts,
+                            episodes = subscribedEpisodes,
+                            currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
+                            currentlyPlayingEpisodeState = playingState,
+                        )
                     }
-                Data(subscribedPodcasts, subscribedEpisodes, currentlyPlaying, playingState)
-            }.collect { (subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState) ->
-                LogHelper.d(TAG, "Total episodes being shown: ${subscribedEpisodes.size}")
-                _state.update {
-                    it.copy(
-                        subscribedPodcasts = subscribedPodcasts,
-                        episodes = subscribedEpisodes,
-                        currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
-                        currentlyPlayingEpisodeState = playingState,
-                    )
                 }
             }
-        }
     }
 
     private data class Data(

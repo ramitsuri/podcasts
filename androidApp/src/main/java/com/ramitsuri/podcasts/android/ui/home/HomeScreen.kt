@@ -183,9 +183,9 @@ private fun Subscriptions(
     ) {
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -232,12 +232,12 @@ private fun SubscribedPodcastItem(
 ) {
     Box(
         modifier =
-        Modifier
-            .clip(MaterialTheme.shapes.small)
-            .combinedClickable(
-                onClick = onClicked,
-                onLongClick = onLongClicked,
-            ),
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .combinedClickable(
+                    onClick = onClicked,
+                    onLongClick = onLongClicked,
+                ),
     ) {
         AsyncImage(
             model =

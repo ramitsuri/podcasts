@@ -13,7 +13,6 @@ import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
-import com.ramitsuri.podcasts.model.Podcast
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.joinAll
@@ -224,7 +223,7 @@ internal class EpisodesDaoImpl(
                         .executeAsOneOrNull()
                         ?.currentMaxQueuePosition
                         ?: Episode.NOT_IN_QUEUE
-                    ) + 1
+                ) + 1
             updateQueuePosition(id, queuePosition)
         }
     }
@@ -313,7 +312,7 @@ internal class EpisodesDaoImpl(
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
         page: Long,
-        showCompleted: Boolean
+        showCompleted: Boolean,
     ): Query<DbEpisode> {
         return when (sortOrder) {
             EpisodeSortOrder.DATE_PUBLISHED_DESC -> {
@@ -339,11 +338,11 @@ internal class EpisodesDaoImpl(
     private val Long.toLimit
         get() = this * PAGE_SIZE
 
-    //private fun Long.offset() = (this - 1) * PAGE_SIZE
+    // private fun Long.offset() = (this - 1) * PAGE_SIZE
 
     companion object {
         // TODO
-        //private const val PAGE_SIZE: Long = 100
+        // private const val PAGE_SIZE: Long = 100
         private const val PAGE_SIZE: Long = 10
     }
 }

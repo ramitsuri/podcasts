@@ -20,8 +20,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
@@ -77,7 +77,6 @@ import com.ramitsuri.podcasts.model.ui.PodcastDetailsViewState
 import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes
 import com.ramitsuri.podcasts.model.ui.SelectableEpisode
 import com.ramitsuri.podcasts.utils.LogHelper
-import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -231,11 +230,11 @@ private fun PodcastDetails(
             EpisodeItem(
                 episode = episode,
                 playingState =
-                if (currentlyPlayingEpisodeId == episode.id) {
-                    currentlyPlayingEpisodeState
-                } else {
-                    PlayingState.NOT_PLAYING
-                },
+                    if (currentlyPlayingEpisodeId == episode.id) {
+                        currentlyPlayingEpisodeState
+                    } else {
+                        PlayingState.NOT_PLAYING
+                    },
                 inSelectionState = podcastWithEpisodes.inSelectionState,
                 selected = it.selected,
                 onClicked = { onEpisodeClicked(episode.id) },
@@ -283,8 +282,8 @@ private fun EpisodesMenu(
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                Modifier
-                    .size(24.dp),
+                    Modifier
+                        .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
                 tint = MaterialTheme.colorScheme.primary,
             )
@@ -438,16 +437,16 @@ private fun PodcastHeader(
         Spacer(modifier = Modifier.height(16.dp))
         Box(
             modifier =
-            Modifier
-                .clickable(clickable) {
-                    isExpanded = !isExpanded
-                },
+                Modifier
+                    .clickable(clickable) {
+                        isExpanded = !isExpanded
+                    },
         ) {
             Text(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .animateContentSize(),
+                    Modifier
+                        .fillMaxWidth()
+                        .animateContentSize(),
                 text = html,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = if (isExpanded) Int.MAX_VALUE else collapsedMaxLine,
@@ -466,16 +465,16 @@ private fun TitleAndImage(podcast: Podcast) {
     Row(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
             model =
-            ImageRequest.Builder(LocalContext.current)
-                .data(podcast.artwork)
-                .crossfade(true)
-                .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(podcast.artwork)
+                    .crossfade(true)
+                    .build(),
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(64.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(64.dp),
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column {
@@ -518,26 +517,26 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-        Modifier
-            .combinedClickable(
-                onClick =
-                if (inSelectionState) {
-                    onSelectionChanged
-                } else {
-                    onClicked
-                },
-                onLongClick = onSelectionChanged,
-            )
-            .background(
-                color =
-                if (inSelectionState && selected) {
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                } else {
-                    MaterialTheme.colorScheme.background
-                },
-            )
-            .padding(top = 12.dp, bottom = 4.dp)
-            .padding(horizontal = 16.dp),
+            Modifier
+                .combinedClickable(
+                    onClick =
+                        if (inSelectionState) {
+                            onSelectionChanged
+                        } else {
+                            onClicked
+                        },
+                    onLongClick = onSelectionChanged,
+                )
+                .background(
+                    color =
+                        if (inSelectionState && selected) {
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                        } else {
+                            MaterialTheme.colorScheme.background
+                        },
+                )
+                .padding(top = 12.dp, bottom = 4.dp)
+                .padding(horizontal = 16.dp),
     ) {
         val datePublished = episode.datePublishedInstant
         if (datePublished != null) {
@@ -613,31 +612,31 @@ private fun SubscribeButton(
     Box {
         Row(
             modifier =
-            Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .border(
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)),
-                    shape = RoundedCornerShape(8.dp),
-                )
-                .clickable(
-                    onClick = {
-                        if (subscribed) {
-                            showMenu = true
-                        } else {
-                            onSubscribeClicked()
-                            showMenu = true
-                        }
-                    },
-                )
-                .background(
-                    color =
-                    if (subscribed) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                    } else {
-                        MaterialTheme.colorScheme.background
-                    },
-                )
-                .padding(vertical = 4.dp, horizontal = 8.dp),
+                Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .border(
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)),
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .clickable(
+                        onClick = {
+                            if (subscribed) {
+                                showMenu = true
+                            } else {
+                                onSubscribeClicked()
+                                showMenu = true
+                            }
+                        },
+                    )
+                    .background(
+                        color =
+                            if (subscribed) {
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                            } else {
+                                MaterialTheme.colorScheme.background
+                            },
+                    )
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
@@ -702,21 +701,21 @@ private fun PodcastDetailsPreview() {
     PreviewTheme {
         PodcastDetailsScreen(
             state =
-            PodcastDetailsViewState(
-                podcastWithEpisodes =
-                PodcastWithSelectableEpisodes(
-                    podcast = podcast(),
-                    episodes =
-                    listOf(
-                        SelectableEpisode(false, episode()),
-                        SelectableEpisode(false, episode()),
-                        SelectableEpisode(false, episode()),
-                        SelectableEpisode(false, episode()),
-                    ),
+                PodcastDetailsViewState(
+                    podcastWithEpisodes =
+                        PodcastWithSelectableEpisodes(
+                            podcast = podcast(),
+                            episodes =
+                                listOf(
+                                    SelectableEpisode(false, episode()),
+                                    SelectableEpisode(false, episode()),
+                                    SelectableEpisode(false, episode()),
+                                    SelectableEpisode(false, episode()),
+                                ),
+                        ),
+                    currentlyPlayingEpisodeId = null,
+                    playingState = PlayingState.NOT_PLAYING,
                 ),
-                currentlyPlayingEpisodeId = null,
-                playingState = PlayingState.NOT_PLAYING,
-            ),
             onBack = { },
             onSubscribeClicked = { },
             onUnsubscribeClicked = { },
@@ -752,21 +751,21 @@ private fun PodcastDetails_WithSelectionPreview() {
     PreviewTheme {
         PodcastDetailsScreen(
             state =
-            PodcastDetailsViewState(
-                podcastWithEpisodes =
-                PodcastWithSelectableEpisodes(
-                    podcast = podcast(),
-                    episodes =
-                    listOf(
-                        SelectableEpisode(true, episode()),
-                        SelectableEpisode(false, episode()),
-                        SelectableEpisode(true, episode()),
-                        SelectableEpisode(false, episode()),
-                    ),
+                PodcastDetailsViewState(
+                    podcastWithEpisodes =
+                        PodcastWithSelectableEpisodes(
+                            podcast = podcast(),
+                            episodes =
+                                listOf(
+                                    SelectableEpisode(true, episode()),
+                                    SelectableEpisode(false, episode()),
+                                    SelectableEpisode(true, episode()),
+                                    SelectableEpisode(false, episode()),
+                                ),
+                        ),
+                    currentlyPlayingEpisodeId = null,
+                    playingState = PlayingState.NOT_PLAYING,
                 ),
-                currentlyPlayingEpisodeId = null,
-                playingState = PlayingState.NOT_PLAYING,
-            ),
             onBack = { },
             onSubscribeClicked = { },
             onUnsubscribeClicked = { },
