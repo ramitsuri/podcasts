@@ -28,14 +28,15 @@ class EpisodesRepository internal constructor(
         episodesToLoad: Long = 100,
         fetchSinceMostRecentEpisode: Boolean = true,
     ): PodcastResult<List<Episode>> {
-        val fetchSinceTime = if (fetchSinceMostRecentEpisode) {
-            episodesDao
-                .getMaxDatePublished(podcastId)
-                // Subtract an hour so that if podcasts were published close to each other, they don't get missed
-                ?.minus(1.hours.inWholeSeconds)
-        } else {
-            null
-        }
+        val fetchSinceTime =
+            if (fetchSinceMostRecentEpisode) {
+                episodesDao
+                    .getMaxDatePublished(podcastId)
+                    // Subtract an hour so that if podcasts were published close to each other, they don't get missed
+                    ?.minus(1.hours.inWholeSeconds)
+            } else {
+                null
+            }
         val request =
             GetEpisodesRequest(
                 id = podcastId,

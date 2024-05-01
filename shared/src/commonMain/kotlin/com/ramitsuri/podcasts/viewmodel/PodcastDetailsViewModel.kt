@@ -238,9 +238,10 @@ class PodcastDetailsViewModel(
                     Triple(podcastWithEpisodes, currentlyPlayingEpisode, playingState)
                 }.collect { (podcastWithEpisodes, currentlyPlayingEpisode, playingState) ->
                     _state.update { previousState ->
-                        val hasMorePages = previousState.podcastWithEpisodes?.episodes?.size !=
-                            podcastWithEpisodes?.episodes?.size &&
-                            podcastWithEpisodes?.episodes?.size != null
+                        val hasMorePages =
+                            previousState.podcastWithEpisodes?.episodes?.size !=
+                                podcastWithEpisodes?.episodes?.size &&
+                                podcastWithEpisodes?.episodes?.size != null
                         previousState.copy(
                             hasMorePages = hasMorePages,
                             availableEpisodeCount = episodesRepository.getAvailableEpisodeCount(podcastId),

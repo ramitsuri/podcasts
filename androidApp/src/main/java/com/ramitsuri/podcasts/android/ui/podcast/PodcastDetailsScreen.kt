@@ -308,8 +308,8 @@ private fun LoadEvenOlderEpisodesButton(
             Card {
                 Column(
                     modifier =
-                    Modifier
-                        .padding(16.dp),
+                        Modifier
+                            .padding(16.dp),
                 ) {
                     Text(
                         text = stringResource(id = R.string.podcast_details_load_even_older_episodes_title),
@@ -317,16 +317,18 @@ private fun LoadEvenOlderEpisodesButton(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = stringResource(
-                            id = R.string.podcast_details_load_even_older_episodes_message,
-                        ),
+                        text =
+                            stringResource(
+                                id = R.string.podcast_details_load_even_older_episodes_message,
+                            ),
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = stringResource(
-                            id = R.string.podcast_details_load_even_older_episodes_message_already_loaded_count,
-                            alreadyLoadedCount,
-                        ),
+                        text =
+                            stringResource(
+                                id = R.string.podcast_details_load_even_older_episodes_message_already_loaded_count,
+                                alreadyLoadedCount,
+                            ),
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Spacer(modifier = Modifier.height(8.dp))
