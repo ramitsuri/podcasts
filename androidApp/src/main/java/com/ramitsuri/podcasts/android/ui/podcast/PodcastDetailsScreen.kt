@@ -1,10 +1,11 @@
 package com.ramitsuri.podcasts.android.ui.podcast
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,8 +20,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Circle
@@ -28,10 +32,10 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -48,13 +52,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import be.digitalia.compose.htmlconverter.htmlToString
@@ -200,26 +200,21 @@ private fun PodcastDetails(
         item {
             PodcastHeader(
                 podcast = podcast,
+                count = podcastWithEpisodes.episodes.size,
+                selectedCount = podcastWithEpisodes.selectedCount,
+                sortOrder = episodeSortOrder,
+                showCompletedEpisodes = podcast.showCompletedEpisodes,
+                onSortOrderClicked = onEpisodeSortOrderClicked,
+                onSelectAllClicked = onSelectAllEpisodesClicked,
+                onUnselectAllClicked = onUnselectAllEpisodesClicked,
+                onMarkSelectedAsPlayed = onMarkSelectedEpisodesAsPlayed,
+                onMarkSelectedAsNotPlayed = onMarkSelectedEpisodesAsNotPlayed,
+                toggleShowCompletedEpisodesClicked = toggleShowCompletedEpisodesClicked,
                 onSubscribeClicked = onSubscribeClicked,
                 onUnsubscribeClicked = onUnsubscribeClicked,
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,
                 toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
-                toggleShowCompletedEpisodesClicked = toggleShowCompletedEpisodesClicked,
             )
-        }
-        if (podcastWithEpisodes.episodes.isNotEmpty()) {
-            item {
-                EpisodeCountAndMenu(
-                    count = podcastWithEpisodes.episodes.size,
-                    selectedCount = podcastWithEpisodes.selectedCount,
-                    sortOrder = episodeSortOrder,
-                    onSortOrderClicked = onEpisodeSortOrderClicked,
-                    onSelectAllClicked = onSelectAllEpisodesClicked,
-                    onUnselectAllClicked = onUnselectAllEpisodesClicked,
-                    onMarkSelectedAsPlayed = onMarkSelectedEpisodesAsPlayed,
-                    onMarkSelectedAsNotPlayed = onMarkSelectedEpisodesAsNotPlayed,
-                )
-            }
         }
         items(podcastWithEpisodes.episodes) {
             val episode = it.episode
@@ -256,71 +251,6 @@ private fun PodcastDetails(
 }
 
 @Composable
-private fun EpisodeCountAndMenu(
-    count: Int,
-    selectedCount: Int,
-    sortOrder: EpisodeSortOrder,
-    onSortOrderClicked: () -> Unit,
-    onSelectAllClicked: () -> Unit,
-    onUnselectAllClicked: () -> Unit,
-    onMarkSelectedAsPlayed: () -> Unit,
-    onMarkSelectedAsNotPlayed: () -> Unit,
-) {
-    var showMenu by remember { mutableStateOf(false) }
-
-    val countText =
-        pluralStringResource(
-            id = R.plurals.podcast_details_episode_count,
-            count = count,
-            count,
-        )
-    val selectedCountText =
-        if (selectedCount == 0) {
-            ""
-        } else {
-            stringResource(
-                id = R.string.podcast_details_selected_episode_count,
-                selectedCount,
-            )
-        }
-    val text =
-        buildAnnotatedString {
-            append(countText)
-            withStyle(SpanStyle(fontSize = MaterialTheme.typography.bodySmall.fontSize)) {
-                append(selectedCountText)
-            }
-        }
-    Row(
-        modifier =
-        Modifier
-            .padding(vertical = 8.dp, horizontal = 16.dp)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        EpisodesMenu(
-            showMenu = showMenu,
-            onToggleMenu = { showMenu = !showMenu },
-            showSortOrder = selectedCount == 0,
-            sortOrder = sortOrder,
-            showSelectAll = selectedCount != count,
-            showUnselectAll = selectedCount != 0,
-            showMarkAsPlayed = selectedCount != 0,
-            showMarkAsNotPlayed = selectedCount != 0,
-            onSortOrderClicked = onSortOrderClicked,
-            onSelectAllClicked = onSelectAllClicked,
-            onUnselectAllClicked = onUnselectAllClicked,
-            onMarkSelectedAsPlayed = onMarkSelectedAsPlayed,
-            onMarkSelectedAsNotPlayed = onMarkSelectedAsNotPlayed,
-        )
-    }
-}
-
-@Composable
 private fun EpisodesMenu(
     showMenu: Boolean,
     onToggleMenu: () -> Unit,
@@ -330,11 +260,14 @@ private fun EpisodesMenu(
     showUnselectAll: Boolean,
     showMarkAsPlayed: Boolean,
     showMarkAsNotPlayed: Boolean,
+    showCompletedEpisodes: Boolean,
+    showCompletedEpisodesMenuItem: Boolean,
     onSortOrderClicked: () -> Unit,
     onSelectAllClicked: () -> Unit,
     onUnselectAllClicked: () -> Unit,
     onMarkSelectedAsPlayed: () -> Unit,
     onMarkSelectedAsNotPlayed: () -> Unit,
+    toggleShowCompletedEpisodesClicked: () -> Unit,
 ) {
     Box {
         IconButton(onClick = { onToggleMenu() }) {
@@ -344,6 +277,7 @@ private fun EpisodesMenu(
                 Modifier
                     .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
+                tint = MaterialTheme.colorScheme.primary,
             )
         }
         DropdownMenu(
@@ -360,8 +294,25 @@ private fun EpisodesMenu(
                 DropdownMenuItem(
                     text = { Text(stringResource(id = sortTextResId)) },
                     onClick = {
-                        onSortOrderClicked()
                         onToggleMenu()
+                        onSortOrderClicked()
+                    },
+                )
+            }
+
+            // Show Completed Episodes
+            if (showCompletedEpisodesMenuItem) {
+                val showCompletedTextResId =
+                    if (showCompletedEpisodes) {
+                        R.string.podcast_details_hide_completed_episodes
+                    } else {
+                        R.string.podcast_details_show_completed_episodes
+                    }
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = showCompletedTextResId)) },
+                    onClick = {
+                        onToggleMenu()
+                        toggleShowCompletedEpisodesClicked()
                     },
                 )
             }
@@ -371,8 +322,8 @@ private fun EpisodesMenu(
                 DropdownMenuItem(
                     text = { Text(stringResource(id = R.string.podcast_details_mark_selected_as_played)) },
                     onClick = {
-                        onMarkSelectedAsPlayed()
                         onToggleMenu()
+                        onMarkSelectedAsPlayed()
                     },
                 )
             }
@@ -382,8 +333,8 @@ private fun EpisodesMenu(
                 DropdownMenuItem(
                     text = { Text(stringResource(id = R.string.podcast_details_mark_selected_as_not_played)) },
                     onClick = {
-                        onMarkSelectedAsNotPlayed()
                         onToggleMenu()
+                        onMarkSelectedAsNotPlayed()
                     },
                 )
             }
@@ -393,8 +344,8 @@ private fun EpisodesMenu(
                 DropdownMenuItem(
                     text = { Text(stringResource(id = R.string.podcast_details_select_all_episodes)) },
                     onClick = {
-                        onSelectAllClicked()
                         onToggleMenu()
+                        onSelectAllClicked()
                     },
                 )
             }
@@ -404,8 +355,8 @@ private fun EpisodesMenu(
                 DropdownMenuItem(
                     text = { Text(stringResource(id = R.string.podcast_details_unselect_all_episodes)) },
                     onClick = {
-                        onUnselectAllClicked()
                         onToggleMenu()
+                        onUnselectAllClicked()
                     },
                 )
             }
@@ -416,9 +367,18 @@ private fun EpisodesMenu(
 @Composable
 private fun PodcastHeader(
     podcast: Podcast,
+    count: Int,
+    selectedCount: Int,
+    sortOrder: EpisodeSortOrder,
+    showCompletedEpisodes: Boolean,
+    onSortOrderClicked: () -> Unit,
+    onSelectAllClicked: () -> Unit,
+    onUnselectAllClicked: () -> Unit,
+    onMarkSelectedAsPlayed: () -> Unit,
+    onMarkSelectedAsNotPlayed: () -> Unit,
+    toggleShowCompletedEpisodesClicked: () -> Unit,
     toggleAutoDownloadClicked: () -> Unit,
     toggleAutoAddToQueueClicked: () -> Unit,
-    toggleShowCompletedEpisodesClicked: () -> Unit,
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
 ) {
@@ -426,22 +386,46 @@ private fun PodcastHeader(
     val collapsedMaxLine = 3
     var isExpanded by remember { mutableStateOf(false) }
     var clickable by remember { mutableStateOf(false) }
+    var showMenu by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Spacer(modifier = Modifier.height(8.dp))
         TitleAndImage(podcast = podcast)
         Spacer(modifier = Modifier.height(16.dp))
-        PodcastControls(
-            subscribed = podcast.subscribed,
-            autoDownloadNewEpisodes = podcast.autoDownloadEpisodes,
-            autoAddToQueueNewEpisodes = podcast.autoAddToQueue,
-            showCompletedEpisodes = podcast.showCompletedEpisodes,
-            onSubscribeClicked = onSubscribeClicked,
-            onUnsubscribeClicked = onUnsubscribeClicked,
-            toggleAutoDownloadClicked = toggleAutoDownloadClicked,
-            toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
-            toggleShowCompletedEpisodesClicked = toggleShowCompletedEpisodesClicked,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            SubscribeButton(
+                subscribed = podcast.subscribed,
+                autoDownloadNewEpisodes = podcast.autoDownloadEpisodes,
+                autoAddToQueueNewEpisodes = podcast.autoAddToQueue,
+                onSubscribeClicked = onSubscribeClicked,
+                onUnsubscribeClicked = onUnsubscribeClicked,
+                toggleAutoDownloadClicked = toggleAutoDownloadClicked,
+                toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
+            )
+            if (count > 0) {
+                EpisodesMenu(
+                    showMenu = showMenu,
+                    onToggleMenu = { showMenu = !showMenu },
+                    showSortOrder = selectedCount == 0,
+                    sortOrder = sortOrder,
+                    showSelectAll = selectedCount > 0 && selectedCount != count,
+                    showUnselectAll = selectedCount != 0,
+                    showMarkAsPlayed = selectedCount != 0,
+                    showMarkAsNotPlayed = selectedCount != 0,
+                    showCompletedEpisodes = showCompletedEpisodes,
+                    showCompletedEpisodesMenuItem = selectedCount == 0,
+                    onSortOrderClicked = onSortOrderClicked,
+                    onSelectAllClicked = onSelectAllClicked,
+                    onUnselectAllClicked = onUnselectAllClicked,
+                    onMarkSelectedAsPlayed = onMarkSelectedAsPlayed,
+                    onMarkSelectedAsNotPlayed = onMarkSelectedAsNotPlayed,
+                    toggleShowCompletedEpisodesClicked = toggleShowCompletedEpisodesClicked,
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(16.dp))
         Box(
             modifier =
@@ -456,7 +440,7 @@ private fun PodcastHeader(
                     .fillMaxWidth()
                     .animateContentSize(),
                 text = html,
-                overflow = TextOverflow.Visible,
+                overflow = TextOverflow.Ellipsis,
                 maxLines = if (isExpanded) Int.MAX_VALUE else collapsedMaxLine,
                 onTextLayout = { textLayoutResult ->
                     if (!isExpanded && textLayoutResult.hasVisualOverflow) {
@@ -497,110 +481,6 @@ private fun TitleAndImage(podcast: Podcast) {
                 style = MaterialTheme.typography.bodySmall,
                 text = podcast.author,
                 maxLines = 1,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PodcastControls(
-    subscribed: Boolean,
-    autoDownloadNewEpisodes: Boolean,
-    autoAddToQueueNewEpisodes: Boolean,
-    showCompletedEpisodes: Boolean,
-    onSubscribeClicked: () -> Unit,
-    onUnsubscribeClicked: () -> Unit,
-    toggleAutoDownloadClicked: () -> Unit,
-    toggleAutoAddToQueueClicked: () -> Unit,
-    toggleShowCompletedEpisodesClicked: () -> Unit,
-) {
-    var showMenu by remember { mutableStateOf(false) }
-
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        OutlinedButton(onClick = if (subscribed) onUnsubscribeClicked else onSubscribeClicked) {
-            Text(text = stringResource(id = if (subscribed) R.string.unsubscribe else R.string.subscribe))
-        }
-        AnimatedVisibility(visible = subscribed) {
-            PodcastMenu(
-                showMenu = showMenu,
-                onToggleMenu = { showMenu = !showMenu },
-                autoDownloadNewEpisodes = autoDownloadNewEpisodes,
-                autoAddToQueueNewEpisodes = autoAddToQueueNewEpisodes,
-                showCompletedEpisodes = showCompletedEpisodes,
-                toggleAutoDownloadClicked = toggleAutoDownloadClicked,
-                toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
-                toggleShowCompletedEpisodesClicked = toggleShowCompletedEpisodesClicked,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PodcastMenu(
-    showMenu: Boolean,
-    onToggleMenu: () -> Unit,
-    autoDownloadNewEpisodes: Boolean,
-    autoAddToQueueNewEpisodes: Boolean,
-    showCompletedEpisodes: Boolean,
-    toggleAutoDownloadClicked: () -> Unit,
-    toggleAutoAddToQueueClicked: () -> Unit,
-    toggleShowCompletedEpisodesClicked: () -> Unit,
-) {
-    Box {
-        IconButton(onClick = { onToggleMenu() }) {
-            Icon(
-                imageVector = Icons.Filled.MoreVert,
-                modifier =
-                Modifier
-                    .size(24.dp),
-                contentDescription = stringResource(id = R.string.menu),
-            )
-        }
-        DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = onToggleMenu,
-        ) {
-            DropdownMenuItem(
-                text = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Checkbox(checked = autoDownloadNewEpisodes, onCheckedChange = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(id = R.string.auto_download_new_episodes))
-                    }
-                },
-                onClick = {
-                    toggleAutoDownloadClicked()
-                },
-            )
-            DropdownMenuItem(
-                text = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Checkbox(checked = autoAddToQueueNewEpisodes, onCheckedChange = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(id = R.string.auto_add_to_queue_new_episodes))
-                    }
-                },
-                onClick = {
-                    toggleAutoAddToQueueClicked()
-                },
-            )
-            DropdownMenuItem(
-                text = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Checkbox(checked = showCompletedEpisodes, onCheckedChange = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(id = R.string.podcast_details_show_completed_episodes))
-                    }
-                },
-                onClick = {
-                    toggleShowCompletedEpisodesClicked()
-                },
             )
         }
     }
@@ -710,6 +590,103 @@ private fun EpisodeItem(
     }
 }
 
+@Composable
+private fun SubscribeButton(
+    subscribed: Boolean,
+    autoDownloadNewEpisodes: Boolean,
+    autoAddToQueueNewEpisodes: Boolean,
+    onSubscribeClicked: () -> Unit,
+    onUnsubscribeClicked: () -> Unit,
+    toggleAutoDownloadClicked: () -> Unit,
+    toggleAutoAddToQueueClicked: () -> Unit,
+) {
+    var showMenu by remember { mutableStateOf(false) }
+    Box {
+        Row(
+            modifier =
+                Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .border(
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)),
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .clickable(
+                        onClick = {
+                            if (subscribed) {
+                                showMenu = true
+                            } else {
+                                onSubscribeClicked()
+                                showMenu = true
+                            }
+                        },
+                    )
+                    .background(
+                        color =
+                            if (subscribed) {
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                            } else {
+                                MaterialTheme.colorScheme.background
+                            },
+                    )
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            Icon(
+                imageVector = if (subscribed) Icons.Filled.CheckCircle else Icons.Filled.Add,
+                contentDescription = "",
+                tint = MaterialTheme.colorScheme.primary,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(id = if (subscribed) R.string.subscribed else R.string.subscribe),
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = !showMenu },
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(checked = autoDownloadNewEpisodes, onCheckedChange = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(id = R.string.auto_download_new_episodes))
+                    }
+                },
+                onClick = toggleAutoDownloadClicked,
+            )
+            DropdownMenuItem(
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(checked = autoAddToQueueNewEpisodes, onCheckedChange = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(id = R.string.auto_add_to_queue_new_episodes))
+                    }
+                },
+                onClick = toggleAutoAddToQueueClicked,
+            )
+            if (subscribed) {
+                HorizontalDivider()
+                DropdownMenuItem(
+                    text = {
+                        Text(stringResource(id = R.string.unsubscribe))
+                    },
+                    onClick = {
+                        showMenu = false
+                        onUnsubscribeClicked()
+                    },
+                )
+            }
+        }
+    }
+}
+
 @ThemePreview
 @Composable
 private fun PodcastDetailsPreview() {
@@ -806,6 +783,38 @@ private fun PodcastDetails_WithSelectionPreview() {
             onMarkSelectedEpisodesAsPlayed = { },
             onMarkSelectedEpisodesAsNotPlayed = { },
             onNextPageRequested = { },
+        )
+    }
+}
+
+@ThemePreview
+@Composable
+private fun SubscribeButtonPreview_WhenSubscribed() {
+    PreviewTheme {
+        SubscribeButton(
+            subscribed = true,
+            autoDownloadNewEpisodes = false,
+            autoAddToQueueNewEpisodes = false,
+            onSubscribeClicked = { },
+            onUnsubscribeClicked = { },
+            toggleAutoDownloadClicked = { },
+            toggleAutoAddToQueueClicked = { },
+        )
+    }
+}
+
+@ThemePreview
+@Composable
+private fun SubscribeButtonPreview_WhenNotSubscribed() {
+    PreviewTheme {
+        SubscribeButton(
+            subscribed = false,
+            autoDownloadNewEpisodes = false,
+            autoAddToQueueNewEpisodes = false,
+            onSubscribeClicked = { },
+            onUnsubscribeClicked = { },
+            toggleAutoDownloadClicked = { },
+            toggleAutoAddToQueueClicked = { },
         )
     }
 }
