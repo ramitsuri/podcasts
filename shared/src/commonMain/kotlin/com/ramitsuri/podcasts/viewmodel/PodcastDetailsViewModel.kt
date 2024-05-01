@@ -231,7 +231,6 @@ class PodcastDetailsViewModel(
                 ) { podcastWithEpisodes, currentlyPlayingEpisode, playingState ->
                     Triple(podcastWithEpisodes, currentlyPlayingEpisode, playingState)
                 }.collect { (podcastWithEpisodes, currentlyPlayingEpisode, playingState) ->
-                    LogHelper.d(TAG, "Total episodes being shown: ${podcastWithEpisodes?.episodes?.size}")
                     _state.update { previousState ->
                         previousState.copy(
                             podcastWithEpisodes = previousState.podcastWithEpisodes.mergeWithNew(podcastWithEpisodes),

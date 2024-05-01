@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.database.dao
 
+import app.cash.sqldelight.Query
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
@@ -12,6 +13,7 @@ import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
+import com.ramitsuri.podcasts.model.Podcast
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.joinAll
@@ -52,20 +54,23 @@ internal class EpisodesDaoImpl(
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
         page: Long,
+        showCompleted: Boolean,
     ): Flow<List<DbEpisode>> {
-        return when (sortOrder) {
-            EpisodeSortOrder.DATE_PUBLISHED_DESC -> {
-                episodeEntityQueries
-                    .getEpisodesForPodcast(podcastId = podcastId, limit = page.toLimit)
-            }
-
-            EpisodeSortOrder.DATE_PUBLISHED_ASC -> {
-                episodeEntityQueries
-                    .getEpisodesForPodcastAsc(podcastId = podcastId, limit = page.toLimit)
-            }
-        }
+        return getForPodcast(podcastId, sortOrder, page, showCompleted)
             .asFlow()
             .mapToList(ioDispatcher)
+    }
+
+    override suspend fun getEpisodesForPodcast(
+        podcastId: Long,
+        sortOrder: EpisodeSortOrder,
+        page: Long,
+        showCompleted: Boolean,
+    ): List<DbEpisode> {
+        return withContext(ioDispatcher) {
+            getForPodcast(podcastId, sortOrder, page, showCompleted)
+                .executeAsList()
+        }
     }
 
     override suspend fun getMaxDatePublished(podcastId: Long): Long? {
@@ -302,6 +307,33 @@ internal class EpisodesDaoImpl(
             ),
         )
         return true
+    }
+
+    private fun getForPodcast(
+        podcastId: Long,
+        sortOrder: EpisodeSortOrder,
+        page: Long,
+        showCompleted: Boolean
+    ): Query<DbEpisode> {
+        return when (sortOrder) {
+            EpisodeSortOrder.DATE_PUBLISHED_DESC -> {
+                episodeEntityQueries
+                    .getEpisodesForPodcast(
+                        podcastId = podcastId,
+                        limit = page.toLimit,
+                        showCompleted = if (showCompleted) 1 else 0,
+                    )
+            }
+
+            EpisodeSortOrder.DATE_PUBLISHED_ASC -> {
+                episodeEntityQueries
+                    .getEpisodesForPodcastAsc(
+                        podcastId = podcastId,
+                        limit = page.toLimit,
+                        showCompleted = if (showCompleted) 1 else 0,
+                    )
+            }
+        }
     }
 
     private val Long.toLimit

@@ -121,17 +121,21 @@ class PodcastsAndEpisodesRepository internal constructor(
         return withContext(ioDispatcher) {
             return@withContext combine(
                 podcastsRepository.getFlow(podcastId),
-                episodesRepository.getEpisodesForPodcastFlow(podcastId, sortOrder, page),
-            ) { podcast, episodes ->
+                // Use showCompleted = true to listen to any changes in episode list for podcast so that flow can
+                // trigger and then get for real value of podcast.showCompletedEpisodes. This is because we want the
+                // showCompleted filter to live in the sql layer. But we don't have access to the value here yet.
+                episodesRepository.getEpisodesForPodcastFlow(podcastId, sortOrder, page, showCompleted = true),
+            ) { podcast, _ ->
                 if (podcast == null) {
                     null
                 } else {
                     val filteredEpisodes =
-                        if (podcast.showCompletedEpisodes) {
-                            episodes
-                        } else {
-                            episodes.filter { !it.isCompleted }
-                        }
+                        episodesRepository.getEpisodesForPodcast(
+                            podcastId,
+                            sortOrder,
+                            page,
+                            podcast.showCompletedEpisodes,
+                        )
                     PodcastWithEpisodes(podcast, filteredEpisodes)
                 }
             }

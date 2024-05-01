@@ -37,12 +37,14 @@ WHERE podcastId == :podcastId;
 getEpisodesForPodcast:
 SELECT * FROM dbEpisode
 WHERE podcastId == :podcastId
+AND CASE WHEN :showCompleted = 1 THEN 1 ELSE completedAt IS NULL END
 ORDER BY datePublished DESC
 LIMIT :limit;
 
 getEpisodesForPodcastAsc:
 SELECT * FROM dbEpisode
 WHERE podcastId == :podcastId
+AND CASE WHEN :showCompleted = 1 THEN 1 ELSE completedAt IS NULL END
 ORDER BY datePublished ASC
 LIMIT :limit;
 

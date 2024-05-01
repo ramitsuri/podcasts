@@ -23,7 +23,15 @@ internal interface EpisodesDao {
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
         page: Long,
+        showCompleted: Boolean,
     ): Flow<List<DbEpisode>>
+
+    suspend fun getEpisodesForPodcast(
+        podcastId: Long,
+        sortOrder: EpisodeSortOrder,
+        page: Long,
+        showCompleted: Boolean,
+    ): List<DbEpisode>
 
     suspend fun getMaxDatePublished(podcastId: Long): Long?
 

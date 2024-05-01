@@ -76,6 +76,8 @@ import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.ui.PodcastDetailsViewState
 import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes
 import com.ramitsuri.podcasts.model.ui.SelectableEpisode
+import com.ramitsuri.podcasts.utils.LogHelper
+import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,6 +110,13 @@ fun PodcastDetailsScreen(
     onNextPageRequested: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    LaunchedEffect(key1 = state) {
+        LogHelper.d(
+            "PodcastDetails",
+            "Total: ${state.podcastWithEpisodes?.episodes?.size}, " +
+                "selected: ${state.podcastWithEpisodes?.episodes?.count { it.selected }}",
+        )
+    }
     Column(modifier = modifier) {
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
         TopAppBar(onBack = onBack, scrollBehavior = scrollBehavior)
@@ -186,9 +195,9 @@ private fun PodcastDetails(
         derivedStateOf {
             val lastVisibleItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
             val totalItemsCount = lazyListState.layoutInfo.totalItemsCount
-            // There are 3 other items in the list in addition to the episodes + we want to load more if second last
-            // item from the end is visible, which is why subtracting 5 (3 + 2)
-            lastVisibleItem != null && lastVisibleItem.index >= totalItemsCount - 5
+            // There is 1 other items in the list above episodes (podcast header) we want to load more if second
+            // last item from the end is visible, which is why subtracting 3 (1 + 2)
+            lastVisibleItem != null && lastVisibleItem.index >= totalItemsCount - 3
         }
     }
     LaunchedEffect(shouldLoadMoreItems) {
@@ -604,31 +613,31 @@ private fun SubscribeButton(
     Box {
         Row(
             modifier =
-                Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .border(
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)),
-                        shape = RoundedCornerShape(8.dp),
-                    )
-                    .clickable(
-                        onClick = {
-                            if (subscribed) {
-                                showMenu = true
-                            } else {
-                                onSubscribeClicked()
-                                showMenu = true
-                            }
-                        },
-                    )
-                    .background(
-                        color =
-                            if (subscribed) {
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                            } else {
-                                MaterialTheme.colorScheme.background
-                            },
-                    )
-                    .padding(vertical = 4.dp, horizontal = 8.dp),
+            Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .border(
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)),
+                    shape = RoundedCornerShape(8.dp),
+                )
+                .clickable(
+                    onClick = {
+                        if (subscribed) {
+                            showMenu = true
+                        } else {
+                            onSubscribeClicked()
+                            showMenu = true
+                        }
+                    },
+                )
+                .background(
+                    color =
+                    if (subscribed) {
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                    } else {
+                        MaterialTheme.colorScheme.background
+                    },
+                )
+                .padding(vertical = 4.dp, horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {

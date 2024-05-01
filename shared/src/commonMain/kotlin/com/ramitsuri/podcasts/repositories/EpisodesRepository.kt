@@ -52,13 +52,27 @@ class EpisodesRepository internal constructor(
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
         page: Long,
+        showCompleted: Boolean,
     ): Flow<List<Episode>> {
         return episodesDao
-            .getEpisodesForPodcastFlow(podcastId, sortOrder, page)
+            .getEpisodesForPodcastFlow(podcastId, sortOrder, page, showCompleted)
             .map { list ->
                 list.map { dbEpisode ->
                     Episode(dbEpisode)
                 }
+            }
+    }
+
+    suspend fun getEpisodesForPodcast(
+        podcastId: Long,
+        sortOrder: EpisodeSortOrder,
+        page: Long,
+        showCompleted: Boolean,
+    ): List<Episode> {
+        return episodesDao
+            .getEpisodesForPodcast(podcastId, sortOrder, page, showCompleted)
+            .map { dbEpisode ->
+                Episode(dbEpisode)
             }
     }
 
