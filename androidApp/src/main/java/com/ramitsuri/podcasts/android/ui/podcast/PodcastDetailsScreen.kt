@@ -60,6 +60,7 @@ import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import be.digitalia.compose.htmlconverter.htmlToString
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.ramitsuri.podcasts.android.BuildConfig
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
@@ -109,12 +110,14 @@ fun PodcastDetailsScreen(
     onNextPageRequested: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LaunchedEffect(key1 = state) {
-        LogHelper.d(
-            "PodcastDetails",
-            "Total: ${state.podcastWithEpisodes?.episodes?.size}, " +
-                "selected: ${state.podcastWithEpisodes?.episodes?.count { it.selected }}",
-        )
+    if (BuildConfig.DEBUG) {
+        LaunchedEffect(key1 = state) {
+            LogHelper.d(
+                "PodcastDetails",
+                "Total: ${state.podcastWithEpisodes?.episodes?.size}, " +
+                    "selected: ${state.podcastWithEpisodes?.episodes?.count { it.selected }}",
+            )
+        }
     }
     Column(modifier = modifier) {
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())

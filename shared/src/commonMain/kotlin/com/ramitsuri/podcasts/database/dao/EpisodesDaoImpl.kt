@@ -48,7 +48,7 @@ internal class EpisodesDaoImpl(
             .getEpisodesForPodcasts(
                 podcastIds = podcastIds,
                 limit = page.toLimit,
-                showCompleted = if (showCompleted) 1 else 0,
+                showCompleted = showCompleted.toShowCompletedLong,
             )
             .asFlow()
             .mapToList(ioDispatcher)
@@ -325,7 +325,7 @@ internal class EpisodesDaoImpl(
                     .getEpisodesForPodcast(
                         podcastId = podcastId,
                         limit = page.toLimit,
-                        showCompleted = if (showCompleted) 1 else 0,
+                        showCompleted = showCompleted.toShowCompletedLong,
                     )
             }
 
@@ -334,7 +334,7 @@ internal class EpisodesDaoImpl(
                     .getEpisodesForPodcastAsc(
                         podcastId = podcastId,
                         limit = page.toLimit,
-                        showCompleted = if (showCompleted) 1 else 0,
+                        showCompleted = showCompleted.toShowCompletedLong,
                     )
             }
         }
@@ -343,11 +343,10 @@ internal class EpisodesDaoImpl(
     private val Long.toLimit
         get() = this * PAGE_SIZE
 
-    // private fun Long.offset() = (this - 1) * PAGE_SIZE
+    private val Boolean.toShowCompletedLong
+        get() = if (this) 1L else 0L
 
     companion object {
-        // TODO
-        // private const val PAGE_SIZE: Long = 100
-        private const val PAGE_SIZE: Long = 10
+        private const val PAGE_SIZE: Long = 100
     }
 }

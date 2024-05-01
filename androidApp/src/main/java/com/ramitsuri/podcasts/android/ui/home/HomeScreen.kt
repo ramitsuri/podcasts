@@ -99,9 +99,9 @@ fun HomeScreen(
             derivedStateOf {
                 val lastVisibleItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
                 val totalItemsCount = lazyListState.layoutInfo.totalItemsCount
-                // There are 2 other items in the list in addition to the episodes + we want to load more if second last
-                // item from the end is visible, which is why subtracting 4 (2 + 2)
-                lastVisibleItem != null && lastVisibleItem.index >= totalItemsCount - 4
+                // There is 1 other item above the list of episodes + we want to load more if second last
+                // item from the end is visible, which is why subtracting 3 (1 + 2)
+                lastVisibleItem != null && lastVisibleItem.index >= totalItemsCount - 3
             }
         }
         LaunchedEffect(shouldLoadMoreItems) {
