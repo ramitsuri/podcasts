@@ -146,6 +146,15 @@ internal class EpisodesDaoImpl(
         }
     }
 
+    override suspend fun getEpisodeCount(podcastIds: List<Long>): Long {
+        return withContext(ioDispatcher) {
+            episodeEntityQueries
+                .getEpisodeCountForPodcasts(podcastIds)
+                .executeAsOneOrNull()
+                ?: 0
+        }
+    }
+
     override suspend fun updatePlayProgress(
         id: String,
         playProgressInSeconds: Int,

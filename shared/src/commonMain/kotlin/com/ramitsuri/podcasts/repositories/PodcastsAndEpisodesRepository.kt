@@ -143,7 +143,7 @@ class PodcastsAndEpisodesRepository internal constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun getSubscribedFlow(page: Long=1): Flow<List<Episode>> {
+    fun getSubscribedFlow(page: Long): Flow<List<Episode>> {
         return podcastsRepository
             .getAllSubscribedFlow()
             .flatMapLatest { podcasts ->
@@ -152,5 +152,10 @@ class PodcastsAndEpisodesRepository internal constructor(
                     list.filter { !it.isCompleted }
                 }
             }
+    }
+
+    suspend fun getEpisodeCountForSubscribedPodcasts(): Long {
+        val subscribedPodcastIds = podcastsRepository.getAllSubscribed().map { it.id }
+        return episodesRepository.getAvailableEpisodeCount(subscribedPodcastIds)
     }
 }

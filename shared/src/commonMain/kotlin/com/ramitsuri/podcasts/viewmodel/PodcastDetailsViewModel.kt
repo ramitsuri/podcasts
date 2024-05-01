@@ -199,17 +199,20 @@ class PodcastDetailsViewModel(
     }
 
     fun onNextPageRequested() {
-        val podcastWithEpisodes = _state.value.podcastWithEpisodes
+        val state = _state.value
+        val podcastWithEpisodes = state.podcastWithEpisodes
         if (podcastWithEpisodes == null) {
             LogHelper.v(TAG, "Podcast next page requested but podcast is null")
             return
         }
-        val availableEpisodeCount = _state.value.availableEpisodeCount
+        val availableEpisodeCount = state.availableEpisodeCount
         if (podcastWithEpisodes.episodes.size.toLong() == availableEpisodeCount) {
             LogHelper.v(TAG, "Podcast next page requested but no more episodes")
             return
         }
-        _state.update { it.copy(page = it.page + 1) }
+        val newPage = state.page + 1
+        LogHelper.d(TAG, "Episodes next page requested: $newPage")
+        _state.update { it.copy(page = newPage) }
         updatePodcastAndEpisodes()
     }
 

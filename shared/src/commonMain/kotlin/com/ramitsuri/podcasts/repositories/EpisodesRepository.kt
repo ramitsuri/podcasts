@@ -161,6 +161,10 @@ class EpisodesRepository internal constructor(
         return episodesDao.getEpisodeCount(podcastId)
     }
 
+    suspend fun getAvailableEpisodeCount(podcastIds: List<Long>): Long {
+        return episodesDao.getEpisodeCount(podcastIds)
+    }
+
     suspend fun updatePlayProgress(
         id: String,
         playProgressInSeconds: Int,

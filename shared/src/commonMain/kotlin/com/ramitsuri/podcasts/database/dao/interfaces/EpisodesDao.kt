@@ -45,6 +45,8 @@ internal interface EpisodesDao {
 
     suspend fun getEpisodeCount(podcastId: Long): Long
 
+    suspend fun getEpisodeCount(podcastIds: List<Long>): Long
+
     suspend fun updatePlayProgress(
         id: String,
         playProgressInSeconds: Int,

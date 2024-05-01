@@ -75,6 +75,11 @@ SELECT COUNT(*) AS count
 FROM dbEpisode
 WHERE podcastId == :podcastId;
 
+getEpisodeCountForPodcasts:
+SELECT COUNT(*) AS count
+FROM dbEpisode
+WHERE podcastId IN :podcastIds;
+
 insertOrReplace:
 INSERT OR REPLACE INTO
 EpisodeEntity(id, podcastId, title, description, link, enclosureUrl, datePublished, duration, explicit, episode, season)
