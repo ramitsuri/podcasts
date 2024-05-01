@@ -23,17 +23,24 @@ class EpisodesRepository internal constructor(
 ) {
     // Should be called via PodcastsAndEpisodesRepository because that does other things like marking podcasts
     // having new episodes
-    suspend fun refreshForPodcastId(podcastId: Long): PodcastResult<List<Episode>> {
-        val fetchSinceTime =
+    suspend fun refreshForPodcastId(
+        podcastId: Long,
+        episodesToLoad: Long = 100,
+        fetchSinceMostRecentEpisode: Boolean = true,
+    ): PodcastResult<List<Episode>> {
+        val fetchSinceTime = if (fetchSinceMostRecentEpisode) {
             episodesDao
                 .getMaxDatePublished(podcastId)
                 // Subtract an hour so that if podcasts were published close to each other, they don't get missed
                 ?.minus(1.hours.inWholeSeconds)
+        } else {
+            null
+        }
         val request =
             GetEpisodesRequest(
                 id = podcastId,
                 sinceEpochSeconds = fetchSinceTime,
-                max = 100,
+                max = episodesToLoad,
             )
         return when (val result = episodesApi.getByPodcastId(request)) {
             is PodcastResult.Success -> {

@@ -28,8 +28,10 @@ class PodcastsAndEpisodesRepository internal constructor(
         podcastId: Long,
         podcastAllowsAutoDownload: Boolean = false,
         podcastAllowsAutoAddToQueue: Boolean = false,
+        episodesToLoad: Long = 100,
+        fetchSinceMostRecentEpisode: Boolean = true,
     ): PodcastResult<List<Episode>> {
-        val result = episodesRepository.refreshForPodcastId(podcastId)
+        val result = episodesRepository.refreshForPodcastId(podcastId, episodesToLoad, fetchSinceMostRecentEpisode)
         val episodes = (result as? PodcastResult.Success)?.data ?: listOf()
         if (episodes.isNotEmpty()) {
             podcastsRepository.updateHasNewEpisodes(podcastId, true)

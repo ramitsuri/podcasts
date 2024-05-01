@@ -13,6 +13,7 @@ data class PodcastDetailsViewState(
     val episodeSortOrder: EpisodeSortOrder = EpisodeSortOrder.DATE_PUBLISHED_DESC,
     val page: Long = 1,
     val availableEpisodeCount: Long = 0,
+    val hasMorePages: Boolean = true,
 )
 
 data class PodcastWithSelectableEpisodes(
