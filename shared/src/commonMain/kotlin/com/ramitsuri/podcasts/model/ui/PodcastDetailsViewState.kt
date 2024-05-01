@@ -12,6 +12,7 @@ data class PodcastDetailsViewState(
     val playingState: PlayingState = PlayingState.NOT_PLAYING,
     val episodeSortOrder: EpisodeSortOrder = EpisodeSortOrder.DATE_PUBLISHED_DESC,
     val page: Long = 1,
+    val availableEpisodeCount: Long = 0,
 )
 
 data class PodcastWithSelectableEpisodes(

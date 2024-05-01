@@ -47,6 +47,12 @@ class PodcastDetailsViewModel(
                 }
 
                 launch {
+                    _state.update {
+                        it.copy(availableEpisodeCount = episodesRepository.getAvailableEpisodeCount(podcastId))
+                    }
+                }
+
+                launch {
                     settings.getPodcastDetailsEpisodeSortOrder().collect { sortOrder ->
                         _state.update { it.copy(episodeSortOrder = sortOrder) }
                         updatePodcastAndEpisodes()
@@ -193,6 +199,16 @@ class PodcastDetailsViewModel(
     }
 
     fun onNextPageRequested() {
+        val podcastWithEpisodes = _state.value.podcastWithEpisodes
+        if (podcastWithEpisodes == null) {
+            LogHelper.v(TAG, "Podcast next page requested but podcast is null")
+            return
+        }
+        val availableEpisodeCount = _state.value.availableEpisodeCount
+        if (podcastWithEpisodes.episodes.size.toLong() == availableEpisodeCount) {
+            LogHelper.v(TAG, "Podcast next page requested but no more episodes")
+            return
+        }
         _state.update { it.copy(page = it.page + 1) }
         updatePodcastAndEpisodes()
     }
