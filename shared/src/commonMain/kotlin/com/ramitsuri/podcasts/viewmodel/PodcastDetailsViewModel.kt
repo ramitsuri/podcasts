@@ -4,7 +4,7 @@ import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.PodcastWithEpisodes
 import com.ramitsuri.podcasts.model.ui.PodcastDetailsViewState
 import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes
-import com.ramitsuri.podcasts.model.ui.SelectableEpisode
+import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes.Companion.mergeWithNew
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
@@ -231,29 +231,16 @@ class PodcastDetailsViewModel(
                 ) { podcastWithEpisodes, currentlyPlayingEpisode, playingState ->
                     Triple(podcastWithEpisodes, currentlyPlayingEpisode, playingState)
                 }.collect { (podcastWithEpisodes, currentlyPlayingEpisode, playingState) ->
+                    LogHelper.d(TAG, "Total episodes being shown: ${podcastWithEpisodes?.episodes?.size}")
                     _state.update { previousState ->
                         previousState.copy(
-                            podcastWithEpisodes = addToCurrentEpisodes(podcastWithEpisodes),
+                            podcastWithEpisodes = previousState.podcastWithEpisodes.mergeWithNew(podcastWithEpisodes),
                             currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
                             playingState = playingState,
                         )
                     }
                 }
             }
-    }
-
-    private fun addToCurrentEpisodes(newPodcastWithEpisodes: PodcastWithEpisodes?): PodcastWithSelectableEpisodes? {
-        if (newPodcastWithEpisodes == null) {
-            return null
-        }
-        val state = _state.value
-        if (state.podcastWithEpisodes == null) {
-            return PodcastWithSelectableEpisodes(newPodcastWithEpisodes)
-        }
-        return PodcastWithSelectableEpisodes(
-            podcast = state.podcastWithEpisodes.podcast,
-            episodes = state.podcastWithEpisodes.episodes + newPodcastWithEpisodes.episodes.map { SelectableEpisode(it) },
-        )
     }
 
     companion object {

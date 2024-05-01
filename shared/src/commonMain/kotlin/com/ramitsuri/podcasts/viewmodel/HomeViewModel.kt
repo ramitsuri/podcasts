@@ -3,10 +3,7 @@ package com.ramitsuri.podcasts.viewmodel
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.Podcast
-import com.ramitsuri.podcasts.model.PodcastWithEpisodes
 import com.ramitsuri.podcasts.model.ui.HomeViewState
-import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes
-import com.ramitsuri.podcasts.model.ui.SelectableEpisode
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
@@ -83,21 +80,17 @@ class HomeViewModel internal constructor(
                     }
                 Data(subscribedPodcasts, subscribedEpisodes, currentlyPlaying, playingState)
             }.collect { (subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState) ->
+                LogHelper.d(TAG, "Total episodes being shown: ${subscribedEpisodes.size}")
                 _state.update {
                     it.copy(
                         subscribedPodcasts = subscribedPodcasts,
-                        episodes = addToCurrentEpisodes(subscribedEpisodes),
+                        episodes = subscribedEpisodes,
                         currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
                         currentlyPlayingEpisodeState = playingState,
                     )
                 }
             }
         }
-    }
-
-    private fun addToCurrentEpisodes(newEpisodes: List<Episode>): List<Episode> {
-        val state = _state.value
-        return state.episodes + newEpisodes
     }
 
     private data class Data(

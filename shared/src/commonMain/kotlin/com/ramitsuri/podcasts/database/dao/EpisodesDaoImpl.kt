@@ -43,7 +43,7 @@ internal class EpisodesDaoImpl(
         page: Long,
     ): Flow<List<DbEpisode>> {
         return episodeEntityQueries
-            .getEpisodesForPodcasts(podcastIds = podcastIds, offset = page.offset, limit = PAGE_SIZE)
+            .getEpisodesForPodcasts(podcastIds = podcastIds, limit = page.toLimit)
             .asFlow()
             .mapToList(ioDispatcher)
     }
@@ -56,12 +56,12 @@ internal class EpisodesDaoImpl(
         return when (sortOrder) {
             EpisodeSortOrder.DATE_PUBLISHED_DESC -> {
                 episodeEntityQueries
-                    .getEpisodesForPodcast(podcastId = podcastId, offset = page.offset, limit = PAGE_SIZE)
+                    .getEpisodesForPodcast(podcastId = podcastId, limit = page.toLimit)
             }
 
             EpisodeSortOrder.DATE_PUBLISHED_ASC -> {
                 episodeEntityQueries
-                    .getEpisodesForPodcastAsc(podcastId = podcastId, offset = page.offset, limit = PAGE_SIZE)
+                    .getEpisodesForPodcastAsc(podcastId = podcastId, limit = page.toLimit)
             }
         }
             .asFlow()
@@ -304,8 +304,8 @@ internal class EpisodesDaoImpl(
         return true
     }
 
-    private val Long.offset
-        get() = (this - 1) * PAGE_SIZE
+    private val Long.toLimit
+        get() = this * PAGE_SIZE
 
     //private fun Long.offset() = (this - 1) * PAGE_SIZE
 

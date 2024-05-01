@@ -38,19 +38,19 @@ getEpisodesForPodcast:
 SELECT * FROM dbEpisode
 WHERE podcastId == :podcastId
 ORDER BY datePublished DESC
-LIMIT :limit OFFSET :offset;
+LIMIT :limit;
 
 getEpisodesForPodcastAsc:
 SELECT * FROM dbEpisode
 WHERE podcastId == :podcastId
 ORDER BY datePublished ASC
-LIMIT :limit OFFSET :offset;
+LIMIT :limit;
 
 getEpisodesForPodcasts:
 SELECT * FROM dbEpisode
 WHERE podcastId IN :podcastIds
 ORDER BY datePublished DESC
-LIMIT :limit OFFSET :offset;
+LIMIT :limit;
 
 getEpisodesInQueue:
 SELECT * FROM dbEpisode
