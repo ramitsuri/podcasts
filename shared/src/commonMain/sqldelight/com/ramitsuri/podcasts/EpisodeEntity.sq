@@ -51,6 +51,7 @@ LIMIT :limit;
 getEpisodesForPodcasts:
 SELECT * FROM dbEpisode
 WHERE podcastId IN :podcastIds
+AND CASE WHEN :showCompleted = 1 THEN 1 ELSE completedAt IS NULL END
 ORDER BY datePublished DESC
 LIMIT :limit;
 

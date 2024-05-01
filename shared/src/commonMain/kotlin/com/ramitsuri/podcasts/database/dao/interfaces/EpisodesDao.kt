@@ -17,6 +17,7 @@ internal interface EpisodesDao {
     fun getEpisodesForPodcastsFlow(
         podcastIds: List<Long>,
         page: Long,
+        showCompleted: Boolean,
     ): Flow<List<DbEpisode>>
 
     fun getEpisodesForPodcastFlow(

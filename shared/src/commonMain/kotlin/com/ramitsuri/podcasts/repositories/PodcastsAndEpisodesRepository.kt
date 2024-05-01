@@ -152,9 +152,7 @@ class PodcastsAndEpisodesRepository internal constructor(
             .getAllSubscribedFlow()
             .flatMapLatest { podcasts ->
                 val subscribedPodcastIds = podcasts.map { it.id }
-                episodesRepository.getEpisodesForPodcastsFlow(subscribedPodcastIds, page).map { list ->
-                    list.filter { !it.isCompleted }
-                }
+                episodesRepository.getEpisodesForPodcastsFlow(subscribedPodcastIds, page, showCompleted = false)
             }
     }
 

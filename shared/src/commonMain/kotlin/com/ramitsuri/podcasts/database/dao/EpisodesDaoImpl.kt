@@ -42,9 +42,14 @@ internal class EpisodesDaoImpl(
     override fun getEpisodesForPodcastsFlow(
         podcastIds: List<Long>,
         page: Long,
+        showCompleted: Boolean,
     ): Flow<List<DbEpisode>> {
         return episodeEntityQueries
-            .getEpisodesForPodcasts(podcastIds = podcastIds, limit = page.toLimit)
+            .getEpisodesForPodcasts(
+                podcastIds = podcastIds,
+                limit = page.toLimit,
+                showCompleted = if (showCompleted) 1 else 0,
+            )
             .asFlow()
             .mapToList(ioDispatcher)
     }

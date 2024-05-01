@@ -79,9 +79,10 @@ class EpisodesRepository internal constructor(
     fun getEpisodesForPodcastsFlow(
         podcastIds: List<Long>,
         page: Long,
+        showCompleted: Boolean,
     ): Flow<List<Episode>> {
         return episodesDao
-            .getEpisodesForPodcastsFlow(podcastIds, page)
+            .getEpisodesForPodcastsFlow(podcastIds, page, showCompleted)
             .map { list ->
                 list.map { dbEpisode ->
                     Episode(dbEpisode)
