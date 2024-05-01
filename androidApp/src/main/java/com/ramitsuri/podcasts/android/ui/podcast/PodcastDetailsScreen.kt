@@ -281,11 +281,12 @@ private fun EpisodesMenu(
 
             // Show Completed Episodes
             if (showCompletedEpisodesMenuItem) {
-                val showCompletedTextResId = if (showCompletedEpisodes) {
-                    R.string.podcast_details_hide_completed_episodes
-                } else {
-                    R.string.podcast_details_show_completed_episodes
-                }
+                val showCompletedTextResId =
+                    if (showCompletedEpisodes) {
+                        R.string.podcast_details_hide_completed_episodes
+                    } else {
+                        R.string.podcast_details_show_completed_episodes
+                    }
                 DropdownMenuItem(
                     text = { Text(stringResource(id = showCompletedTextResId)) },
                     onClick = {
@@ -582,43 +583,44 @@ private fun SubscribeButton(
     Box {
         Row(
             modifier =
-            Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .border(
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)),
-                    shape = RoundedCornerShape(8.dp),
-                )
-                .clickable(
-                    onClick = {
-                        if (subscribed) {
-                            showMenu = true
-                        } else {
-                            onSubscribeClicked()
-                            showMenu = true
-                        }
-                    },
-                )
-                .background(
-                    color = if (subscribed) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                    } else {
-                        MaterialTheme.colorScheme.background
-                    },
-                )
-                .padding(vertical = 4.dp, horizontal = 8.dp),
+                Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .border(
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)),
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .clickable(
+                        onClick = {
+                            if (subscribed) {
+                                showMenu = true
+                            } else {
+                                onSubscribeClicked()
+                                showMenu = true
+                            }
+                        },
+                    )
+                    .background(
+                        color =
+                            if (subscribed) {
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                            } else {
+                                MaterialTheme.colorScheme.background
+                            },
+                    )
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
-                Icon(
-                    imageVector = if (subscribed) Icons.Filled.CheckCircle else Icons.Filled.Add,
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(id = if (subscribed) R.string.subscribed else R.string.subscribe),
-                    style = MaterialTheme.typography.bodySmall,
-                )
+            Icon(
+                imageVector = if (subscribed) Icons.Filled.CheckCircle else Icons.Filled.Add,
+                contentDescription = "",
+                tint = MaterialTheme.colorScheme.primary,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(id = if (subscribed) R.string.subscribed else R.string.subscribe),
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
         DropdownMenu(
             expanded = showMenu,
