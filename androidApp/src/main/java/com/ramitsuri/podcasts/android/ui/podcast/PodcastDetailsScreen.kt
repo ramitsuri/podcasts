@@ -19,11 +19,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Circle
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -36,6 +36,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -103,7 +105,7 @@ fun PodcastDetailsScreen(
     onUnselectAllEpisodesClicked: () -> Unit,
     onMarkSelectedEpisodesAsPlayed: () -> Unit,
     onMarkSelectedEpisodesAsNotPlayed: () -> Unit,
-    onNextPage: ()->Unit,
+    onNextPageRequested: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -140,7 +142,7 @@ fun PodcastDetailsScreen(
                 onUnselectAllEpisodesClicked = onUnselectAllEpisodesClicked,
                 onMarkSelectedEpisodesAsPlayed = onMarkSelectedEpisodesAsPlayed,
                 onMarkSelectedEpisodesAsNotPlayed = onMarkSelectedEpisodesAsNotPlayed,
-                onNextPage = onNextPage,
+                onNextPageRequested = onNextPageRequested,
             )
         }
     }
@@ -176,10 +178,24 @@ private fun PodcastDetails(
     onUnselectAllEpisodesClicked: () -> Unit,
     onMarkSelectedEpisodesAsPlayed: () -> Unit,
     onMarkSelectedEpisodesAsNotPlayed: () -> Unit,
-    onNextPage: ()->Unit,
+    onNextPageRequested: () -> Unit,
 ) {
     val podcast = podcastWithEpisodes.podcast
-    LazyColumn(modifier = modifier) {
+    val lazyListState = rememberLazyListState()
+    val shouldLoadMoreItems by remember {
+        derivedStateOf {
+            val lastVisibleItemIndex = lazyListState.layoutInfo.visibleItemsInfo.lastIndex
+            val totalItemsCount = lazyListState.layoutInfo.totalItemsCount
+            // Should load more if second last item from the end is visible
+            lastVisibleItemIndex != -1 && lastVisibleItemIndex >= totalItemsCount - 2
+        }
+    }
+    LaunchedEffect(shouldLoadMoreItems) {
+        if (shouldLoadMoreItems) {
+            onNextPageRequested()
+        }
+    }
+    LazyColumn(modifier = modifier, state = lazyListState) {
         item {
             PodcastHeader(
                 podcast = podcast,
@@ -210,11 +226,11 @@ private fun PodcastDetails(
             EpisodeItem(
                 episode = episode,
                 playingState =
-                    if (currentlyPlayingEpisodeId == episode.id) {
-                        currentlyPlayingEpisodeState
-                    } else {
-                        PlayingState.NOT_PLAYING
-                    },
+                if (currentlyPlayingEpisodeId == episode.id) {
+                    currentlyPlayingEpisodeState
+                } else {
+                    PlayingState.NOT_PLAYING
+                },
                 inSelectionState = podcastWithEpisodes.inSelectionState,
                 selected = it.selected,
                 onClicked = { onEpisodeClicked(episode.id) },
@@ -231,11 +247,6 @@ private fun PodcastDetails(
                 onFavoriteClicked = { onEpisodeFavoriteClicked(episode.id) },
                 onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(episode.id) },
             )
-        }
-        item {
-            Button(onClick = onNextPage) {
-                Text(text = "Load more")
-            }
         }
         item {
             Spacer(modifier = Modifier.height(16.dp))
@@ -329,8 +340,8 @@ private fun EpisodesMenu(
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                    Modifier
-                        .size(24.dp),
+                Modifier
+                    .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
             )
         }
@@ -433,10 +444,10 @@ private fun PodcastHeader(
         Spacer(modifier = Modifier.height(16.dp))
         Box(
             modifier =
-                Modifier
-                    .clickable(clickable) {
-                        isExpanded = !isExpanded
-                    },
+            Modifier
+                .clickable(clickable) {
+                    isExpanded = !isExpanded
+                },
         ) {
             Text(
                 modifier =
@@ -461,10 +472,10 @@ private fun TitleAndImage(podcast: Podcast) {
     Row(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
             model =
-                ImageRequest.Builder(LocalContext.current)
-                    .data(podcast.artwork)
-                    .crossfade(true)
-                    .build(),
+            ImageRequest.Builder(LocalContext.current)
+                .data(podcast.artwork)
+                .crossfade(true)
+                .build(),
             contentDescription = podcast.title,
             contentScale = ContentScale.FillBounds,
             modifier =
@@ -539,8 +550,8 @@ private fun PodcastMenu(
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 modifier =
-                    Modifier
-                        .size(24.dp),
+                Modifier
+                    .size(24.dp),
                 contentDescription = stringResource(id = R.string.menu),
             )
         }
@@ -704,21 +715,21 @@ private fun PodcastDetailsPreview() {
     PreviewTheme {
         PodcastDetailsScreen(
             state =
-                PodcastDetailsViewState(
-                    podcastWithEpisodes =
-                        PodcastWithSelectableEpisodes(
-                            podcast = podcast(),
-                            episodes =
-                                listOf(
-                                    SelectableEpisode(false, episode()),
-                                    SelectableEpisode(false, episode()),
-                                    SelectableEpisode(false, episode()),
-                                    SelectableEpisode(false, episode()),
-                                ),
-                        ),
-                    currentlyPlayingEpisodeId = null,
-                    playingState = PlayingState.NOT_PLAYING,
+            PodcastDetailsViewState(
+                podcastWithEpisodes =
+                PodcastWithSelectableEpisodes(
+                    podcast = podcast(),
+                    episodes =
+                    listOf(
+                        SelectableEpisode(false, episode()),
+                        SelectableEpisode(false, episode()),
+                        SelectableEpisode(false, episode()),
+                        SelectableEpisode(false, episode()),
+                    ),
                 ),
+                currentlyPlayingEpisodeId = null,
+                playingState = PlayingState.NOT_PLAYING,
+            ),
             onBack = { },
             onSubscribeClicked = { },
             onUnsubscribeClicked = { },
@@ -743,7 +754,7 @@ private fun PodcastDetailsPreview() {
             onUnselectAllEpisodesClicked = { },
             onMarkSelectedEpisodesAsPlayed = { },
             onMarkSelectedEpisodesAsNotPlayed = { },
-            onNextPage = { },
+            onNextPageRequested = { },
         )
     }
 }
@@ -754,21 +765,21 @@ private fun PodcastDetails_WithSelectionPreview() {
     PreviewTheme {
         PodcastDetailsScreen(
             state =
-                PodcastDetailsViewState(
-                    podcastWithEpisodes =
-                        PodcastWithSelectableEpisodes(
-                            podcast = podcast(),
-                            episodes =
-                                listOf(
-                                    SelectableEpisode(true, episode()),
-                                    SelectableEpisode(false, episode()),
-                                    SelectableEpisode(true, episode()),
-                                    SelectableEpisode(false, episode()),
-                                ),
-                        ),
-                    currentlyPlayingEpisodeId = null,
-                    playingState = PlayingState.NOT_PLAYING,
+            PodcastDetailsViewState(
+                podcastWithEpisodes =
+                PodcastWithSelectableEpisodes(
+                    podcast = podcast(),
+                    episodes =
+                    listOf(
+                        SelectableEpisode(true, episode()),
+                        SelectableEpisode(false, episode()),
+                        SelectableEpisode(true, episode()),
+                        SelectableEpisode(false, episode()),
+                    ),
                 ),
+                currentlyPlayingEpisodeId = null,
+                playingState = PlayingState.NOT_PLAYING,
+            ),
             onBack = { },
             onSubscribeClicked = { },
             onUnsubscribeClicked = { },
@@ -793,7 +804,7 @@ private fun PodcastDetails_WithSelectionPreview() {
             onUnselectAllEpisodesClicked = { },
             onMarkSelectedEpisodesAsPlayed = { },
             onMarkSelectedEpisodesAsNotPlayed = { },
-            onNextPage = { },
+            onNextPageRequested = { },
         )
     }
 }

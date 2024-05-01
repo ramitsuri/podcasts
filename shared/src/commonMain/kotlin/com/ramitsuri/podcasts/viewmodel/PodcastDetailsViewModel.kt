@@ -192,7 +192,7 @@ class PodcastDetailsViewModel(
         }
     }
 
-    fun onNextPage() {
+    fun onNextPageRequested() {
         _state.update { it.copy(page = it.page + 1) }
         updatePodcastAndEpisodes()
     }
@@ -214,7 +214,7 @@ class PodcastDetailsViewModel(
                 }.collect { (podcastWithEpisodes, currentlyPlayingEpisode, playingState) ->
                     _state.update { previousState ->
                         previousState.copy(
-                            podcastWithEpisodes = newEpisodes(podcastWithEpisodes),
+                            podcastWithEpisodes = addToCurrentEpisodes(podcastWithEpisodes),
                             currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
                             playingState = playingState,
                         )
@@ -223,7 +223,7 @@ class PodcastDetailsViewModel(
             }
     }
 
-    private fun newEpisodes(newPodcastWithEpisodes: PodcastWithEpisodes?): PodcastWithSelectableEpisodes? {
+    private fun addToCurrentEpisodes(newPodcastWithEpisodes: PodcastWithEpisodes?): PodcastWithSelectableEpisodes? {
         if (newPodcastWithEpisodes == null) {
             return null
         }

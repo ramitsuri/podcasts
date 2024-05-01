@@ -1,6 +1,5 @@
 package com.ramitsuri.podcasts.database.dao
 
-import androidx.annotation.Size
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
@@ -39,18 +38,16 @@ internal class EpisodesDaoImpl(
         }
     }
 
-    // This one
     override fun getEpisodesForPodcastsFlow(
         podcastIds: List<Long>,
         page: Long,
     ): Flow<List<DbEpisode>> {
         return episodeEntityQueries
-            .getEpisodesForPodcasts(podcastIds = podcastIds, offset = page.offset(), limit = PAGE_SIZE)
+            .getEpisodesForPodcasts(podcastIds = podcastIds, offset = page.offset, limit = PAGE_SIZE)
             .asFlow()
             .mapToList(ioDispatcher)
     }
 
-    // This one
     override fun getEpisodesForPodcastFlow(
         podcastId: Long,
         sortOrder: EpisodeSortOrder,
@@ -59,23 +56,24 @@ internal class EpisodesDaoImpl(
         return when (sortOrder) {
             EpisodeSortOrder.DATE_PUBLISHED_DESC -> {
                 episodeEntityQueries
-                    .getEpisodesForPodcast(podcastId = podcastId, offset = page.offset(), limit = PAGE_SIZE)
+                    .getEpisodesForPodcast(podcastId = podcastId, offset = page.offset, limit = PAGE_SIZE)
             }
 
             EpisodeSortOrder.DATE_PUBLISHED_ASC -> {
                 episodeEntityQueries
-                    .getEpisodesForPodcastAsc(podcastId = podcastId, offset = page.offset(), limit = PAGE_SIZE)
+                    .getEpisodesForPodcastAsc(podcastId = podcastId, offset = page.offset, limit = PAGE_SIZE)
             }
         }
             .asFlow()
             .mapToList(ioDispatcher)
     }
 
-    override suspend fun getEpisodesForPodcast(podcastId: Long): List<DbEpisode> {
+    override suspend fun getMaxDatePublished(podcastId: Long): Long? {
         return withContext(ioDispatcher) {
             episodeEntityQueries
-                .getAllEpisodesForPodcast(podcastId = podcastId)
-                .executeAsList()
+                .getMaxEpisodeDatePublishedForPodcast(podcastId)
+                .executeAsOneOrNull()
+                ?.maxDatePublished
         }
     }
 
@@ -203,7 +201,7 @@ internal class EpisodesDaoImpl(
                         .executeAsOneOrNull()
                         ?.currentMaxQueuePosition
                         ?: Episode.NOT_IN_QUEUE
-                    ) + 1
+                ) + 1
             updateQueuePosition(id, queuePosition)
         }
     }
@@ -288,7 +286,10 @@ internal class EpisodesDaoImpl(
         return true
     }
 
-    private fun Long.offset() = (this - 1) * PAGE_SIZE
+    private val Long.offset
+        get() = (this - 1) * PAGE_SIZE
+
+    //private fun Long.offset() = (this - 1) * PAGE_SIZE
 
     companion object {
         // TODO

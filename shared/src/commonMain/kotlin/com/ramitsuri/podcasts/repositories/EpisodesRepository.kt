@@ -24,11 +24,9 @@ class EpisodesRepository internal constructor(
     // Should be called via PodcastsAndEpisodesRepository because that does other things like marking podcasts
     // having new episodes
     suspend fun refreshForPodcastId(podcastId: Long): PodcastResult<List<Episode>> {
-        val episodes = episodesDao.getEpisodesForPodcast(podcastId)
         val fetchSinceTime =
-            episodes
-                .maxByOrNull { it.datePublished }
-                ?.datePublished
+            episodesDao
+                .getMaxDatePublished(podcastId)
                 // Subtract an hour so that if podcasts were published close to each other, they don't get missed
                 ?.minus(1.hours.inWholeSeconds)
         val request =
@@ -64,7 +62,6 @@ class EpisodesRepository internal constructor(
             }
     }
 
-    // This one
     fun getEpisodesForPodcastsFlow(
         podcastIds: List<Long>,
         page: Long,

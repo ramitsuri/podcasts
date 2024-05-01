@@ -29,10 +29,10 @@ getEpisode:
 SELECT * FROM dbEpisode
 WHERE id == :id;
 
-getAllEpisodesForPodcast:
-SELECT * FROM dbEpisode
-WHERE podcastId == :podcastId
-ORDER BY datePublished DESC;
+getMaxEpisodeDatePublishedForPodcast:
+SELECT MAX(datePublished) AS maxDatePublished
+FROM dbEpisode
+WHERE podcastId == :podcastId;
 
 getEpisodesForPodcast:
 SELECT * FROM dbEpisode

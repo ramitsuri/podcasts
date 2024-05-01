@@ -25,7 +25,7 @@ internal interface EpisodesDao {
         page: Long,
     ): Flow<List<DbEpisode>>
 
-    suspend fun getEpisodesForPodcast(podcastId: Long): List<DbEpisode>
+    suspend fun getMaxDatePublished(podcastId: Long): Long?
 
     fun getEpisodeFlow(id: String): Flow<DbEpisode?>
 
