@@ -15,6 +15,7 @@
     <string name="search">Search</string>
     <string name="menu">Dropdown menu</string>
     <string name="subscribe">Subscribe</string>
+    <string name="subscribed">Subscribed</string>
     <string name="unsubscribe">Unsubscribe</string>
     <string name="more">More</string>
     <string name="auto_download_new_episodes">Auto download</string>
@@ -152,14 +153,10 @@
     <!-- Podcast details -->
     <string name="podcast_details_sort_by_publish_desc">Newest first</string>
     <string name="podcast_details_sort_by_publish_asc">Oldest first</string>
-    <plurals name="podcast_details_episode_count">
-        <item quantity="one">%1$s Episode</item>
-        <item quantity="other">%1$s Episodes</item>
-    </plurals>
-    <string name="podcast_details_selected_episode_count">" (%1$s selected)"</string>
     <string name="podcast_details_select_all_episodes">Select all</string>
     <string name="podcast_details_unselect_all_episodes">Unselect all</string>
     <string name="podcast_details_mark_selected_as_played">Mark played</string>
     <string name="podcast_details_mark_selected_as_not_played">Mark not played</string>
     <string name="podcast_details_show_completed_episodes">Show completed</string>
+    <string name="podcast_details_hide_completed_episodes">Hide completed</string>
 </resources>
