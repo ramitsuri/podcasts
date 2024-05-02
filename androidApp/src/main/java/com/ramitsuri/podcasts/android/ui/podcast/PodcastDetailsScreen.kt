@@ -212,9 +212,9 @@ private fun PodcastDetails(
         derivedStateOf {
             val lastVisibleItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
             val totalItemsCount = lazyListState.layoutInfo.totalItemsCount
-            // There is 1 other items in the list above episodes (podcast header) we want to load more if second
-            // last item from the end is visible, which is why subtracting 3 (1 + 2)
-            lastVisibleItem != null && lastVisibleItem.index >= totalItemsCount - 3
+            // There is 1 other items in the list above episodes (podcast header) we want to load more if 10th
+            // item from the end is visible, which is why subtracting 11 (1 + 10)
+            lastVisibleItem != null && lastVisibleItem.index >= totalItemsCount - 11
         }
     }
     LaunchedEffect(shouldLoadMoreItems) {
