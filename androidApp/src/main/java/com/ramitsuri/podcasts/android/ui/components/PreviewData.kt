@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.android.ui.components
 
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.Podcast
 import java.util.UUID
 
@@ -68,4 +69,5 @@ fun podcast(hasNewEpisodes: Boolean = false) =
         hasNewEpisodes = hasNewEpisodes,
         autoAddToQueue = false,
         showCompletedEpisodes = true,
+        episodeSortOrder = EpisodeSortOrder.default,
     )

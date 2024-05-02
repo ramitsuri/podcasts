@@ -45,16 +45,11 @@ class PodcastDetailsViewModel(
                 }
 
                 launch {
-                    settings.getPodcastDetailsEpisodeSortOrder().collect { sortOrder ->
-                        _state.update { it.copy(episodeSortOrder = sortOrder) }
-                        updatePodcastAndEpisodes()
-                    }
-                }
-
-                launch {
                     // Remove has new episodes marker if podcast page visited
                     repository.updateHasNewEpisodes(id = podcastId, hasNewEpisodes = false)
                 }
+
+                updatePodcastAndEpisodes()
             }
         }
     }
@@ -106,14 +101,18 @@ class PodcastDetailsViewModel(
     }
 
     fun onSortOrderClicked() {
+        val podcast = _state.value.podcastWithEpisodes?.podcast
+        if (podcast == null) {
+            LogHelper.v(TAG, "Podcast toggle episode sort order requested but podcast is null")
+            return
+        }
         longLivingScope.launch {
-            val currentSortOrder = _state.value.episodeSortOrder
             val newSortOrder =
-                when (currentSortOrder) {
+                when (podcast.episodeSortOrder) {
                     EpisodeSortOrder.DATE_PUBLISHED_DESC -> EpisodeSortOrder.DATE_PUBLISHED_ASC
                     EpisodeSortOrder.DATE_PUBLISHED_ASC -> EpisodeSortOrder.DATE_PUBLISHED_DESC
                 }
-            settings.setPodcastDetailsEpisodeSortOrder(newSortOrder)
+            repository.updateEpisodeSortOrder(id = podcast.id, episodeSortOrder = newSortOrder)
         }
     }
 
@@ -226,12 +225,11 @@ class PodcastDetailsViewModel(
         val podcastId = podcastId ?: return
         val state = _state.value
         val page = state.page
-        val sortOrder = state.episodeSortOrder
         updatePodcastAndEpisodesJob?.cancel()
         updatePodcastAndEpisodesJob =
             viewModelScope.launch {
                 combine(
-                    podcastsAndEpisodesRepository.getPodcastWithEpisodesFlow(podcastId, sortOrder, page),
+                    podcastsAndEpisodesRepository.getPodcastWithEpisodesFlow(podcastId, page),
                     episodesRepository.getCurrentEpisode(),
                     settings.getPlayingStateFlow(),
                 ) { podcastWithEpisodes, currentlyPlayingEpisode, playingState ->

@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.repositories
 import com.ramitsuri.podcasts.database.dao.interfaces.CategoryDao
 import com.ramitsuri.podcasts.database.dao.interfaces.PodcastsDao
 import com.ramitsuri.podcasts.model.Category
+import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.ImportedPodcast
 import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.PodcastError
@@ -151,5 +152,12 @@ class PodcastsRepository internal constructor(
         showCompletedEpisodes: Boolean,
     ) {
         podcastsDao.updateShowCompletedEpisodes(id, showCompletedEpisodes)
+    }
+
+    suspend fun updateEpisodeSortOrder(
+        id: Long,
+        episodeSortOrder: EpisodeSortOrder,
+    ) {
+        podcastsDao.updateEpisodeSortOrder(id, episodeSortOrder)
     }
 }

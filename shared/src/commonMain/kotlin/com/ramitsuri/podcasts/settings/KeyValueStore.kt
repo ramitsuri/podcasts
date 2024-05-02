@@ -42,4 +42,6 @@ internal interface KeyValueStore {
         key: Key,
         value: Int,
     )
+
+    suspend fun removeInt(key: Key)
 }

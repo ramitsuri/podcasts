@@ -117,7 +117,6 @@ class PodcastsAndEpisodesRepository internal constructor(
 
     suspend fun getPodcastWithEpisodesFlow(
         podcastId: Long,
-        sortOrder: EpisodeSortOrder,
         page: Long,
     ): Flow<PodcastWithEpisodes?> {
         return withContext(ioDispatcher) {
@@ -126,7 +125,12 @@ class PodcastsAndEpisodesRepository internal constructor(
                 // Use showCompleted = true to listen to any changes in episode list for podcast so that flow can
                 // trigger and then get for real value of podcast.showCompletedEpisodes. This is because we want the
                 // showCompleted filter to live in the sql layer. But we don't have access to the value here yet.
-                episodesRepository.getEpisodesForPodcastFlow(podcastId, sortOrder, page, showCompleted = true),
+                episodesRepository.getEpisodesForPodcastFlow(
+                    podcastId,
+                    EpisodeSortOrder.default,
+                    page,
+                    showCompleted = true,
+                ),
             ) { podcast, _ ->
                 if (podcast == null) {
                     null
@@ -134,7 +138,7 @@ class PodcastsAndEpisodesRepository internal constructor(
                     val filteredEpisodes =
                         episodesRepository.getEpisodesForPodcast(
                             podcastId,
-                            sortOrder,
+                            podcast.episodeSortOrder,
                             page,
                             podcast.showCompletedEpisodes,
                         )

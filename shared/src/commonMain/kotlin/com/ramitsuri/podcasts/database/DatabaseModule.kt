@@ -11,6 +11,7 @@ import com.ramitsuri.podcasts.PodcastsDatabase
 import com.ramitsuri.podcasts.SessionActionEntity
 import com.ramitsuri.podcasts.model.Action
 import com.ramitsuri.podcasts.model.DownloadStatus
+import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import kotlinx.datetime.Instant
 
 internal fun provideDatabase(driver: SqlDriver): PodcastsDatabase {
@@ -21,6 +22,7 @@ internal fun provideDatabase(driver: SqlDriver): PodcastsDatabase {
     val downloadStatusToStringAdapter = DownloadStatusToStringAdapter()
     val intListToStringAdapter = IntListToStringAdapter()
     val actionToStringAdapter = ActionToStringAdapter()
+    val episodeSortOrderToLongAdapter = EpisodeSortOrderToLongAdapter()
 
     return PodcastsDatabase(
         driver = driver,
@@ -46,6 +48,7 @@ internal fun provideDatabase(driver: SqlDriver): PodcastsDatabase {
         PodcastAdditionalInfoEntityAdapter =
             PodcastAdditionalInfoEntity.Adapter(
                 subscribedDateAdapter = instantToLongAdapter,
+                episodeSortOrderAdapter = episodeSortOrderToLongAdapter,
             ),
         PodcastEntityAdapter =
             PodcastEntity.Adapter(
@@ -135,5 +138,15 @@ private class ActionToStringAdapter : ColumnAdapter<Action, String> {
 
     override fun encode(value: Action): String {
         return value.value
+    }
+}
+
+private class EpisodeSortOrderToLongAdapter : ColumnAdapter<EpisodeSortOrder, Long> {
+    override fun decode(databaseValue: Long): EpisodeSortOrder {
+        return EpisodeSortOrder.fromKey(databaseValue)
+    }
+
+    override fun encode(value: EpisodeSortOrder): Long {
+        return value.key
     }
 }

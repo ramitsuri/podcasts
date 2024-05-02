@@ -27,6 +27,7 @@ data class Podcast(
     val hasNewEpisodes: Boolean,
     val autoAddToQueue: Boolean,
     val showCompletedEpisodes: Boolean,
+    val episodeSortOrder: EpisodeSortOrder,
 ) {
     internal constructor(dto: PodcastDto) : this(
         id = dto.id,
@@ -49,6 +50,7 @@ data class Podcast(
         hasNewEpisodes = false,
         autoAddToQueue = false,
         showCompletedEpisodes = true,
+        episodeSortOrder = EpisodeSortOrder.default,
     )
 
     internal constructor(getPodcast: GetPodcast, categories: List<Category>) : this(
@@ -72,6 +74,7 @@ data class Podcast(
         hasNewEpisodes = getPodcast.hasNewEpisodes,
         autoAddToQueue = getPodcast.autoAddToQueue,
         showCompletedEpisodes = getPodcast.showCompletedEpisodes,
+        episodeSortOrder = getPodcast.episodeSortOrder,
     )
 
     internal constructor(getAllPodcasts: GetAllPodcasts, categories: List<Category>) : this(
@@ -95,6 +98,7 @@ data class Podcast(
         hasNewEpisodes = getAllPodcasts.hasNewEpisodes,
         autoAddToQueue = getAllPodcasts.autoAddToQueue,
         showCompletedEpisodes = getAllPodcasts.showCompletedEpisodes,
+        episodeSortOrder = getAllPodcasts.episodeSortOrder,
     )
 
     internal constructor(getAllSubscribedPodcasts: GetAllSubscribedPodcasts, categories: List<Category>) : this(
@@ -118,5 +122,6 @@ data class Podcast(
         hasNewEpisodes = getAllSubscribedPodcasts.hasNewEpisodes,
         autoAddToQueue = getAllSubscribedPodcasts.autoAddToQueue,
         showCompletedEpisodes = getAllSubscribedPodcasts.showCompletedEpisodes,
+        episodeSortOrder = getAllSubscribedPodcasts.episodeSortOrder,
     )
 }

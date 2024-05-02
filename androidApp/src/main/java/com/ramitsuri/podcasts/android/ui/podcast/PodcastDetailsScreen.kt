@@ -140,7 +140,7 @@ fun PodcastDetailsScreen(
                 podcastWithEpisodes = podcastWithEpisodes,
                 currentlyPlayingEpisodeId = state.currentlyPlayingEpisodeId,
                 currentlyPlayingEpisodeState = state.playingState,
-                episodeSortOrder = state.episodeSortOrder,
+                episodeSortOrder = state.podcastWithEpisodes?.podcast?.episodeSortOrder ?: EpisodeSortOrder.default,
                 onSubscribeClicked = onSubscribeClicked,
                 onUnsubscribeClicked = onUnsubscribeClicked,
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,

@@ -101,6 +101,10 @@ internal class DataStoreKeyValueStore(
         }
     }
 
+    override suspend fun removeInt(key: Key) {
+        remove(intPreferencesKey(key.value))
+    }
+
     private suspend fun <T> remove(key: Preferences.Key<T>) {
         dataStore.edit {
             it.remove(key)
