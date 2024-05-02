@@ -31,6 +31,7 @@ import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -137,6 +138,7 @@ fun PodcastDetailsScreen(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 hasMorePages = state.hasMorePages,
                 alreadyLoadedEpisodeCount = state.availableEpisodeCount,
+                loadingOlderEpisodes = state.loadingOlderEpisodes,
                 podcastWithEpisodes = podcastWithEpisodes,
                 currentlyPlayingEpisodeId = state.currentlyPlayingEpisodeId,
                 currentlyPlayingEpisodeState = state.playingState,
@@ -175,6 +177,7 @@ fun PodcastDetailsScreen(
 private fun PodcastDetails(
     modifier: Modifier = Modifier,
     hasMorePages: Boolean,
+    loadingOlderEpisodes: Boolean,
     alreadyLoadedEpisodeCount: Long,
     podcastWithEpisodes: PodcastWithSelectableEpisodes,
     currentlyPlayingEpisodeId: String?,
@@ -273,8 +276,9 @@ private fun PodcastDetails(
         if (!hasMorePages) {
             item {
                 LoadEvenOlderEpisodesButton(
+                    loadingOlderEpisodes = loadingOlderEpisodes,
                     alreadyLoadedCount = alreadyLoadedEpisodeCount,
-                    onLoadMoreRequested = onLoadOlderEpisodesRequested,
+                    onLoadOlderEpisodesRequested = onLoadOlderEpisodesRequested,
                 )
             }
         }
@@ -286,8 +290,9 @@ private fun PodcastDetails(
 
 @Composable
 private fun LoadEvenOlderEpisodesButton(
+    loadingOlderEpisodes: Boolean,
     alreadyLoadedCount: Long,
-    onLoadMoreRequested: (Long) -> Unit,
+    onLoadOlderEpisodesRequested: (Long) -> Unit,
 ) {
     var showLoadEvenOlderEpisodesDialog by remember { mutableStateOf(false) }
     var enteredLoadMoreCount by remember { mutableStateOf("") }
@@ -298,7 +303,11 @@ private fun LoadEvenOlderEpisodesButton(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedButton(onClick = { showLoadEvenOlderEpisodesDialog = true }) {
-            Text(text = stringResource(id = R.string.podcast_details_load_even_older_episodes))
+            if (loadingOlderEpisodes) {
+                CircularProgressIndicator(modifier = Modifier.size(24.dp))
+            } else {
+                Text(text = stringResource(id = R.string.podcast_details_load_even_older_episodes))
+            }
         }
     }
     if (showLoadEvenOlderEpisodesDialog) {
@@ -358,7 +367,7 @@ private fun LoadEvenOlderEpisodesButton(
                         TextButton(
                             onClick = {
                                 showLoadEvenOlderEpisodesDialog = false
-                                onLoadMoreRequested(enteredLoadMoreCount.toLongOrNull() ?: 0)
+                                onLoadOlderEpisodesRequested(enteredLoadMoreCount.toLongOrNull() ?: 0)
                                 enteredLoadMoreCount = ""
                             },
                         ) {
