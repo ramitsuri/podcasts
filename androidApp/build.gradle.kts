@@ -14,8 +14,8 @@ android {
         applicationId = "com.ramitsuri.podcasts.android"
         minSdk = 26
         targetSdk = 34
-        versionCode = 16
-        versionName = "1.6"
+        versionCode = 17
+        versionName = "1.7"
     }
     buildFeatures {
         compose = true
