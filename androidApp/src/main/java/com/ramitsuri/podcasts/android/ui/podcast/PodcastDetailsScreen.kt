@@ -344,6 +344,7 @@ private fun LoadEvenOlderEpisodesButton(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
                         value = enteredLoadMoreCount,
                         onValueChange = {
                             if (it.isDigitsOnly()) {

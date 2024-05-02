@@ -159,8 +159,8 @@
     <string name="podcast_details_mark_selected_as_not_played">Mark not played</string>
     <string name="podcast_details_show_completed_episodes">Show completed</string>
     <string name="podcast_details_hide_completed_episodes">Hide completed</string>
-    <string name="podcast_details_load_even_older_episodes">Load older episodes</string>
-    <string name="podcast_details_load_even_older_episodes_title">Load older episodes?</string>
+    <string name="podcast_details_load_even_older_episodes">Load more episodes</string>
+    <string name="podcast_details_load_even_older_episodes_title">Load more episodes</string>
     <string name="podcast_details_load_even_older_episodes_message">The podcast service used in the app doesn\'t support getting older episodes with pagination so the app might crash if too many episodes are loaded.\n\nHow many additional episodes would you like to load?</string>
     <string name="podcast_details_load_even_older_episodes_message_already_loaded_count">%1$s most recent episodes loaded right now.</string>
     <string name="podcast_details_load_even_older_episodes_text_field_hint">Additional episodes</string>
