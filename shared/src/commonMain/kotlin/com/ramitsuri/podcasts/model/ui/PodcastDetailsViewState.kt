@@ -1,7 +1,6 @@
 package com.ramitsuri.podcasts.model.ui
 
 import com.ramitsuri.podcasts.model.Episode
-import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.PodcastWithEpisodes

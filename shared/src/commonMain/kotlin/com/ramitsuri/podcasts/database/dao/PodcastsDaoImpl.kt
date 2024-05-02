@@ -143,7 +143,10 @@ internal class PodcastsDaoImpl(
         }
     }
 
-    override suspend fun updateEpisodeSortOrder(id: Long, episodeSortOrder: EpisodeSortOrder) {
+    override suspend fun updateEpisodeSortOrder(
+        id: Long,
+        episodeSortOrder: EpisodeSortOrder,
+    ) {
         withContext(ioDispatcher) {
             podcastAdditionalInfoEntityQueries.updateEpisodeSortOrder(
                 id = id,

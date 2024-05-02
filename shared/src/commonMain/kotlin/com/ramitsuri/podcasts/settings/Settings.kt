@@ -1,6 +1,5 @@
 package com.ramitsuri.podcasts.settings
 
-import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.RemoveDownloadsAfter
 import com.ramitsuri.podcasts.model.ui.SleepTimer
