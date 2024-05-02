@@ -451,6 +451,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         }
     }
 
+    // Almost replicated in EpisodeControllerImpl
     private fun playNextFromQueueOnMediaEnded(player: Player) {
         LogHelper.d(TAG, "Finding next media to play")
         if (attemptingToPlayNextMedia) {
@@ -490,7 +491,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             val queue = episodesRepository.getQueue()
             val currentEpisodeIndex = queue.indexOfFirst { it.id == currentlyPlayingEpisode.id }
             if (currentEpisodeIndex == -1) {
-                LogHelper.v(TAG, "current episode not found")
+                LogHelper.v(TAG, "current episode not found in queue")
                 onDone()
                 return@launchSuspend
             }

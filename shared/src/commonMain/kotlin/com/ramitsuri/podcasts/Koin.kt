@@ -158,6 +158,7 @@ private val coreModule =
                 episodesRepository = get(),
                 playerController = get(),
                 episodeDownloader = get(),
+                settings = get(),
             )
         }
 
