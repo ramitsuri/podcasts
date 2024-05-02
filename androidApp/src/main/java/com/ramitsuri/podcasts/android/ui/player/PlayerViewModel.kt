@@ -111,22 +111,23 @@ class PlayerViewModel(
     fun onSeekRequested(toPercentOfDuration: Float) {
         _state.update { it.copy(tempPlayProgress = toPercentOfDuration) }
         updateSeekJob?.cancel()
-        updateSeekJob = viewModelScope.launch {
-            delay(300)
-            val state = _state.value
-            val duration = state.totalDuration
-            if (duration == null) {
-                LogHelper.v(TAG, "Seek requested but no duration")
-                return@launch
+        updateSeekJob =
+            viewModelScope.launch {
+                delay(300)
+                val state = _state.value
+                val duration = state.totalDuration
+                if (duration == null) {
+                    LogHelper.v(TAG, "Seek requested but no duration")
+                    return@launch
+                }
+                val playProgress = duration.times(toPercentOfDuration.toDouble())
+                val episodeId = state.episodeId
+                if (episodeId != null) {
+                    episodesRepository.updatePlayProgress(episodeId, playProgress.inWholeSeconds.toInt())
+                }
+                playerController.seek(playProgress)
+                _state.update { it.copy(tempPlayProgress = null) }
             }
-            val playProgress = duration.times(toPercentOfDuration.toDouble())
-            val episodeId = state.episodeId
-            if (episodeId != null) {
-                episodesRepository.updatePlayProgress(episodeId, playProgress.inWholeSeconds.toInt())
-            }
-            playerController.seek(playProgress)
-            _state.update { it.copy(tempPlayProgress = null) }
-        }
     }
 
     fun onSpeedChangeRequested(speed: Float) {
