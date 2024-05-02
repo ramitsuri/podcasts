@@ -13,6 +13,7 @@ data class PlayerViewState(
     val playbackSpeed: Float = 1f,
     val isCasting: Boolean = false,
     val trimSilence: Boolean = false,
+    val tempPlayProgress: Float? = null,
 ) {
     val episodeId
         get() = episode?.id
@@ -49,8 +50,8 @@ data class PlayerViewState(
             }
 
     val progress
-        get() =
-            if (episode?.isCompleted == true) {
+        get() = tempPlayProgress
+            ?: if (episode?.isCompleted == true) {
                 1f
             } else {
                 val durationForProgress = (episode?.duration?.toFloat() ?: 1f).coerceAtLeast(1f)
