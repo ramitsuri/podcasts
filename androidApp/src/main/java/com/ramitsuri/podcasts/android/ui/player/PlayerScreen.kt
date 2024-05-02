@@ -62,7 +62,6 @@ import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.SquigglySlider
-import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.PlayerViewState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
@@ -70,7 +69,6 @@ import kotlinx.datetime.Clock
 import java.util.Locale
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun PlayerScreen(
@@ -783,16 +781,10 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
                 state =
                     PlayerViewState(
                         playingState = PlayingState.PLAYING,
-                        episodeTitle = episode().title,
-                        episodeArtworkUrl = episode().podcastImageUrl,
-                        podcastName = episode().podcastName,
                         sleepTimer = SleepTimer.None,
                         sleepTimerDuration = null,
                         playbackSpeed = 1f,
                         isCasting = false,
-                        progress = 0.4f,
-                        playedDuration = 5.seconds,
-                        remainingDuration = 55.minutes + 32.seconds,
                     ),
                 onNotExpandedHeightKnown = { },
                 onEpisodeTitleClicked = { },
@@ -828,16 +820,10 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
                 state =
                     PlayerViewState(
                         playingState = PlayingState.NOT_PLAYING,
-                        episodeTitle = episode().title,
-                        episodeArtworkUrl = episode().podcastImageUrl,
-                        podcastName = episode().podcastName,
                         sleepTimer = SleepTimer.None,
                         sleepTimerDuration = null,
                         playbackSpeed = 1f,
                         isCasting = false,
-                        progress = 0.4f,
-                        playedDuration = 5.seconds,
-                        remainingDuration = 55.minutes + 32.seconds,
                     ),
                 onNotExpandedHeightKnown = { },
                 onEpisodeTitleClicked = { },
@@ -872,18 +858,11 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
                 isExpanded = true,
                 state =
                     PlayerViewState(
-                        episodeId = "",
                         playingState = PlayingState.PLAYING,
-                        episodeTitle = episode().title,
-                        episodeArtworkUrl = episode().podcastImageUrl,
-                        podcastName = episode().podcastName,
                         sleepTimer = SleepTimer.None,
                         sleepTimerDuration = null,
                         playbackSpeed = 1f,
                         isCasting = false,
-                        progress = 0.4f,
-                        playedDuration = 5.seconds,
-                        remainingDuration = 55.minutes + 32.seconds,
                     ),
                 onNotExpandedHeightKnown = { },
                 onEpisodeTitleClicked = { },
@@ -918,16 +897,10 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
             state =
                 PlayerViewState(
                     playingState = PlayingState.NOT_PLAYING,
-                    episodeTitle = episode().title,
-                    episodeArtworkUrl = episode().podcastImageUrl,
-                    podcastName = episode().podcastName,
                     sleepTimer = SleepTimer.None,
                     sleepTimerDuration = null,
                     playbackSpeed = 1f,
                     isCasting = false,
-                    progress = 0.4f,
-                    playedDuration = 5.seconds,
-                    remainingDuration = 55.minutes + 32.seconds,
                 ),
             onNotExpandedHeightKnown = { },
             onEpisodeTitleClicked = { },

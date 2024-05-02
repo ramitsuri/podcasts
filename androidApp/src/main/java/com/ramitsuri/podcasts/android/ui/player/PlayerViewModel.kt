@@ -23,7 +23,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import kotlin.math.roundToInt
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -68,44 +67,13 @@ class PlayerViewModel(
                     EpisodeUpdate(episode, speed, trimSilence, sleepTimer)
                 }.collect { (episode, speed, trimSilence, sleepTimer) ->
                     if (episode != null) {
-                        val duration = episode.duration
-                        val durationForProgress = (duration?.toFloat() ?: 1f).coerceAtLeast(1f)
-                        val progressPercent =
-                            if (episode.isCompleted) {
-                                1f
-                            } else {
-                                episode
-                                    .progressInSeconds
-                                    .toFloat()
-                                    .div(durationForProgress)
-                                    .coerceIn(0f, 1f)
-                            }
                         _state.update {
                             it.copy(
-                                episodeId = episode.id,
-                                episodeTitle = episode.title,
-                                episodeArtworkUrl = episode.podcastImageUrl,
-                                podcastId = episode.podcastId,
-                                podcastName = episode.podcastName,
+                                episode = episode,
                                 playbackSpeed = speed,
                                 sleepTimer = sleepTimer,
                                 isCasting = false,
-                                progress = progressPercent,
-                                playedDuration =
-                                    if (episode.isCompleted) {
-                                        duration?.seconds ?: ZERO
-                                    } else {
-                                        episode.progressInSeconds.seconds
-                                    },
-                                remainingDuration =
-                                    if (episode.isCompleted) {
-                                        ZERO
-                                    } else {
-                                        episode.remainingDuration
-                                    },
-                                totalDuration = duration?.seconds,
                                 trimSilence = trimSilence,
-                                isFavorite = episode.isFavorite,
                             )
                         }
                         updateSleepTimerDuration()
