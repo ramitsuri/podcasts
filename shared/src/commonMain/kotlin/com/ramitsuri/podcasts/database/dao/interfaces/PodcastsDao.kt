@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.database.dao.interfaces
 import com.ramitsuri.podcasts.GetAllPodcasts
 import com.ramitsuri.podcasts.GetAllSubscribedPodcasts
 import com.ramitsuri.podcasts.GetPodcast
+import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.Podcast
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Clock
@@ -50,5 +51,10 @@ internal interface PodcastsDao {
     suspend fun updateShowCompletedEpisodes(
         id: Long,
         showCompletedEpisodes: Boolean,
+    )
+
+    suspend fun updateEpisodeSortOrder(
+        id: Long,
+        episodeSortOrder: EpisodeSortOrder,
     )
 }

@@ -1,6 +1,5 @@
 package com.ramitsuri.podcasts.settings
 
-import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.RemoveDownloadsAfter
 import com.ramitsuri.podcasts.model.ui.SleepTimer
@@ -115,20 +114,6 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
         keyValueStore.putBoolean(Key.AUTO_PLAY_NEXT_IN_QUEUE, autoPlayNextInQueue)
     }
 
-    fun getPodcastDetailsEpisodeSortOrder(): Flow<EpisodeSortOrder> {
-        return keyValueStore.getIntFlow(
-            Key.PODCAST_DETAILS_EPISODE_SORT_ORDER,
-            EpisodeSortOrder.DATE_PUBLISHED_DESC.key,
-        )
-            .map {
-                EpisodeSortOrder.fromKey(it)
-            }
-    }
-
-    suspend fun setPodcastDetailsEpisodeSortOrder(sortOrder: EpisodeSortOrder) {
-        keyValueStore.putInt(Key.PODCAST_DETAILS_EPISODE_SORT_ORDER, sortOrder.key)
-    }
-
     fun getRemoveCompletedEpisodesAfter(): Flow<RemoveDownloadsAfter> {
         return keyValueStore.getIntFlow(
             Key.REMOVE_COMPLETED_EPISODES_AFTER,
@@ -155,5 +140,9 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
 
     suspend fun setRemoveUnfinishedEpisodesAfter(removeDownloadsAfter: RemoveDownloadsAfter) {
         keyValueStore.putInt(Key.REMOVE_UNFINISHED_EPISODES_AFTER, removeDownloadsAfter.key)
+    }
+
+    suspend fun removeLegacySettings() {
+        keyValueStore.removeInt(Key.PODCAST_DETAILS_EPISODE_SORT_ORDER)
     }
 }

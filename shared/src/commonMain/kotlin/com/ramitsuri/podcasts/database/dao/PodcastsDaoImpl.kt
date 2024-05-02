@@ -11,6 +11,7 @@ import com.ramitsuri.podcasts.PodcastAdditionalInfoEntityQueries
 import com.ramitsuri.podcasts.PodcastEntity
 import com.ramitsuri.podcasts.PodcastEntityQueries
 import com.ramitsuri.podcasts.database.dao.interfaces.PodcastsDao
+import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.Podcast
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -142,6 +143,18 @@ internal class PodcastsDaoImpl(
         }
     }
 
+    override suspend fun updateEpisodeSortOrder(
+        id: Long,
+        episodeSortOrder: EpisodeSortOrder,
+    ) {
+        withContext(ioDispatcher) {
+            podcastAdditionalInfoEntityQueries.updateEpisodeSortOrder(
+                id = id,
+                episodeSortOrder = episodeSortOrder,
+            )
+        }
+    }
+
     private fun insert(podcast: Podcast) {
         podcastEntityQueries.insertOrReplace(
             PodcastEntity(
@@ -170,6 +183,7 @@ internal class PodcastsDaoImpl(
                 hasNewEpisodes = podcast.hasNewEpisodes,
                 autoAddToQueue = podcast.autoAddToQueue,
                 showCompletedEpisodes = podcast.showCompletedEpisodes,
+                episodeSortOrder = podcast.episodeSortOrder,
             ),
         )
     }

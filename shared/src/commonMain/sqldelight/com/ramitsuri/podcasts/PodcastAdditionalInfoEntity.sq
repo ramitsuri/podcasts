@@ -1,3 +1,4 @@
+import com.ramitsuri.podcasts.model.EpisodeSortOrder;
 import kotlin.Boolean;
 import kotlinx.datetime.Instant;
 
@@ -9,12 +10,13 @@ CREATE TABLE IF NOT EXISTS PodcastAdditionalInfoEntity (
     subscribedDate INTEGER AS Instant,
     hasNewEpisodes INTEGER AS Boolean NOT NULL DEFAULT 0,
     autoAddToQueue INTEGER AS Boolean NOT NULL DEFAULT 0,
-    showCompletedEpisodes INTEGER AS Boolean NOT NULL DEFAULT 1
+    showCompletedEpisodes INTEGER AS Boolean NOT NULL DEFAULT 1,
+    episodeSortOrder INTEGER AS EpisodeSortOrder NOT NULL DEFAULT 0
 );
 
 insertOrIgnore:
 INSERT OR IGNORE INTO
-PodcastAdditionalInfoEntity(id, subscribed, autoDownloadEpisodes, newEpisodeNotification, subscribedDate, hasNewEpisodes, autoAddToQueue, showCompletedEpisodes)
+PodcastAdditionalInfoEntity(id, subscribed, autoDownloadEpisodes, newEpisodeNotification, subscribedDate, hasNewEpisodes, autoAddToQueue, showCompletedEpisodes, episodeSortOrder)
 VALUES ?;
 
 updateSubscribed:
@@ -50,4 +52,9 @@ WHERE id = :id;
 updateShowCompletedEpisodes:
 UPDATE PodcastAdditionalInfoEntity
 SET showCompletedEpisodes = :showCompletedEpisodes
+WHERE id = :id;
+
+updateEpisodeSortOrder:
+UPDATE PodcastAdditionalInfoEntity
+SET episodeSortOrder = :episodeSortOrder
 WHERE id = :id;
