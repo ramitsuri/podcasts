@@ -1,6 +1,7 @@
 package com.ramitsuri.podcasts.model.ui
 
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.PodcastWithEpisodes
@@ -12,7 +13,9 @@ data class PodcastDetailsViewState(
     val page: Long = 1,
     val availableEpisodeCount: Long = 0,
     val hasMorePages: Boolean = true,
-)
+) {
+    val episodeSortOrder: EpisodeSortOrder = podcastWithEpisodes?.podcast?.episodeSortOrder ?: EpisodeSortOrder.default
+}
 
 data class PodcastWithSelectableEpisodes(
     val podcast: Podcast,
