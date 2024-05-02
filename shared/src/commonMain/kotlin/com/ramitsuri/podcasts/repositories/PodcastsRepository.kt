@@ -10,7 +10,6 @@ import com.ramitsuri.podcasts.model.PodcastError
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.network.api.interfaces.PodcastsApi
 import com.ramitsuri.podcasts.network.model.SearchPodcastsRequest
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
