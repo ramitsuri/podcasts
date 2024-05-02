@@ -213,11 +213,14 @@ class PodcastDetailsViewModel(
         val currentCount = _state.value.availableEpisodeCount
         val episodesToLoadCount = currentCount + additionalCount
         longLivingScope.launch {
-            podcastsAndEpisodesRepository.refreshPodcast(
+            _state.update { it.copy(loadingOlderEpisodes = true) }
+            episodesRepository.refreshForPodcastId(
                 podcastId = podcastId,
                 episodesToLoad = episodesToLoadCount,
                 fetchSinceMostRecentEpisode = false,
             )
+            _state.update { it.copy(loadingOlderEpisodes = false) }
+            onNextPageRequested()
         }
     }
 

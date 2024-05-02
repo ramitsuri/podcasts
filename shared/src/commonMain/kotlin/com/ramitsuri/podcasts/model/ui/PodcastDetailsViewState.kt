@@ -13,6 +13,7 @@ data class PodcastDetailsViewState(
     val page: Long = 1,
     val availableEpisodeCount: Long = 0,
     val hasMorePages: Boolean = true,
+    val loadingOlderEpisodes: Boolean = false,
 ) {
     val episodeSortOrder: EpisodeSortOrder
         get() = podcastWithEpisodes?.podcast?.episodeSortOrder ?: EpisodeSortOrder.default

@@ -21,8 +21,8 @@ class EpisodesRepository internal constructor(
     private val episodesApi: EpisodesApi,
     private val settings: Settings,
 ) {
-    // Should be called via PodcastsAndEpisodesRepository because that does other things like marking podcasts
-    // having new episodes
+    // Should be called via PodcastsAndEpisodesRepository when necessary because that does other things like
+    // marking podcasts having new episodes
     suspend fun refreshForPodcastId(
         podcastId: Long,
         episodesToLoad: Long = 100,
