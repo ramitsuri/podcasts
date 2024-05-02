@@ -76,7 +76,6 @@ private val coreModule =
                 podcastsApi = get(),
                 podcastsDao = get(),
                 categoryDao = get(),
-                ioDispatcher = get<DispatcherProvider>().io,
             )
         }
 
