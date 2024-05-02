@@ -58,6 +58,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -65,6 +66,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
+import androidx.core.view.HapticFeedbackConstantsCompat
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import be.digitalia.compose.htmlconverter.htmlToString
 import coil.compose.AsyncImage
@@ -637,6 +639,7 @@ private fun EpisodeItem(
     onFavoriteClicked: () -> Unit,
     onNotFavoriteClicked: () -> Unit,
 ) {
+    val view = LocalView.current
     Column(
         modifier =
             Modifier
@@ -647,7 +650,10 @@ private fun EpisodeItem(
                         } else {
                             onClicked
                         },
-                    onLongClick = onSelectionChanged,
+                    onLongClick = {
+                        onSelectionChanged()
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.LONG_PRESS)
+                    },
                 )
                 .background(
                     color =
