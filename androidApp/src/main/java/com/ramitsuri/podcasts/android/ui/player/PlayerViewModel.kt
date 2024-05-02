@@ -9,6 +9,7 @@ import com.ramitsuri.podcasts.model.ui.SleepTimer
 import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
+import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -37,6 +38,7 @@ class PlayerViewModel(
     val state = _state.asStateFlow()
 
     private var updateEpisodeStateJob: Job? = null
+    private var updateSeekJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -107,10 +109,25 @@ class PlayerViewModel(
     }
 
     fun onSeekRequested(toPercentOfDuration: Float) {
-        val duration = _state.value.totalDuration
-        if (duration != null) {
-            playerController.seek(duration.times(toPercentOfDuration.toDouble()))
-        }
+        _state.update { it.copy(tempPlayProgress = toPercentOfDuration) }
+        updateSeekJob?.cancel()
+        updateSeekJob =
+            viewModelScope.launch {
+                delay(300)
+                val state = _state.value
+                val duration = state.totalDuration
+                if (duration == null) {
+                    LogHelper.v(TAG, "Seek requested but no duration")
+                    return@launch
+                }
+                val playProgress = duration.times(toPercentOfDuration.toDouble())
+                val episodeId = state.episodeId
+                if (episodeId != null) {
+                    episodesRepository.updatePlayProgress(episodeId, playProgress.inWholeSeconds.toInt())
+                }
+                playerController.seek(playProgress)
+                _state.update { it.copy(tempPlayProgress = null) }
+            }
     }
 
     fun onSpeedChangeRequested(speed: Float) {
@@ -244,6 +261,8 @@ class PlayerViewModel(
     )
 
     companion object {
+        private const val TAG = "PlayerViewModel"
+
         fun factory(): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory, KoinComponent {
                 @Suppress("UNCHECKED_CAST")
