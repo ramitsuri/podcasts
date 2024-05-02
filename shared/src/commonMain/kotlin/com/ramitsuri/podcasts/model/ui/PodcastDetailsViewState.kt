@@ -14,7 +14,8 @@ data class PodcastDetailsViewState(
     val availableEpisodeCount: Long = 0,
     val hasMorePages: Boolean = true,
 ) {
-    val episodeSortOrder: EpisodeSortOrder = podcastWithEpisodes?.podcast?.episodeSortOrder ?: EpisodeSortOrder.default
+    val episodeSortOrder: EpisodeSortOrder
+        get() = podcastWithEpisodes?.podcast?.episodeSortOrder ?: EpisodeSortOrder.default
 }
 
 data class PodcastWithSelectableEpisodes(
