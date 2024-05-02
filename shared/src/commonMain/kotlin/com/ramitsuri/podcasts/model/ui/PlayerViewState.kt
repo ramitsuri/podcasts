@@ -33,31 +33,34 @@ data class PlayerViewState(
         get() = episode?.isFavorite ?: false
 
     val playedDuration
-        get() = if (episode?.isCompleted == true) {
-            totalDuration ?: Duration.ZERO
-        } else {
-            episode?.progressInSeconds?.seconds ?: Duration.ZERO
-        }
+        get() =
+            if (episode?.isCompleted == true) {
+                totalDuration ?: Duration.ZERO
+            } else {
+                episode?.progressInSeconds?.seconds ?: Duration.ZERO
+            }
 
     val remainingDuration
-        get() = if (episode?.isCompleted == true) {
-            Duration.ZERO
-        } else {
-            episode?.remainingDuration
-        }
+        get() =
+            if (episode?.isCompleted == true) {
+                Duration.ZERO
+            } else {
+                episode?.remainingDuration
+            }
 
     val progress
-        get() = if (episode?.isCompleted == true) {
-            1f
-        } else {
-            val durationForProgress = (episode?.duration?.toFloat() ?: 1f).coerceAtLeast(1f)
-            episode
-                ?.progressInSeconds
-                ?.toFloat()
-                ?.div(durationForProgress)
-                ?.coerceIn(0f, 1f)
-                ?: 0f
-        }
+        get() =
+            if (episode?.isCompleted == true) {
+                1f
+            } else {
+                val durationForProgress = (episode?.duration?.toFloat() ?: 1f).coerceAtLeast(1f)
+                episode
+                    ?.progressInSeconds
+                    ?.toFloat()
+                    ?.div(durationForProgress)
+                    ?.coerceIn(0f, 1f)
+                    ?: 0f
+            }
 
     val hasEverBeenPlayed
         get() = episode?.id != null
