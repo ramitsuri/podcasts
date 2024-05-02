@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS PodcastEntity (
     categories TEXT AS List<Int> NOT NULL
 );
 
-getAllPodcasts:
+CREATE VIEW dbPodcast AS
 SELECT
 pe.*,
 paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.subscribedDate, paie.hasNewEpisodes, paie.autoAddToQueue, paie.showCompletedEpisodes, paie.episodeSortOrder
@@ -26,24 +26,17 @@ FROM PodcastEntity AS pe
 INNER JOIN PodcastAdditionalInfoEntity AS paie
     ON pe.id == paie.id;
 
+getAllPodcasts:
+SELECT * FROM dbPodcast;
+
 getAllSubscribedPodcasts:
-SELECT
-pe.*,
-paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.subscribedDate, paie.hasNewEpisodes, paie.autoAddToQueue, paie.showCompletedEpisodes, paie.episodeSortOrder
-FROM PodcastEntity AS pe
-INNER JOIN PodcastAdditionalInfoEntity AS paie
-    ON pe.id == paie.id
-WHERE paie.subscribed = 1
-ORDER BY paie.hasNewEpisodes DESC, paie.subscribedDate ASC;
+SELECT * FROM dbPodcast
+WHERE subscribed = 1
+ORDER BY hasNewEpisodes DESC, subscribedDate ASC;
 
 getPodcast:
-SELECT
-pe.*,
-paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.subscribedDate, paie.hasNewEpisodes, paie.autoAddToQueue, paie.showCompletedEpisodes, paie.episodeSortOrder
-FROM PodcastEntity AS pe
-INNER JOIN PodcastAdditionalInfoEntity AS paie
-    ON pe.id == paie.id
-WHERE pe.id == :id;
+SELECT * FROM dbPodcast
+WHERE id == :id;
 
 insertOrReplace:
 INSERT OR REPLACE INTO

@@ -1,0 +1,7 @@
+CREATE VIEW dbPodcast AS
+SELECT
+pe.*,
+paie.subscribed, paie.autoDownloadEpisodes, paie.newEpisodeNotification, paie.subscribedDate, paie.hasNewEpisodes, paie.autoAddToQueue, paie.showCompletedEpisodes, paie.episodeSortOrder
+FROM PodcastEntity AS pe
+INNER JOIN PodcastAdditionalInfoEntity AS paie
+    ON pe.id == paie.id;

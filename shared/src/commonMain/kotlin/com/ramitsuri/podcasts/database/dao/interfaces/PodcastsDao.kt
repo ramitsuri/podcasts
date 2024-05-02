@@ -1,8 +1,6 @@
 package com.ramitsuri.podcasts.database.dao.interfaces
 
-import com.ramitsuri.podcasts.GetAllPodcasts
-import com.ramitsuri.podcasts.GetAllSubscribedPodcasts
-import com.ramitsuri.podcasts.GetPodcast
+import com.ramitsuri.podcasts.DbPodcast
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.Podcast
 import kotlinx.coroutines.flow.Flow
@@ -10,15 +8,15 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
 internal interface PodcastsDao {
-    fun getAll(): Flow<List<GetAllPodcasts>>
+    fun getAll(): Flow<List<DbPodcast>>
 
-    suspend fun getAllSubscribed(): List<GetAllSubscribedPodcasts>
+    suspend fun getAllSubscribed(): List<DbPodcast>
 
-    fun getAllSubscribedFlow(): Flow<List<GetAllSubscribedPodcasts>>
+    fun getAllSubscribedFlow(): Flow<List<DbPodcast>>
 
-    fun getFlow(id: Long): Flow<GetPodcast?>
+    fun getFlow(id: Long): Flow<DbPodcast?>
 
-    suspend fun get(id: Long): GetPodcast?
+    suspend fun get(id: Long): DbPodcast?
 
     suspend fun insert(podcasts: List<Podcast>)
 

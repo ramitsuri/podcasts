@@ -3,9 +3,7 @@ package com.ramitsuri.podcasts.database.dao
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import com.ramitsuri.podcasts.GetAllPodcasts
-import com.ramitsuri.podcasts.GetAllSubscribedPodcasts
-import com.ramitsuri.podcasts.GetPodcast
+import com.ramitsuri.podcasts.DbPodcast
 import com.ramitsuri.podcasts.PodcastAdditionalInfoEntity
 import com.ramitsuri.podcasts.PodcastAdditionalInfoEntityQueries
 import com.ramitsuri.podcasts.PodcastEntity
@@ -23,14 +21,14 @@ internal class PodcastsDaoImpl(
     private val podcastAdditionalInfoEntityQueries: PodcastAdditionalInfoEntityQueries,
     private val ioDispatcher: CoroutineDispatcher,
 ) : PodcastsDao {
-    override fun getAll(): Flow<List<GetAllPodcasts>> {
+    override fun getAll(): Flow<List<DbPodcast>> {
         return podcastEntityQueries
             .getAllPodcasts()
             .asFlow()
             .mapToList(ioDispatcher)
     }
 
-    override suspend fun getAllSubscribed(): List<GetAllSubscribedPodcasts> {
+    override suspend fun getAllSubscribed(): List<DbPodcast> {
         return withContext(ioDispatcher) {
             podcastEntityQueries
                 .getAllSubscribedPodcasts()
@@ -38,21 +36,21 @@ internal class PodcastsDaoImpl(
         }
     }
 
-    override fun getAllSubscribedFlow(): Flow<List<GetAllSubscribedPodcasts>> {
+    override fun getAllSubscribedFlow(): Flow<List<DbPodcast>> {
         return podcastEntityQueries
             .getAllSubscribedPodcasts()
             .asFlow()
             .mapToList(ioDispatcher)
     }
 
-    override fun getFlow(id: Long): Flow<GetPodcast?> {
+    override fun getFlow(id: Long): Flow<DbPodcast?> {
         return podcastEntityQueries
             .getPodcast(id)
             .asFlow()
             .mapToOneOrNull(ioDispatcher)
     }
 
-    override suspend fun get(id: Long): GetPodcast? {
+    override suspend fun get(id: Long): DbPodcast? {
         return withContext(ioDispatcher) {
             podcastEntityQueries
                 .getPodcast(id)

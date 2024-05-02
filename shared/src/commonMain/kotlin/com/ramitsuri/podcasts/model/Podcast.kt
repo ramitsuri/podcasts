@@ -1,8 +1,6 @@
 package com.ramitsuri.podcasts.model
 
-import com.ramitsuri.podcasts.GetAllPodcasts
-import com.ramitsuri.podcasts.GetAllSubscribedPodcasts
-import com.ramitsuri.podcasts.GetPodcast
+import com.ramitsuri.podcasts.DbPodcast
 import com.ramitsuri.podcasts.network.model.PodcastDto
 import kotlinx.datetime.Instant
 
@@ -53,75 +51,27 @@ data class Podcast(
         episodeSortOrder = EpisodeSortOrder.default,
     )
 
-    internal constructor(getPodcast: GetPodcast, categories: List<Category>) : this(
-        id = getPodcast.id,
-        guid = getPodcast.guid,
-        title = getPodcast.title,
-        description = getPodcast.description,
-        author = getPodcast.author,
-        owner = getPodcast.owner,
-        url = getPodcast.url,
-        link = getPodcast.link,
-        image = getPodcast.image,
-        artwork = getPodcast.artwork,
-        explicit = getPodcast.explicit,
-        episodeCount = getPodcast.episodeCount,
+    internal constructor(dbPodcast: DbPodcast, categories: List<Category>) : this(
+        id = dbPodcast.id,
+        guid = dbPodcast.guid,
+        title = dbPodcast.title,
+        description = dbPodcast.description,
+        author = dbPodcast.author,
+        owner = dbPodcast.owner,
+        url = dbPodcast.url,
+        link = dbPodcast.link,
+        image = dbPodcast.image,
+        artwork = dbPodcast.artwork,
+        explicit = dbPodcast.explicit,
+        episodeCount = dbPodcast.episodeCount,
         categories = categories,
-        subscribed = getPodcast.subscribed,
-        autoDownloadEpisodes = getPodcast.autoDownloadEpisodes,
-        newEpisodeNotifications = getPodcast.newEpisodeNotification,
-        subscribedDate = getPodcast.subscribedDate,
-        hasNewEpisodes = getPodcast.hasNewEpisodes,
-        autoAddToQueue = getPodcast.autoAddToQueue,
-        showCompletedEpisodes = getPodcast.showCompletedEpisodes,
-        episodeSortOrder = getPodcast.episodeSortOrder,
-    )
-
-    internal constructor(getAllPodcasts: GetAllPodcasts, categories: List<Category>) : this(
-        id = getAllPodcasts.id,
-        guid = getAllPodcasts.guid,
-        title = getAllPodcasts.title,
-        description = getAllPodcasts.description,
-        author = getAllPodcasts.author,
-        owner = getAllPodcasts.owner,
-        url = getAllPodcasts.url,
-        link = getAllPodcasts.link,
-        image = getAllPodcasts.image,
-        artwork = getAllPodcasts.artwork,
-        explicit = getAllPodcasts.explicit,
-        episodeCount = getAllPodcasts.episodeCount,
-        categories = categories,
-        subscribed = getAllPodcasts.subscribed,
-        autoDownloadEpisodes = getAllPodcasts.autoDownloadEpisodes,
-        newEpisodeNotifications = getAllPodcasts.newEpisodeNotification,
-        subscribedDate = getAllPodcasts.subscribedDate,
-        hasNewEpisodes = getAllPodcasts.hasNewEpisodes,
-        autoAddToQueue = getAllPodcasts.autoAddToQueue,
-        showCompletedEpisodes = getAllPodcasts.showCompletedEpisodes,
-        episodeSortOrder = getAllPodcasts.episodeSortOrder,
-    )
-
-    internal constructor(getAllSubscribedPodcasts: GetAllSubscribedPodcasts, categories: List<Category>) : this(
-        id = getAllSubscribedPodcasts.id,
-        guid = getAllSubscribedPodcasts.guid,
-        title = getAllSubscribedPodcasts.title,
-        description = getAllSubscribedPodcasts.description,
-        author = getAllSubscribedPodcasts.author,
-        owner = getAllSubscribedPodcasts.owner,
-        url = getAllSubscribedPodcasts.url,
-        link = getAllSubscribedPodcasts.link,
-        image = getAllSubscribedPodcasts.image,
-        artwork = getAllSubscribedPodcasts.artwork,
-        explicit = getAllSubscribedPodcasts.explicit,
-        episodeCount = getAllSubscribedPodcasts.episodeCount,
-        categories = categories,
-        subscribed = getAllSubscribedPodcasts.subscribed,
-        autoDownloadEpisodes = getAllSubscribedPodcasts.autoDownloadEpisodes,
-        newEpisodeNotifications = getAllSubscribedPodcasts.newEpisodeNotification,
-        subscribedDate = getAllSubscribedPodcasts.subscribedDate,
-        hasNewEpisodes = getAllSubscribedPodcasts.hasNewEpisodes,
-        autoAddToQueue = getAllSubscribedPodcasts.autoAddToQueue,
-        showCompletedEpisodes = getAllSubscribedPodcasts.showCompletedEpisodes,
-        episodeSortOrder = getAllSubscribedPodcasts.episodeSortOrder,
+        subscribed = dbPodcast.subscribed,
+        autoDownloadEpisodes = dbPodcast.autoDownloadEpisodes,
+        newEpisodeNotifications = dbPodcast.newEpisodeNotification,
+        subscribedDate = dbPodcast.subscribedDate,
+        hasNewEpisodes = dbPodcast.hasNewEpisodes,
+        autoAddToQueue = dbPodcast.autoAddToQueue,
+        showCompletedEpisodes = dbPodcast.showCompletedEpisodes,
+        episodeSortOrder = dbPodcast.episodeSortOrder,
     )
 }

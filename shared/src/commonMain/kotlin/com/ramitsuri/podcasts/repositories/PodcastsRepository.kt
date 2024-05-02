@@ -10,7 +10,6 @@ import com.ramitsuri.podcasts.model.PodcastError
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.network.api.interfaces.PodcastsApi
 import com.ramitsuri.podcasts.network.model.SearchPodcastsRequest
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -18,49 +17,48 @@ class PodcastsRepository internal constructor(
     private val podcastsApi: PodcastsApi,
     private val podcastsDao: PodcastsDao,
     private val categoryDao: CategoryDao,
-    private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend fun get(id: Long): Podcast? {
-        val getPodcast =
+        val dbPodcast =
             podcastsDao
                 .get(id)
-        return if (getPodcast == null) {
+        return if (dbPodcast == null) {
             null
         } else {
-            val categories = categoryDao.get(getPodcast.categories).map { Category(it.id, it.name) }
-            Podcast(getPodcast, categories)
+            val categories = categoryDao.get(dbPodcast.categories).map { Category(it.id, it.name) }
+            Podcast(dbPodcast, categories)
         }
     }
 
     suspend fun getFlow(id: Long): Flow<Podcast?> {
         return podcastsDao
             .getFlow(id)
-            .map { getPodcast ->
-                if (getPodcast == null) {
+            .map { dbPodcast ->
+                if (dbPodcast == null) {
                     null
                 } else {
-                    val categories = categoryDao.get(getPodcast.categories).map { Category(it.id, it.name) }
-                    Podcast(getPodcast, categories)
+                    val categories = categoryDao.get(dbPodcast.categories).map { Category(it.id, it.name) }
+                    Podcast(dbPodcast, categories)
                 }
             }
     }
 
     suspend fun getAllSubscribed(): List<Podcast> {
         return podcastsDao.getAllSubscribed()
-            .map { getAllSubscribedPodcasts ->
+            .map { dbPodcast ->
                 val categories =
-                    categoryDao.get(getAllSubscribedPodcasts.categories).map { Category(it.id, it.name) }
-                Podcast(getAllSubscribedPodcasts, categories)
+                    categoryDao.get(dbPodcast.categories).map { Category(it.id, it.name) }
+                Podcast(dbPodcast, categories)
             }
     }
 
     fun getAllSubscribedFlow(): Flow<List<Podcast>> {
         return podcastsDao.getAllSubscribedFlow()
             .map { list ->
-                list.map { getAllSubscribedPodcasts ->
+                list.map { dbPodcast ->
                     val categories =
-                        categoryDao.get(getAllSubscribedPodcasts.categories).map { Category(it.id, it.name) }
-                    Podcast(getAllSubscribedPodcasts, categories)
+                        categoryDao.get(dbPodcast.categories).map { Category(it.id, it.name) }
+                    Podcast(dbPodcast, categories)
                 }
             }
     }
