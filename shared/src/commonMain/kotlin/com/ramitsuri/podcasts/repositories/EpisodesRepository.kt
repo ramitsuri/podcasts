@@ -171,10 +171,10 @@ class EpisodesRepository internal constructor(
                 Episode(dbEpisode)
             }
             .filter { episode ->
-                val downloadAtTime = episode.downloadedAt ?: return@filter false
-                if (episode.isCompleted) {
-                    now.minus(downloadAtTime) >= removeCompletedAfter.duration
-                } else {
+                if (episode.completedAt != null) { // Completed episode
+                    now.minus(episode.completedAt) >= removeCompletedAfter.duration
+                } else { // Not completed episode
+                    val downloadAtTime = episode.downloadedAt ?: return@filter false
                     now.minus(downloadAtTime) >= removeUnfinishedAfter.duration
                 }
             }
