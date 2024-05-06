@@ -45,26 +45,12 @@ class PlayerControllerImpl(
         controller?.pause()
     }
 
-    override fun replay(by: Duration) {
-        controller?.let {
-            val newPosition = (it.currentPosition - by.inWholeMilliseconds).coerceAtLeast(0)
-            it.seekTo(newPosition)
-        }
-    }
-
-    override fun skip(by: Duration) {
-        controller?.let {
-            val newPosition = (it.currentPosition + by.inWholeMilliseconds).coerceAtMost(it.duration)
-            it.seekTo(newPosition)
-        }
-    }
-
     override fun seek(to: Duration) {
         if (controller?.isCommandAvailable(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) != true) {
             LogHelper.d(TAG, "Seek requested but not allowed")
             return
         }
-        val newPosition = to.inWholeMilliseconds
+        val newPosition = to.inWholeMilliseconds.coerceIn(0, controller?.duration ?: 0)
         controller?.seekTo(newPosition)
     }
 

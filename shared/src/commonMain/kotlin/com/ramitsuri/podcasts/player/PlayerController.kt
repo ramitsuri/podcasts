@@ -12,9 +12,5 @@ interface PlayerController {
 
     fun pause()
 
-    fun replay(by: Duration)
-
-    fun skip(by: Duration)
-
     fun seek(to: Duration)
 }

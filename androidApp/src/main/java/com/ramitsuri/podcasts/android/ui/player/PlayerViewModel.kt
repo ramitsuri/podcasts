@@ -101,11 +101,37 @@ class PlayerViewModel(
     }
 
     fun onSkipRequested(by: Duration = 30.seconds) {
-        playerController.skip(by)
+        updateSeekJob?.cancel()
+        updateSeekJob =
+            viewModelScope.launch {
+                delay(300)
+                val episode = _state.value.episode
+                if (episode == null) {
+                    LogHelper.v(TAG, "Skip requested but episode is null")
+                    return@launch
+                }
+                val newPlayProgress = episode.progressInSeconds.seconds + by
+                episodesRepository.updatePlayProgress(episode.id, newPlayProgress.inWholeSeconds.toInt())
+                playerController.seek(newPlayProgress)
+                _state.update { it.copy(tempPlayProgress = null) }
+            }
     }
 
     fun onReplayRequested(by: Duration = 10.seconds) {
-        playerController.replay(by)
+        updateSeekJob?.cancel()
+        updateSeekJob =
+            viewModelScope.launch {
+                delay(300)
+                val episode = _state.value.episode
+                if (episode == null) {
+                    LogHelper.v(TAG, "Replay requested but episode is null")
+                    return@launch
+                }
+                val newPlayProgress = episode.progressInSeconds.seconds - by
+                episodesRepository.updatePlayProgress(episode.id, newPlayProgress.inWholeSeconds.toInt())
+                playerController.seek(newPlayProgress)
+                _state.update { it.copy(tempPlayProgress = null) }
+            }
     }
 
     fun onSeekRequested(toPercentOfDuration: Float) {
@@ -114,17 +140,18 @@ class PlayerViewModel(
         updateSeekJob =
             viewModelScope.launch {
                 delay(300)
-                val state = _state.value
-                val duration = state.totalDuration
+                val episode = _state.value.episode
+                if (episode == null) {
+                    LogHelper.v(TAG, "Seek requested but episode is null")
+                    return@launch
+                }
+                val duration = episode.duration?.seconds
                 if (duration == null) {
                     LogHelper.v(TAG, "Seek requested but no duration")
                     return@launch
                 }
                 val playProgress = duration.times(toPercentOfDuration.toDouble())
-                val episodeId = state.episodeId
-                if (episodeId != null) {
-                    episodesRepository.updatePlayProgress(episodeId, playProgress.inWholeSeconds.toInt())
-                }
+                episodesRepository.updatePlayProgress(episode.id, playProgress.inWholeSeconds.toInt())
                 playerController.seek(playProgress)
                 _state.update { it.copy(tempPlayProgress = null) }
             }
