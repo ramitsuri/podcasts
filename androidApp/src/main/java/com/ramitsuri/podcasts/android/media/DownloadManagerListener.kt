@@ -33,41 +33,43 @@ class DownloadManagerListener(
         download: Download,
         finalException: Exception?,
     ) {
-        val state =
+        val (state, needsDownload) =
             when (download.state) {
-                Download.STATE_QUEUED -> DownloadStatus.QUEUED
-                Download.STATE_DOWNLOADING -> DownloadStatus.DOWNLOADING
-                Download.STATE_COMPLETED -> DownloadStatus.DOWNLOADED
+                Download.STATE_QUEUED -> Pair(DownloadStatus.QUEUED, null)
+                Download.STATE_DOWNLOADING -> Pair(DownloadStatus.DOWNLOADING, null)
+                Download.STATE_COMPLETED -> Pair(DownloadStatus.DOWNLOADED, false)
                 Download.STATE_STOPPED -> {
                     if (download.stopReason == Constants.DOWNLOAD_CANCELED_REASON) {
-                        DownloadStatus.NOT_DOWNLOADED
+                        Pair(DownloadStatus.NOT_DOWNLOADED, false)
                     } else {
-                        DownloadStatus.PAUSED
+                        Pair(DownloadStatus.PAUSED, null)
                     }
                 }
 
                 Download.STATE_FAILED -> {
                     // TODO log the final exception
-                    DownloadStatus.NOT_DOWNLOADED
+                    Pair(DownloadStatus.NOT_DOWNLOADED, null)
                 }
 
-                else -> null
+                else -> Pair(null, null)
             }
 
         longLivingScope.launch {
+            val episodeId = download.request.id
             if (state != null) {
-                val episodeId = download.request.id
                 episodesRepository.updateDownloadStatus(episodeId, state)
                 if (state == DownloadStatus.DOWNLOADED) {
                     episodesRepository.updateDownloadedAt(episodeId)
                     episodesRepository.updateDownloadProgress(episodeId, 1.0)
-                    episodesRepository.updateNeedsDownload(episodeId, false)
                 } else {
                     episodesRepository.updateDownloadProgress(
                         episodeId,
                         download.percentDownloaded.div(100.0).coerceIn(0.0, 1.0),
                     )
                 }
+            }
+            if (needsDownload != null) {
+                episodesRepository.updateNeedsDownload(episodeId, needsDownload)
             }
         }
     }
