@@ -506,6 +506,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             LogHelper.d(TAG, "Found next media: ${nextEpisode.title}")
             val position = nextEpisode.progressInSeconds.times(1000L)
             player.setMediaItem(nextEpisode.asMediaItem(), position)
+            player.play()
             episodesRepository.setCurrentlyPlayingEpisodeId(nextEpisode.id)
             onDone()
         }
