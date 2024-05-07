@@ -273,7 +273,9 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 if (currentEpisode != null) {
                     val startingPosition = currentEpisode.progressInSeconds.times(1000).toLong()
                     MediaSession.MediaItemsWithStartPosition(
-                        listOf(currentEpisode.asMediaItem()),
+                        listOf(
+                            currentEpisode.asMediaItem(artworkUriOverride = currentEpisode.cachedArtworkUri),
+                        ),
                         C.INDEX_UNSET,
                         startingPosition,
                     )
@@ -505,7 +507,10 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
 
             LogHelper.d(TAG, "Found next media: ${nextEpisode.title}")
             val position = nextEpisode.progressInSeconds.times(1000L)
-            player.setMediaItem(nextEpisode.asMediaItem(), position)
+            player.setMediaItem(
+                nextEpisode.asMediaItem(artworkUriOverride = nextEpisode.cachedArtworkUri),
+                position,
+            )
             player.play()
             episodesRepository.setCurrentlyPlayingEpisodeId(nextEpisode.id)
             onDone()
