@@ -57,16 +57,22 @@ open class BaseTest(private val initDatabase: Boolean = true) : KoinTest {
                 }
 
                 single<Logger> {
-                    object :Logger {
+                    object : Logger {
                         override fun toggleRemoteLogging(enable: Boolean) {
                             println("Toggle remote logging $enable")
                         }
 
-                        override fun d(tag: String, message: String) {
+                        override fun d(
+                            tag: String,
+                            message: String,
+                        ) {
                             println("$tag: $message")
                         }
 
-                        override fun v(tag: String, message: String) {
+                        override fun v(
+                            tag: String,
+                            message: String,
+                        ) {
                             println("$tag: $message")
                         }
                     }
