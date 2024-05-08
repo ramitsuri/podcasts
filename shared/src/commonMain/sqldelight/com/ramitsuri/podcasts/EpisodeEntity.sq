@@ -109,6 +109,6 @@ DELETE FROM EpisodeEntity
 WHERE id IN :episodeIds;
 
 getPodcastsThatHaveEpisodes:
-SELECT podcastId
+SELECT DISTINCT podcastId
 FROM dbEpisode
 WHERE podcastId IN :podcastIds;
