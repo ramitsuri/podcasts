@@ -57,7 +57,7 @@ class PodcastsAndEpisodesRepositoryTest : BaseTest() {
 
             // Assert
             assertEquals(listOf("P1-E1"), getEpisodes(podcastIds = listOf(1)).map { it.id })
-            assertEquals(listOf(1L), getPodcasts().map { it.id })
+            assertEquals(listOf(1L, 2L), getPodcasts().map { it.id })
         }
 
     @Test
