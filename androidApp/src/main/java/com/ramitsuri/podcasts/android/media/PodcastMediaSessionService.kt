@@ -172,10 +172,14 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                     }
                 }
                 while (true) {
-                    val episodeId = player?.currentMediaItem?.mediaId ?: break
-                    val progressInSeconds = player.currentPosition.div(1000)
-                    if (progressInSeconds != 0L) {
-                        episodesRepository.updatePlayProgress(episodeId, progressInSeconds.toInt())
+                    if (player != null && player.isPlaying &&
+                        currentEpisode != null && !currentEpisode.isCompleted &&
+                        player.currentMediaItem?.mediaId == currentEpisode.id
+                    ) {
+                        val progressInSeconds = player.currentPosition.div(1000)
+                        if (progressInSeconds != 0L) {
+                            episodesRepository.updatePlayProgress(currentEpisode.id, progressInSeconds.toInt())
+                        }
                     }
                     delay(1.seconds)
                 }
