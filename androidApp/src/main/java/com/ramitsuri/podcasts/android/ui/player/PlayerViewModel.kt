@@ -107,6 +107,9 @@ class PlayerViewModel(
                 LogHelper.v(TAG, "Skip requested but episode is null")
                 return@launch
             }
+            if (episode.isCompleted) {
+                episodesRepository.markNotPlayed(episode.id)
+            }
             val newPlayProgress = episode.progressInSeconds.seconds + by
             episodesRepository.updatePlayProgress(episode.id, newPlayProgress.inWholeSeconds.toInt())
             playerController.seek(newPlayProgress)
@@ -120,6 +123,9 @@ class PlayerViewModel(
             if (episode == null) {
                 LogHelper.v(TAG, "Replay requested but episode is null")
                 return@launch
+            }
+            if (episode.isCompleted) {
+                episodesRepository.markNotPlayed(episode.id)
             }
             val newPlayProgress = episode.progressInSeconds.seconds - by
             episodesRepository.updatePlayProgress(episode.id, newPlayProgress.inWholeSeconds.toInt())
@@ -143,6 +149,9 @@ class PlayerViewModel(
                 if (duration == null) {
                     LogHelper.v(TAG, "Seek requested but no duration")
                     return@launch
+                }
+                if (episode.isCompleted) {
+                    episodesRepository.markNotPlayed(episode.id)
                 }
                 val playProgress = duration.times(toPercentOfDuration.toDouble())
                 episodesRepository.updatePlayProgress(episode.id, playProgress.inWholeSeconds.toInt())

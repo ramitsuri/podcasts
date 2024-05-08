@@ -264,8 +264,13 @@ class EpisodesRepository internal constructor(
     }
 
     suspend fun markPlayed(id: String) {
+        val episode = getEpisode(id)
+        if (episode == null) {
+            LogHelper.v(TAG, "Episode with id $id not found")
+            return
+        }
         updateCompletedAt(id)
-        updatePlayProgress(id, Episode.PLAY_PROGRESS_MAX)
+        updatePlayProgress(id, episode.duration ?: Episode.PLAY_PROGRESS_MAX)
         updateQueuePositions(mapOf(id to Episode.NOT_IN_QUEUE))
     }
 
