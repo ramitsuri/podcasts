@@ -20,6 +20,11 @@ Run()
   then
     exit 1
   fi
+
+  if ! ./gradlew shared:jvmTest;
+  then
+    exit 1
+  fi
 }
 
 ############################################################

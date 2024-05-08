@@ -75,3 +75,7 @@ updateNeedsDownload:
 UPDATE EpisodeAdditionalInfoEntity
 SET needsDownload = :needsDownload
 WHERE id = :id;
+
+remove:
+DELETE FROM EpisodeAdditionalInfoEntity
+WHERE id IN :episodeIds;

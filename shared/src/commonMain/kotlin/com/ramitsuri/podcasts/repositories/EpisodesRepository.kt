@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.repositories
 import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.EpisodeAndPodcastId
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.model.RemoveDownloadsAfter
@@ -160,7 +161,7 @@ class EpisodesRepository internal constructor(
             }
     }
 
-    suspend fun getEpisodesEligibleForRemoval(
+    suspend fun getEpisodesEligibleForDownloadRemoval(
         removeCompletedAfter: RemoveDownloadsAfter,
         removeUnfinishedAfter: RemoveDownloadsAfter,
         now: Instant,
@@ -178,6 +179,14 @@ class EpisodesRepository internal constructor(
                     now.minus(downloadAtTime) >= removeUnfinishedAfter.duration
                 }
             }
+    }
+
+    suspend fun getRemovableEpisodes(podcastIds: List<Long>): List<EpisodeAndPodcastId> {
+        return episodesDao.getRemovableEpisodes(podcastIds)
+    }
+
+    suspend fun getPodcastsThatHaveEpisodes(podcastIds: List<Long>): List<Long> {
+        return episodesDao.getPodcastIdsThatHaveEpisodes(podcastIds)
     }
 
     suspend fun getAvailableEpisodeCount(podcastId: Long): Long {
@@ -287,6 +296,10 @@ class EpisodesRepository internal constructor(
 
     suspend fun setCurrentlyPlayingEpisodeId(episodeId: String?) {
         settings.setCurrentlyPlayingEpisodeId(episodeId)
+    }
+
+    suspend fun remove(episodeIds: List<String>) {
+        episodesDao.remove(episodeIds)
     }
 
     companion object {

@@ -63,6 +63,13 @@ class PodcastsRepository internal constructor(
             }
     }
 
+    suspend fun getAllUnsubscribed(): List<Long> {
+        return podcastsDao.getAllSubscribed(subscribed = false)
+            .map { dbPodcast ->
+                dbPodcast.id
+            }
+    }
+
     suspend fun search(
         request: SearchPodcastsRequest,
         saveSearchResults: Boolean = true,
@@ -157,5 +164,9 @@ class PodcastsRepository internal constructor(
         episodeSortOrder: EpisodeSortOrder,
     ) {
         podcastsDao.updateEpisodeSortOrder(id, episodeSortOrder)
+    }
+
+    suspend fun remove(podcastIds: List<Long>) {
+        podcastsDao.remove(podcastIds)
     }
 }

@@ -12,6 +12,7 @@ import com.ramitsuri.podcasts.EpisodeEntityQueries
 import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.EpisodeAndPodcastId
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -272,6 +273,30 @@ internal class EpisodesDaoImpl(
         needsDownload: Boolean,
     ) {
         episodeAdditionalInfoEntityQueries.updateNeedsDownload(id = id, needsDownload = needsDownload)
+    }
+
+    override suspend fun getRemovableEpisodes(forPodcastIds: List<Long>): List<EpisodeAndPodcastId> {
+        return withContext(ioDispatcher) {
+            episodeEntityQueries.getRemovableEpisodes(forPodcastIds)
+                .executeAsList()
+                .map {
+                    EpisodeAndPodcastId(episodeId = it.id, podcastId = it.podcastId)
+                }
+        }
+    }
+
+    override suspend fun getPodcastIdsThatHaveEpisodes(podcastIds: List<Long>): List<Long> {
+        return withContext(ioDispatcher) {
+            episodeEntityQueries.getPodcastsThatHaveEpisodes(podcastIds)
+                .executeAsList()
+        }
+    }
+
+    override suspend fun remove(episodeIds: List<String>) {
+        withContext(ioDispatcher) {
+            episodeAdditionalInfoEntityQueries.remove(episodeIds)
+            episodeEntityQueries.remove(episodeIds)
+        }
     }
 
     private fun insert(episode: Episode): Boolean {

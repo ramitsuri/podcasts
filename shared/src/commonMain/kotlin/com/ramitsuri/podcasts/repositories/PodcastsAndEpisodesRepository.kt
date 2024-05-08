@@ -12,7 +12,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -21,6 +20,7 @@ import kotlinx.datetime.Instant
 class PodcastsAndEpisodesRepository internal constructor(
     private val podcastsRepository: PodcastsRepository,
     private val episodesRepository: EpisodesRepository,
+    private val sessionHistoryRepository: SessionHistoryRepository,
     private val ioDispatcher: CoroutineDispatcher,
     private val episodeDownloader: EpisodeDownloader,
 ) {
@@ -84,7 +84,7 @@ class PodcastsAndEpisodesRepository internal constructor(
 
                 // Delete downloaded episodes
                 episodesRepository
-                    .getEpisodesEligibleForRemoval(
+                    .getEpisodesEligibleForDownloadRemoval(
                         removeCompletedAfter = removeCompletedAfter,
                         removeUnfinishedAfter = removeUnfinishedAfter,
                         now = now,
@@ -165,5 +165,39 @@ class PodcastsAndEpisodesRepository internal constructor(
     suspend fun getEpisodeCountForSubscribedPodcasts(): Long {
         val subscribedPodcastIds = podcastsRepository.getAllSubscribed().map { it.id }
         return episodesRepository.getAvailableEpisodeCount(subscribedPodcastIds)
+    }
+
+    suspend fun removeIrrelevantPodcastsAndEpisodes() {
+        // Begin with podcasts that haven't been subscribed to
+        val unsubscribedPodcasts = podcastsRepository.getAllUnsubscribed()
+
+        // Get episode and podcast ids for those unsubscribed podcasts where episode hasn't been downloaded or added
+        // to queue or marked favorite because we don't want to remove those episodes and their podcasts
+        val (removableEpisodeIds, removablePodcastIds) = episodesRepository
+            .getRemovableEpisodes(unsubscribedPodcasts)
+            .map { Pair(it.episodeId, it.podcastId) }
+            .unzip()
+
+        // Check if potentially removable episodes were ever played (are in history) as they can't be removed either
+        // Using both episodeId and podcastId to get episodes in case episodeId is not unique across podcasts
+        val removableEpisodesThatHaveBeenPlayed =
+            sessionHistoryRepository.getEpisodes(removableEpisodeIds, removablePodcastIds)
+                .map { it.episodeId }
+                .distinct()
+
+        // Remove episodes that have never been played
+        val episodesThatCanBeRemoved = removableEpisodeIds.filter {
+            removableEpisodesThatHaveBeenPlayed.contains(it).not()
+        }
+        episodesRepository.remove(episodesThatCanBeRemoved)
+
+        // After episode removal, get unsubscribed podcasts that still have episodes
+        val podcastsThatHaveEpisodes = episodesRepository.getPodcastsThatHaveEpisodes(unsubscribedPodcasts)
+
+        // Remove unsubscribed podcasts that have no episodes
+        val podcastsThatCanBeRemoved = removablePodcastIds.filter {
+            podcastsThatHaveEpisodes.contains(it).not()
+        }
+        podcastsRepository.remove(podcastsThatCanBeRemoved)
     }
 }

@@ -10,9 +10,9 @@ import kotlinx.datetime.Instant
 internal interface PodcastsDao {
     fun getAll(): Flow<List<DbPodcast>>
 
-    suspend fun getAllSubscribed(): List<DbPodcast>
+    suspend fun getAllSubscribed(subscribed: Boolean = true): List<DbPodcast>
 
-    fun getAllSubscribedFlow(): Flow<List<DbPodcast>>
+    fun getAllSubscribedFlow(subscribed: Boolean = true): Flow<List<DbPodcast>>
 
     fun getFlow(id: Long): Flow<DbPodcast?>
 
@@ -55,4 +55,6 @@ internal interface PodcastsDao {
         id: Long,
         episodeSortOrder: EpisodeSortOrder,
     )
+
+    suspend fun remove(podcastIds: List<Long>)
 }

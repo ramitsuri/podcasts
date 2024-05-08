@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.database.dao.interfaces
 import com.ramitsuri.podcasts.DbEpisode
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.EpisodeAndPodcastId
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
@@ -104,4 +105,10 @@ internal interface EpisodesDao {
         id: String,
         needsDownload: Boolean,
     )
+
+    suspend fun getRemovableEpisodes(forPodcastIds: List<Long>): List<EpisodeAndPodcastId>
+
+    suspend fun getPodcastIdsThatHaveEpisodes(podcastIds: List<Long>): List<Long>
+
+    suspend fun remove(episodeIds: List<String>)
 }

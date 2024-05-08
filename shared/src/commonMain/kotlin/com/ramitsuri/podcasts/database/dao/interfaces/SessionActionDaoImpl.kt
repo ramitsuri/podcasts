@@ -4,6 +4,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.ramitsuri.podcasts.SessionActionEntity
 import com.ramitsuri.podcasts.SessionHistoryQueries
+import com.ramitsuri.podcasts.model.EpisodeAndPodcastId
 import com.ramitsuri.podcasts.model.SessionAction
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -46,5 +47,19 @@ internal class SessionActionDaoImpl(
                         sessionActionEntity.time
                     }
             }
+    }
+
+    override suspend fun getEpisodes(episodeIds: List<String>, podcastIds: List<Long>): List<EpisodeAndPodcastId> {
+        return withContext(ioDispatcher) {
+            sessionHistoryQueries
+                .getEpisodes(episodeIds = episodeIds, podcastIds = podcastIds)
+                .executeAsList()
+                .map {
+                    EpisodeAndPodcastId(
+                        episodeId = it.episodeId,
+                        podcastId = it.podcastId,
+                    )
+                }
+        }
     }
 }

@@ -31,7 +31,7 @@ SELECT * FROM dbPodcast;
 
 getAllSubscribedPodcasts:
 SELECT * FROM dbPodcast
-WHERE subscribed = 1
+WHERE subscribed = :subscribed
 ORDER BY hasNewEpisodes DESC, subscribedDate ASC;
 
 getPodcast:
@@ -42,3 +42,7 @@ insertOrReplace:
 INSERT OR REPLACE INTO
 PodcastEntity(id, guid, title, description, author, owner, url, link, image, artwork, explicit, episodeCount, categories)
 VALUES ?;
+
+remove:
+DELETE FROM PodcastEntity
+WHERE id IN :podcastIds;

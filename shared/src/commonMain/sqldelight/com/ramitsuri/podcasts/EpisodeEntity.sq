@@ -55,6 +55,17 @@ AND CASE WHEN :showCompleted = 1 THEN 1 ELSE completedAt IS NULL END
 ORDER BY datePublished DESC
 LIMIT :limit;
 
+getRemovableEpisodes:
+SELECT id, podcastId FROM dbEpisode
+WHERE
+podcastId IN :podcastIds
+AND
+downloadStatus == "not_downloaded"
+AND
+queuePosition == -1
+AND
+isFavorite == 0;
+
 getEpisodesInQueue:
 SELECT * FROM dbEpisode
 WHERE queuePosition != -1
@@ -92,3 +103,12 @@ updateDuration:
 UPDATE EpisodeEntity
 SET duration = :duration
 WHERE id = :id;
+
+remove:
+DELETE FROM EpisodeEntity
+WHERE id IN :episodeIds;
+
+getPodcastsThatHaveEpisodes:
+SELECT podcastId
+FROM dbEpisode
+WHERE podcastId IN :podcastIds;

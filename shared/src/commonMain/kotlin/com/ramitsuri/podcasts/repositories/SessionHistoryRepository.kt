@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.repositories
 import com.ramitsuri.podcasts.database.dao.interfaces.SessionActionDao
 import com.ramitsuri.podcasts.model.Action
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.EpisodeAndPodcastId
 import com.ramitsuri.podcasts.model.EpisodeHistory
 import com.ramitsuri.podcasts.model.SessionAction
 import com.ramitsuri.podcasts.utils.LogHelper
@@ -152,6 +153,10 @@ class SessionHistoryRepository internal constructor(
                         }
                 }
             }
+    }
+
+    suspend fun getEpisodes(episodeIds: List<String>, podcastIds: List<Long>): List<EpisodeAndPodcastId> {
+        return sessionActionDao.getEpisodes(episodeIds = episodeIds, podcastIds = podcastIds)
     }
 
     private suspend fun insert(action: SessionAction) {
