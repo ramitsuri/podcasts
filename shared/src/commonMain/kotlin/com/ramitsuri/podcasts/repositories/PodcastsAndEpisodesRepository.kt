@@ -93,6 +93,9 @@ class PodcastsAndEpisodesRepository internal constructor(
                         episodeDownloader.remove(episode)
                     }
             }
+
+            removeIrrelevantPodcastsAndEpisodes()
+
             val failure = failures.firstOrNull()
             if (failure == null) {
                 PodcastResult.Success(Unit)
@@ -167,7 +170,7 @@ class PodcastsAndEpisodesRepository internal constructor(
         return episodesRepository.getAvailableEpisodeCount(subscribedPodcastIds)
     }
 
-    suspend fun removeIrrelevantPodcastsAndEpisodes() {
+    internal suspend fun removeIrrelevantPodcastsAndEpisodes() {
         // Begin with podcasts that haven't been subscribed to
         val unsubscribedPodcasts = podcastsRepository.getAllUnsubscribed()
 
@@ -198,7 +201,7 @@ class PodcastsAndEpisodesRepository internal constructor(
 
         // Remove unsubscribed podcasts that have no episodes
         val podcastsThatCanBeRemoved =
-            removablePodcastIds.filter {
+            unsubscribedPodcasts.filter {
                 podcastsThatHaveEpisodes.contains(it).not()
             }
         podcastsRepository.remove(podcastsThatCanBeRemoved)

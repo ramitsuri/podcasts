@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts
 import app.cash.sqldelight.db.SqlDriver
 import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.utils.Logger
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
@@ -51,6 +52,22 @@ open class BaseTest(private val initDatabase: Boolean = true) : KoinTest {
 
                         override fun cancel(episode: Episode) {
                             println("Cancel episode ${episode.id} download")
+                        }
+                    }
+                }
+
+                single<Logger> {
+                    object :Logger {
+                        override fun toggleRemoteLogging(enable: Boolean) {
+                            println("Toggle remote logging $enable")
+                        }
+
+                        override fun d(tag: String, message: String) {
+                            println("$tag: $message")
+                        }
+
+                        override fun v(tag: String, message: String) {
+                            println("$tag: $message")
                         }
                     }
                 }

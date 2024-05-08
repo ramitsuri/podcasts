@@ -202,6 +202,24 @@ class PodcastsAndEpisodesRepositoryTest : BaseTest() {
             assertEquals(listOf(), getPodcasts().map { it.id })
         }
 
+    @Test
+    fun `should remove podcast if not subscribed, has no episodes`() =
+        runBlocking {
+            // Arrange
+            get<PodcastsDao>().insert(
+                listOf(
+                    podcast(id = 1, subscribed = false),
+                ),
+            )
+
+            // Act
+            removeIrrelevant()
+
+            // Assert
+            assertEquals(listOf(), getEpisodes(podcastIds = listOf(1)).map { it.id })
+            assertEquals(listOf(), getPodcasts().map { it.id })
+        }
+
     private suspend fun removeIrrelevant() {
         get<PodcastsAndEpisodesRepository>().removeIrrelevantPodcastsAndEpisodes()
     }
