@@ -58,3 +58,7 @@ updateEpisodeSortOrder:
 UPDATE PodcastAdditionalInfoEntity
 SET episodeSortOrder = :episodeSortOrder
 WHERE id = :id;
+
+remove:
+DELETE FROM PodcastAdditionalInfoEntity
+WHERE id IN :podcastIds;

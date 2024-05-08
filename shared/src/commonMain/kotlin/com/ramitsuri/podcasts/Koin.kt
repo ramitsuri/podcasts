@@ -91,6 +91,7 @@ private val coreModule =
             PodcastsAndEpisodesRepository(
                 podcastsRepository = get(),
                 episodesRepository = get(),
+                sessionHistoryRepository = get(),
                 ioDispatcher = get<DispatcherProvider>().io,
                 episodeDownloader = get<EpisodeDownloader>(),
             )

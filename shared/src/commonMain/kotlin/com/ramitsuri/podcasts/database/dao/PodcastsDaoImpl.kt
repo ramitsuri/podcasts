@@ -28,17 +28,17 @@ internal class PodcastsDaoImpl(
             .mapToList(ioDispatcher)
     }
 
-    override suspend fun getAllSubscribed(): List<DbPodcast> {
+    override suspend fun getAllSubscribed(subscribed: Boolean): List<DbPodcast> {
         return withContext(ioDispatcher) {
             podcastEntityQueries
-                .getAllSubscribedPodcasts()
+                .getAllSubscribedPodcasts(subscribed)
                 .executeAsList()
         }
     }
 
-    override fun getAllSubscribedFlow(): Flow<List<DbPodcast>> {
+    override fun getAllSubscribedFlow(subscribed: Boolean): Flow<List<DbPodcast>> {
         return podcastEntityQueries
-            .getAllSubscribedPodcasts()
+            .getAllSubscribedPodcasts(subscribed)
             .asFlow()
             .mapToList(ioDispatcher)
     }
@@ -150,6 +150,13 @@ internal class PodcastsDaoImpl(
                 id = id,
                 episodeSortOrder = episodeSortOrder,
             )
+        }
+    }
+
+    override suspend fun remove(podcastIds: List<Long>) {
+        withContext(ioDispatcher) {
+            podcastAdditionalInfoEntityQueries.remove(podcastIds)
+            podcastEntityQueries.remove(podcastIds)
         }
     }
 
