@@ -14,21 +14,25 @@ import kotlin.test.assertEquals
 
 class EpisodesRepositoryTest : BaseTest() {
     @Test
-    fun getPodcastsThatHaveEpisodes_returnsPodcastsForWhichEpisodesExist() = runBlocking {
-        // Arrange
-        insert(id = "P1-E1", podcastId = 1)
-        insert(id = "P1-E2", podcastId = 1)
-        insert(id = "P2-E1", podcastId = 2)
-        insert(id = "P2-E2", podcastId = 2)
+    fun getPodcastsThatHaveEpisodes_returnsPodcastsForWhichEpisodesExist() =
+        runBlocking {
+            // Arrange
+            insert(id = "P1-E1", podcastId = 1)
+            insert(id = "P1-E2", podcastId = 1)
+            insert(id = "P2-E1", podcastId = 2)
+            insert(id = "P2-E2", podcastId = 2)
 
-        // Act
-        val result = get<EpisodesRepository>().getPodcastsThatHaveEpisodes(listOf(1, 3))
+            // Act
+            val result = get<EpisodesRepository>().getPodcastsThatHaveEpisodes(listOf(1, 3))
 
-        // Assert
-        assertEquals(listOf(1L), result)
-    }
+            // Assert
+            assertEquals(listOf(1L), result)
+        }
 
-    private suspend fun insert(id: String, podcastId: Long) {
+    private suspend fun insert(
+        id: String,
+        podcastId: Long,
+    ) {
         get<PodcastsDao>().insert(
             listOf(
                 Podcast(

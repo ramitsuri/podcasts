@@ -12,31 +12,36 @@ import kotlin.test.assertEquals
 
 class SessionHistoryRepositoryTest : BaseTest() {
     @Test
-    fun getEpisodes_returnsEpisodesWhereBothPodcastIdAndEpisodeIdMatch() = runBlocking {
-        // Arrange
-        insert(
-            podcastId = 1,
-            episodeId = "P1-E1",
-        )
-        insert(
-            podcastId = 1,
-            episodeId = "P1-E2",
-        )
-        insert(
-            podcastId = 2,
-            episodeId = "P2-E1",
-        )
+    fun getEpisodes_returnsEpisodesWhereBothPodcastIdAndEpisodeIdMatch() =
+        runBlocking {
+            // Arrange
+            insert(
+                podcastId = 1,
+                episodeId = "P1-E1",
+            )
+            insert(
+                podcastId = 1,
+                episodeId = "P1-E2",
+            )
+            insert(
+                podcastId = 2,
+                episodeId = "P2-E1",
+            )
 
-        // Act
-        val episodeIds = get<SessionHistoryRepository>()
-            .getEpisodes(episodeIds = listOf("P1-E1", "P2-E1"), podcastIds = listOf(1))
-            .map { it.episodeId }
+            // Act
+            val episodeIds =
+                get<SessionHistoryRepository>()
+                    .getEpisodes(episodeIds = listOf("P1-E1", "P2-E1"), podcastIds = listOf(1))
+                    .map { it.episodeId }
 
-        // Assert
-        assertEquals(listOf("P1-E1"), episodeIds)
-    }
+            // Assert
+            assertEquals(listOf("P1-E1"), episodeIds)
+        }
 
-    private suspend fun insert(episodeId: String, podcastId: Long) {
+    private suspend fun insert(
+        episodeId: String,
+        podcastId: Long,
+    ) {
         get<SessionActionDao>().insert(
             SessionAction(
                 sessionId = "s1",
