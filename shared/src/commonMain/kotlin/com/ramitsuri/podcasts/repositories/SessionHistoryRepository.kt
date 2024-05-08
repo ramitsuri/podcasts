@@ -155,7 +155,10 @@ class SessionHistoryRepository internal constructor(
             }
     }
 
-    suspend fun getEpisodes(episodeIds: List<String>, podcastIds: List<Long>): List<EpisodeAndPodcastId> {
+    suspend fun getEpisodes(
+        episodeIds: List<String>,
+        podcastIds: List<Long>,
+    ): List<EpisodeAndPodcastId> {
         return sessionActionDao.getEpisodes(episodeIds = episodeIds, podcastIds = podcastIds)
     }
 

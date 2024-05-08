@@ -49,7 +49,10 @@ internal class SessionActionDaoImpl(
             }
     }
 
-    override suspend fun getEpisodes(episodeIds: List<String>, podcastIds: List<Long>): List<EpisodeAndPodcastId> {
+    override suspend fun getEpisodes(
+        episodeIds: List<String>,
+        podcastIds: List<Long>,
+    ): List<EpisodeAndPodcastId> {
         return withContext(ioDispatcher) {
             sessionHistoryQueries
                 .getEpisodes(episodeIds = episodeIds, podcastIds = podcastIds)

@@ -13,7 +13,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 
 open class BaseTest(private val initDatabase: Boolean = true) : KoinTest {
-
     @AfterTest
     fun tearDown() {
         stopKoin()

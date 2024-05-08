@@ -10,5 +10,8 @@ internal interface SessionActionDao {
 
     fun getSessionActionEntities(): Flow<List<SessionActionEntity>>
 
-    suspend fun getEpisodes(episodeIds: List<String>, podcastIds: List<Long>): List<EpisodeAndPodcastId>
+    suspend fun getEpisodes(
+        episodeIds: List<String>,
+        podcastIds: List<Long>,
+    ): List<EpisodeAndPodcastId>
 }

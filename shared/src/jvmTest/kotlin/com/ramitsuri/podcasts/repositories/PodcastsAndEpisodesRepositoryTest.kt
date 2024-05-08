@@ -18,182 +18,189 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class PodcastsAndEpisodesRepositoryTest : BaseTest() {
+    @Test
+    fun `should remove if podcast notSubscribed, 1 removable episode`() =
+        runBlocking {
+            // Arrange
+            insertEpisode(
+                episodeId = "P1-E1",
+                podcastSubscribed = false,
+                downloaded = false,
+                inQueue = false,
+                isFavorite = false,
+                previouslyListenedTo = false,
+            )
+
+            // Act
+            removeIrrelevant()
+
+            // Assert
+            assertEquals(listOf(), getEpisodes(podcastIds = listOf(1)))
+            assertEquals(listOf(), getPodcasts())
+        }
 
     @Test
-    fun `should remove if podcast notSubscribed, 1 removable episode`() = runBlocking {
-        // Arrange
-        insertEpisode(
-            episodeId = "P1-E1",
-            podcastSubscribed = false,
-            downloaded = false,
-            inQueue = false,
-            isFavorite = false,
-            previouslyListenedTo = false,
-        )
+    fun `should NOT remove if podcast notSubscribed, 1 downloaded episode`() =
+        runBlocking {
+            // Arrange
+            insertEpisode(
+                episodeId = "P1-E1",
+                podcastSubscribed = false,
+                downloaded = true,
+                inQueue = false,
+                isFavorite = false,
+                previouslyListenedTo = false,
+            )
 
-        // Act
-        removeIrrelevant()
+            // Act
+            removeIrrelevant()
 
-        // Assert
-        assertEquals(listOf(), getEpisodes(podcastIds = listOf(1)))
-        assertEquals(listOf(), getPodcasts())
-    }
-
-    @Test
-    fun `should NOT remove if podcast notSubscribed, 1 downloaded episode`() = runBlocking {
-        // Arrange
-        insertEpisode(
-            episodeId = "P1-E1",
-            podcastSubscribed = false,
-            downloaded = true,
-            inQueue = false,
-            isFavorite = false,
-            previouslyListenedTo = false,
-        )
-
-        // Act
-        removeIrrelevant()
-
-        // Assert
-        assertEquals(listOf("P1-E1"), getEpisodes(podcastIds = listOf(1)).map { it.id })
-        assertEquals(listOf(1L), getPodcasts().map { it.id })
-    }
+            // Assert
+            assertEquals(listOf("P1-E1"), getEpisodes(podcastIds = listOf(1)).map { it.id })
+            assertEquals(listOf(1L), getPodcasts().map { it.id })
+        }
 
     @Test
-    fun `should NOT remove if podcast notSubscribed, 1 inQueue episode`() = runBlocking {
-        // Arrange
-        insertEpisode(
-            episodeId = "P1-E1",
-            podcastSubscribed = false,
-            downloaded = false,
-            inQueue = true,
-            isFavorite = false,
-            previouslyListenedTo = false,
-        )
+    fun `should NOT remove if podcast notSubscribed, 1 inQueue episode`() =
+        runBlocking {
+            // Arrange
+            insertEpisode(
+                episodeId = "P1-E1",
+                podcastSubscribed = false,
+                downloaded = false,
+                inQueue = true,
+                isFavorite = false,
+                previouslyListenedTo = false,
+            )
 
-        // Act
-        removeIrrelevant()
+            // Act
+            removeIrrelevant()
 
-        // Assert
-        assertEquals(listOf("P1-E1"), getEpisodes(podcastIds = listOf(1)).map { it.id })
-        assertEquals(listOf(1L), getPodcasts().map { it.id })
-    }
-
-    @Test
-    fun `should NOT remove if podcast notSubscribed, 1 favorite episode`() = runBlocking {
-        // Arrange
-        insertEpisode(
-            episodeId = "P1-E1",
-            podcastSubscribed = false,
-            downloaded = false,
-            inQueue = false,
-            isFavorite = true,
-            previouslyListenedTo = false,
-        )
-
-        // Act
-        removeIrrelevant()
-
-        // Assert
-        assertEquals(listOf("P1-E1"), getEpisodes(podcastIds = listOf(1)).map { it.id })
-        assertEquals(listOf(1L), getPodcasts().map { it.id })
-    }
+            // Assert
+            assertEquals(listOf("P1-E1"), getEpisodes(podcastIds = listOf(1)).map { it.id })
+            assertEquals(listOf(1L), getPodcasts().map { it.id })
+        }
 
     @Test
-    fun `should NOT remove if podcast notSubscribed, 1 listenedTo episode`() = runBlocking {
-        // Arrange
-        insertEpisode(
-            episodeId = "P1-E1",
-            podcastSubscribed = false,
-            downloaded = false,
-            inQueue = false,
-            isFavorite = false,
-            previouslyListenedTo = true,
-        )
+    fun `should NOT remove if podcast notSubscribed, 1 favorite episode`() =
+        runBlocking {
+            // Arrange
+            insertEpisode(
+                episodeId = "P1-E1",
+                podcastSubscribed = false,
+                downloaded = false,
+                inQueue = false,
+                isFavorite = true,
+                previouslyListenedTo = false,
+            )
 
-        // Act
-        removeIrrelevant()
+            // Act
+            removeIrrelevant()
 
-        // Assert
-        assertEquals(listOf("P1-E1"), getEpisodes(podcastIds = listOf(1)).map { it.id })
-        assertEquals(listOf(1L), getPodcasts().map { it.id })
-    }
-
-    @Test
-    fun `should NOT remove if podcast subscribed, 1 removable episode`() = runBlocking {
-        // Arrange
-        insertEpisode(
-            episodeId = "P1-E1",
-            podcastSubscribed = true,
-            downloaded = false,
-            inQueue = false,
-            isFavorite = false,
-            previouslyListenedTo = false,
-        )
-
-        // Act
-        removeIrrelevant()
-
-        // Assert
-        assertEquals(listOf("P1-E1"), getEpisodes(podcastIds = listOf(1)).map { it.id })
-        assertEquals(listOf(1L), getPodcasts().map { it.id })
-    }
+            // Assert
+            assertEquals(listOf("P1-E1"), getEpisodes(podcastIds = listOf(1)).map { it.id })
+            assertEquals(listOf(1L), getPodcasts().map { it.id })
+        }
 
     @Test
-    fun `should remove partially if podcast not subscribed, 1 removable episode, 1 not removable`() = runBlocking {
-        // Arrange
-        insertEpisode(
-            episodeId = "P1-E1",
-            podcastSubscribed = false,
-            downloaded = false,
-            inQueue = false,
-            isFavorite = false,
-            previouslyListenedTo = false,
-        )
-        insertEpisode(
-            episodeId = "P1-E2",
-            podcastSubscribed = false,
-            downloaded = true,
-            inQueue = false,
-            isFavorite = false,
-            previouslyListenedTo = false,
-        )
+    fun `should NOT remove if podcast notSubscribed, 1 listenedTo episode`() =
+        runBlocking {
+            // Arrange
+            insertEpisode(
+                episodeId = "P1-E1",
+                podcastSubscribed = false,
+                downloaded = false,
+                inQueue = false,
+                isFavorite = false,
+                previouslyListenedTo = true,
+            )
 
-        // Act
-        removeIrrelevant()
+            // Act
+            removeIrrelevant()
 
-        // Assert
-        assertEquals(listOf("P1-E2"), getEpisodes(podcastIds = listOf(1)).map { it.id })
-        assertEquals(listOf(1L), getPodcasts().map { it.id })
-    }
+            // Assert
+            assertEquals(listOf("P1-E1"), getEpisodes(podcastIds = listOf(1)).map { it.id })
+            assertEquals(listOf(1L), getPodcasts().map { it.id })
+        }
 
     @Test
-    fun `should remove entirely if podcast not subscribed, 2 removable episodes`() = runBlocking {
-        // Arrange
-        insertEpisode(
-            episodeId = "P1-E1",
-            podcastSubscribed = false,
-            downloaded = false,
-            inQueue = false,
-            isFavorite = false,
-            previouslyListenedTo = false,
-        )
-        insertEpisode(
-            episodeId = "P1-E2",
-            podcastSubscribed = false,
-            downloaded = false,
-            inQueue = false,
-            isFavorite = false,
-            previouslyListenedTo = false,
-        )
+    fun `should NOT remove if podcast subscribed, 1 removable episode`() =
+        runBlocking {
+            // Arrange
+            insertEpisode(
+                episodeId = "P1-E1",
+                podcastSubscribed = true,
+                downloaded = false,
+                inQueue = false,
+                isFavorite = false,
+                previouslyListenedTo = false,
+            )
 
-        // Act
-        removeIrrelevant()
+            // Act
+            removeIrrelevant()
 
-        // Assert
-        assertEquals(listOf(), getEpisodes(podcastIds = listOf(1)).map { it.id })
-        assertEquals(listOf(), getPodcasts().map { it.id })
-    }
+            // Assert
+            assertEquals(listOf("P1-E1"), getEpisodes(podcastIds = listOf(1)).map { it.id })
+            assertEquals(listOf(1L), getPodcasts().map { it.id })
+        }
+
+    @Test
+    fun `should remove partially if podcast not subscribed, 1 removable episode, 1 not removable`() =
+        runBlocking {
+            // Arrange
+            insertEpisode(
+                episodeId = "P1-E1",
+                podcastSubscribed = false,
+                downloaded = false,
+                inQueue = false,
+                isFavorite = false,
+                previouslyListenedTo = false,
+            )
+            insertEpisode(
+                episodeId = "P1-E2",
+                podcastSubscribed = false,
+                downloaded = true,
+                inQueue = false,
+                isFavorite = false,
+                previouslyListenedTo = false,
+            )
+
+            // Act
+            removeIrrelevant()
+
+            // Assert
+            assertEquals(listOf("P1-E2"), getEpisodes(podcastIds = listOf(1)).map { it.id })
+            assertEquals(listOf(1L), getPodcasts().map { it.id })
+        }
+
+    @Test
+    fun `should remove entirely if podcast not subscribed, 2 removable episodes`() =
+        runBlocking {
+            // Arrange
+            insertEpisode(
+                episodeId = "P1-E1",
+                podcastSubscribed = false,
+                downloaded = false,
+                inQueue = false,
+                isFavorite = false,
+                previouslyListenedTo = false,
+            )
+            insertEpisode(
+                episodeId = "P1-E2",
+                podcastSubscribed = false,
+                downloaded = false,
+                inQueue = false,
+                isFavorite = false,
+                previouslyListenedTo = false,
+            )
+
+            // Act
+            removeIrrelevant()
+
+            // Assert
+            assertEquals(listOf(), getEpisodes(podcastIds = listOf(1)).map { it.id })
+            assertEquals(listOf(), getPodcasts().map { it.id })
+        }
 
     private suspend fun removeIrrelevant() {
         get<PodcastsAndEpisodesRepository>().removeIrrelevantPodcastsAndEpisodes()
@@ -247,7 +254,10 @@ class PodcastsAndEpisodesRepositoryTest : BaseTest() {
 
     private suspend fun getPodcasts() = get<PodcastsDao>().getAll().first()
 
-    private fun podcast(id: Long, subscribed: Boolean) = Podcast(
+    private fun podcast(
+        id: Long,
+        subscribed: Boolean,
+    ) = Podcast(
         id = id,
         guid = "",
         title = "",

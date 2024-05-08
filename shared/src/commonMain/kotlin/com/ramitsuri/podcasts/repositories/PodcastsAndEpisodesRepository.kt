@@ -173,10 +173,11 @@ class PodcastsAndEpisodesRepository internal constructor(
 
         // Get episode and podcast ids for those unsubscribed podcasts where episode hasn't been downloaded or added
         // to queue or marked favorite because we don't want to remove those episodes and their podcasts
-        val (removableEpisodeIds, removablePodcastIds) = episodesRepository
-            .getRemovableEpisodes(unsubscribedPodcasts)
-            .map { Pair(it.episodeId, it.podcastId) }
-            .unzip()
+        val (removableEpisodeIds, removablePodcastIds) =
+            episodesRepository
+                .getRemovableEpisodes(unsubscribedPodcasts)
+                .map { Pair(it.episodeId, it.podcastId) }
+                .unzip()
 
         // Check if potentially removable episodes were ever played (are in history) as they can't be removed either
         // Using both episodeId and podcastId to get episodes in case episodeId is not unique across podcasts
@@ -186,18 +187,20 @@ class PodcastsAndEpisodesRepository internal constructor(
                 .distinct()
 
         // Remove episodes that have never been played
-        val episodesThatCanBeRemoved = removableEpisodeIds.filter {
-            removableEpisodesThatHaveBeenPlayed.contains(it).not()
-        }
+        val episodesThatCanBeRemoved =
+            removableEpisodeIds.filter {
+                removableEpisodesThatHaveBeenPlayed.contains(it).not()
+            }
         episodesRepository.remove(episodesThatCanBeRemoved)
 
         // After episode removal, get unsubscribed podcasts that still have episodes
         val podcastsThatHaveEpisodes = episodesRepository.getPodcastsThatHaveEpisodes(unsubscribedPodcasts)
 
         // Remove unsubscribed podcasts that have no episodes
-        val podcastsThatCanBeRemoved = removablePodcastIds.filter {
-            podcastsThatHaveEpisodes.contains(it).not()
-        }
+        val podcastsThatCanBeRemoved =
+            removablePodcastIds.filter {
+                podcastsThatHaveEpisodes.contains(it).not()
+            }
         podcastsRepository.remove(podcastsThatCanBeRemoved)
     }
 }
