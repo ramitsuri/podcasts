@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class SessionHistoryRepository internal constructor(
     private val sessionActionDao: SessionActionDao,
@@ -142,7 +145,7 @@ class SessionHistoryRepository internal constructor(
         }
     }
 
-    fun getEpisodeHistory(): Flow<List<EpisodeHistory>> {
+    fun getEpisodeHistory(timeZone: TimeZone): Flow<List<EpisodeHistory>> {
         return sessionActionDao
             .getSessionActionEntities()
             .map { sessionActionEntities ->
@@ -151,7 +154,7 @@ class SessionHistoryRepository internal constructor(
                         ?.let { episode ->
                             EpisodeHistory(episode, sessionActionEntity.time)
                         }
-                }
+                }.mergeConsecutiveDuplicateEpisodes(timeZone)
             }
     }
 
@@ -164,6 +167,26 @@ class SessionHistoryRepository internal constructor(
 
     private suspend fun insert(action: SessionAction) {
         sessionActionDao.insert(action)
+    }
+
+    private fun List<EpisodeHistory>.mergeConsecutiveDuplicateEpisodes(timeZone: TimeZone): List<EpisodeHistory> {
+        var previous: EpisodeHistory? = null
+        val merged = mutableListOf<EpisodeHistory>()
+        forEach { episodeHistory ->
+            val previousEpisode = previous
+            if (previousEpisode == null ||
+                previousEpisode.episode.id != episodeHistory.episode.id ||
+                previousEpisode.date(timeZone) != episodeHistory.date(timeZone)
+            ) {
+                merged.add(episodeHistory)
+            }
+            previous = episodeHistory
+        }
+        return merged
+    }
+
+    private fun EpisodeHistory.date(timeZone: TimeZone): LocalDate {
+        return time.toLocalDateTime(timeZone).date
     }
 
     private fun d(message: String) {
