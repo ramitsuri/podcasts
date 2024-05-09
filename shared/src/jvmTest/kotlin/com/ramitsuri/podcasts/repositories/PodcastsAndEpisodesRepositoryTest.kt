@@ -7,8 +7,6 @@ import com.ramitsuri.podcasts.database.dao.interfaces.SessionActionDao
 import com.ramitsuri.podcasts.model.Action
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
-import com.ramitsuri.podcasts.model.EpisodeSortOrder
-import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.SessionAction
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking

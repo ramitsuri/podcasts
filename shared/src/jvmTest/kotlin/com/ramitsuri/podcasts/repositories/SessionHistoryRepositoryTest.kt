@@ -50,47 +50,50 @@ class SessionHistoryRepositoryTest : BaseTest() {
         }
 
     @Test
-    fun getEpisodeHistory_shouldMerge_ifConsecutiveAndSameDay() = runBlocking {
-        // Arrange
-        val baseDateTime = LocalDateTime.parse("2024-01-01T12:00:00")
-        insertSessionAction("P1-E1", 1, "s1", Action.START, baseDateTime)
-        insertSessionAction("P1-E1", 1, "s2", Action.START, baseDateTime.plus(1.seconds))
+    fun getEpisodeHistory_shouldMerge_ifConsecutiveAndSameDay() =
+        runBlocking {
+            // Arrange
+            val baseDateTime = LocalDateTime.parse("2024-01-01T12:00:00")
+            insertSessionAction("P1-E1", 1, "s1", Action.START, baseDateTime)
+            insertSessionAction("P1-E1", 1, "s2", Action.START, baseDateTime.plus(1.seconds))
 
-        // Act
-        val history = getHistory()
+            // Act
+            val history = getHistory()
 
-        // Assert
-        assertEquals(listOf("P1-E1"), history.map { it.episode.id })
-    }
-
-    @Test
-    fun getEpisodeHistory_shouldNotMergeConsecutiveEpisodes_ifNotSameDay() = runBlocking {
-        // Arrange
-        val baseDateTime = LocalDateTime.parse("2024-01-01T12:00:00")
-        insertSessionAction("P1-E1", 1, "s1", Action.START, baseDateTime)
-        insertSessionAction("P1-E1", 1, "s2", Action.START, baseDateTime.plus(1.days))
-
-        // Act
-        val history = getHistory()
-
-        // Assert
-        assertEquals(listOf("P1-E1", "P1-E1"), history.map { it.episode.id })
-    }
+            // Assert
+            assertEquals(listOf("P1-E1"), history.map { it.episode.id })
+        }
 
     @Test
-    fun getEpisodeHistory_shouldNotMerge_ifNotConsecutive() = runBlocking {
-        // Arrange
-        val baseDateTime = LocalDateTime.parse("2024-01-01T12:00:00")
-        insertSessionAction("P1-E1", 1, "s1", Action.START, baseDateTime)
-        insertSessionAction("P1-E2", 1, "s1", Action.START, baseDateTime.plus(1.seconds))
-        insertSessionAction("P1-E1", 1, "s2", Action.START, baseDateTime.plus(2.seconds))
+    fun getEpisodeHistory_shouldNotMergeConsecutiveEpisodes_ifNotSameDay() =
+        runBlocking {
+            // Arrange
+            val baseDateTime = LocalDateTime.parse("2024-01-01T12:00:00")
+            insertSessionAction("P1-E1", 1, "s1", Action.START, baseDateTime)
+            insertSessionAction("P1-E1", 1, "s2", Action.START, baseDateTime.plus(1.days))
 
-        // Act
-        val history = getHistory()
+            // Act
+            val history = getHistory()
 
-        // Assert
-        assertEquals(listOf("P1-E1", "P1-E2", "P1-E1"), history.map { it.episode.id })
-    }
+            // Assert
+            assertEquals(listOf("P1-E1", "P1-E1"), history.map { it.episode.id })
+        }
+
+    @Test
+    fun getEpisodeHistory_shouldNotMerge_ifNotConsecutive() =
+        runBlocking {
+            // Arrange
+            val baseDateTime = LocalDateTime.parse("2024-01-01T12:00:00")
+            insertSessionAction("P1-E1", 1, "s1", Action.START, baseDateTime)
+            insertSessionAction("P1-E2", 1, "s1", Action.START, baseDateTime.plus(1.seconds))
+            insertSessionAction("P1-E1", 1, "s2", Action.START, baseDateTime.plus(2.seconds))
+
+            // Act
+            val history = getHistory()
+
+            // Assert
+            assertEquals(listOf("P1-E1", "P1-E2", "P1-E1"), history.map { it.episode.id })
+        }
 
     private suspend fun insertSessionAction(
         episodeId: String,
@@ -119,6 +122,5 @@ class SessionHistoryRepositoryTest : BaseTest() {
         return this.toInstant(timeZone).plus(duration).toLocalDateTime(timeZone)
     }
 
-    private suspend fun getHistory() =
-        get<SessionHistoryRepository>().getEpisodeHistory(timeZone).first()
+    private suspend fun getHistory() = get<SessionHistoryRepository>().getEpisodeHistory(timeZone).first()
 }
