@@ -30,7 +30,7 @@ class EpisodeHistoryViewModel internal constructor(
     init {
         viewModelScope.launch {
             combine(
-                repository.getEpisodeHistory(),
+                repository.getEpisodeHistory(timeZone),
                 episodesRepository.getCurrentEpisode(),
                 settings.getPlayingStateFlow(),
             ) { episodeHistories, currentlyPlayingEpisode, playingState ->
