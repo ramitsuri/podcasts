@@ -50,11 +50,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.unpackFloat1
 import androidx.core.view.HapticFeedbackConstantsCompat
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -99,19 +101,19 @@ fun PlayerScreen(
     val alphaNotExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 0f else 1f, label = "player visibility")
     Box(
         modifier =
-            modifier
-                .fillMaxWidth(),
+        modifier
+            .fillMaxWidth(),
         contentAlignment = Alignment.TopCenter,
     ) {
         if (!isExpanded) {
             if (state.hasEverBeenPlayed) {
                 PlayerScreenNotExpanded(
                     modifier =
-                        Modifier
-                            .onGloballyPositioned {
-                                onNotExpandedHeightKnown(it.size.height)
-                            }
-                            .alpha(alphaNotExpandedPlayer),
+                    Modifier
+                        .onGloballyPositioned {
+                            onNotExpandedHeightKnown(it.size.height)
+                        }
+                        .alpha(alphaNotExpandedPlayer),
                     episodeTitle = state.episodeTitle,
                     episodeArtwork = state.episodeArtworkUrl,
                     playingState = state.playingState,
@@ -125,9 +127,9 @@ fun PlayerScreen(
         if (state.hasEverBeenPlayed) {
             PlayerScreenExpanded(
                 modifier =
-                    Modifier
-                        .padding(16.dp)
-                        .alpha(alphaExpandedPlayer),
+                Modifier
+                    .padding(16.dp)
+                    .alpha(alphaExpandedPlayer),
                 episodeTitle = state.episodeTitle,
                 episodeArtwork = state.episodeArtworkUrl,
                 podcastName = state.podcastName,
@@ -197,77 +199,109 @@ private fun PlayerScreenExpanded(
     onFavoriteClicked: () -> Unit,
     onNotFavoriteClicked: () -> Unit,
 ) {
+    var showSleepControl by remember { mutableStateOf(false) }
+    var sleepControlHeight: Int by remember { mutableStateOf(0) }
+    var toHideControlHeight: Int? by remember { mutableStateOf(null) }
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        AsyncImage(
-            model =
+        val height = toHideControlHeight
+        val modifierr = if (height == null || sleepControlHeight == 0) {
+            Modifier
+        } else {
+            Modifier.height(with(LocalDensity.current) { (height-sleepControlHeight).toDp() })
+        }
+
+        Column(
+            modifier = modifierr
+                .onGloballyPositioned {
+                    if (toHideControlHeight == null || toHideControlHeight == 0) {
+                        toHideControlHeight = it.size.height
+                    }
+                },
+        ) {
+            Spacer(modifier = Modifier.height(16.dp))
+            AsyncImage(
+                model =
                 ImageRequest.Builder(LocalContext.current)
                     .data(episodeArtwork)
                     .crossfade(true)
                     .build(),
-            contentDescription = episodeTitle,
-            contentScale = ContentScale.FillBounds,
-            modifier =
+                contentDescription = episodeTitle,
+                contentScale = ContentScale.FillBounds,
+                modifier =
                 Modifier
                     .clip(MaterialTheme.shapes.medium)
                     .size(328.dp),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier =
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier =
                 Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onEpisodeTitleClicked),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = episodeTitle,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(8.dp),
-                textAlign = TextAlign.Center,
-            )
-        }
-        Row(
-            modifier =
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = episodeTitle,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(8.dp),
+                    textAlign = TextAlign.Center,
+                )
+            }
+            Row(
+                modifier =
                 Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onPodcastNameClicked),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = podcastName,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(8.dp),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodySmall,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = podcastName,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(8.dp),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Seekbar(
+                playing = playingState == PlayingState.PLAYING,
+                playedDuration = playedDuration,
+                remainingDuration = remainingDuration,
+                playProgress = playProgress,
+                onSeekValueChange = onSeekValueChange,
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            MainControls(
+                playingState = playingState,
+                isFavorite = isFavorite,
+                onGoToQueueClicked = onGoToQueueClicked,
+                onReplayClicked = onReplayClicked,
+                onPauseClicked = onPauseClicked,
+                onPlayClicked = onPlayClicked,
+                onSkipClicked = onSkipClicked,
+                onFavoriteClicked = onFavoriteClicked,
+                onNotFavoriteClicked = onNotFavoriteClicked,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Seekbar(
-            playing = playingState == PlayingState.PLAYING,
-            playedDuration = playedDuration,
-            remainingDuration = remainingDuration,
-            playProgress = playProgress,
-            onSeekValueChange = onSeekValueChange,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        MainControls(
-            playingState = playingState,
-            isFavorite = isFavorite,
-            onGoToQueueClicked = onGoToQueueClicked,
-            onReplayClicked = onReplayClicked,
-            onPauseClicked = onPauseClicked,
-            onPlayClicked = onPlayClicked,
-            onSkipClicked = onSkipClicked,
-            onFavoriteClicked = onFavoriteClicked,
-            onNotFavoriteClicked = onNotFavoriteClicked,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+        if (showSleepControl) {
+            Column(
+                modifier = Modifier
+                    .onGloballyPositioned {
+                        sleepControlHeight = it.size.height
+                    },
+            ) {
+                Text(text = "Sleep control", modifier = Modifier.padding(16.dp))
+                Text(text = "Sleep control", modifier = Modifier.padding(16.dp))
+                Text(text = "Sleep control", modifier = Modifier.padding(16.dp))
+                Text(text = "Sleep control", modifier = Modifier.padding(16.dp))
+            }
+        }
         SecondaryControls(
             playbackSpeed = playbackSpeed,
             trimSilence = trimSilence,
@@ -278,7 +312,7 @@ private fun PlayerScreenExpanded(
             onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
             onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
             onToggleTrimSilence = onToggleTrimSilence,
-            onSleepTimer = onSleepTimer,
+            onSleepTimer = { showSleepControl = !showSleepControl },
             onSleepTimerIncrease = onSleepTimerIncrease,
             onSleepTimerDecrease = onSleepTimerDecrease,
         )
@@ -543,9 +577,9 @@ fun SleepTimerControl(
                 Icon(
                     imageVector = Icons.Outlined.Nightlight,
                     modifier =
-                        Modifier
-                            .size(24.dp)
-                            .rotate(-30f),
+                    Modifier
+                        .size(24.dp)
+                        .rotate(-30f),
                     contentDescription = stringResource(id = R.string.player_sleep_timer),
                 )
             }
@@ -632,11 +666,11 @@ private fun Seekbar(
             textStart = playedDuration.formatted(),
             textEnd = if (remainingDuration != null) "-${remainingDuration.formatted()}" else "",
             squigglesSpec =
-                if (playing) {
-                    SquigglySlider.SquigglesSpec()
-                } else {
-                    SquigglySlider.SquigglesSpec(amplitude = 0.dp)
-                },
+            if (playing) {
+                SquigglySlider.SquigglesSpec()
+            } else {
+                SquigglySlider.SquigglesSpec(amplitude = 0.dp)
+            },
         )
     }
 }
@@ -675,29 +709,29 @@ private fun PlayerScreenNotExpanded(
     val view = LocalView.current
     Column(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClicked),
+        modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClicked),
     ) {
         Row(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp, horizontal = 8.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp, horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
                 model =
-                    ImageRequest.Builder(LocalContext.current)
-                        .data(episodeArtwork)
-                        .crossfade(true)
-                        .build(),
+                ImageRequest.Builder(LocalContext.current)
+                    .data(episodeArtwork)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = episodeTitle,
                 contentScale = ContentScale.FillBounds,
                 modifier =
-                    Modifier
-                        .clip(MaterialTheme.shapes.extraSmall)
-                        .size(40.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .size(40.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
@@ -779,13 +813,13 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
             PlayerScreen(
                 isExpanded = false,
                 state =
-                    PlayerViewState(
-                        playingState = PlayingState.PLAYING,
-                        sleepTimer = SleepTimer.None,
-                        sleepTimerDuration = null,
-                        playbackSpeed = 1f,
-                        isCasting = false,
-                    ),
+                PlayerViewState(
+                    playingState = PlayingState.PLAYING,
+                    sleepTimer = SleepTimer.None,
+                    sleepTimerDuration = null,
+                    playbackSpeed = 1f,
+                    isCasting = false,
+                ),
                 onNotExpandedHeightKnown = { },
                 onEpisodeTitleClicked = { },
                 onPodcastNameClicked = { },
@@ -818,13 +852,13 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
             PlayerScreen(
                 isExpanded = false,
                 state =
-                    PlayerViewState(
-                        playingState = PlayingState.NOT_PLAYING,
-                        sleepTimer = SleepTimer.None,
-                        sleepTimerDuration = null,
-                        playbackSpeed = 1f,
-                        isCasting = false,
-                    ),
+                PlayerViewState(
+                    playingState = PlayingState.NOT_PLAYING,
+                    sleepTimer = SleepTimer.None,
+                    sleepTimerDuration = null,
+                    playbackSpeed = 1f,
+                    isCasting = false,
+                ),
                 onNotExpandedHeightKnown = { },
                 onEpisodeTitleClicked = { },
                 onPodcastNameClicked = { },
@@ -857,13 +891,13 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
             PlayerScreen(
                 isExpanded = true,
                 state =
-                    PlayerViewState(
-                        playingState = PlayingState.PLAYING,
-                        sleepTimer = SleepTimer.None,
-                        sleepTimerDuration = null,
-                        playbackSpeed = 1f,
-                        isCasting = false,
-                    ),
+                PlayerViewState(
+                    playingState = PlayingState.PLAYING,
+                    sleepTimer = SleepTimer.None,
+                    sleepTimerDuration = null,
+                    playbackSpeed = 1f,
+                    isCasting = false,
+                ),
                 onNotExpandedHeightKnown = { },
                 onEpisodeTitleClicked = { },
                 onPodcastNameClicked = { },
@@ -895,13 +929,13 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
         PlayerScreen(
             isExpanded = true,
             state =
-                PlayerViewState(
-                    playingState = PlayingState.NOT_PLAYING,
-                    sleepTimer = SleepTimer.None,
-                    sleepTimerDuration = null,
-                    playbackSpeed = 1f,
-                    isCasting = false,
-                ),
+            PlayerViewState(
+                playingState = PlayingState.NOT_PLAYING,
+                sleepTimer = SleepTimer.None,
+                sleepTimerDuration = null,
+                playbackSpeed = 1f,
+                isCasting = false,
+            ),
             onNotExpandedHeightKnown = { },
             onEpisodeTitleClicked = { },
             onPodcastNameClicked = { },
