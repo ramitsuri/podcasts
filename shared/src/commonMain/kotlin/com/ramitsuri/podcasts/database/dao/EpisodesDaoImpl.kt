@@ -210,13 +210,28 @@ internal class EpisodesDaoImpl(
         }
     }
 
-    override suspend fun updateQueuePositions(idToQueuePosition: Map<String, Int>) {
+    override suspend fun updateQueuePosition(
+        id: String,
+        position: Int,
+    ) {
         withContext(ioDispatcher) {
-            episodeEntityQueries.transaction {
-                idToQueuePosition.forEach { (id, position) ->
-                    updateQueuePosition(id, position)
-                }
-            }
+            episodeAdditionalInfoEntityQueries.updateQueuePosition(id = id, queuePosition = position)
+        }
+    }
+
+    override suspend fun updateQueuePositions(
+        id1: String,
+        position1: Int,
+        id2: String,
+        position2: Int,
+    ) {
+        withContext(ioDispatcher) {
+            episodeAdditionalInfoEntityQueries.updateQueuePositions(
+                id1 = id1,
+                position1 = position1,
+                id2 = id2,
+                position2 = position2,
+            )
         }
     }
 
@@ -259,13 +274,6 @@ internal class EpisodesDaoImpl(
         withContext(ioDispatcher) {
             episodeAdditionalInfoEntityQueries.updateFavorite(id = id, isFavorite = isFavorite)
         }
-    }
-
-    private fun updateQueuePosition(
-        id: String,
-        position: Int,
-    ) {
-        episodeAdditionalInfoEntityQueries.updateQueuePosition(id = id, queuePosition = position)
     }
 
     override suspend fun updateNeedsDownload(
