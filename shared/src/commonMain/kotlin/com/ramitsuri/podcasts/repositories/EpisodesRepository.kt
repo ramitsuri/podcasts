@@ -232,8 +232,18 @@ class EpisodesRepository internal constructor(
         episodesDao.updateDownloadedAt(id, downloadedAt)
     }
 
-    suspend fun updateQueuePositions(idToPositionMap: Map<String, Int>) {
-        episodesDao.updateQueuePositions(idToPositionMap)
+    suspend fun updateQueuePositions(
+        id1: String,
+        position1: Int,
+        id2: String,
+        position2: Int
+    ) {
+        episodesDao.updateQueuePositions(
+            id1 = id1,
+            position1 = position1,
+            id2 = id2,
+            position2 = position2,
+        )
     }
 
     suspend fun addToQueue(id: String) {
@@ -241,7 +251,7 @@ class EpisodesRepository internal constructor(
     }
 
     suspend fun removeFromQueue(id: String) {
-        updateQueuePositions(mapOf(id to Episode.NOT_IN_QUEUE))
+        episodesDao.updateQueuePosition(id, Episode.NOT_IN_QUEUE)
     }
 
     private suspend fun updateCompletedAt(
@@ -280,7 +290,7 @@ class EpisodesRepository internal constructor(
         }
         updateCompletedAt(id)
         updatePlayProgress(id, episode.duration ?: Episode.PLAY_PROGRESS_MAX)
-        updateQueuePositions(mapOf(id to Episode.NOT_IN_QUEUE))
+        removeFromQueue(id)
     }
 
     suspend fun markNotPlayed(id: String) {

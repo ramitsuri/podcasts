@@ -57,6 +57,14 @@ UPDATE EpisodeAdditionalInfoEntity
 SET queuePosition = :queuePosition
 WHERE id = :id;
 
+updateQueuePositions:
+UPDATE EpisodeAdditionalInfoEntity
+SET queuePosition = CASE id
+                    WHEN :id1 THEN :position1
+                    WHEN :id2 THEN :position2
+                    END
+WHERE id = :id1 OR id = :id2;
+
 updateFavorite:
 UPDATE EpisodeAdditionalInfoEntity
 SET isFavorite = :isFavorite

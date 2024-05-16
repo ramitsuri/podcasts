@@ -46,18 +46,16 @@ class QueueViewModel internal constructor(
     }
 
     fun onEpisodeRearrangementRequested(
-        from: Int,
-        to: Int,
+        position1: Int,
+        position2: Int,
     ) {
         viewModelScope.launch {
-            val currentlyAtFrom = _state.value.episodes.getOrNull(from)
-            val currentlyAtTo = _state.value.episodes.getOrNull(to)
-            if (currentlyAtFrom != null && currentlyAtTo != null) {
+            val currentlyAtPosition1 = _state.value.episodes.getOrNull(position1)
+            val currentlyAtPosition2 = _state.value.episodes.getOrNull(position2)
+            if (currentlyAtPosition1 != null && currentlyAtPosition2 != null) {
                 episodesRepository.updateQueuePositions(
-                    mapOf(
-                        currentlyAtFrom.id to to,
-                        currentlyAtTo.id to from,
-                    ),
+                    currentlyAtPosition1.id, currentlyAtPosition2.queuePosition,
+                    currentlyAtPosition2.id, currentlyAtPosition1.queuePosition,
                 )
             }
         }
