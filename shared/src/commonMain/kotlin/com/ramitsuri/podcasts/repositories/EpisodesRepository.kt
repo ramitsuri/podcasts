@@ -236,7 +236,7 @@ class EpisodesRepository internal constructor(
         id1: String,
         position1: Int,
         id2: String,
-        position2: Int
+        position2: Int,
     ) {
         episodesDao.updateQueuePositions(
             id1 = id1,

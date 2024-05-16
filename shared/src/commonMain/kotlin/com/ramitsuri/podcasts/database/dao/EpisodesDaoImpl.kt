@@ -210,7 +210,10 @@ internal class EpisodesDaoImpl(
         }
     }
 
-    override suspend fun updateQueuePosition(id: String, position: Int) {
+    override suspend fun updateQueuePosition(
+        id: String,
+        position: Int,
+    ) {
         withContext(ioDispatcher) {
             episodeAdditionalInfoEntityQueries.updateQueuePosition(id = id, queuePosition = position)
         }
@@ -220,7 +223,7 @@ internal class EpisodesDaoImpl(
         id1: String,
         position1: Int,
         id2: String,
-        position2: Int
+        position2: Int,
     ) {
         withContext(ioDispatcher) {
             episodeAdditionalInfoEntityQueries.updateQueuePositions(

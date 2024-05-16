@@ -30,38 +30,42 @@ class EpisodesRepositoryTest : BaseTest() {
         }
 
     @Test
-    fun testSwapQueuePositions() = runBlocking {
-        // Arrange
-        insert(id = "1", queuePosition = 1)
-        insert(id = "2", queuePosition = 2)
-        insert(id = "3", queuePosition = 3)
-        insert(id = "4", queuePosition = 4)
-        insert(id = "5", queuePosition = 5)
+    fun testSwapQueuePositions() =
+        runBlocking {
+            // Arrange
+            insert(id = "1", queuePosition = 1)
+            insert(id = "2", queuePosition = 2)
+            insert(id = "3", queuePosition = 3)
+            insert(id = "4", queuePosition = 4)
+            insert(id = "5", queuePosition = 5)
 
-        // Act
-        // Assert
-        assertQueueOrder("1", "2", "3", "4", "5")
+            // Act
+            // Assert
+            assertQueueOrder("1", "2", "3", "4", "5")
 
-        swapQueuePositions("1", "2")
-        assertQueueOrder("2", "1", "3", "4", "5")
+            swapQueuePositions("1", "2")
+            assertQueueOrder("2", "1", "3", "4", "5")
 
-        swapQueuePositions("3","4",)
-        assertQueueOrder("2", "1", "4", "3", "5")
+            swapQueuePositions("3", "4")
+            assertQueueOrder("2", "1", "4", "3", "5")
 
-        swapQueuePositions("1","5",)
-        assertQueueOrder("2", "5", "4", "3", "1")
+            swapQueuePositions("1", "5")
+            assertQueueOrder("2", "5", "4", "3", "1")
 
-        swapQueuePositions("2","1",)
-        assertQueueOrder("1", "5", "4", "3", "2")
+            swapQueuePositions("2", "1")
+            assertQueueOrder("1", "5", "4", "3", "2")
 
-        swapQueuePositions("1","2",)
-        assertQueueOrder("2", "5", "4", "3", "1")
+            swapQueuePositions("1", "2")
+            assertQueueOrder("2", "5", "4", "3", "1")
 
-        swapQueuePositions("5","4",)
-        assertQueueOrder("2", "4", "5", "3", "1")
-    }
+            swapQueuePositions("5", "4")
+            assertQueueOrder("2", "4", "5", "3", "1")
+        }
 
-    private suspend fun swapQueuePositions(id1: String, id2: String) {
+    private suspend fun swapQueuePositions(
+        id1: String,
+        id2: String,
+    ) {
         val repo = get<EpisodesRepository>()
         val episodes = repo.getQueue()
         val pos1 = episodes.indexOfFirst { it.id == id1 }
@@ -69,9 +73,11 @@ class EpisodesRepositoryTest : BaseTest() {
         val currentlyAtPosition1 = episodes[pos1]
         val currentlyAtPosition2 = episodes[pos2]
         repo.updateQueuePositions(
-                currentlyAtPosition1.id, currentlyAtPosition2.queuePosition,
-                currentlyAtPosition2.id, currentlyAtPosition1.queuePosition,
-            )
+            currentlyAtPosition1.id,
+            currentlyAtPosition2.queuePosition,
+            currentlyAtPosition2.id,
+            currentlyAtPosition1.queuePosition,
+        )
     }
 
     private suspend fun assertQueueOrder(vararg ids: String) {

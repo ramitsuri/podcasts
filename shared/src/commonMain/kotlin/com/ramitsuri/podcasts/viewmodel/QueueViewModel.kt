@@ -54,8 +54,10 @@ class QueueViewModel internal constructor(
             val currentlyAtPosition2 = _state.value.episodes.getOrNull(position2)
             if (currentlyAtPosition1 != null && currentlyAtPosition2 != null) {
                 episodesRepository.updateQueuePositions(
-                    currentlyAtPosition1.id, currentlyAtPosition2.queuePosition,
-                    currentlyAtPosition2.id, currentlyAtPosition1.queuePosition,
+                    currentlyAtPosition1.id,
+                    currentlyAtPosition2.queuePosition,
+                    currentlyAtPosition2.id,
+                    currentlyAtPosition1.queuePosition,
                 )
             }
         }

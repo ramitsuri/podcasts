@@ -82,9 +82,17 @@ internal interface EpisodesDao {
         downloadedAt: Instant?,
     )
 
-    suspend fun updateQueuePosition(id: String, position: Int)
+    suspend fun updateQueuePosition(
+        id: String,
+        position: Int,
+    )
 
-    suspend fun updateQueuePositions(id1: String,  position1: Int, id2: String, position2: Int)
+    suspend fun updateQueuePositions(
+        id1: String,
+        position1: Int,
+        id2: String,
+        position2: Int,
+    )
 
     suspend fun updateFavorite(
         id: String,
