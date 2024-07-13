@@ -248,10 +248,6 @@ class PlayerViewModel(
         playerController.initializePlayer()
     }
 
-    fun releasePlayer() {
-        playerController.releasePlayer()
-    }
-
     private fun updateSleepTimerDuration() {
         when (val sleepTimer = _state.value.sleepTimer) {
             is SleepTimer.Custom -> {
