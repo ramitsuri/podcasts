@@ -162,7 +162,7 @@ fun NavGraph(
                             playerViewModel.initializePlayer()
 
                             onStopOrDispose {
-                                playerViewModel.releasePlayer()
+                                // Do nothing
                             }
                         }
                         PlayerScreen(
