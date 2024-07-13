@@ -20,3 +20,5 @@ xcuserdata
 
 secret.properties
 *.aab
+
+/.kotlin
