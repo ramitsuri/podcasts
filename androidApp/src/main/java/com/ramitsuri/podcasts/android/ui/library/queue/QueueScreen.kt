@@ -55,7 +55,7 @@ import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.QueueViewState
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
-import sh.calvin.reorderable.rememberReorderableLazyColumnState
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,7 +89,7 @@ fun QueueScreen(
         )
         val lazyListState = rememberLazyListState()
         val reorderableLazyColumnState =
-            rememberReorderableLazyColumnState(lazyListState) { from, to ->
+            rememberReorderableLazyListState(lazyListState) { from, to ->
                 onEpisodesRearranged(from.index, to.index)
             }
         LazyColumn(
@@ -178,7 +178,7 @@ private fun LazyItemScope.EpisodeItem(
     onNotFavoriteClicked: () -> Unit,
 ) {
     ReorderableItem(
-        reorderableLazyListState = reorderableLazyColumnState,
+        state = reorderableLazyColumnState,
         key = episode.id,
     ) {
         val interactionSource = remember { MutableInteractionSource() }
