@@ -16,7 +16,7 @@ class QueueRearrangementHelper(
     private val _queuePositions = MutableStateFlow<Map<String, Int>>(mapOf())
     val queuePositions = _queuePositions.asStateFlow()
 
-    private val queueRearrangementChannel = Channel<Positions>() // Episode id and new queue position
+    private val queueRearrangementChannel = Channel<Positions>()
 
     suspend fun updateQueuePositions(
         id1: String,
