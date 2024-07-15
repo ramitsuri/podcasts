@@ -110,7 +110,7 @@ class PlayerViewModel(
             if (episode.isCompleted) {
                 episodesRepository.markNotPlayed(episode.id)
             }
-            val newPlayProgress = episode.progressInSeconds.seconds + by
+            val newPlayProgress = (episode.progressInSeconds.seconds + by).coerceAtMost((episode.duration ?: 0).seconds)
             episodesRepository.updatePlayProgress(episode.id, newPlayProgress.inWholeSeconds.toInt())
             playerController.seek(newPlayProgress)
             _state.update { it.copy(tempPlayProgress = null) }
@@ -127,7 +127,7 @@ class PlayerViewModel(
             if (episode.isCompleted) {
                 episodesRepository.markNotPlayed(episode.id)
             }
-            val newPlayProgress = episode.progressInSeconds.seconds - by
+            val newPlayProgress = (episode.progressInSeconds.seconds - by).coerceAtLeast(0.seconds)
             episodesRepository.updatePlayProgress(episode.id, newPlayProgress.inWholeSeconds.toInt())
             playerController.seek(newPlayProgress)
             _state.update { it.copy(tempPlayProgress = null) }

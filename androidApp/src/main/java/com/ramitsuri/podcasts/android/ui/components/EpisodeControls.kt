@@ -54,6 +54,9 @@ import com.ramitsuri.podcasts.model.PlayingState
 @Composable
 fun EpisodeControls(
     episode: Episode,
+    showQueueButton: Boolean = true,
+    showDownloadButton: Boolean = true,
+    showMenuButton: Boolean = true,
     playingState: PlayingState,
     onPlayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
@@ -85,85 +88,125 @@ fun EpisodeControls(
                         onPauseClicked()
                         view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_OFF)
                     }
+
                     PlayingState.NOT_PLAYING -> {
                         onPlayClicked()
                         view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_ON)
                     }
+
                     PlayingState.LOADING -> {}
                 }
             },
         )
-        if (episode.queuePosition == Episode.NOT_IN_QUEUE) {
+        if (showQueueButton) {
+            QueueButton(
+                queuePosition = episode.queuePosition,
+                onAddToQueueClicked = onAddToQueueClicked,
+                onRemoveFromQueueClicked = onRemoveFromQueueClicked,
+            )
+        }
+
+        if (showDownloadButton) {
+            DownloadButton(
+                downloadStatus = episode.downloadStatus,
+                onDownloadClicked = onDownloadClicked,
+                onCancelDownloadClicked = onCancelDownloadClicked,
+                onRemoveDownloadClicked = onRemoveDownloadClicked,
+            )
+        }
+
+        if (showMenuButton) {
+            Spacer(modifier = Modifier.weight(1f))
+            EpisodeMenu(
+                showMenu = showMenu,
+                onToggleMenu = { showMenu = !showMenu },
+                episodeCompleted = episode.isCompleted,
+                podcastTitle = episode.podcastName,
+                episodeTitle = episode.title,
+                isFavorite = episode.isFavorite,
+                onFavoriteClicked = onFavoriteClicked,
+                onNotFavoriteClicked = onNotFavoriteClicked,
+                onPlayedClicked = onPlayedClicked,
+                onNotPlayedClicked = onNotPlayedClicked,
+            )
+        }
+    }
+}
+
+@Composable
+private fun QueueButton(
+    queuePosition: Int,
+    onAddToQueueClicked: () -> Unit,
+    onRemoveFromQueueClicked: () -> Unit,
+) {
+    val view = LocalView.current
+    if (queuePosition == Episode.NOT_IN_QUEUE) {
+        ControlWithTooltip(
+            icon = Icons.AutoMirrored.Filled.PlaylistAdd,
+            toolTipLabelRes = R.string.episode_controller_add_to_queue,
+            onClicked = {
+                onAddToQueueClicked()
+                view.performHapticFeedback(HapticFeedbackConstantsCompat.CONFIRM)
+            },
+        )
+    } else {
+        ControlWithTooltip(
+            icon = Icons.Filled.CheckCircle,
+            toolTipLabelRes = R.string.episode_controller_remove_from_queue,
+            onClicked = {
+                onRemoveFromQueueClicked()
+                view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
+            },
+            useTint = true,
+        )
+    }
+}
+
+@Composable
+private fun DownloadButton(
+    downloadStatus: DownloadStatus,
+    onDownloadClicked: () -> Unit,
+    onCancelDownloadClicked: () -> Unit,
+    onRemoveDownloadClicked: () -> Unit,
+) {
+    val view = LocalView.current
+    when (downloadStatus) {
+        DownloadStatus.NOT_DOWNLOADED -> {
             ControlWithTooltip(
-                icon = Icons.AutoMirrored.Filled.PlaylistAdd,
-                toolTipLabelRes = R.string.episode_controller_add_to_queue,
+                icon = Icons.Outlined.ArrowCircleDown,
+                toolTipLabelRes = R.string.episode_controller_download,
                 onClicked = {
-                    onAddToQueueClicked()
+                    onDownloadClicked()
                     view.performHapticFeedback(HapticFeedbackConstantsCompat.CONFIRM)
                 },
             )
-        } else {
+        }
+
+        DownloadStatus.PAUSED,
+        DownloadStatus.DOWNLOADING,
+        DownloadStatus.QUEUED,
+        -> {
             ControlWithTooltip(
-                icon = Icons.Filled.CheckCircle,
-                toolTipLabelRes = R.string.episode_controller_remove_from_queue,
+                icon = Icons.Outlined.Downloading,
+                toolTipLabelRes = R.string.episode_controller_downloading,
                 onClicked = {
-                    onRemoveFromQueueClicked()
+                    onCancelDownloadClicked()
+                    view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
+                },
+            )
+        }
+
+        DownloadStatus.DOWNLOADED -> {
+            ControlWithTooltip(
+                icon = ImageVector.vectorResource(R.drawable.ic_arrow_circle_down),
+                toolTipLabelRes = R.string.episode_controller_remove_download,
+                onClicked = {
+                    onRemoveDownloadClicked()
                     view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
                 },
                 useTint = true,
             )
         }
-        when (episode.downloadStatus) {
-            DownloadStatus.NOT_DOWNLOADED -> {
-                ControlWithTooltip(
-                    icon = Icons.Outlined.ArrowCircleDown,
-                    toolTipLabelRes = R.string.episode_controller_download,
-                    onClicked = {
-                        onDownloadClicked()
-                        view.performHapticFeedback(HapticFeedbackConstantsCompat.CONFIRM)
-                    },
-                )
-            }
-
-            DownloadStatus.PAUSED,
-            DownloadStatus.DOWNLOADING,
-            DownloadStatus.QUEUED,
-            -> {
-                ControlWithTooltip(
-                    icon = Icons.Outlined.Downloading,
-                    toolTipLabelRes = R.string.episode_controller_downloading,
-                    onClicked = {
-                        onCancelDownloadClicked()
-                        view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
-                    },
-                )
-            }
-
-            DownloadStatus.DOWNLOADED -> {
-                ControlWithTooltip(
-                    icon = ImageVector.vectorResource(R.drawable.ic_arrow_circle_down),
-                    toolTipLabelRes = R.string.episode_controller_remove_download,
-                    onClicked = {
-                        onRemoveDownloadClicked()
-                        view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
-                    },
-                    useTint = true,
-                )
-            }
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        EpisodeMenu(
-            showMenu = showMenu,
-            onToggleMenu = { showMenu = !showMenu },
-            episodeCompleted = episode.isCompleted,
-            podcastTitle = episode.podcastName,
-            episodeTitle = episode.title,
-            isFavorite = episode.isFavorite,
-            onFavoriteClicked = onFavoriteClicked,
-            onNotFavoriteClicked = onNotFavoriteClicked,
-            onPlayedClicked = onPlayedClicked,
-            onNotPlayedClicked = onNotPlayedClicked,
-        )
     }
 }
 

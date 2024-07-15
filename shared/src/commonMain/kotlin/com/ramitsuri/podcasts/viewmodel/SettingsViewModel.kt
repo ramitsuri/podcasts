@@ -6,44 +6,42 @@ import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.EpisodeFetcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 
 class SettingsViewModel internal constructor(
     private val settings: Settings,
     private val episodeFetcher: EpisodeFetcher,
     private val longLivingScope: CoroutineScope,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(SettingsViewState())
-    val state = _state.asStateFlow()
+    private val fetching = MutableStateFlow(false)
 
-    init {
-        viewModelScope.launch {
-            combine(
-                settings.autoPlayNextInQueue(),
-                settings.getLastEpisodeFetchTime(),
-                settings.getRemoveCompletedEpisodesAfter(),
-                settings.getRemoveUnfinishedEpisodesAfter(),
-            ) { autoPlayNextInQueue, lastFetchTime, removeCompletedAfter, removeUnfinishedAfter ->
-                Data(autoPlayNextInQueue, lastFetchTime, removeCompletedAfter, removeUnfinishedAfter)
-            }.collect { (autoPlayNextInQueue, lastFetchTime, removeCompletedAfter, removeUnfinishedAfter) ->
-                _state.update {
-                    it.copy(
-                        autoPlayNextInQueue = autoPlayNextInQueue,
-                        lastFetchTime = lastFetchTime,
-                        removeCompletedAfter = removeCompletedAfter,
-                        removeUnfinishedAfter = removeUnfinishedAfter,
-                    )
-                }
-            }
-        }
-    }
+    val state =
+        combine(
+            settings.autoPlayNextInQueue(),
+            settings.getLastEpisodeFetchTime(),
+            settings.getRemoveCompletedEpisodesAfter(),
+            settings.getRemoveUnfinishedEpisodesAfter(),
+            fetching,
+        ) { autoPlayNextInQueue, lastFetchTime, removeCompletedAfter, removeUnfinishedAfter, fetching ->
+            SettingsViewState(
+                autoPlayNextInQueue = autoPlayNextInQueue,
+                lastFetchTime = lastFetchTime,
+                removeCompletedAfter = removeCompletedAfter,
+                removeUnfinishedAfter = removeUnfinishedAfter,
+                fetching = fetching,
+            )
+        }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = SettingsViewState(),
+        )
 
     fun toggleAutoPlayNextInQueue() {
-        val currentAutoPlayNextInQueue = _state.value.autoPlayNextInQueue
+        val currentAutoPlayNextInQueue = state.value.autoPlayNextInQueue
         longLivingScope.launch {
             settings.setAutoPlayNextInQueue(autoPlayNextInQueue = !currentAutoPlayNextInQueue)
         }
@@ -51,9 +49,9 @@ class SettingsViewModel internal constructor(
 
     fun fetch() {
         longLivingScope.launch {
-            _state.update { it.copy(fetching = true) }
+            fetching.update { true }
             episodeFetcher.fetchPodcastsIfNecessary(forced = true, downloaderTasksAllowed = true)
-            _state.update { it.copy(fetching = false) }
+            fetching.update { false }
         }
     }
 
@@ -68,11 +66,4 @@ class SettingsViewModel internal constructor(
             settings.setRemoveUnfinishedEpisodesAfter(removeUnfinishedAfter)
         }
     }
-
-    private data class Data(
-        val autoPlayNextInQueue: Boolean,
-        val lastFetchTime: Instant,
-        val removeCompletedAfter: RemoveDownloadsAfter,
-        val removeUnfinishedAfter: RemoveDownloadsAfter,
-    )
 }
