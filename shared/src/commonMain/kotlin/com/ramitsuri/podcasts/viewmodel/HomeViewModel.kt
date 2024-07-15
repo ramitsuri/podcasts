@@ -23,10 +23,10 @@ class HomeViewModel internal constructor(
     private val settings: Settings,
     private val podcastsRepository: PodcastsRepository,
 ) : ViewModel(), EpisodeController by episodeController {
-    private val _page = MutableStateFlow(1L)
+    private val page = MutableStateFlow(1L)
     private var availableEpisodeCount: Long = 0
 
-    val state = _page
+    val state = page
         .flatMapLatest { page ->
             combine(
                 podcastsAndEpisodesRepository.getSubscribedPodcastsFlow(),
@@ -74,9 +74,9 @@ class HomeViewModel internal constructor(
             LogHelper.v(TAG, "Episodes next page requested but no more episodes")
             return
         }
-        val newPage = _page.value + 1
+        val newPage = page.value + 1
         LogHelper.d(TAG, "Episodes next page requested: $newPage")
-        _page.update { newPage }
+        page.update { newPage }
     }
 
     companion object {

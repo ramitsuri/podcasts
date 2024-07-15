@@ -17,14 +17,14 @@ class SettingsViewModel internal constructor(
     private val episodeFetcher: EpisodeFetcher,
     private val longLivingScope: CoroutineScope,
 ) : ViewModel() {
-    private val _fetching = MutableStateFlow(false)
+    private val fetching = MutableStateFlow(false)
 
     val state = combine(
         settings.autoPlayNextInQueue(),
         settings.getLastEpisodeFetchTime(),
         settings.getRemoveCompletedEpisodesAfter(),
         settings.getRemoveUnfinishedEpisodesAfter(),
-        _fetching,
+        fetching,
     ) { autoPlayNextInQueue, lastFetchTime, removeCompletedAfter, removeUnfinishedAfter, fetching ->
         SettingsViewState(
             autoPlayNextInQueue = autoPlayNextInQueue,
@@ -48,9 +48,9 @@ class SettingsViewModel internal constructor(
 
     fun fetch() {
         longLivingScope.launch {
-            _fetching.update { true }
+            fetching.update { true }
             episodeFetcher.fetchPodcastsIfNecessary(forced = true, downloaderTasksAllowed = true)
-            _fetching.update { false }
+            fetching.update { false }
         }
     }
 
