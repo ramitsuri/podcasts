@@ -23,7 +23,6 @@ class HomeViewModel internal constructor(
     private val settings: Settings,
     private val podcastsRepository: PodcastsRepository,
 ) : ViewModel(), EpisodeController by episodeController {
-    private val _state = MutableStateFlow(HomeViewState())
     private val _page = MutableStateFlow(1L)
     private var availableEpisodeCount: Long = 0
 
@@ -63,7 +62,7 @@ class HomeViewModel internal constructor(
     }
 
     fun markPodcastHasNewSeen(podcastId: Long): Boolean {
-        val hadNewEpisodes = _state.value.subscribedPodcasts.firstOrNull { it.id == podcastId }?.hasNewEpisodes == true
+        val hadNewEpisodes = state.value.subscribedPodcasts.firstOrNull { it.id == podcastId }?.hasNewEpisodes == true
         viewModelScope.launch {
             podcastsRepository.updateHasNewEpisodes(podcastId, false)
         }
@@ -71,8 +70,7 @@ class HomeViewModel internal constructor(
     }
 
     fun onNextPageRequested() {
-        val state = _state.value
-        if (state.episodes.size.toLong() == availableEpisodeCount) {
+        if (state.value.episodes.size.toLong() == availableEpisodeCount) {
             LogHelper.v(TAG, "Episodes next page requested but no more episodes")
             return
         }
