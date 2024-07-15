@@ -8,11 +8,9 @@ import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.EpisodeController
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -24,34 +22,24 @@ class EpisodeHistoryViewModel internal constructor(
     settings: Settings,
     private val timeZone: TimeZone,
 ) : ViewModel(), EpisodeController by episodeController {
-    private val _state = MutableStateFlow(EpisodeHistoryViewState())
-    val state = _state.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            combine(
-                repository.getEpisodeHistory(timeZone),
-                episodesRepository.getCurrentEpisode(),
-                settings.getPlayingStateFlow(),
-            ) { episodeHistories, currentlyPlayingEpisode, playingState ->
-                val currentlyPlaying =
-                    if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
-                        currentlyPlayingEpisode
-                    } else {
-                        null
-                    }
-                Triple(episodeHistories, currentlyPlaying, playingState)
-            }.collect { (episodeHistories, currentlyPlayingEpisode, playingState) ->
-                _state.update {
-                    it.copy(
-                        episodesByDate = episodeHistories.groupedByDate(),
-                        currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
-                        currentlyPlayingEpisodeState = playingState,
-                    )
+    val state =
+        combine(
+            repository.getEpisodeHistory(timeZone),
+            episodesRepository.getCurrentEpisode(),
+            settings.getPlayingStateFlow(),
+        ) { episodeHistories, currentlyPlayingEpisode, playingState ->
+            val currentlyPlaying =
+                if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
+                    currentlyPlayingEpisode
+                } else {
+                    null
                 }
-            }
-        }
-    }
+            EpisodeHistoryViewState(episodeHistories.groupedByDate(), currentlyPlaying?.id, playingState)
+        }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = EpisodeHistoryViewState(),
+        )
 
     private fun List<EpisodeHistory>.groupedByDate(): Map<LocalDate, List<Episode>> {
         return groupBy { episodeHistory ->
