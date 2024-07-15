@@ -16,11 +16,11 @@ fun Image(
 ) {
     AsyncImage(
         model =
-        ImageRequest.Builder(LocalContext.current)
-            .setHeader("User-Agent", "Podcasts")
-            .data(url)
-            .crossfade(true)
-            .build(),
+            ImageRequest.Builder(LocalContext.current)
+                .setHeader("User-Agent", "Podcasts")
+                .data(url)
+                .crossfade(true)
+                .build(),
         contentDescription = contentDescription,
         contentScale = contentScale,
         modifier = modifier,

@@ -586,7 +586,7 @@ private fun PodcastHeader(
 private fun TitleAndImage(podcast: Podcast) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Image(
-            url =podcast.artwork,
+            url = podcast.artwork,
             contentDescription = podcast.title,
             modifier =
                 Modifier
