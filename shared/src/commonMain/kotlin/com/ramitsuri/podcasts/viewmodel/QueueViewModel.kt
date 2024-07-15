@@ -15,28 +15,29 @@ class QueueViewModel internal constructor(
     settings: Settings,
     private val episodesRepository: EpisodesRepository,
 ) : ViewModel(), EpisodeController by episodeController {
-    val state = combine(
-        episodesRepository.getQueueFlow(),
-        episodesRepository.getCurrentEpisode(),
-        settings.getPlayingStateFlow(),
-    ) { subscribedEpisodes, currentlyPlayingEpisode, playingState ->
-        val currentlyPlaying =
-            if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
-                currentlyPlayingEpisode
-            } else {
-                null
-            }
-        QueueViewState(
-            episodes = subscribedEpisodes,
-            currentlyPlayingEpisodeId = currentlyPlaying?.id,
-            currentlyPlayingEpisodeState = playingState,
-        )
-    }
-        .stateIn(
-            viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = QueueViewState(),
-        )
+    val state =
+        combine(
+            episodesRepository.getQueueFlow(),
+            episodesRepository.getCurrentEpisode(),
+            settings.getPlayingStateFlow(),
+        ) { subscribedEpisodes, currentlyPlayingEpisode, playingState ->
+            val currentlyPlaying =
+                if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
+                    currentlyPlayingEpisode
+                } else {
+                    null
+                }
+            QueueViewState(
+                episodes = subscribedEpisodes,
+                currentlyPlayingEpisodeId = currentlyPlaying?.id,
+                currentlyPlayingEpisodeState = playingState,
+            )
+        }
+            .stateIn(
+                viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = QueueViewState(),
+            )
 
     fun onEpisodeRearrangementRequested(
         position1: Int,

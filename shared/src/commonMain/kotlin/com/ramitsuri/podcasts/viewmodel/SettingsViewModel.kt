@@ -19,25 +19,26 @@ class SettingsViewModel internal constructor(
 ) : ViewModel() {
     private val fetching = MutableStateFlow(false)
 
-    val state = combine(
-        settings.autoPlayNextInQueue(),
-        settings.getLastEpisodeFetchTime(),
-        settings.getRemoveCompletedEpisodesAfter(),
-        settings.getRemoveUnfinishedEpisodesAfter(),
-        fetching,
-    ) { autoPlayNextInQueue, lastFetchTime, removeCompletedAfter, removeUnfinishedAfter, fetching ->
-        SettingsViewState(
-            autoPlayNextInQueue = autoPlayNextInQueue,
-            lastFetchTime = lastFetchTime,
-            removeCompletedAfter = removeCompletedAfter,
-            removeUnfinishedAfter = removeUnfinishedAfter,
-            fetching = fetching,
+    val state =
+        combine(
+            settings.autoPlayNextInQueue(),
+            settings.getLastEpisodeFetchTime(),
+            settings.getRemoveCompletedEpisodesAfter(),
+            settings.getRemoveUnfinishedEpisodesAfter(),
+            fetching,
+        ) { autoPlayNextInQueue, lastFetchTime, removeCompletedAfter, removeUnfinishedAfter, fetching ->
+            SettingsViewState(
+                autoPlayNextInQueue = autoPlayNextInQueue,
+                lastFetchTime = lastFetchTime,
+                removeCompletedAfter = removeCompletedAfter,
+                removeUnfinishedAfter = removeUnfinishedAfter,
+                fetching = fetching,
+            )
+        }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = SettingsViewState(),
         )
-    }.stateIn(
-        viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = SettingsViewState(),
-    )
 
     fun toggleAutoPlayNextInQueue() {
         val currentAutoPlayNextInQueue = state.value.autoPlayNextInQueue

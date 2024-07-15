@@ -14,21 +14,22 @@ class DownloadsViewModel internal constructor(
     settings: Settings,
     episodesRepository: EpisodesRepository,
 ) : ViewModel(), EpisodeController by episodeController {
-    val state = combine(
-        episodesRepository.getDownloadedFlow(),
-        episodesRepository.getCurrentEpisode(),
-        settings.getPlayingStateFlow(),
-    ) { subscribedEpisodes, currentlyPlayingEpisode, playingState ->
-        val currentlyPlaying =
-            if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
-                currentlyPlayingEpisode
-            } else {
-                null
-            }
-        DownloadsViewState(subscribedEpisodes, currentlyPlaying?.id, playingState)
-    }.stateIn(
-        viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = DownloadsViewState(),
-    )
+    val state =
+        combine(
+            episodesRepository.getDownloadedFlow(),
+            episodesRepository.getCurrentEpisode(),
+            settings.getPlayingStateFlow(),
+        ) { subscribedEpisodes, currentlyPlayingEpisode, playingState ->
+            val currentlyPlaying =
+                if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
+                    currentlyPlayingEpisode
+                } else {
+                    null
+                }
+            DownloadsViewState(subscribedEpisodes, currentlyPlaying?.id, playingState)
+        }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = DownloadsViewState(),
+        )
 }

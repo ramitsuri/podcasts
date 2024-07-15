@@ -26,34 +26,35 @@ class HomeViewModel internal constructor(
     private val page = MutableStateFlow(1L)
     private var availableEpisodeCount: Long = 0
 
-    val state = page
-        .flatMapLatest { page ->
-            combine(
-                podcastsAndEpisodesRepository.getSubscribedPodcastsFlow(),
-                podcastsAndEpisodesRepository.getSubscribedFlow(page),
-                episodesRepository.getCurrentEpisode(),
-                settings.getPlayingStateFlow(),
-            ) { subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState ->
-                LogHelper.d(TAG, "Total episodes being shown: ${subscribedEpisodes.size}")
-                val currentlyPlaying =
-                    if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
-                        currentlyPlayingEpisode
-                    } else {
-                        null
-                    }
-                HomeViewState(
-                    subscribedPodcasts = subscribedPodcasts,
-                    episodes = subscribedEpisodes,
-                    currentlyPlayingEpisodeId = currentlyPlaying?.id,
-                    currentlyPlayingEpisodeState = playingState,
-                )
+    val state =
+        page
+            .flatMapLatest { page ->
+                combine(
+                    podcastsAndEpisodesRepository.getSubscribedPodcastsFlow(),
+                    podcastsAndEpisodesRepository.getSubscribedFlow(page),
+                    episodesRepository.getCurrentEpisode(),
+                    settings.getPlayingStateFlow(),
+                ) { subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState ->
+                    LogHelper.d(TAG, "Total episodes being shown: ${subscribedEpisodes.size}")
+                    val currentlyPlaying =
+                        if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
+                            currentlyPlayingEpisode
+                        } else {
+                            null
+                        }
+                    HomeViewState(
+                        subscribedPodcasts = subscribedPodcasts,
+                        episodes = subscribedEpisodes,
+                        currentlyPlayingEpisodeId = currentlyPlaying?.id,
+                        currentlyPlayingEpisodeState = playingState,
+                    )
+                }
             }
-        }
-        .stateIn(
-            viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = HomeViewState(),
-        )
+            .stateIn(
+                viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = HomeViewState(),
+            )
 
     init {
         viewModelScope.launch {

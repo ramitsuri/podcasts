@@ -22,24 +22,24 @@ class EpisodeHistoryViewModel internal constructor(
     settings: Settings,
     private val timeZone: TimeZone,
 ) : ViewModel(), EpisodeController by episodeController {
-    val state = combine(
-        repository.getEpisodeHistory(timeZone),
-        episodesRepository.getCurrentEpisode(),
-        settings.getPlayingStateFlow(),
-    ) { episodeHistories, currentlyPlayingEpisode, playingState ->
-        val currentlyPlaying =
-            if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
-                currentlyPlayingEpisode
-            } else {
-                null
-            }
-        EpisodeHistoryViewState(episodeHistories.groupedByDate(), currentlyPlaying?.id, playingState)
-    }.stateIn(
-        viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = EpisodeHistoryViewState(),
-    )
-
+    val state =
+        combine(
+            repository.getEpisodeHistory(timeZone),
+            episodesRepository.getCurrentEpisode(),
+            settings.getPlayingStateFlow(),
+        ) { episodeHistories, currentlyPlayingEpisode, playingState ->
+            val currentlyPlaying =
+                if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
+                    currentlyPlayingEpisode
+                } else {
+                    null
+                }
+            EpisodeHistoryViewState(episodeHistories.groupedByDate(), currentlyPlaying?.id, playingState)
+        }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = EpisodeHistoryViewState(),
+        )
 
     private fun List<EpisodeHistory>.groupedByDate(): Map<LocalDate, List<Episode>> {
         return groupBy { episodeHistory ->

@@ -16,23 +16,24 @@ class EpisodeDetailsViewModel internal constructor(
     episodeController: EpisodeController,
     settings: Settings,
 ) : ViewModel(), EpisodeController by episodeController {
-    val state = combine(
-        repository.getEpisodeFlow(episodeId ?: ""),
-        repository.getCurrentEpisode(),
-        settings.getPlayingStateFlow(),
-    ) { episode, currentlyPlayingEpisode, playingState ->
-        val currentlyPlaying =
-            if (episode != null && episode.id == currentlyPlayingEpisode?.id) {
-                playingState
-            } else {
-                PlayingState.NOT_PLAYING
-            }
-        EpisodeDetailsViewState(episode, currentlyPlaying)
-    }.stateIn(
-        viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = EpisodeDetailsViewState(),
-    )
+    val state =
+        combine(
+            repository.getEpisodeFlow(episodeId ?: ""),
+            repository.getCurrentEpisode(),
+            settings.getPlayingStateFlow(),
+        ) { episode, currentlyPlayingEpisode, playingState ->
+            val currentlyPlaying =
+                if (episode != null && episode.id == currentlyPlayingEpisode?.id) {
+                    playingState
+                } else {
+                    PlayingState.NOT_PLAYING
+                }
+            EpisodeDetailsViewState(episode, currentlyPlaying)
+        }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = EpisodeDetailsViewState(),
+        )
 
     init {
         if (episodeId == null) {

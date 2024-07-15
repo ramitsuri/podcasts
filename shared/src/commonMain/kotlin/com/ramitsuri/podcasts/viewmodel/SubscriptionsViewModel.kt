@@ -9,13 +9,14 @@ import kotlinx.coroutines.flow.stateIn
 class SubscriptionsViewModel(
     podcastsAndEpisodesRepository: PodcastsAndEpisodesRepository,
 ) : ViewModel() {
-    val state = podcastsAndEpisodesRepository
-        .getSubscribedPodcastsFlow()
-        .map { subscribedPodcasts ->
-            SubscriptionsViewState(subscribedPodcasts = subscribedPodcasts.sortedBy { podcast -> podcast.title })
-        }.stateIn(
-            viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = SubscriptionsViewState(),
-        )
+    val state =
+        podcastsAndEpisodesRepository
+            .getSubscribedPodcastsFlow()
+            .map { subscribedPodcasts ->
+                SubscriptionsViewState(subscribedPodcasts = subscribedPodcasts.sortedBy { podcast -> podcast.title })
+            }.stateIn(
+                viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = SubscriptionsViewState(),
+            )
 }

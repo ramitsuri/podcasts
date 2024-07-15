@@ -14,21 +14,22 @@ class FavoritesViewModel internal constructor(
     settings: Settings,
     episodesRepository: EpisodesRepository,
 ) : ViewModel(), EpisodeController by episodeController {
-    val state = combine(
-        episodesRepository.getFavoritesFlow(),
-        episodesRepository.getCurrentEpisode(),
-        settings.getPlayingStateFlow(),
-    ) { subscribedEpisodes, currentlyPlayingEpisode, playingState ->
-        val currentlyPlaying =
-            if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
-                currentlyPlayingEpisode
-            } else {
-                null
-            }
-        FavoritesViewState(subscribedEpisodes, currentlyPlaying?.id, playingState)
-    }.stateIn(
-        viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = FavoritesViewState(),
-    )
+    val state =
+        combine(
+            episodesRepository.getFavoritesFlow(),
+            episodesRepository.getCurrentEpisode(),
+            settings.getPlayingStateFlow(),
+        ) { subscribedEpisodes, currentlyPlayingEpisode, playingState ->
+            val currentlyPlaying =
+                if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
+                    currentlyPlayingEpisode
+                } else {
+                    null
+                }
+            FavoritesViewState(subscribedEpisodes, currentlyPlaying?.id, playingState)
+        }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = FavoritesViewState(),
+        )
 }
