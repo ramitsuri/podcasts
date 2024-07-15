@@ -298,7 +298,7 @@ class EpisodesRepository internal constructor(
         updatePlayProgress(id, 0)
     }
 
-    suspend fun getCurrentEpisode(): Flow<Episode?> {
+    fun getCurrentEpisode(): Flow<Episode?> {
         return settings.getCurrentEpisodeId().map { episodeId ->
             episodeId?.let { getEpisode(it) }
         }
