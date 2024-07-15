@@ -34,19 +34,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
+import com.ramitsuri.podcasts.android.ui.components.Image
 import com.ramitsuri.podcasts.android.ui.components.TopAppBar
 import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.android.utils.friendlyPublishDate
@@ -223,14 +220,9 @@ private fun LazyItemScope.EpisodeItem(
 @Composable
 private fun EpisodeInfo(episode: Episode) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        AsyncImage(
-            model =
-                ImageRequest.Builder(LocalContext.current)
-                    .data(episode.podcastImageUrl)
-                    .crossfade(true)
-                    .build(),
+        Image(
+            url = episode.podcastImageUrl,
             contentDescription = episode.title,
-            contentScale = ContentScale.FillBounds,
             modifier =
                 Modifier
                     .clip(MaterialTheme.shapes.extraSmall)

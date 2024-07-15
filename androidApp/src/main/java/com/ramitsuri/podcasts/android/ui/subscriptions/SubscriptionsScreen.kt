@@ -26,17 +26,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.components.Image
 import com.ramitsuri.podcasts.android.ui.components.TopAppBar
 import com.ramitsuri.podcasts.android.ui.components.podcast
 import com.ramitsuri.podcasts.model.Podcast
@@ -103,14 +100,9 @@ private fun SubscribedPodcastItem(
                 .clickable(onClick = { onClicked(podcast) }),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        AsyncImage(
-            model =
-                ImageRequest.Builder(LocalContext.current)
-                    .data(podcast.artwork)
-                    .crossfade(true)
-                    .build(),
+        Image(
+            url = podcast.artwork,
             contentDescription = podcast.title,
-            contentScale = ContentScale.FillBounds,
             modifier =
                 Modifier
                     .clip(MaterialTheme.shapes.small)

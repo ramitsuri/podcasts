@@ -38,8 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,14 +45,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import be.digitalia.compose.htmlconverter.htmlToString
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.CenteredTitleTopAppBar
 import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
+import com.ramitsuri.podcasts.android.ui.components.Image
 import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.android.ui.components.podcast
 import com.ramitsuri.podcasts.android.utils.friendlyPublishDate
@@ -239,14 +236,9 @@ private fun SubscribedPodcastItem(
                     onLongClick = onLongClicked,
                 ),
     ) {
-        AsyncImage(
-            model =
-                ImageRequest.Builder(LocalContext.current)
-                    .data(artwork)
-                    .crossfade(true)
-                    .build(),
+        Image(
+            url = artwork,
             contentDescription = title,
-            contentScale = ContentScale.FillBounds,
             modifier =
                 Modifier
                     .size(88.dp)
@@ -291,14 +283,9 @@ private fun EpisodeItem(
                 .padding(horizontal = 16.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            AsyncImage(
-                model =
-                    ImageRequest.Builder(LocalContext.current)
-                        .data(episode.podcastImageUrl)
-                        .crossfade(true)
-                        .build(),
+            Image(
+                url = episode.podcastImageUrl,
                 contentDescription = episode.title,
-                contentScale = ContentScale.FillBounds,
                 modifier =
                     Modifier
                         .clip(MaterialTheme.shapes.extraSmall)
