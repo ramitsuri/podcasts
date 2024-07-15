@@ -16,7 +16,6 @@ class QueueViewModel internal constructor(
     settings: Settings,
     episodesRepository: EpisodesRepository,
 ) : ViewModel(), EpisodeController by episodeController {
-
     private val queueRearrangementHelper = QueueRearrangementHelper(viewModelScope, episodesRepository)
 
     val state =
@@ -32,9 +31,10 @@ class QueueViewModel internal constructor(
                 } else {
                     null
                 }
-            val episodes = subscribedEpisodes.map {
-                it.copy(queuePosition = queuePositions[it.id] ?: it.queuePosition)
-            }.sortedBy { it.queuePosition }
+            val episodes =
+                subscribedEpisodes.map {
+                    it.copy(queuePosition = queuePositions[it.id] ?: it.queuePosition)
+                }.sortedBy { it.queuePosition }
             QueueViewState(
                 episodes = episodes,
                 currentlyPlayingEpisodeId = currentlyPlaying?.id,

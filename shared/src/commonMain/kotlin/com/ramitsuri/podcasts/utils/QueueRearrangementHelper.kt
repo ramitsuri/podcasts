@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class QueueRearrangementHelper(
     scope: CoroutineScope,
-    repo: EpisodesRepository
+    repo: EpisodesRepository,
 ) {
     private val _queuePositions = MutableStateFlow<Map<String, Int>>(mapOf())
     val queuePositions = _queuePositions.asStateFlow()
