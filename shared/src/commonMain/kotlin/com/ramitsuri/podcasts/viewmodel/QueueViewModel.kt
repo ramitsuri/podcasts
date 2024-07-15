@@ -1,7 +1,6 @@
 package com.ramitsuri.podcasts.viewmodel
 
 import com.ramitsuri.podcasts.model.PlayingState
-import com.ramitsuri.podcasts.model.ui.HomeViewState
 import com.ramitsuri.podcasts.model.ui.QueueViewState
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
