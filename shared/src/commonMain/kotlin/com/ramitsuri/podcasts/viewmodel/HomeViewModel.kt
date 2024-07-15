@@ -1,8 +1,6 @@
 package com.ramitsuri.podcasts.viewmodel
 
-import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
-import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.ui.HomeViewState
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
@@ -14,7 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -38,23 +35,20 @@ class HomeViewModel internal constructor(
                 episodesRepository.getCurrentEpisode(),
                 settings.getPlayingStateFlow(),
             ) { subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState ->
+                LogHelper.d(TAG, "Total episodes being shown: ${subscribedEpisodes.size}")
                 val currentlyPlaying =
                     if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
                         currentlyPlayingEpisode
                     } else {
                         null
                     }
-                Data(subscribedPodcasts, subscribedEpisodes, currentlyPlaying, playingState)
+                HomeViewState(
+                    subscribedPodcasts = subscribedPodcasts,
+                    episodes = subscribedEpisodes,
+                    currentlyPlayingEpisodeId = currentlyPlaying?.id,
+                    currentlyPlayingEpisodeState = playingState,
+                )
             }
-        }
-        .map { (subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState) ->
-            LogHelper.d(TAG, "Total episodes being shown: ${subscribedEpisodes.size}")
-            HomeViewState(
-                subscribedPodcasts = subscribedPodcasts,
-                episodes = subscribedEpisodes,
-                currentlyPlayingEpisodeId = currentlyPlayingEpisode?.id,
-                currentlyPlayingEpisodeState = playingState,
-            )
         }
         .stateIn(
             viewModelScope,
@@ -86,13 +80,6 @@ class HomeViewModel internal constructor(
         LogHelper.d(TAG, "Episodes next page requested: $newPage")
         _page.update { newPage }
     }
-
-    private data class Data(
-        val podcasts: List<Podcast>,
-        val episodes: List<Episode>,
-        val currentEpisode: Episode?,
-        val playingState: PlayingState,
-    )
 
     companion object {
         private const val TAG = "HomeViewModel"
