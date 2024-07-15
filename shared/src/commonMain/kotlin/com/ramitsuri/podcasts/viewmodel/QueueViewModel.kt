@@ -1,6 +1,5 @@
 package com.ramitsuri.podcasts.viewmodel
 
-import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.QueueViewState
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
@@ -65,11 +64,4 @@ class QueueViewModel internal constructor(
             }
         }
     }
-
-    private data class Data(
-        val queuePosition: Map<String, Int>,
-        val subscribedEpisodes: List<Episode>,
-        val currentlyPlaying: Episode?,
-        val playingState: PlayingState
-    )
 }
