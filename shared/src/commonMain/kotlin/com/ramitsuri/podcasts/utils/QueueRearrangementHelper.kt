@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class QueueRearrangementHelper(
-    private val scope: CoroutineScope,
+    scope: CoroutineScope,
     repo: EpisodesRepository
 ) {
     private val _queuePositions = MutableStateFlow<Map<String, Int>>(mapOf())
@@ -18,7 +18,7 @@ class QueueRearrangementHelper(
 
     private val queueRearrangementChannel = Channel<Positions>() // Episode id and new queue position
 
-    fun updateQueuePositions(
+    suspend fun updateQueuePositions(
         id1: String,
         position1: Int,
         id2: String,
@@ -30,9 +30,7 @@ class QueueRearrangementHelper(
                 put(id2, position2)
             }
         }
-        scope.launch {
-            queueRearrangementChannel.send(Positions(id1, position1, id2, position2))
-        }
+        queueRearrangementChannel.send(Positions(id1, position1, id2, position2))
     }
 
     init {

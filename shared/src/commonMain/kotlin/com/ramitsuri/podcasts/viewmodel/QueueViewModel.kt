@@ -57,15 +57,17 @@ class QueueViewModel internal constructor(
         position1: Int,
         position2: Int,
     ) {
-        val currentlyAtPosition1 = _state.value.episodes.getOrNull(position1)
-        val currentlyAtPosition2 = _state.value.episodes.getOrNull(position2)
-        if (currentlyAtPosition1 != null && currentlyAtPosition2 != null) {
-            queueRearrangementHelper.updateQueuePositions(
-                currentlyAtPosition1.id,
-                currentlyAtPosition2.queuePosition,
-                currentlyAtPosition2.id,
-                currentlyAtPosition1.queuePosition,
-            )
+        viewModelScope.launch {
+            val currentlyAtPosition1 = _state.value.episodes.getOrNull(position1)
+            val currentlyAtPosition2 = _state.value.episodes.getOrNull(position2)
+            if (currentlyAtPosition1 != null && currentlyAtPosition2 != null) {
+                queueRearrangementHelper.updateQueuePositions(
+                    currentlyAtPosition1.id,
+                    currentlyAtPosition2.queuePosition,
+                    currentlyAtPosition2.id,
+                    currentlyAtPosition1.queuePosition,
+                )
+            }
         }
     }
 
