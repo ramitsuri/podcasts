@@ -73,6 +73,21 @@ class PlayerControllerImpl(
         logPlaylist()
     }
 
+    fun addEpisodesAfterCurrentMediaItem(episodes: List<Episode>) {
+        resetQueueFromCurrentMediaItem()
+        controller?.let {
+            it.addMediaItems(episodes.map { episode -> episode.asMediaItem() })
+        }
+    }
+
+    private fun resetQueueFromCurrentMediaItem() {
+        controller?.let {
+            for (index in it.currentMediaItemIndex until it.mediaItemCount) {
+                it.removeMediaItem(index)
+            }
+        }
+    }
+
     private val isPlayingOrAboutToPlay: Boolean
         get() = controller?.isPlaying == true || controller?.isLoading == true
 
