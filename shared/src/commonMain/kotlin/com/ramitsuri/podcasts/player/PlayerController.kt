@@ -8,9 +8,15 @@ interface PlayerController {
 
     fun releasePlayer()
 
-    fun play(episode: Episode)
+    fun play(episode: Episode, queue: List<Episode> = listOf())
 
     fun pause()
 
     fun seek(to: Duration)
+
+    fun addToQueue(episode: Episode)
+
+    fun removeFromQueue(episode: Episode)
+
+    fun swapInQueue(episode1: Episode, episode2: Episode)
 }

@@ -33,12 +33,14 @@ internal class EpisodeControllerImpl(
         longLivingScope.launch {
             episodesRepository.addToQueue(episode.id)
         }
+        playerController.addToQueue(episode)
     }
 
     override fun onEpisodeRemoveFromQueueClicked(episode: Episode) {
         longLivingScope.launch {
             episodesRepository.removeFromQueue(episode.id)
         }
+        playerController.removeFromQueue(episode)
     }
 
     override fun onEpisodeDownloadClicked(episode: Episode) {
@@ -59,7 +61,7 @@ internal class EpisodeControllerImpl(
             if (currentlyPlayingEpisode?.id == episodeId) {
                 // Play next only if the currently playing episode is marked as played, otherwise we'd be changing
                 // the media even when the user didn't intend to do that
-                playNextFromQueueOnMediaEnded(currentlyPlayingEpisode)
+                //playNextFromQueueOnMediaEnded(currentlyPlayingEpisode)
             }
             episodesRepository.markPlayed(episodeId)
         }
@@ -143,7 +145,14 @@ internal class EpisodeControllerImpl(
         if (episode.isCompleted) {
             episodesRepository.markNotPlayed(episode.id)
         }
-        playerController.play(episode)
+        val queue = if (settings.autoPlayNextInQueue().first() &&
+            settings.getSleepTimerFlow().first() !is SleepTimer.EndOfEpisode
+        ) {
+            episodesRepository.getQueue()
+        } else {
+            listOf()
+        }
+        playerController.play(episode, queue)
     }
 
     companion object {

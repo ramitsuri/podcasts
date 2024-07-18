@@ -16,6 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -91,7 +92,14 @@ class PlayerViewModel(
                 if (episode.isCompleted) {
                     episodesRepository.markNotPlayed(episode.id)
                 }
-                playerController.play(episode)
+                val queue = if (settings.autoPlayNextInQueue().first() &&
+                    settings.getSleepTimerFlow().first() !is SleepTimer.EndOfEpisode
+                ) {
+                    episodesRepository.getQueue()
+                } else {
+                    listOf()
+                }
+                playerController.play(episode, queue)
             }
         }
     }

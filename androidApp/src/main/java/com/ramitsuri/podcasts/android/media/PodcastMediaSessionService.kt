@@ -260,6 +260,8 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 ConnectionResult.DEFAULT_PLAYER_COMMANDS.buildUpon()
                     .remove(Player.COMMAND_SEEK_TO_PREVIOUS)
                     .remove(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
+                    .remove(Player.COMMAND_SEEK_TO_NEXT)
+                    .remove(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
                     .build()
 
             return ConnectionResult.AcceptedResultBuilder(session)
@@ -407,7 +409,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         ) {
             super.onPlaybackStateChanged(playbackState)
             if (playbackState == Player.STATE_ENDED) {
-                playNextFromQueueOnMediaEnded(player)
+                //playNextFromQueueOnMediaEnded(player)
             } else if (playbackState == STATE_BUFFERING) {
                 settings.setPlayingState(PlayingState.LOADING)
             } else if (playbackState == STATE_READY) {
@@ -450,6 +452,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             if (mediaItem != null) {
                 coroutineScope.launch {
                     val nextEpisode = episodesRepository.getEpisode(mediaItem.mediaId) ?: return@launch
+                    episodesRepository.setCurrentlyPlayingEpisodeId(nextEpisode.id)
                     val position = nextEpisode.progressInSeconds.times(1000).toLong()
                     player.seekTo(position)
                 }
