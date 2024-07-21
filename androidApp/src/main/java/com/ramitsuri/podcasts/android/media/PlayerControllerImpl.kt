@@ -33,100 +33,58 @@ class PlayerControllerImpl(
     }
 
     override fun play(episode: Episode, queue: List<Episode>) {
-        controller?.clearMediaItems()
         controller?.setMediaItemForEpisode(episode)
         controller?.prepare()
         if (episode.progressInSeconds != 0) {
             controller?.seekTo(episode.progressInSeconds * 1000L)
         }
         controller?.play()
-        if (queue.isNotEmpty()) {
-            addEpisodes(episode, queue)
-        }
+        //onQueueUpdated(queue)
     }
 
-    override fun addToQueue(episode: Episode) {
+    override fun onQueueUpdated(nextInQueue: List<Episode>) {
         if (!isPlayingOrAboutToPlay) {
             return
         }
-        controller?.addMediaItem(episode.asMediaItem())
-        logPlaylist()
-    }
-
-    override fun removeFromQueue(episode: Episode) {
-        if (!isPlayingOrAboutToPlay) {
-            return
-        }
-        val indexOfEpisode = indexOf(episode) ?: return
-        controller?.removeMediaItem(indexOfEpisode)
-        logPlaylist()
-    }
-
-    override fun swapInQueue(episode1: Episode, episode2: Episode) {
-        if (!isPlayingOrAboutToPlay) {
-            return
-        }
-        val index1 = indexOf(episode1) ?: return
-        val index2 = indexOf(episode2) ?: return
-        controller?.replaceMediaItem(index1, episode2.asMediaItem())
-        controller?.replaceMediaItem(index2, episode1.asMediaItem())
-        logPlaylist()
-    }
-
-    fun addEpisodesAfterCurrentMediaItem(episodes: List<Episode>) {
-        resetQueueFromCurrentMediaItem()
-        controller?.let {
-            it.addMediaItems(episodes.map { episode -> episode.asMediaItem() })
-        }
-    }
-
-    private fun resetQueueFromCurrentMediaItem() {
-        controller?.let {
-            for (index in it.currentMediaItemIndex until it.mediaItemCount) {
-                it.removeMediaItem(index)
-            }
-        }
+        resetQueue(nextInQueue)
     }
 
     private val isPlayingOrAboutToPlay: Boolean
         get() = controller?.isPlaying == true || controller?.isLoading == true
 
-    private fun logPlaylist() {
-        controller?.let {
-            for (index in 0 until it.mediaItemCount) {
-                LogHelper.d(TAG, it.getMediaItemAt(index).mediaMetadata.title.toString())
+    override fun logQueue(): List<String> {
+        return controller?.let {
+            (0 until it.mediaItemCount).map { index ->
+                "$index: ${it.getMediaItemAt(index).mediaMetadata.title.toString()}"
             }
-        }
+        } ?: listOf("Controller is null")
     }
 
-    private fun indexOf(episode: Episode): Int? {
-        controller?.let {
-            for (index in 0 until it.mediaItemCount) {
-                if (it.getMediaItemAt(index).mediaId == episode.id) {
-                    return index
-                }
-            }
-        }
-        return null
-    }
-
-    private fun addEpisodes(playingEpisode: Episode, queueEpisodes: List<Episode>) {
-        var playingEpisodeEncounteredInQueue = false
-        val nextEpisodes = queueEpisodes.filter {
-            if (!playingEpisodeEncounteredInQueue && it.id == playingEpisode.id) {
-                playingEpisodeEncounteredInQueue = true
-            }
-            playingEpisodeEncounteredInQueue
-        }
-        nextEpisodes.forEach { controller?.addMediaItem(it.asMediaItem()) }
-    }
-
-    private fun resetQueue(currentEpisode: Episode, queueEpisodes: List<Episode>) {
+    private fun resetQueue(queueEpisodes: List<Episode>) {
         if (!isPlayingOrAboutToPlay) {
             return
         }
-        val controller = controller ?: return
+        removeEverythingButCurrentMedia()
+        addEpisodes(queueEpisodes)
+    }
 
+    private fun removeEverythingButCurrentMedia() {
+        controller?.let {
+            val currentIndex = it.currentMediaItemIndex
+            for (index in (it.mediaItemCount - 1) downTo 0) {
+                if (index != currentIndex) {
+                    it.removeMediaItem(index)
+                }
+            }
+        }
+    }
+
+    private fun addEpisodes(episodes: List<Episode>) {
+        controller?.let {
+            for (queueEpisode in episodes) {
+                it.addMediaItem(queueEpisode.asMediaItem())
+            }
+        }
     }
 
     override fun pause() {

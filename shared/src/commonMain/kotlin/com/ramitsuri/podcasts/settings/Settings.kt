@@ -145,4 +145,12 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
     suspend fun removeLegacySettings() {
         keyValueStore.removeInt(Key.PODCAST_DETAILS_EPISODE_SORT_ORDER)
     }
+
+    fun showLogQueueButton(): Flow<Boolean> {
+        return keyValueStore.getBooleanFlow(Key.SHOW_LOG_QUEUE_BUTTON, true)
+    }
+
+    suspend fun setShowLogQueueButton(showLogQueueButton: Boolean) {
+        keyValueStore.putBoolean(Key.SHOW_LOG_QUEUE_BUTTON, showLogQueueButton)
+    }
 }

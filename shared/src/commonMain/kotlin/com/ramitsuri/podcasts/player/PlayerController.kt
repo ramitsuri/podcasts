@@ -14,9 +14,7 @@ interface PlayerController {
 
     fun seek(to: Duration)
 
-    fun addToQueue(episode: Episode)
+    fun onQueueUpdated(nextInQueue: List<Episode>)
 
-    fun removeFromQueue(episode: Episode)
-
-    fun swapInQueue(episode1: Episode, episode2: Episode)
+    fun logQueue(): List<String>
 }

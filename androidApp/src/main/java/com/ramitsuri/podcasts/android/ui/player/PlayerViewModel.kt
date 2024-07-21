@@ -66,9 +66,10 @@ class PlayerViewModel(
                     settings.getPlaybackSpeedFlow(),
                     settings.getTrimSilenceFlow(),
                     settings.getSleepTimerFlow(),
-                ) { episode, speed, trimSilence, sleepTimer ->
-                    EpisodeUpdate(episode, speed, trimSilence, sleepTimer)
-                }.collect { (episode, speed, trimSilence, sleepTimer) ->
+                    settings.showLogQueueButton(),
+                ) { episode, speed, trimSilence, sleepTimer, showLogQueueButton ->
+                    EpisodeUpdate(episode, speed, trimSilence, sleepTimer, showLogQueueButton)
+                }.collect { (episode, speed, trimSilence, sleepTimer, showLogQueueButton) ->
                     if (episode != null) {
                         _state.update {
                             it.copy(
@@ -77,6 +78,11 @@ class PlayerViewModel(
                                 sleepTimer = sleepTimer,
                                 isCasting = false,
                                 trimSilence = trimSilence,
+                                queueForLogging = if (showLogQueueButton) {
+                                    playerController.logQueue().ifEmpty { listOf("Empty queue") }
+                                } else {
+                                    listOf()
+                                },
                             )
                         }
                         updateSleepTimerDuration()
@@ -292,6 +298,7 @@ class PlayerViewModel(
         val speed: Float,
         val trimSilence: Boolean,
         val sleepTimer: SleepTimer,
+        val showLogQueueButton: Boolean,
     )
 
     companion object {

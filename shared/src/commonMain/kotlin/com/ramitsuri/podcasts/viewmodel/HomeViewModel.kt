@@ -35,7 +35,6 @@ class HomeViewModel internal constructor(
                     episodesRepository.getCurrentEpisode(),
                     settings.getPlayingStateFlow(),
                 ) { subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState ->
-                    LogHelper.d(TAG, "Total episodes being shown: ${subscribedEpisodes.size}")
                     val currentlyPlaying =
                         if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
                             currentlyPlayingEpisode

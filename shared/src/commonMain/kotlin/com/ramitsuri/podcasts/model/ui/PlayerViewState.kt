@@ -14,6 +14,7 @@ data class PlayerViewState(
     val isCasting: Boolean = false,
     val trimSilence: Boolean = false,
     val tempPlayProgress: Float? = null,
+    val queueForLogging: List<String> = listOf(),
 ) {
     val episodeId
         get() = episode?.id
@@ -67,6 +68,6 @@ data class PlayerViewState(
     val hasEverBeenPlayed
         get() = episode?.id != null
 
-    val totalDuration
+    private val totalDuration
         get() = episode?.duration?.seconds
 }

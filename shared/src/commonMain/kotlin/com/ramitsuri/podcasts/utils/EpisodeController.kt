@@ -3,6 +3,10 @@ package com.ramitsuri.podcasts.utils
 import com.ramitsuri.podcasts.model.Episode
 
 interface EpisodeController {
+    fun startObservingQueueChanges()
+
+    fun stopObservingQueueChanges()
+
     fun onEpisodePlayClicked(episode: Episode)
 
     fun onEpisodePauseClicked()

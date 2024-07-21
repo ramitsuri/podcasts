@@ -68,6 +68,7 @@ fun SettingsScreen(
     onFetchRequested: () -> Unit,
     onRemoveCompletedAfterSelected: (RemoveDownloadsAfter) -> Unit,
     onRemoveUnfinishedAfterSelected: (RemoveDownloadsAfter) -> Unit,
+    onVersionClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -98,7 +99,7 @@ fun SettingsScreen(
                 onRemoveUnfinishedAfterSelected = onRemoveUnfinishedAfterSelected,
             )
             ColoredHorizontalDivider()
-            AboutApp()
+            AboutApp(onVersionClicked = onVersionClicked)
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -288,7 +289,7 @@ private fun Subtitle(text: String) {
 }
 
 @Composable
-private fun AboutApp() {
+private fun AboutApp(onVersionClicked: () -> Unit) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val appVersion = context.packageManager.getPackageInfo(context.packageName, 0)?.versionName ?: ""
@@ -305,7 +306,8 @@ private fun AboutApp() {
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .clickable(onClick = onVersionClicked),
         ) {
             Title(text = stringResource(id = R.string.settings_version))
             Subtitle(text = appVersion)
@@ -412,6 +414,7 @@ private fun SettingsPreview_LastFetchTimeNever() {
             onBack = { },
             toggleAutoPlayNextInQueue = { },
             onFetchRequested = { },
+            onVersionClicked = { },
             onRemoveCompletedAfterSelected = { },
             onRemoveUnfinishedAfterSelected = { },
         )
@@ -427,6 +430,7 @@ private fun SettingsPreview_LastFetchTimeMinutesAgo() {
             onBack = { },
             toggleAutoPlayNextInQueue = { },
             onFetchRequested = { },
+            onVersionClicked = { },
             onRemoveCompletedAfterSelected = { },
             onRemoveUnfinishedAfterSelected = { },
         )
@@ -442,6 +446,7 @@ private fun SettingsPreview_Fetching() {
             onBack = { },
             toggleAutoPlayNextInQueue = { },
             onFetchRequested = { },
+            onVersionClicked = { },
             onRemoveCompletedAfterSelected = { },
             onRemoveUnfinishedAfterSelected = { },
         )

@@ -25,6 +25,7 @@ import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.AndroidLogger
+import com.ramitsuri.podcasts.utils.EpisodeController
 import com.ramitsuri.podcasts.utils.EpisodeFetcher
 import com.ramitsuri.podcasts.utils.Logger
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +45,7 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
     private val episodeFetcher by inject<EpisodeFetcher>()
     private val settings by inject<Settings>()
     private val longLivingScope by inject<CoroutineScope>()
+    private val episodeController by inject<EpisodeController>()
 
     override fun onCreate() {
         super.onCreate()
@@ -53,6 +55,7 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
         longLivingScope.launch {
             settings.removeLegacySettings()
         }
+        //episodeController.startObservingQueueChanges()
     }
 
     override fun newImageLoader(): ImageLoader {

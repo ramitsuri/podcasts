@@ -409,7 +409,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         ) {
             super.onPlaybackStateChanged(playbackState)
             if (playbackState == Player.STATE_ENDED) {
-                //playNextFromQueueOnMediaEnded(player)
+                playNextFromQueueOnMediaEnded(player)
             } else if (playbackState == STATE_BUFFERING) {
                 settings.setPlayingState(PlayingState.LOADING)
             } else if (playbackState == STATE_READY) {
@@ -514,12 +514,12 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
 
             LogHelper.d(TAG, "Found next media: ${nextEpisode.title}")
             val position = nextEpisode.progressInSeconds.times(1000L)
-            player.setMediaItem(
+            /*player.setMediaItem(
                 nextEpisode.asMediaItem(artworkUriOverride = nextEpisode.cachedArtworkUri),
                 position,
             )
             player.play()
-            episodesRepository.setCurrentlyPlayingEpisodeId(nextEpisode.id)
+            episodesRepository.setCurrentlyPlayingEpisodeId(nextEpisode.id)*/
             onDone()
         }
     }

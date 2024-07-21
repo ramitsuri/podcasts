@@ -8,6 +8,8 @@ import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -19,6 +21,35 @@ internal class EpisodeControllerImpl(
     private val episodeDownloader: EpisodeDownloader,
     private val settings: Settings,
 ) : EpisodeController {
+
+    private var queueJob: Job? = null
+
+    override fun startObservingQueueChanges() {
+        queueJob = longLivingScope.launch {
+            combine(
+                settings.autoPlayNextInQueue(),
+                settings.getSleepTimerFlow(),
+                episodesRepository.getQueueFlow(),
+            ) { autoPlayNextInQueue, sleepTimer, queue ->
+                val currentEpisode = episodesRepository.getCurrentEpisode().first()
+                if (currentEpisode == null ||
+                    autoPlayNextInQueue.not() ||
+                    sleepTimer is SleepTimer.EndOfEpisode
+                ) {
+                    emptyList()
+                } else {
+                    queue.partition { it.queuePosition > currentEpisode.queuePosition }.first
+                }
+            }.collect { queue ->
+                //playerController.onQueueUpdated(queue)
+            }
+        }
+    }
+
+    override fun stopObservingQueueChanges() {
+        queueJob?.cancel()
+    }
+
     override fun onEpisodePlayClicked(episode: Episode) {
         longLivingScope.launch {
             playEpisode(episode)
@@ -33,14 +64,12 @@ internal class EpisodeControllerImpl(
         longLivingScope.launch {
             episodesRepository.addToQueue(episode.id)
         }
-        playerController.addToQueue(episode)
     }
 
     override fun onEpisodeRemoveFromQueueClicked(episode: Episode) {
         longLivingScope.launch {
             episodesRepository.removeFromQueue(episode.id)
         }
-        playerController.removeFromQueue(episode)
     }
 
     override fun onEpisodeDownloadClicked(episode: Episode) {

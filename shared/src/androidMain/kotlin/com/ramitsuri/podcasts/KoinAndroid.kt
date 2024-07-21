@@ -26,6 +26,7 @@ import com.ramitsuri.podcasts.viewmodel.SubscriptionsViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.android.Android
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import okio.Path
 import okio.Path.Companion.toPath
@@ -137,6 +138,7 @@ actual val platformModule =
                 settings = get<Settings>(),
                 episodeFetcher = get<EpisodeFetcher>(),
                 longLivingScope = get<CoroutineScope>(),
+                get<Clock>(),
             )
         }
 
