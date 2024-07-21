@@ -35,9 +35,9 @@ class PlayerControllerImpl(
     override fun play(episode: Episode, queue: List<Episode>) {
         controller?.setMediaItemForEpisode(episode)
         controller?.prepare()
-        if (episode.progressInSeconds != 0) {
+        /*if (episode.progressInSeconds != 0) {
             controller?.seekTo(episode.progressInSeconds * 1000L)
-        }
+        }*/
         controller?.play()
         //onQueueUpdated(queue)
     }
@@ -46,26 +46,19 @@ class PlayerControllerImpl(
         if (!isPlayingOrAboutToPlay) {
             return
         }
-        resetQueue(nextInQueue)
+        removeEverythingButCurrentMedia()
+        addEpisodes(nextInQueue)
     }
 
     private val isPlayingOrAboutToPlay: Boolean
         get() = controller?.isPlaying == true || controller?.isLoading == true
 
     override fun logQueue(): List<String> {
-        return controller?.let {
+        return/* controller?.let {
             (0 until it.mediaItemCount).map { index ->
                 "$index: ${it.getMediaItemAt(index).mediaMetadata.title.toString()}"
             }
-        } ?: listOf("Controller is null")
-    }
-
-    private fun resetQueue(queueEpisodes: List<Episode>) {
-        if (!isPlayingOrAboutToPlay) {
-            return
-        }
-        removeEverythingButCurrentMedia()
-        addEpisodes(queueEpisodes)
+        } ?:*/ listOf("Controller is null")
     }
 
     private fun removeEverythingButCurrentMedia() {

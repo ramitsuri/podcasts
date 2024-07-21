@@ -174,14 +174,7 @@ internal class EpisodeControllerImpl(
         if (episode.isCompleted) {
             episodesRepository.markNotPlayed(episode.id)
         }
-        val queue = if (settings.autoPlayNextInQueue().first() &&
-            settings.getSleepTimerFlow().first() !is SleepTimer.EndOfEpisode
-        ) {
-            episodesRepository.getQueue()
-        } else {
-            listOf()
-        }
-        playerController.play(episode, queue)
+        playerController.play(episode)
     }
 
     companion object {

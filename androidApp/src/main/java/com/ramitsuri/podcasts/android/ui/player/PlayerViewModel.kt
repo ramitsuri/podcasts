@@ -66,9 +66,9 @@ class PlayerViewModel(
                     settings.getPlaybackSpeedFlow(),
                     settings.getTrimSilenceFlow(),
                     settings.getSleepTimerFlow(),
-                    settings.showLogQueueButton(),
-                ) { episode, speed, trimSilence, sleepTimer, showLogQueueButton ->
-                    EpisodeUpdate(episode, speed, trimSilence, sleepTimer, showLogQueueButton)
+                    //settings.showLogQueueButton(),
+                ) { episode, speed, trimSilence, sleepTimer, /*showLogQueueButton*/ ->
+                    EpisodeUpdate(episode, speed, trimSilence, sleepTimer, false)
                 }.collect { (episode, speed, trimSilence, sleepTimer, showLogQueueButton) ->
                     if (episode != null) {
                         _state.update {
@@ -78,11 +78,11 @@ class PlayerViewModel(
                                 sleepTimer = sleepTimer,
                                 isCasting = false,
                                 trimSilence = trimSilence,
-                                queueForLogging = if (showLogQueueButton) {
+                                queueForLogging = /*if (showLogQueueButton) {
                                     playerController.logQueue().ifEmpty { listOf("Empty queue") }
-                                } else {
+                                } else {*/
                                     listOf()
-                                },
+                                //},
                             )
                         }
                         updateSleepTimerDuration()
@@ -98,14 +98,7 @@ class PlayerViewModel(
                 if (episode.isCompleted) {
                     episodesRepository.markNotPlayed(episode.id)
                 }
-                val queue = if (settings.autoPlayNextInQueue().first() &&
-                    settings.getSleepTimerFlow().first() !is SleepTimer.EndOfEpisode
-                ) {
-                    episodesRepository.getQueue()
-                } else {
-                    listOf()
-                }
-                playerController.play(episode, queue)
+                playerController.play(episode)
             }
         }
     }

@@ -147,7 +147,7 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
     }
 
     fun showLogQueueButton(): Flow<Boolean> {
-        return keyValueStore.getBooleanFlow(Key.SHOW_LOG_QUEUE_BUTTON, true)
+        return keyValueStore.getBooleanFlow(Key.SHOW_LOG_QUEUE_BUTTON, false)
     }
 
     suspend fun setShowLogQueueButton(showLogQueueButton: Boolean) {

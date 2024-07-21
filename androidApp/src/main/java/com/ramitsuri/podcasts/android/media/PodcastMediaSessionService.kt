@@ -164,7 +164,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         launchSuspend {
             currentlyPlayingEpisode.collectLatest { currentEpisode ->
                 val player = mediaSession?.player
-                if (currentEpisode != null && player?.duration != null) {
+                if (currentEpisode != null && player?.duration != null && player.currentMediaItem?.mediaId == currentEpisode.id) {
                     val duration = player.duration
                     // Set episode's duration to what the player is reporting
                     if (duration != C.TIME_UNSET && currentEpisode.duration?.toLong() != (duration / 1000)) {
@@ -260,8 +260,6 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 ConnectionResult.DEFAULT_PLAYER_COMMANDS.buildUpon()
                     .remove(Player.COMMAND_SEEK_TO_PREVIOUS)
                     .remove(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
-                    .remove(Player.COMMAND_SEEK_TO_NEXT)
-                    .remove(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
                     .build()
 
             return ConnectionResult.AcceptedResultBuilder(session)
