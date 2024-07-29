@@ -34,10 +34,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.view.HapticFeedbackConstantsCompat
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
@@ -73,6 +75,7 @@ fun QueueScreen(
     onEpisodesRearranged: (from: Int, to: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val view = LocalView.current
     Column(
         modifier =
             modifier
@@ -88,6 +91,7 @@ fun QueueScreen(
         val reorderableLazyColumnState =
             rememberReorderableLazyListState(lazyListState) { from, to ->
                 onEpisodesRearranged(from.index, to.index)
+                view.performHapticFeedback(HapticFeedbackConstantsCompat.CONFIRM)
             }
         LazyColumn(
             state = lazyListState,
