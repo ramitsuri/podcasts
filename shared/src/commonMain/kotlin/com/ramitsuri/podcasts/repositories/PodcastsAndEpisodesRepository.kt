@@ -184,17 +184,24 @@ class PodcastsAndEpisodesRepository internal constructor(
 
         // Check if potentially removable episodes were ever played (are in history) as they can't be removed either
         // Using both episodeId and podcastId to get episodes in case episodeId is not unique across podcasts
-        val removableEpisodesThatHaveBeenPlayed =
-            sessionHistoryRepository.getEpisodes(removableEpisodeIds, removablePodcastIds)
-                .map { it.episodeId }
-                .distinct()
+        removableEpisodeIds
+            // Chunking because on some devices, the limit for how vars can be supplied as param to SQL statements can
+            // be as low as 999. Dividing that by 2 as there could be as little as 1 episode per podcast, so allowing
+            // rest of the 500 spaces to be used for podcast ids.
+            .chunked(499)
+            .forEach { episodeIds ->
+                val removableEpisodesThatHaveBeenPlayed =
+                    sessionHistoryRepository.getEpisodes(episodeIds, removablePodcastIds)
+                        .map { it.episodeId }
+                        .distinct()
 
-        // Remove episodes that have never been played
-        val episodesThatCanBeRemoved =
-            removableEpisodeIds.filter {
-                removableEpisodesThatHaveBeenPlayed.contains(it).not()
+                // Remove episodes that have never been played
+                val episodesThatCanBeRemoved =
+                    removableEpisodeIds.filter {
+                        removableEpisodesThatHaveBeenPlayed.contains(it).not()
+                    }
+                episodesRepository.remove(episodesThatCanBeRemoved)
             }
-        episodesRepository.remove(episodesThatCanBeRemoved)
 
         // After episode removal, get unsubscribed podcasts that still have episodes
         val podcastsThatHaveEpisodes = episodesRepository.getPodcastsThatHaveEpisodes(unsubscribedPodcasts)
