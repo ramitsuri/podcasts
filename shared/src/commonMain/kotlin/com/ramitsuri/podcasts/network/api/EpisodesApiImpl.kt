@@ -13,8 +13,12 @@ internal class EpisodesApiImpl(
     private val baseUrl: String,
     private val httpClient: HttpClient,
     private val ioDispatcher: CoroutineDispatcher,
+    private val isDebug: Boolean,
 ) : EpisodesApi {
     override suspend fun getByPodcastId(request: GetEpisodesRequest): PodcastResult<EpisodesResponseDto> {
+        if (isDebug) {
+            return PodcastResult.Success(EpisodesResponseDto(listOf()))
+        }
         return apiRequest(ioDispatcher) {
             httpClient.get(urlString = "$baseUrl/episodes/byfeedid") {
                 url {
