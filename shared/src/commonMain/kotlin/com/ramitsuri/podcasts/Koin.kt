@@ -169,7 +169,6 @@ private val coreModule =
                 clock = get<Clock>(),
                 foregroundStateObserver = get<ForegroundStateObserver>(),
                 longLivingScope = get<CoroutineScope>(),
-                isDebug = get<AppInfo>().isDebug,
             )
         }
 
@@ -194,6 +193,7 @@ private val coreModule =
                 baseUrl = get(qualifier = KoinQualifier.BASE_API_URL),
                 httpClient = get(),
                 ioDispatcher = get<DispatcherProvider>().io,
+                isDebug = get<AppInfo>().isDebug,
             )
         }
 

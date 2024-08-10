@@ -10,7 +10,6 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.ramitsuri.podcasts.android.BuildConfig
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.utils.EpisodeFetcher
 import com.ramitsuri.podcasts.utils.LogHelper
@@ -52,10 +51,6 @@ class EpisodeFetchWorker(
         private const val NOTIFICATION_ID = NotificationId.EPISODE_FETCH_WORKER
 
         fun enqueuePeriodic(context: Context) {
-            if (BuildConfig.DEBUG) {
-                LogHelper.d(TAG, "Skipping in debug build")
-                return
-            }
             val builder =
                 PeriodicWorkRequest
                     .Builder(EpisodeFetchWorker::class.java, REPEAT_HOURS, TimeUnit.HOURS)
