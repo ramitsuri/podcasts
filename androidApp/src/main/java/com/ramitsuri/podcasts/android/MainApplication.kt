@@ -31,6 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asExecutor
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.workmanager.dsl.worker
@@ -108,6 +109,11 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
                 single<PlayerController> {
                     PlayerControllerImpl(
                         context = get<Application>(),
+                        coroutineScope = get<CoroutineScope>(),
+                        shouldAutoPlayNextInQueue = { settings.autoPlayNextInQueue().first() },
+                        getSleepTimer = { settings.getSleepTimerFlow().first() },
+                        getAppQueue = { get<EpisodesRepository>().getQueue() },
+                        getCurrentlyPlayingEpisode = { get<EpisodesRepository>().getCurrentEpisode().first() },
                     )
                 }
 

@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.utils
 
+import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -12,6 +13,7 @@ import kotlinx.coroutines.launch
 class QueueRearrangementHelper(
     scope: CoroutineScope,
     repo: EpisodesRepository,
+    playerController: PlayerController,
 ) {
     private val _queuePositions = MutableStateFlow<Map<String, Int>>(mapOf())
     val queuePositions = _queuePositions.asStateFlow()
@@ -37,6 +39,7 @@ class QueueRearrangementHelper(
         scope.launch {
             queueRearrangementChannel.consumeEach { positions ->
                 repo.updateQueuePositions(positions.id1, positions.position1, positions.id2, positions.position2)
+                playerController.updateQueue()
             }
         }
     }

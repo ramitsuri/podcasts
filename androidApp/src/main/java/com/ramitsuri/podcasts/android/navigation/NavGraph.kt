@@ -159,10 +159,10 @@ fun NavGraph(
                 if (bottomSheetVisible) {
                     {
                         LifecycleStartEffect(Unit, LocalLifecycleOwner.current) {
-                            playerViewModel.initializePlayer()
+                            playerViewModel.viewStarted()
 
                             onStopOrDispose {
-                                // Do nothing
+                                playerViewModel.viewStopped()
                             }
                         }
                         PlayerScreen(

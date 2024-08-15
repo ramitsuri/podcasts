@@ -13,4 +13,12 @@ interface PlayerController {
     fun pause()
 
     fun seek(to: Duration)
+
+    fun updateQueue()
+
+    fun logQueue(): List<String>
+
+    fun playNext()
+
+    fun hasNext(): Boolean
 }
