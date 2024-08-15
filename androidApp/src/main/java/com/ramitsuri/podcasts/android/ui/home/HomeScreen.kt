@@ -130,7 +130,7 @@ fun HomeScreen(
                     )
                 }
             }
-            items(state.episodes) {
+            items(key = { it.id }, items = state.episodes) {
                 ColoredHorizontalDivider()
                 EpisodeItem(
                     episode = it,
@@ -201,7 +201,7 @@ private fun Subscriptions(
             item {
                 Spacer(modifier = Modifier.width(8.dp))
             }
-            items(podcasts) {
+            items(items = podcasts, key = { it.id }) {
                 SubscribedPodcastItem(
                     title = it.title,
                     artwork = it.artwork,

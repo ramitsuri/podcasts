@@ -262,7 +262,7 @@ private fun SearchResults(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
-            items(podcasts) {
+            items(items = podcasts, key = { it.id }) {
                 ColoredHorizontalDivider()
                 PodcastInfoItem(it, onClick = onPodcastClicked)
             }
