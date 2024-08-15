@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Subscriptions
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -60,8 +61,8 @@ fun SubscriptionsScreen(
         )
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 112.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier =
                 Modifier
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -97,7 +98,9 @@ private fun SubscribedPodcastItem(
     Column(
         modifier =
             Modifier
-                .clickable(onClick = { onClicked(podcast) }),
+                .clip(MaterialTheme.shapes.small)
+                .clickable(onClick = { onClicked(podcast) })
+                .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
