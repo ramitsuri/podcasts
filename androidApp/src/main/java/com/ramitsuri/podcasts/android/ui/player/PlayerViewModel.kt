@@ -256,24 +256,24 @@ class PlayerViewModel(
     }
 
     private fun startUpdatingQueue() {
-        updateQueueJob = longLivingScope.launch {
-            launch {
-                settings
-                    .autoPlayNextInQueue()
-                    .collect {
-                        playerController.updateQueue()
-                    }
-
+        updateQueueJob =
+            longLivingScope.launch {
+                launch {
+                    settings
+                        .autoPlayNextInQueue()
+                        .collect {
+                            playerController.updateQueue()
+                        }
+                }
+                launch {
+                    settings
+                        .getSleepTimerFlow()
+                        .filter { it is SleepTimer.EndOfEpisode }
+                        .collect {
+                            playerController.updateQueue()
+                        }
+                }
             }
-            launch {
-                settings
-                    .getSleepTimerFlow()
-                    .filter { it is SleepTimer.EndOfEpisode }
-                    .collect {
-                        playerController.updateQueue()
-                    }
-            }
-        }
     }
 
     private fun stopUpdatingQueue() {

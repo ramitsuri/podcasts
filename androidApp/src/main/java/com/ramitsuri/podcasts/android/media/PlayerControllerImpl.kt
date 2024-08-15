@@ -61,30 +61,34 @@ class PlayerControllerImpl(
 
     override fun updateQueue() {
         updateQueueJob?.cancel()
-        updateQueueJob = coroutineScope.launch {
-            delay(300)
-            val currentEpisode = getCurrentlyPlayingEpisode()
-            val playerQueue = if (currentEpisode == null ||
-                currentEpisode.queuePosition == Episode.NOT_IN_QUEUE ||
-                shouldAutoPlayNextInQueue().not() ||
-                getSleepTimer() is SleepTimer.EndOfEpisode
-            ) {
-                emptyList()
-            } else {
-                getAppQueue().filter { it.queuePosition > currentEpisode.queuePosition }
+        updateQueueJob =
+            coroutineScope.launch {
+                delay(300)
+                val currentEpisode = getCurrentlyPlayingEpisode()
+                val playerQueue =
+                    if (currentEpisode == null ||
+                        currentEpisode.queuePosition == Episode.NOT_IN_QUEUE ||
+                        shouldAutoPlayNextInQueue().not() ||
+                        getSleepTimer() is SleepTimer.EndOfEpisode
+                    ) {
+                        emptyList()
+                    } else {
+                        getAppQueue().filter { it.queuePosition > currentEpisode.queuePosition }
+                    }
+                removeEverythingButCurrentEpisode()
+                addEpisodes(playerQueue)
+                logQueue()
             }
-            removeEverythingButCurrentEpisode()
-            addEpisodes(playerQueue)
-            logQueue()
-        }
     }
 
     override fun logQueue(): List<String> {
-        return (controller?.let {
-            (0 until it.mediaItemCount).map { index ->
-                "$index: ${it.getMediaItemAt(index).mediaMetadata.title.toString()}\n"
-            }
-        } ?: listOf("Controller is null")).also {
+        return (
+            controller?.let {
+                (0 until it.mediaItemCount).map { index ->
+                    "$index: ${it.getMediaItemAt(index).mediaMetadata.title}\n"
+                }
+            } ?: listOf("Controller is null")
+        ).also {
             LogHelper.d(TAG, "$it")
         }
     }
