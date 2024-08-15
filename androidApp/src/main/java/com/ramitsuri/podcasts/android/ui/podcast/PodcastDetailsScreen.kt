@@ -244,7 +244,7 @@ private fun PodcastDetails(
                 toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
             )
         }
-        items(key = { it.episode.id } , items = podcastWithEpisodes.episodes) {
+        items(key = { it.episode.id }, items = podcastWithEpisodes.episodes) {
             val episode = it.episode
             ColoredHorizontalDivider()
             EpisodeItem(
