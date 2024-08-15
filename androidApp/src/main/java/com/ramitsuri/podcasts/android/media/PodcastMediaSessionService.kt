@@ -9,6 +9,7 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_AUTO
 import androidx.media3.common.Player.STATE_BUFFERING
 import androidx.media3.common.Player.STATE_READY
 import androidx.media3.common.Player.State
@@ -48,7 +49,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
@@ -56,6 +56,7 @@ import kotlinx.datetime.Clock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.seconds
 
@@ -70,7 +71,8 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     private var mediaSession: MediaSession? = null
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val currentlyPlayingEpisode = MutableStateFlow<Episode?>(null)
-    private var attemptingToPlayNextMedia = false
+    private val onMediaEndedRunning = AtomicBoolean(false)
+    private val onMediaItemTransitionRunning = AtomicBoolean(false)
 
     private var insertStartActionJob: Job? = null
     private var insertStopActionJob: Job? = null
@@ -164,7 +166,10 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         launchSuspend {
             currentlyPlayingEpisode.collectLatest { currentEpisode ->
                 val player = mediaSession?.player
-                if (currentEpisode != null && player?.duration != null) {
+                if (currentEpisode != null &&
+                    player?.duration != null &&
+                    player.currentMediaItem?.mediaId == currentEpisode.id
+                ) {
                     val duration = player.duration
                     // Set episode's duration to what the player is reporting
                     if (duration != C.TIME_UNSET && currentEpisode.duration?.toLong() != (duration / 1000)) {
@@ -407,7 +412,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         ) {
             super.onPlaybackStateChanged(playbackState)
             if (playbackState == Player.STATE_ENDED) {
-                playNextFromQueueOnMediaEnded(player)
+                onMediaEnded()
             } else if (playbackState == STATE_BUFFERING) {
                 settings.setPlayingState(PlayingState.LOADING)
             } else if (playbackState == STATE_READY) {
@@ -447,77 +452,41 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             mediaItem: MediaItem?,
             reason: Int,
         ) {
-            if (mediaItem != null) {
-                coroutineScope.launch {
-                    val nextEpisode = episodesRepository.getEpisode(mediaItem.mediaId) ?: return@launch
-                    val position = nextEpisode.progressInSeconds.times(1000).toLong()
-                    player.seekTo(position)
+            if (onMediaItemTransitionRunning.get()) {
+                LogHelper.d(TAG, "onMediaItemTransition already running")
+                return
+            }
+            onMediaItemTransitionRunning.getAndSet(true)
+            launchSuspend {
+                if (reason == MEDIA_ITEM_TRANSITION_REASON_AUTO) {
+                    currentlyPlayingEpisode.value?.let { currentEpisode ->
+                        episodesRepository.markPlayed(currentEpisode.id)
+                    }
                 }
+
+                if (mediaItem != null) {
+                    episodesRepository.getEpisode(mediaItem.mediaId)?.let { nextEpisode ->
+                        episodesRepository.setCurrentlyPlayingEpisodeId(nextEpisode.id)
+                        val position = nextEpisode.progressInSeconds.times(1000).toLong()
+                        player.seekTo(position)
+                    }
+                }
+                onMediaItemTransitionRunning.set(false)
             }
         }
     }
 
-    // Almost replicated in EpisodeControllerImpl
-    private fun playNextFromQueueOnMediaEnded(player: Player) {
-        LogHelper.d(TAG, "Finding next media to play")
-        if (attemptingToPlayNextMedia) {
-            LogHelper.d(TAG, "Already attempting to play next media")
+    private fun onMediaEnded() {
+        if (onMediaEndedRunning.get()) {
+            LogHelper.d(TAG, "OnMediaEnded already running")
             return
         }
-        attemptingToPlayNextMedia = true
+        onMediaEndedRunning.getAndSet(true)
         launchSuspend {
-            delay(500)
-            val currentlyPlayingEpisode = currentlyPlayingEpisode.value
-            if (currentlyPlayingEpisode == null) {
-                LogHelper.d(TAG, "Currently playing episode is null")
-                attemptingToPlayNextMedia = false
-                return@launchSuspend
+            currentlyPlayingEpisode.value?.let { currentEpisode ->
+                episodesRepository.markPlayed(currentEpisode.id)
             }
-
-            suspend fun onDone() {
-                attemptingToPlayNextMedia = false
-                episodesRepository.markPlayed(currentlyPlayingEpisode.id)
-            }
-
-            val autoPlayNextInQueue = settings.autoPlayNextInQueue().first()
-            if (!autoPlayNextInQueue) {
-                LogHelper.d(TAG, "Auto play next in queue is false")
-                onDone()
-                return@launchSuspend
-            }
-
-            val sleepTimer = settings.getSleepTimerFlow().first()
-            if (sleepTimer is SleepTimer.EndOfEpisode) {
-                LogHelper.d(TAG, "Sleep timer is set to end of episode")
-                settings.setSleepTimer(SleepTimer.None)
-                onDone()
-                return@launchSuspend
-            }
-
-            val queue = episodesRepository.getQueue()
-            val currentEpisodeIndex = queue.indexOfFirst { it.id == currentlyPlayingEpisode.id }
-            if (currentEpisodeIndex == -1) {
-                LogHelper.v(TAG, "current episode not found in queue")
-                onDone()
-                return@launchSuspend
-            }
-
-            val nextEpisode = queue.getOrNull(currentEpisodeIndex + 1)
-            if (nextEpisode == null) {
-                LogHelper.v(TAG, "next episode is null")
-                onDone()
-                return@launchSuspend
-            }
-
-            LogHelper.d(TAG, "Found next media: ${nextEpisode.title}")
-            val position = nextEpisode.progressInSeconds.times(1000L)
-            player.setMediaItem(
-                nextEpisode.asMediaItem(artworkUriOverride = nextEpisode.cachedArtworkUri),
-                position,
-            )
-            player.play()
-            episodesRepository.setCurrentlyPlayingEpisodeId(nextEpisode.id)
-            onDone()
+            onMediaEndedRunning.set(false)
         }
     }
 
