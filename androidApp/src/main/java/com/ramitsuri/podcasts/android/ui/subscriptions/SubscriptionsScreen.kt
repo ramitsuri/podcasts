@@ -68,7 +68,7 @@ fun SubscriptionsScreen(
                     .padding(horizontal = 16.dp),
         ) {
             fullWidthSpacer()
-            items(state.subscribedPodcasts) { podcast ->
+            items(items = state.subscribedPodcasts, key = { it.id }) { podcast ->
                 SubscribedPodcastItem(podcast = podcast, onClicked = { onPodcastClicked(it.id) })
             }
             fullWidthSpacer()
