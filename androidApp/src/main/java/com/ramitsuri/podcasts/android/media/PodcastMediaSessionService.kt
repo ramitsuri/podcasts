@@ -265,6 +265,8 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 ConnectionResult.DEFAULT_PLAYER_COMMANDS.buildUpon()
                     .remove(Player.COMMAND_SEEK_TO_PREVIOUS)
                     .remove(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
+                    .remove(Player.COMMAND_SEEK_TO_NEXT)
+                    .remove(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
                     .build()
 
             return ConnectionResult.AcceptedResultBuilder(session)
