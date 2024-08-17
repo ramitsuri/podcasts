@@ -55,6 +55,7 @@
     <string name="player_sleep_timer_increase">+2 minutes</string>
     <string name="player_sleep_timer_decrease">-2 minutes</string>
     <string name="player_go_to_queue">Go to queue</string>
+    <string name="player_playback_speed">Playback speed</string>
 
     <!-- Library screen -->
     <string name="library_queue">Queue</string>
