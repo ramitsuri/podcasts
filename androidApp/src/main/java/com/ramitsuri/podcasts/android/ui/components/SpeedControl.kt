@@ -115,9 +115,10 @@ fun SpeedControl(
         }
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.Center,
         ) {
             PresetButton(
@@ -194,12 +195,13 @@ private fun SpeedSlider(
     var height by remember { mutableStateOf(0.dp) }
     Column(modifier = modifier) {
         Box(
-            modifier = Modifier
-                .onSizeChanged {
-                    padding = with(density) { (it.width / 2).toDp() }
-                    height = with(density) { it.height.toDp() }
-                }
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .onSizeChanged {
+                        padding = with(density) { (it.width / 2).toDp() }
+                        height = with(density) { it.height.toDp() }
+                    }
+                    .fillMaxWidth(),
         ) {
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
@@ -229,10 +231,13 @@ private fun PresetButton(
 ) {
     OutlinedButton(
         onClick = { onClick(intSpeed) },
-        modifier = Modifier
-            .size(48.dp)
-            .clip(CircleShape)
-            .background(if (selected) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f) else Color.Transparent),
+        modifier =
+            Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(
+                    if (selected) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f) else Color.Transparent,
+                ),
         shape = CircleShape,
         contentPadding = PaddingValues(0.dp),
     ) {
@@ -252,12 +257,18 @@ private fun fromIndexToIntSpeed(index: Int): Int {
     return START_ITEM + index
 }
 
-private fun indexToSpeedForDisplay(index: Int, showX: Boolean = false): String {
+private fun indexToSpeedForDisplay(
+    index: Int,
+    showX: Boolean = false,
+): String {
     val speed = fromIndexToIntSpeed(index)
     return intSpeedToSpeedForDisplay(speed, showX)
 }
 
-private fun intSpeedToSpeedForDisplay(speed: Int, showX: Boolean): String {
+private fun intSpeedToSpeedForDisplay(
+    speed: Int,
+    showX: Boolean,
+): String {
     return buildString {
         append("${speed / 10}.${speed % 10}")
         if (showX) {
@@ -278,11 +289,12 @@ private fun SpeedVerticalLineItem(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
-            modifier = Modifier
-                .padding(horizontal = 12.dp)
-                .height(40.dp)
-                .width(2.dp)
-                .background(color, shape = CircleShape),
+            modifier =
+                Modifier
+                    .padding(horizontal = 12.dp)
+                    .height(40.dp)
+                    .width(2.dp)
+                    .background(color, shape = CircleShape),
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
@@ -298,20 +310,21 @@ private fun SpeedVerticalLineItem(
 @Composable
 private fun EdgeTransparency(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                Brush.horizontalGradient(
-                    listOf(
-                        MaterialTheme.colorScheme.surface,
-                        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                        Color.Transparent,
-                        Color.Transparent,
-                        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                        MaterialTheme.colorScheme.surface,
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(
+                            MaterialTheme.colorScheme.surface,
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                            Color.Transparent,
+                            Color.Transparent,
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                            MaterialTheme.colorScheme.surface,
+                        ),
                     ),
                 ),
-            ),
     )
 }
 
