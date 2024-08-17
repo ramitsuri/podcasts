@@ -50,6 +50,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
 import com.ramitsuri.podcasts.android.R
+import com.ramitsuri.podcasts.android.ui.PreviewTheme
+import com.ramitsuri.podcasts.android.ui.ThemePreview
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
@@ -124,31 +126,26 @@ fun SpeedControl(
             PresetButton(
                 intSpeed = 8,
                 onClick = { setSpeed(it) },
-                selected = selectedValue == 8,
             )
             Spacer(modifier = Modifier.width(16.dp))
             PresetButton(
                 intSpeed = 10,
                 onClick = { setSpeed(it) },
-                selected = selectedValue == 10,
             )
             Spacer(modifier = Modifier.width(16.dp))
             PresetButton(
                 intSpeed = 12,
                 onClick = { setSpeed(it) },
-                selected = selectedValue == 12,
             )
             Spacer(modifier = Modifier.width(16.dp))
             PresetButton(
                 intSpeed = 15,
                 onClick = { setSpeed(it) },
-                selected = selectedValue == 15,
             )
             Spacer(modifier = Modifier.width(16.dp))
             PresetButton(
                 intSpeed = 20,
                 onClick = { setSpeed(it) },
-                selected = selectedValue == 20,
             )
         }
     }
@@ -226,7 +223,6 @@ private fun SpeedSlider(
 @Composable
 private fun PresetButton(
     intSpeed: Int,
-    selected: Boolean,
     onClick: (Int) -> Unit,
 ) {
     OutlinedButton(
@@ -234,10 +230,7 @@ private fun PresetButton(
         modifier =
             Modifier
                 .size(48.dp)
-                .clip(CircleShape)
-                .background(
-                    if (selected) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f) else Color.Transparent,
-                ),
+                .clip(CircleShape),
         shape = CircleShape,
         contentPadding = PaddingValues(0.dp),
     ) {
@@ -330,3 +323,17 @@ private fun EdgeTransparency(modifier: Modifier = Modifier) {
 
 private const val TOTAL_SPEED_ITEMS = 26
 private const val START_ITEM = 5
+
+@ThemePreview
+@Composable
+private fun SpeedControlPreview() {
+    PreviewTheme {
+        Column {
+            SpeedControl(
+                selectedValue = 10,
+                onSpeedSet = {},
+                modifier = Modifier.padding(16.dp),
+            )
+        }
+    }
+}
