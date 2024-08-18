@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,8 +21,12 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.FastForward
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -41,6 +46,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
@@ -61,9 +67,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun SpeedControl(
     selectedValue: Int,
+    trimSilence: Boolean,
     onSpeedSet: (Int) -> Unit,
+    onTrimSilence: () -> Unit,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.primary,
 ) {
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = fromIntSpeedToIndex(selectedValue))
     var speedLabel by remember {
@@ -83,26 +90,22 @@ fun SpeedControl(
         Text(
             text = stringResource(R.string.player_playback_speed),
             style = MaterialTheme.typography.bodyLarge,
-            color = color,
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = speedLabel,
             style = MaterialTheme.typography.titleLarge,
-            color = color,
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(8.dp))
         Icon(
             imageVector = Icons.Default.ArrowDropDown,
-            tint = color,
             contentDescription = null,
         )
         Spacer(modifier = Modifier.height(8.dp))
         SpeedSlider(
             listState = listState,
-            color = color,
             onIndexSet = {
                 speedLabel = indexToSpeedForDisplay(it, showX = true)
                 onSpeedSet(fromIndexToIntSpeed(it))
@@ -148,6 +151,13 @@ fun SpeedControl(
                 onClick = { setSpeed(it) },
             )
         }
+        Spacer(modifier = Modifier.height(32.dp))
+        Button(
+            icon = if (trimSilence) Icons.Outlined.Check else Icons.Outlined.FastForward,
+            filled = trimSilence,
+            label = stringResource(R.string.player_trim_silence_enable),
+            onClick = onTrimSilence,
+        )
     }
 }
 
@@ -157,7 +167,6 @@ private fun SpeedSlider(
     modifier: Modifier = Modifier,
     listState: LazyListState,
     totalValues: Int = TOTAL_SPEED_ITEMS,
-    color: Color,
     onIndexSet: (Int) -> Unit,
 ) {
     val density = LocalDensity.current
@@ -211,7 +220,6 @@ private fun SpeedSlider(
                     SpeedVerticalLineItem(
                         label = indexToSpeedForDisplay(index),
                         showLabel = index % 5 == 0,
-                        color = color,
                     )
                 }
             }
@@ -238,6 +246,43 @@ private fun PresetButton(
             text = intSpeedToSpeedForDisplay(speed = intSpeed, showX = false),
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+    }
+}
+
+@Composable
+private fun Button(
+    icon: ImageVector? = null,
+    label: String,
+    onClick: () -> Unit,
+    filled: Boolean,
+) {
+    val content: @Composable RowScope.() -> Unit = {
+        if (icon != null) {
+            Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+        Text(text = label, color = MaterialTheme.colorScheme.onBackground)
+    }
+    val modifier = Modifier.clip(RoundedCornerShape(8.dp))
+    val shape = RoundedCornerShape(8.dp)
+    val contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+    if (filled) {
+        FilledTonalButton(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+            contentPadding = contentPadding,
+            content = content,
+        )
+    } else {
+        OutlinedButton(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+            contentPadding = contentPadding,
+            content = content,
         )
     }
 }
@@ -274,7 +319,6 @@ private fun intSpeedToSpeedForDisplay(
 private fun SpeedVerticalLineItem(
     label: String,
     showLabel: Boolean,
-    color: Color,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -293,7 +337,6 @@ private fun SpeedVerticalLineItem(
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
-            color = color,
             modifier = Modifier.fillMaxWidth().alpha(if (showLabel) 1f else 0f),
             textAlign = TextAlign.Center,
         )
@@ -331,7 +374,9 @@ private fun SpeedControlPreview() {
         Column {
             SpeedControl(
                 selectedValue = 10,
+                trimSilence = false,
                 onSpeedSet = {},
+                onTrimSilence = {},
                 modifier = Modifier.padding(16.dp),
             )
         }
