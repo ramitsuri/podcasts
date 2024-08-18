@@ -139,7 +139,7 @@ private fun SleepTimerCustom(
     onTimerCanceled: () -> Unit,
     onTimerIncrement: () -> Unit,
     onTimerDecrement: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -256,12 +256,12 @@ private fun SleepTimerNotSet(
         Spacer(modifier = Modifier.height(8.dp))
         Box(
             modifier =
-            Modifier
-                .onSizeChanged {
-                    padding = with(density) { (it.width / 2).toDp() }
-                    height = with(density) { it.height.toDp() }
-                }
-                .fillMaxWidth(),
+                Modifier
+                    .onSizeChanged {
+                        padding = with(density) { (it.width / 2).toDp() }
+                        height = with(density) { it.height.toDp() }
+                    }
+                    .fillMaxWidth(),
         ) {
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
@@ -297,7 +297,7 @@ private fun SleepTimerNotSet(
 private fun Button(
     icon: ImageVector? = null,
     label: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -324,11 +324,11 @@ private fun TimerVerticalLineItem(
     ) {
         Box(
             modifier =
-            Modifier
-                .padding(horizontal = 12.dp)
-                .height(40.dp)
-                .width(2.dp)
-                .background(MaterialTheme.colorScheme.onBackground, shape = CircleShape),
+                Modifier
+                    .padding(horizontal = 12.dp)
+                    .height(40.dp)
+                    .width(2.dp)
+                    .background(MaterialTheme.colorScheme.onBackground, shape = CircleShape),
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
@@ -345,20 +345,20 @@ private fun TimerVerticalLineItem(
 private fun EdgeTransparency(modifier: Modifier = Modifier) {
     Box(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .background(
-                Brush.horizontalGradient(
-                    listOf(
-                        MaterialTheme.colorScheme.surface,
-                        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                        Color.Transparent,
-                        Color.Transparent,
-                        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                        MaterialTheme.colorScheme.surface,
+            modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(
+                            MaterialTheme.colorScheme.surface,
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                            Color.Transparent,
+                            Color.Transparent,
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                            MaterialTheme.colorScheme.surface,
+                        ),
                     ),
                 ),
-            ),
     )
 }
 
