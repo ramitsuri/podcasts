@@ -24,6 +24,8 @@
     <string name="am">AM</string>
     <string name="pm">PM</string>
     <string name="ok">OK</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>
@@ -56,6 +58,9 @@
     <string name="player_sleep_timer_decrease">-2 minutes</string>
     <string name="player_go_to_queue">Go to queue</string>
     <string name="player_playback_speed">Playback speed</string>
+    <string name="player_sleep_timer_five_min">5 min</string>
+    <string name="player_sleep_timer_to_episode_completion">to episode completion</string>
+    <string name="player_sleep_timer_minutes">min</string>
 
     <!-- Library screen -->
     <string name="library_queue">Queue</string>
