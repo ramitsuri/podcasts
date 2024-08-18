@@ -331,7 +331,7 @@ private fun SpeedVerticalLineItem(
                     .padding(horizontal = 12.dp)
                     .height(40.dp)
                     .width(2.dp)
-                    .background(color, shape = CircleShape),
+                    .background(MaterialTheme.colorScheme.onBackground, shape = CircleShape),
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
