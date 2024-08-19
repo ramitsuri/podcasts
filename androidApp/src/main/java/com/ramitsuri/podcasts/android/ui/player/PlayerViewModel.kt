@@ -198,10 +198,21 @@ class PlayerViewModel(
         }
     }
 
-    fun onSleepTimerRequested(sleepTimer: SleepTimer) {
+    fun onSleepTimerCancelRequested() {
         viewModelScope.launch {
-            settings.setSleepTimer(sleepTimer)
-            // State and actual timer get set in the flow collection in updateEpisodeState
+            settings.setSleepTimer(SleepTimer.None)
+        }
+    }
+
+    fun onSleepTimerEndOfEpisodeRequested() {
+        viewModelScope.launch {
+            settings.setSleepTimer(SleepTimer.EndOfEpisode)
+        }
+    }
+
+    fun onSleepTimerCustomRequested(minutes: Int) {
+        viewModelScope.launch {
+            settings.setSleepTimer(SleepTimer.Custom(clock.now().plus(minutes.minutes)))
         }
     }
 
@@ -210,8 +221,10 @@ class PlayerViewModel(
         if (currentSleepTimer !is SleepTimer.Custom) {
             return
         }
-        val newTime = currentSleepTimer.time.plus(2.minutes)
-        onSleepTimerRequested(SleepTimer.Custom(time = newTime))
+        val newTime = currentSleepTimer.time.plus(5.minutes)
+        viewModelScope.launch {
+            settings.setSleepTimer(SleepTimer.Custom(time = newTime))
+        }
     }
 
     fun onSleepTimerDecreaseRequested() {
@@ -220,12 +233,14 @@ class PlayerViewModel(
             return
         }
         val newTime =
-            if (currentSleepTimer.time.minus(2.minutes) < clock.now()) {
+            if (currentSleepTimer.time.minus(5.minutes) < clock.now()) {
                 clock.now()
             } else {
-                currentSleepTimer.time.minus(2.minutes)
+                currentSleepTimer.time.minus(5.minutes)
             }
-        onSleepTimerRequested(SleepTimer.Custom(time = newTime))
+        viewModelScope.launch {
+            settings.setSleepTimer(SleepTimer.Custom(time = newTime))
+        }
     }
 
     fun onFavoriteClicked() {

@@ -26,6 +26,7 @@
     <string name="ok">OK</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
+    <string name="close">Close</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>

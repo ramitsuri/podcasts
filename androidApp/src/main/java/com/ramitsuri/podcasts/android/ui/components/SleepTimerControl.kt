@@ -39,8 +39,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -118,7 +116,7 @@ private fun SleepTimerEndOfEpisode(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(text = sleepTimerDuration.formatted(), style = MaterialTheme.typography.displayLarge)
+        Text(text = sleepTimerDuration.formatted(), style = MaterialTheme.typography.displayMedium)
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             stringResource(R.string.player_sleep_timer_to_episode_completion),
@@ -164,7 +162,7 @@ private fun SleepTimerCustom(
                 Text(stringResource(R.string.player_sleep_timer_five_min), style = MaterialTheme.typography.bodySmall)
             }
             Spacer(modifier = Modifier.width(40.dp))
-            Text(text = sleepTimerDuration.formatted(), style = MaterialTheme.typography.displayLarge)
+            Text(text = sleepTimerDuration.formatted(), style = MaterialTheme.typography.displayMedium)
             Spacer(modifier = Modifier.width(40.dp))
             Column(
                 modifier = Modifier.clickable { onTimerIncrement() },
@@ -212,6 +210,10 @@ private fun SleepTimerNotSet(
         )
     }
 
+    LaunchedEffect(Unit) {
+        listState.animateScrollToItem(fromTimeToIndex(initialSelectedTime))
+    }
+
     val selectedIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
     LaunchedEffect(selectedIndex) {
         sleepTimerLabel = indexToTimeForDisplay(index = selectedIndex, unit = timeUnit)
@@ -256,12 +258,12 @@ private fun SleepTimerNotSet(
         Spacer(modifier = Modifier.height(8.dp))
         Box(
             modifier =
-                Modifier
-                    .onSizeChanged {
-                        padding = with(density) { (it.width / 2).toDp() }
-                        height = with(density) { it.height.toDp() }
-                    }
-                    .fillMaxWidth(),
+            Modifier
+                .onSizeChanged {
+                    padding = with(density) { (it.width / 2).toDp() }
+                    height = with(density) { it.height.toDp() }
+                }
+                .fillMaxWidth(),
         ) {
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
@@ -277,7 +279,6 @@ private fun SleepTimerNotSet(
                     )
                 }
             }
-            EdgeTransparency(modifier = Modifier.height(height))
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(
@@ -324,11 +325,11 @@ private fun TimerVerticalLineItem(
     ) {
         Box(
             modifier =
-                Modifier
-                    .padding(horizontal = 12.dp)
-                    .height(40.dp)
-                    .width(2.dp)
-                    .background(MaterialTheme.colorScheme.onBackground, shape = CircleShape),
+            Modifier
+                .padding(horizontal = 12.dp)
+                .height(40.dp)
+                .width(2.dp)
+                .background(MaterialTheme.colorScheme.onBackground, shape = CircleShape),
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
@@ -339,27 +340,6 @@ private fun TimerVerticalLineItem(
             textAlign = TextAlign.Center,
         )
     }
-}
-
-@Composable
-private fun EdgeTransparency(modifier: Modifier = Modifier) {
-    Box(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .background(
-                    Brush.horizontalGradient(
-                        listOf(
-                            MaterialTheme.colorScheme.surface,
-                            MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                            Color.Transparent,
-                            Color.Transparent,
-                            MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                            MaterialTheme.colorScheme.surface,
-                        ),
-                    ),
-                ),
-    )
 }
 
 private fun Duration.formatted(): String {
