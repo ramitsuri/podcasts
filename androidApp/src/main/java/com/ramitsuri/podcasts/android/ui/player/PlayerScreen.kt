@@ -102,19 +102,19 @@ fun PlayerScreen(
     val alphaNotExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 0f else 1f, label = "player visibility")
     Box(
         modifier =
-        modifier
-            .fillMaxWidth(),
+            modifier
+                .fillMaxWidth(),
         contentAlignment = Alignment.TopCenter,
     ) {
         if (!isExpanded) {
             if (state.hasEverBeenPlayed) {
                 PlayerScreenNotExpanded(
                     modifier =
-                    Modifier
-                        .onGloballyPositioned {
-                            onNotExpandedHeightKnown(it.size.height)
-                        }
-                        .alpha(alphaNotExpandedPlayer),
+                        Modifier
+                            .onGloballyPositioned {
+                                onNotExpandedHeightKnown(it.size.height)
+                            }
+                            .alpha(alphaNotExpandedPlayer),
                     episodeTitle = state.episodeTitle,
                     episodeArtwork = state.episodeArtworkUrl,
                     playingState = state.playingState,
@@ -128,9 +128,9 @@ fun PlayerScreen(
         if (state.hasEverBeenPlayed) {
             PlayerScreenExpanded(
                 modifier =
-                Modifier
-                    .padding(16.dp)
-                    .alpha(alphaExpandedPlayer),
+                    Modifier
+                        .padding(16.dp)
+                        .alpha(alphaExpandedPlayer),
                 isExpanded = isExpanded,
                 episodeTitle = state.episodeTitle,
                 episodeArtwork = state.episodeArtworkUrl,
@@ -279,14 +279,15 @@ fun SleepTimer(
     onCustomTimerSet: (Int) -> Unit,
     onHideSleepTimerControl: () -> Unit,
     onSleepTimerControlHeightKnown: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .onGloballyPositioned {
-                onSleepTimerControlHeightKnown(it.size.height)
-            }
-            .fillMaxWidth(),
+        modifier =
+            modifier
+                .onGloballyPositioned {
+                    onSleepTimerControlHeightKnown(it.size.height)
+                }
+                .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         SleepTimerControl(
@@ -351,28 +352,30 @@ private fun Player(
     onShowSleepControl: (Boolean) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .alpha(if (disableUI) 0.3f else 1f)
-            .offset(
-                y = with(LocalDensity.current) {
-                    (-yOffset).toDp()
-                },
-            ),
+        modifier =
+            Modifier
+                .alpha(if (disableUI) 0.3f else 1f)
+                .offset(
+                    y =
+                        with(LocalDensity.current) {
+                            (-yOffset).toDp()
+                        },
+                ),
     ) {
         Image(
             url = episodeArtwork,
             contentDescription = episodeTitle,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.medium)
-                .size(328.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.medium)
+                    .size(328.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onEpisodeTitleClicked),
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onEpisodeTitleClicked),
             horizontalArrangement = Arrangement.Center,
         ) {
             Text(
@@ -385,9 +388,9 @@ private fun Player(
         }
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onPodcastNameClicked),
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onPodcastNameClicked),
             horizontalArrangement = Arrangement.Center,
         ) {
             Text(
@@ -433,13 +436,10 @@ private fun Player(
             onShowSleepControl = onShowSleepControl,
         )
     }
-
 }
 
 @Composable
-private fun CloseButton(
-    onClick: () -> Unit,
-) {
+private fun CloseButton(onClick: () -> Unit) {
     TextButton(onClick = onClick) {
         Icon(
             imageVector = Icons.Outlined.Close,
@@ -699,9 +699,9 @@ fun SleepTimerControlButton(
                 Icon(
                     imageVector = Icons.Outlined.Nightlight,
                     modifier =
-                    Modifier
-                        .size(24.dp)
-                        .rotate(-30f),
+                        Modifier
+                            .size(24.dp)
+                            .rotate(-30f),
                     contentDescription = stringResource(id = R.string.player_sleep_timer),
                 )
             }
@@ -730,11 +730,11 @@ private fun Seekbar(
             textStart = playedDuration.formatted(),
             textEnd = if (remainingDuration != null) "-${remainingDuration.formatted()}" else "",
             squigglesSpec =
-            if (playing) {
-                SquigglySlider.SquigglesSpec()
-            } else {
-                SquigglySlider.SquigglesSpec(amplitude = 0.dp)
-            },
+                if (playing) {
+                    SquigglySlider.SquigglesSpec()
+                } else {
+                    SquigglySlider.SquigglesSpec(amplitude = 0.dp)
+                },
         )
     }
 }
@@ -773,24 +773,24 @@ private fun PlayerScreenNotExpanded(
     val view = LocalView.current
     Column(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClicked),
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClicked),
     ) {
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp, horizontal = 8.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
                 url = episodeArtwork,
                 contentDescription = episodeTitle,
                 modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.extraSmall)
-                    .size(40.dp),
+                    Modifier
+                        .clip(MaterialTheme.shapes.extraSmall)
+                        .size(40.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
@@ -872,13 +872,13 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
             PlayerScreen(
                 isExpanded = false,
                 state =
-                PlayerViewState(
-                    playingState = PlayingState.PLAYING,
-                    sleepTimer = SleepTimer.None,
-                    sleepTimerDuration = null,
-                    playbackSpeed = 1f,
-                    isCasting = false,
-                ),
+                    PlayerViewState(
+                        playingState = PlayingState.PLAYING,
+                        sleepTimer = SleepTimer.None,
+                        sleepTimerDuration = null,
+                        playbackSpeed = 1f,
+                        isCasting = false,
+                    ),
                 onNotExpandedHeightKnown = { },
                 onEpisodeTitleClicked = { },
                 onPodcastNameClicked = { },
@@ -913,13 +913,13 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
             PlayerScreen(
                 isExpanded = false,
                 state =
-                PlayerViewState(
-                    playingState = PlayingState.NOT_PLAYING,
-                    sleepTimer = SleepTimer.None,
-                    sleepTimerDuration = null,
-                    playbackSpeed = 1f,
-                    isCasting = false,
-                ),
+                    PlayerViewState(
+                        playingState = PlayingState.NOT_PLAYING,
+                        sleepTimer = SleepTimer.None,
+                        sleepTimerDuration = null,
+                        playbackSpeed = 1f,
+                        isCasting = false,
+                    ),
                 onNotExpandedHeightKnown = { },
                 onEpisodeTitleClicked = { },
                 onPodcastNameClicked = { },
@@ -954,13 +954,13 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
             PlayerScreen(
                 isExpanded = true,
                 state =
-                PlayerViewState(
-                    playingState = PlayingState.PLAYING,
-                    sleepTimer = SleepTimer.None,
-                    sleepTimerDuration = null,
-                    playbackSpeed = 1f,
-                    isCasting = false,
-                ),
+                    PlayerViewState(
+                        playingState = PlayingState.PLAYING,
+                        sleepTimer = SleepTimer.None,
+                        sleepTimerDuration = null,
+                        playbackSpeed = 1f,
+                        isCasting = false,
+                    ),
                 onNotExpandedHeightKnown = { },
                 onEpisodeTitleClicked = { },
                 onPodcastNameClicked = { },
@@ -994,13 +994,13 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
         PlayerScreen(
             isExpanded = true,
             state =
-            PlayerViewState(
-                playingState = PlayingState.NOT_PLAYING,
-                sleepTimer = SleepTimer.None,
-                sleepTimerDuration = null,
-                playbackSpeed = 1f,
-                isCasting = false,
-            ),
+                PlayerViewState(
+                    playingState = PlayingState.NOT_PLAYING,
+                    sleepTimer = SleepTimer.None,
+                    sleepTimerDuration = null,
+                    playbackSpeed = 1f,
+                    isCasting = false,
+                ),
             onNotExpandedHeightKnown = { },
             onEpisodeTitleClicked = { },
             onPodcastNameClicked = { },
