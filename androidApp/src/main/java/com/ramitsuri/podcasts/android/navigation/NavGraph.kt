@@ -206,8 +206,6 @@ fun NavGraph(
                             onSkipClicked = playerViewModel::onSkipRequested,
                             onSeekValueChange = playerViewModel::onSeekRequested,
                             onPlaybackSpeedSet = playerViewModel::onSpeedChangeRequested,
-                            onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
-                            onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
                             onToggleTrimSilence = playerViewModel::toggleTrimSilence,
                             onTimerDecrement = playerViewModel::onSleepTimerDecreaseRequested,
                             onTimerIncrement = playerViewModel::onSleepTimerIncreaseRequested,

@@ -197,6 +197,7 @@ private fun SleepTimerNotSet(
     val initialSelectedTime = 30 // In minutes
 
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = fromTimeToIndex(initialSelectedTime))
+    var initialScrollDone by remember { mutableStateOf(false) }
     val density = LocalDensity.current
     val view = LocalView.current
 
@@ -212,6 +213,7 @@ private fun SleepTimerNotSet(
 
     LaunchedEffect(Unit) {
         listState.animateScrollToItem(fromTimeToIndex(initialSelectedTime))
+        initialScrollDone = true
     }
 
     val selectedIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
@@ -219,21 +221,25 @@ private fun SleepTimerNotSet(
         sleepTimerLabel = indexToTimeForDisplay(index = selectedIndex, unit = timeUnit)
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(initialScrollDone) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .drop(1)
             .collect { index ->
                 when (index) {
                     0, listState.layoutInfo.totalItemsCount - 1 -> {
-                        view.performHapticFeedback(
-                            HapticFeedbackConstantsCompat.LONG_PRESS,
-                        )
+                             if (initialScrollDone) {
+                                 view.performHapticFeedback(
+                                     HapticFeedbackConstantsCompat.LONG_PRESS,
+                                 )
+                             }
                     }
 
                     else -> {
-                        view.performHapticFeedback(
-                            HapticFeedbackConstantsCompat.CLOCK_TICK,
-                        )
+                        if (initialScrollDone) {
+                            view.performHapticFeedback(
+                                HapticFeedbackConstantsCompat.CLOCK_TICK,
+                            )
+                        }
                     }
                 }
             }
