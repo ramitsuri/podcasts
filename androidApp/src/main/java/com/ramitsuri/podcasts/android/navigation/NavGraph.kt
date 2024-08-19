@@ -209,9 +209,11 @@ fun NavGraph(
                             onPlaybackSpeedIncrease = playerViewModel::onSpeedIncreaseRequested,
                             onPlaybackSpeedDecrease = playerViewModel::onSpeedDecreaseRequested,
                             onToggleTrimSilence = playerViewModel::toggleTrimSilence,
-                            onSleepTimer = playerViewModel::onSleepTimerRequested,
-                            onSleepTimerIncrease = playerViewModel::onSleepTimerIncreaseRequested,
-                            onSleepTimerDecrease = playerViewModel::onSleepTimerDecreaseRequested,
+                            onTimerDecrement = playerViewModel::onSleepTimerDecreaseRequested,
+                            onTimerIncrement = playerViewModel::onSleepTimerIncreaseRequested,
+                            onTimerCanceled = playerViewModel::onSleepTimerCancelRequested,
+                            onEndOfEpisodeTimerSet = playerViewModel::onSleepTimerEndOfEpisodeRequested,
+                            onCustomTimerSet = playerViewModel::onSleepTimerCustomRequested,
                             onNotExpandedPlayerClicked = {
                                 coroutineScope.launch {
                                     scaffoldSheetState.bottomSheetState.expand()

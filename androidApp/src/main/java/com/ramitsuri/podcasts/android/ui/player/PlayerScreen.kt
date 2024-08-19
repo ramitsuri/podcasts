@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.android.ui.player
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Replay10
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Nightlight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -37,7 +40,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,6 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -58,14 +64,13 @@ import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.Image
+import com.ramitsuri.podcasts.android.ui.components.SleepTimerControl
 import com.ramitsuri.podcasts.android.ui.components.SquigglySlider
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.PlayerViewState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
-import kotlinx.datetime.Clock
 import java.util.Locale
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
 
 @Composable
 fun PlayerScreen(
@@ -85,9 +90,11 @@ fun PlayerScreen(
     onPlaybackSpeedIncrease: () -> Unit,
     onPlaybackSpeedDecrease: () -> Unit,
     onToggleTrimSilence: () -> Unit,
-    onSleepTimer: (SleepTimer) -> Unit,
-    onSleepTimerIncrease: () -> Unit,
-    onSleepTimerDecrease: () -> Unit,
+    onEndOfEpisodeTimerSet: () -> Unit,
+    onCustomTimerSet: (Int) -> Unit,
+    onTimerCanceled: () -> Unit,
+    onTimerIncrement: () -> Unit,
+    onTimerDecrement: () -> Unit,
     onNotExpandedPlayerClicked: () -> Unit,
     onFavoriteClicked: () -> Unit,
     onNotFavoriteClicked: () -> Unit,
@@ -125,6 +132,7 @@ fun PlayerScreen(
                     Modifier
                         .padding(16.dp)
                         .alpha(alphaExpandedPlayer),
+                isExpanded = isExpanded,
                 episodeTitle = state.episodeTitle,
                 episodeArtwork = state.episodeArtworkUrl,
                 podcastName = state.podcastName,
@@ -150,9 +158,11 @@ fun PlayerScreen(
                 onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
                 onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
                 onToggleTrimSilence = onToggleTrimSilence,
-                onSleepTimer = onSleepTimer,
-                onSleepTimerIncrease = onSleepTimerIncrease,
-                onSleepTimerDecrease = onSleepTimerDecrease,
+                onEndOfEpisodeTimerSet = onEndOfEpisodeTimerSet,
+                onCustomTimerSet = onCustomTimerSet,
+                onTimerCanceled = onTimerCanceled,
+                onTimerIncrement = onTimerIncrement,
+                onTimerDecrement = onTimerDecrement,
                 onFavoriteClicked = onFavoriteClicked,
                 onNotFavoriteClicked = onNotFavoriteClicked,
             )
@@ -163,6 +173,7 @@ fun PlayerScreen(
 @Composable
 private fun PlayerScreenExpanded(
     modifier: Modifier = Modifier,
+    isExpanded: Boolean,
     episodeTitle: String,
     episodeArtwork: String,
     podcastName: String,
@@ -188,93 +199,272 @@ private fun PlayerScreenExpanded(
     onPlaybackSpeedIncrease: () -> Unit,
     onPlaybackSpeedDecrease: () -> Unit,
     onToggleTrimSilence: () -> Unit,
-    onSleepTimer: (SleepTimer) -> Unit,
-    onSleepTimerIncrease: () -> Unit,
-    onSleepTimerDecrease: () -> Unit,
+    onEndOfEpisodeTimerSet: () -> Unit,
+    onCustomTimerSet: (Int) -> Unit,
+    onTimerCanceled: () -> Unit,
+    onTimerIncrement: () -> Unit,
+    onTimerDecrement: () -> Unit,
     onFavoriteClicked: () -> Unit,
     onNotFavoriteClicked: () -> Unit,
 ) {
-    Column(
+    var showSleepTimerControl by remember { mutableStateOf(false) }
+    var sleepTimerControlHeight by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(isExpanded) {
+        if (!isExpanded) {
+            showSleepTimerControl = false
+        }
+    }
+    Box(
         modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        contentAlignment = Alignment.BottomCenter,
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        Image(
-            url = episodeArtwork,
-            contentDescription = episodeTitle,
-            modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.medium)
-                    .size(328.dp),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onEpisodeTitleClicked),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = episodeTitle,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(8.dp),
-                textAlign = TextAlign.Center,
-            )
-        }
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onPodcastNameClicked),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = podcastName,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(8.dp),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodySmall,
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Seekbar(
-            playing = playingState == PlayingState.PLAYING,
+        Player(
+            disableUI = showSleepTimerControl,
+            yOffset = if (showSleepTimerControl) sleepTimerControlHeight else 0,
+            episodeTitle = episodeTitle,
+            episodeArtwork = episodeArtwork,
+            podcastName = podcastName,
+            playingState = playingState,
             playedDuration = playedDuration,
             remainingDuration = remainingDuration,
             playProgress = playProgress,
-            onSeekValueChange = onSeekValueChange,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        MainControls(
-            playingState = playingState,
+            sleepTimer = sleepTimer,
+            sleepTimerDuration = sleepTimerDuration,
+            playbackSpeed = playbackSpeed,
+            trimSilence = trimSilence,
+            isCasting = isCasting,
             isFavorite = isFavorite,
+            onEpisodeTitleClicked = onEpisodeTitleClicked,
+            onPodcastNameClicked = onPodcastNameClicked,
             onGoToQueueClicked = onGoToQueueClicked,
             onReplayClicked = onReplayClicked,
             onPauseClicked = onPauseClicked,
             onPlayClicked = onPlayClicked,
             onSkipClicked = onSkipClicked,
-            onFavoriteClicked = onFavoriteClicked,
-            onNotFavoriteClicked = onNotFavoriteClicked,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        SecondaryControls(
-            playbackSpeed = playbackSpeed,
-            trimSilence = trimSilence,
-            sleepTimer = sleepTimer,
-            sleepTimerDuration = sleepTimerDuration,
-            isCasting = isCasting,
+            onSeekValueChange = onSeekValueChange,
             onPlaybackSpeedSet = onPlaybackSpeedSet,
             onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
             onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
             onToggleTrimSilence = onToggleTrimSilence,
-            onSleepTimer = onSleepTimer,
-            onSleepTimerIncrease = onSleepTimerIncrease,
-            onSleepTimerDecrease = onSleepTimerDecrease,
+            onFavoriteClicked = onFavoriteClicked,
+            onNotFavoriteClicked = onNotFavoriteClicked,
+            onShowSleepControl = { showSleepTimerControl = it },
+        )
+        if (showSleepTimerControl) {
+            SleepTimer(
+                sleepTimer = sleepTimer,
+                sleepTimerDuration = sleepTimerDuration,
+                onTimerDecrement = onTimerDecrement,
+                onTimerIncrement = onTimerIncrement,
+                onTimerCanceled = onTimerCanceled,
+                onEndOfEpisodeTimerSet = onEndOfEpisodeTimerSet,
+                onCustomTimerSet = onCustomTimerSet,
+                onHideSleepTimerControl = { showSleepTimerControl = false },
+                onSleepTimerControlHeightKnown = { sleepTimerControlHeight = it },
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+fun SleepTimer(
+    sleepTimer: SleepTimer,
+    sleepTimerDuration: Duration?,
+    onTimerDecrement: () -> Unit,
+    onTimerIncrement: () -> Unit,
+    onTimerCanceled: () -> Unit,
+    onEndOfEpisodeTimerSet: () -> Unit,
+    onCustomTimerSet: (Int) -> Unit,
+    onHideSleepTimerControl: () -> Unit,
+    onSleepTimerControlHeightKnown: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier =
+            modifier
+                .onGloballyPositioned {
+                    onSleepTimerControlHeightKnown(it.size.height)
+                }
+                .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        SleepTimerControl(
+            sleepTimer = sleepTimer,
+            sleepTimerDuration = sleepTimerDuration,
+            onEndOfEpisodeTimerSet = {
+                onEndOfEpisodeTimerSet()
+                onHideSleepTimerControl()
+            },
+            onTimerCanceled = {
+                onTimerCanceled()
+                onHideSleepTimerControl()
+            },
+            onTimerDecrement = {
+                onTimerDecrement()
+            },
+            onTimerIncrement = {
+                onTimerIncrement()
+            },
+            onCustomTimerSet = {
+                onCustomTimerSet(it)
+                onHideSleepTimerControl()
+            },
         )
         Spacer(modifier = Modifier.height(16.dp))
+        CloseButton(onClick = { onHideSleepTimerControl() })
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun Player(
+    disableUI: Boolean,
+    yOffset: Int,
+    episodeTitle: String,
+    episodeArtwork: String,
+    podcastName: String,
+    playingState: PlayingState,
+    playedDuration: Duration,
+    remainingDuration: Duration?,
+    playProgress: Float,
+    sleepTimer: SleepTimer,
+    sleepTimerDuration: Duration?,
+    playbackSpeed: Float,
+    trimSilence: Boolean,
+    isCasting: Boolean,
+    isFavorite: Boolean,
+    onEpisodeTitleClicked: () -> Unit,
+    onPodcastNameClicked: () -> Unit,
+    onGoToQueueClicked: () -> Unit,
+    onReplayClicked: () -> Unit,
+    onPauseClicked: () -> Unit,
+    onPlayClicked: () -> Unit,
+    onSkipClicked: () -> Unit,
+    onSeekValueChange: (Float) -> Unit,
+    onPlaybackSpeedSet: (Float) -> Unit,
+    onPlaybackSpeedIncrease: () -> Unit,
+    onPlaybackSpeedDecrease: () -> Unit,
+    onToggleTrimSilence: () -> Unit,
+    onFavoriteClicked: () -> Unit,
+    onNotFavoriteClicked: () -> Unit,
+    onShowSleepControl: (Boolean) -> Unit,
+) {
+    Box {
+        Column(
+            modifier =
+                Modifier
+                    .alpha(if (disableUI) 0.3f else 1f)
+                    .offset(
+                        y =
+                            with(LocalDensity.current) {
+                                (-yOffset).toDp()
+                            },
+                    ),
+        ) {
+            Image(
+                url = episodeArtwork,
+                contentDescription = episodeTitle,
+                modifier =
+                    Modifier
+                        .clip(MaterialTheme.shapes.medium)
+                        .size(328.dp),
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onEpisodeTitleClicked),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = episodeTitle,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(8.dp),
+                    textAlign = TextAlign.Center,
+                )
+            }
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onPodcastNameClicked),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = podcastName,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(8.dp),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Seekbar(
+                playing = playingState == PlayingState.PLAYING,
+                playedDuration = playedDuration,
+                remainingDuration = remainingDuration,
+                playProgress = playProgress,
+                onSeekValueChange = onSeekValueChange,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            MainControls(
+                playingState = playingState,
+                isFavorite = isFavorite,
+                onGoToQueueClicked = onGoToQueueClicked,
+                onReplayClicked = onReplayClicked,
+                onPauseClicked = onPauseClicked,
+                onPlayClicked = onPlayClicked,
+                onSkipClicked = onSkipClicked,
+                onFavoriteClicked = onFavoriteClicked,
+                onNotFavoriteClicked = onNotFavoriteClicked,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            SecondaryControls(
+                playbackSpeed = playbackSpeed,
+                trimSilence = trimSilence,
+                sleepTimer = sleepTimer,
+                sleepTimerDuration = sleepTimerDuration,
+                isCasting = isCasting,
+                onPlaybackSpeedSet = onPlaybackSpeedSet,
+                onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
+                onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
+                onToggleTrimSilence = onToggleTrimSilence,
+                onShowSleepControl = onShowSleepControl,
+            )
+        }
+        if (disableUI) {
+            val interactionSource = remember { MutableInteractionSource() }
+            Box(
+                modifier =
+                    Modifier
+                        .offset(
+                            y =
+                                with(LocalDensity.current) {
+                                    (-yOffset).toDp()
+                                },
+                        )
+                        .matchParentSize()
+                        .clickable(interactionSource = interactionSource, indication = null) { },
+            )
+        }
+    }
+}
+
+@Composable
+private fun CloseButton(onClick: () -> Unit) {
+    TextButton(onClick = onClick) {
+        Icon(
+            imageVector = Icons.Outlined.Close,
+            contentDescription = null,
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = stringResource(R.string.close))
     }
 }
 
@@ -376,6 +566,7 @@ private fun MainControls(
 
 @Composable
 private fun SecondaryControls(
+    modifier: Modifier = Modifier,
     playbackSpeed: Float,
     trimSilence: Boolean,
     sleepTimer: SleepTimer,
@@ -385,14 +576,11 @@ private fun SecondaryControls(
     onPlaybackSpeedIncrease: () -> Unit,
     onPlaybackSpeedDecrease: () -> Unit,
     onToggleTrimSilence: () -> Unit,
-    onSleepTimer: (SleepTimer) -> Unit,
-    onSleepTimerIncrease: () -> Unit,
-    onSleepTimerDecrease: () -> Unit,
+    onShowSleepControl: (Boolean) -> Unit,
 ) {
     var showSpeedControl by remember { mutableStateOf(false) }
-    var showSleepTimerControl by remember { mutableStateOf(false) }
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround,
     ) {
@@ -406,14 +594,12 @@ private fun SecondaryControls(
             onToggleTrimSilence = onToggleTrimSilence,
             onToggleMenu = { showSpeedControl = !showSpeedControl },
         )
-        SleepTimerControl(
+        SleepTimerControlButton(
             sleepTimer = sleepTimer,
             sleepTimerDuration = sleepTimerDuration,
-            showSleepTimerControl = showSleepTimerControl,
-            onSleepTimer = onSleepTimer,
-            onSleepTimerIncrease = onSleepTimerIncrease,
-            onSleepTimerDecrease = onSleepTimerDecrease,
-            onToggleMenu = { showSleepTimerControl = !showSleepTimerControl },
+            onToggleMenu = {
+                onShowSleepControl(true)
+            },
         )
 
         // TODO Hidden until implemented
@@ -520,13 +706,9 @@ fun SpeedControl(
 }
 
 @Composable
-fun SleepTimerControl(
+fun SleepTimerControlButton(
     sleepTimer: SleepTimer,
     sleepTimerDuration: Duration?,
-    showSleepTimerControl: Boolean,
-    onSleepTimer: (SleepTimer) -> Unit,
-    onSleepTimerIncrease: () -> Unit,
-    onSleepTimerDecrease: () -> Unit,
     onToggleMenu: () -> Unit,
 ) {
     Box {
@@ -544,64 +726,6 @@ fun SleepTimerControl(
         } else if (sleepTimerDuration != null) {
             TextButton(onClick = { onToggleMenu() }) {
                 Text(text = sleepTimerDuration.formatted())
-            }
-        }
-        DropdownMenu(
-            expanded = showSleepTimerControl,
-            onDismissRequest = onToggleMenu,
-        ) {
-            when (sleepTimer) {
-                is SleepTimer.None -> {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(id = R.string.player_sleep_timer_15_min)) },
-                        onClick = {
-                            onToggleMenu()
-                            onSleepTimer(SleepTimer.Custom(Clock.System.now().plus(15.minutes)))
-                        },
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(id = R.string.player_sleep_timer_30_min)) },
-                        onClick = {
-                            onToggleMenu()
-                            onSleepTimer(SleepTimer.Custom(Clock.System.now().plus(30.minutes)))
-                        },
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(id = R.string.player_sleep_timer_episode_end)) },
-                        onClick = {
-                            onToggleMenu()
-                            onSleepTimer(SleepTimer.EndOfEpisode)
-                        },
-                    )
-                }
-
-                SleepTimer.EndOfEpisode -> {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(id = R.string.cancel)) },
-                        onClick = {
-                            onToggleMenu()
-                            onSleepTimer(SleepTimer.None)
-                        },
-                    )
-                }
-
-                else -> {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(id = R.string.player_sleep_timer_decrease)) },
-                        onClick = onSleepTimerDecrease,
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(id = R.string.player_sleep_timer_increase)) },
-                        onClick = onSleepTimerIncrease,
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(id = R.string.cancel)) },
-                        onClick = {
-                            onToggleMenu()
-                            onSleepTimer(SleepTimer.None)
-                        },
-                    )
-                }
             }
         }
     }
@@ -786,9 +910,11 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
                 onPlaybackSpeedIncrease = { },
                 onPlaybackSpeedDecrease = { },
                 onToggleTrimSilence = { },
-                onSleepTimer = { },
-                onSleepTimerIncrease = { },
-                onSleepTimerDecrease = { },
+                onTimerDecrement = { },
+                onTimerIncrement = { },
+                onTimerCanceled = { },
+                onEndOfEpisodeTimerSet = { },
+                onCustomTimerSet = { },
                 onNotExpandedPlayerClicked = { },
                 onFavoriteClicked = { },
                 onNotFavoriteClicked = { },
@@ -825,9 +951,11 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
                 onPlaybackSpeedIncrease = { },
                 onPlaybackSpeedDecrease = { },
                 onToggleTrimSilence = { },
-                onSleepTimer = { },
-                onSleepTimerIncrease = { },
-                onSleepTimerDecrease = { },
+                onTimerDecrement = { },
+                onTimerIncrement = { },
+                onTimerCanceled = { },
+                onEndOfEpisodeTimerSet = { },
+                onCustomTimerSet = { },
                 onNotExpandedPlayerClicked = { },
                 onFavoriteClicked = { },
                 onNotFavoriteClicked = { },
@@ -864,9 +992,11 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
                 onPlaybackSpeedIncrease = { },
                 onPlaybackSpeedDecrease = { },
                 onToggleTrimSilence = { },
-                onSleepTimer = { },
-                onSleepTimerIncrease = { },
-                onSleepTimerDecrease = { },
+                onTimerDecrement = { },
+                onTimerIncrement = { },
+                onTimerCanceled = { },
+                onEndOfEpisodeTimerSet = { },
+                onCustomTimerSet = { },
                 onNotExpandedPlayerClicked = { },
                 onFavoriteClicked = { },
                 onNotFavoriteClicked = { },
@@ -902,9 +1032,11 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
             onPlaybackSpeedIncrease = { },
             onPlaybackSpeedDecrease = { },
             onToggleTrimSilence = { },
-            onSleepTimer = { },
-            onSleepTimerIncrease = { },
-            onSleepTimerDecrease = { },
+            onTimerDecrement = { },
+            onTimerIncrement = { },
+            onTimerCanceled = { },
+            onEndOfEpisodeTimerSet = { },
+            onCustomTimerSet = { },
             onNotExpandedPlayerClicked = { },
             onFavoriteClicked = { },
             onNotFavoriteClicked = { },
