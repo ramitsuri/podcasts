@@ -219,13 +219,14 @@ private fun PlayerScreenExpanded(
         Spacer(modifier = Modifier.height(16.dp))
         Player(
             disableUI = showSleepTimerControl || showSpeedControl,
-            yOffset = if (showSleepTimerControl) {
-                sleepTimerControlHeight
-            } else if (showSpeedControl) {
-                speedControlHeight
-            } else {
-                0
-            },
+            yOffset =
+                if (showSleepTimerControl) {
+                    sleepTimerControlHeight
+                } else if (showSpeedControl) {
+                    speedControlHeight
+                } else {
+                    0
+                },
             episodeTitle = episodeTitle,
             episodeArtwork = episodeArtwork,
             podcastName = podcastName,
@@ -286,15 +287,15 @@ private fun Speed(
     onTrimSilence: () -> Unit,
     onHideSpeedControl: () -> Unit,
     onSpeedControlHeightKnown: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier =
-        modifier
-            .onGloballyPositioned {
-                onSpeedControlHeightKnown(it.size.height)
-            }
-            .fillMaxWidth(),
+            modifier
+                .onGloballyPositioned {
+                    onSpeedControlHeightKnown(it.size.height)
+                }
+                .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         SpeedControl(
@@ -400,7 +401,7 @@ private fun Player(
                                 (-yOffset).toDp()
                             },
                     ),
-                horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
                 url = episodeArtwork,

@@ -227,11 +227,11 @@ private fun SleepTimerNotSet(
             .collect { index ->
                 when (index) {
                     0, listState.layoutInfo.totalItemsCount - 1 -> {
-                             if (initialScrollDone) {
-                                 view.performHapticFeedback(
-                                     HapticFeedbackConstantsCompat.LONG_PRESS,
-                                 )
-                             }
+                        if (initialScrollDone) {
+                            view.performHapticFeedback(
+                                HapticFeedbackConstantsCompat.LONG_PRESS,
+                            )
+                        }
                     }
 
                     else -> {
