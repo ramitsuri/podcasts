@@ -444,9 +444,10 @@ private fun Player(
                 modifier =
                     Modifier
                         .offset(
-                            y = with(LocalDensity.current) {
-                                (-yOffset).toDp()
-                            },
+                            y =
+                                with(LocalDensity.current) {
+                                    (-yOffset).toDp()
+                                },
                         )
                         .matchParentSize()
                         .clickable(interactionSource = interactionSource, indication = null) { },
