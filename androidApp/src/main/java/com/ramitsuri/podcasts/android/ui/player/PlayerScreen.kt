@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.android.ui.player
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -351,90 +352,106 @@ private fun Player(
     onNotFavoriteClicked: () -> Unit,
     onShowSleepControl: (Boolean) -> Unit,
 ) {
-    Column(
-        modifier =
-            Modifier
-                .alpha(if (disableUI) 0.3f else 1f)
-                .offset(
-                    y =
-                        with(LocalDensity.current) {
-                            (-yOffset).toDp()
-                        },
-                ),
-    ) {
-        Image(
-            url = episodeArtwork,
-            contentDescription = episodeTitle,
+    Box {
+        Column(
             modifier =
                 Modifier
-                    .clip(MaterialTheme.shapes.medium)
-                    .size(328.dp),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onEpisodeTitleClicked),
-            horizontalArrangement = Arrangement.Center,
+                    .alpha(if (disableUI) 0.3f else 1f)
+                    .offset(
+                        y =
+                            with(LocalDensity.current) {
+                                (-yOffset).toDp()
+                            },
+                    ),
         ) {
-            Text(
-                text = episodeTitle,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(8.dp),
-                textAlign = TextAlign.Center,
+            Image(
+                url = episodeArtwork,
+                contentDescription = episodeTitle,
+                modifier =
+                    Modifier
+                        .clip(MaterialTheme.shapes.medium)
+                        .size(328.dp),
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onEpisodeTitleClicked),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = episodeTitle,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(8.dp),
+                    textAlign = TextAlign.Center,
+                )
+            }
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onPodcastNameClicked),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = podcastName,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(8.dp),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Seekbar(
+                playing = playingState == PlayingState.PLAYING,
+                playedDuration = playedDuration,
+                remainingDuration = remainingDuration,
+                playProgress = playProgress,
+                onSeekValueChange = onSeekValueChange,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            MainControls(
+                playingState = playingState,
+                isFavorite = isFavorite,
+                onGoToQueueClicked = onGoToQueueClicked,
+                onReplayClicked = onReplayClicked,
+                onPauseClicked = onPauseClicked,
+                onPlayClicked = onPlayClicked,
+                onSkipClicked = onSkipClicked,
+                onFavoriteClicked = onFavoriteClicked,
+                onNotFavoriteClicked = onNotFavoriteClicked,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            SecondaryControls(
+                playbackSpeed = playbackSpeed,
+                trimSilence = trimSilence,
+                sleepTimer = sleepTimer,
+                sleepTimerDuration = sleepTimerDuration,
+                isCasting = isCasting,
+                onPlaybackSpeedSet = onPlaybackSpeedSet,
+                onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
+                onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
+                onToggleTrimSilence = onToggleTrimSilence,
+                onShowSleepControl = onShowSleepControl,
             )
         }
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onPodcastNameClicked),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = podcastName,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(8.dp),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodySmall,
+        if (disableUI) {
+            val interactionSource = remember { MutableInteractionSource() }
+            Box(
+                modifier =
+                    Modifier
+                        .offset(
+                            y = with(LocalDensity.current) {
+                                (-yOffset).toDp()
+                            },
+                        )
+                        .matchParentSize()
+                        .clickable(interactionSource = interactionSource, indication = null) { },
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Seekbar(
-            playing = playingState == PlayingState.PLAYING,
-            playedDuration = playedDuration,
-            remainingDuration = remainingDuration,
-            playProgress = playProgress,
-            onSeekValueChange = onSeekValueChange,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        MainControls(
-            playingState = playingState,
-            isFavorite = isFavorite,
-            onGoToQueueClicked = onGoToQueueClicked,
-            onReplayClicked = onReplayClicked,
-            onPauseClicked = onPauseClicked,
-            onPlayClicked = onPlayClicked,
-            onSkipClicked = onSkipClicked,
-            onFavoriteClicked = onFavoriteClicked,
-            onNotFavoriteClicked = onNotFavoriteClicked,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        SecondaryControls(
-            playbackSpeed = playbackSpeed,
-            trimSilence = trimSilence,
-            sleepTimer = sleepTimer,
-            sleepTimerDuration = sleepTimerDuration,
-            isCasting = isCasting,
-            onPlaybackSpeedSet = onPlaybackSpeedSet,
-            onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
-            onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
-            onToggleTrimSilence = onToggleTrimSilence,
-            onShowSleepControl = onShowSleepControl,
-        )
     }
 }
 
