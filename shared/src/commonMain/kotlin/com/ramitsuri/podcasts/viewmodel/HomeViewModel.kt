@@ -43,7 +43,7 @@ class HomeViewModel internal constructor(
                             null
                         }
                     HomeViewState(
-                        subscribedPodcasts = subscribedPodcasts,
+                        subscribedPodcasts = subscribedPodcasts.take(10),
                         episodes = subscribedEpisodes,
                         currentlyPlayingEpisodeId = currentlyPlaying?.id,
                         currentlyPlayingEpisodeState = playingState,

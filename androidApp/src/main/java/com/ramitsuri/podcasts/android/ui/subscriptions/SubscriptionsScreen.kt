@@ -60,8 +60,6 @@ fun SubscriptionsScreen(
         )
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 112.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier =
                 Modifier
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -108,7 +106,7 @@ private fun SubscribedPodcastItem(
             modifier =
                 Modifier
                     .clip(MaterialTheme.shapes.small)
-                    .size(128.dp),
+                    .size(112.dp),
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
