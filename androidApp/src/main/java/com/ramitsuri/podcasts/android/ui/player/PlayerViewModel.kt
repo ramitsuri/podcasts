@@ -74,7 +74,7 @@ class PlayerViewModel(
                         _state.update {
                             it.copy(
                                 episode = episode,
-                                playbackSpeed = speed,
+                                playbackSpeed = speed.times(10).roundToInt(),
                                 sleepTimer = sleepTimer,
                                 isCasting = false,
                                 trimSilence = trimSilence,
@@ -162,30 +162,17 @@ class PlayerViewModel(
             }
     }
 
-    fun onSpeedChangeRequested(speed: Float) {
+    // Speed is 10x the actual value so that it can be represented as integer
+    fun onSpeedChangeRequested(speed: Int) {
         longLivingScope.launch {
             val rounded =
                 speed
-                    .times(1000)
-                    .roundToInt()
-                    .div(1000f)
+                    .div(10f)
                     .coerceIn(0.1f, 3.0f)
             settings.setPlaybackSpeed(rounded)
-            _state.update { it.copy(playbackSpeed = rounded) }
+            _state.update { it.copy(playbackSpeed = speed) }
             // Updated on the player via MediaSessionService
         }
-    }
-
-    fun onSpeedIncreaseRequested() {
-        val currentSpeed = _state.value.playbackSpeed
-        val newSpeed = currentSpeed.plus(0.1f)
-        onSpeedChangeRequested(newSpeed)
-    }
-
-    fun onSpeedDecreaseRequested() {
-        val currentSpeed = _state.value.playbackSpeed
-        val newSpeed = currentSpeed.minus(0.1f)
-        onSpeedChangeRequested(newSpeed)
     }
 
     fun toggleTrimSilence() {

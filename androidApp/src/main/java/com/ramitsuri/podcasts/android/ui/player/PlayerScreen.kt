@@ -30,8 +30,6 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Nightlight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -65,6 +63,7 @@ import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.Image
 import com.ramitsuri.podcasts.android.ui.components.SleepTimerControl
+import com.ramitsuri.podcasts.android.ui.components.SpeedControl
 import com.ramitsuri.podcasts.android.ui.components.SquigglySlider
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.PlayerViewState
@@ -86,9 +85,7 @@ fun PlayerScreen(
     onPlayClicked: () -> Unit,
     onSkipClicked: () -> Unit,
     onSeekValueChange: (Float) -> Unit,
-    onPlaybackSpeedSet: (Float) -> Unit,
-    onPlaybackSpeedIncrease: () -> Unit,
-    onPlaybackSpeedDecrease: () -> Unit,
+    onPlaybackSpeedSet: (Int) -> Unit,
     onToggleTrimSilence: () -> Unit,
     onEndOfEpisodeTimerSet: () -> Unit,
     onCustomTimerSet: (Int) -> Unit,
@@ -155,8 +152,6 @@ fun PlayerScreen(
                 onSkipClicked = onSkipClicked,
                 onSeekValueChange = onSeekValueChange,
                 onPlaybackSpeedSet = onPlaybackSpeedSet,
-                onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
-                onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
                 onToggleTrimSilence = onToggleTrimSilence,
                 onEndOfEpisodeTimerSet = onEndOfEpisodeTimerSet,
                 onCustomTimerSet = onCustomTimerSet,
@@ -183,7 +178,7 @@ private fun PlayerScreenExpanded(
     playProgress: Float,
     sleepTimer: SleepTimer,
     sleepTimerDuration: Duration?,
-    playbackSpeed: Float,
+    playbackSpeed: Int,
     trimSilence: Boolean,
     isCasting: Boolean,
     isFavorite: Boolean,
@@ -195,9 +190,7 @@ private fun PlayerScreenExpanded(
     onPlayClicked: () -> Unit,
     onSkipClicked: () -> Unit,
     onSeekValueChange: (Float) -> Unit,
-    onPlaybackSpeedSet: (Float) -> Unit,
-    onPlaybackSpeedIncrease: () -> Unit,
-    onPlaybackSpeedDecrease: () -> Unit,
+    onPlaybackSpeedSet: (Int) -> Unit,
     onToggleTrimSilence: () -> Unit,
     onEndOfEpisodeTimerSet: () -> Unit,
     onCustomTimerSet: (Int) -> Unit,
@@ -210,9 +203,13 @@ private fun PlayerScreenExpanded(
     var showSleepTimerControl by remember { mutableStateOf(false) }
     var sleepTimerControlHeight by remember { mutableIntStateOf(0) }
 
+    var showSpeedControl by remember { mutableStateOf(false) }
+    var speedControlHeight by remember { mutableIntStateOf(0) }
+
     LaunchedEffect(isExpanded) {
         if (!isExpanded) {
             showSleepTimerControl = false
+            showSpeedControl = false
         }
     }
     Box(
@@ -221,8 +218,15 @@ private fun PlayerScreenExpanded(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Player(
-            disableUI = showSleepTimerControl,
-            yOffset = if (showSleepTimerControl) sleepTimerControlHeight else 0,
+            disableUI = showSleepTimerControl || showSpeedControl,
+            yOffset =
+                if (showSleepTimerControl) {
+                    sleepTimerControlHeight
+                } else if (showSpeedControl) {
+                    speedControlHeight
+                } else {
+                    0
+                },
             episodeTitle = episodeTitle,
             episodeArtwork = episodeArtwork,
             podcastName = podcastName,
@@ -233,7 +237,6 @@ private fun PlayerScreenExpanded(
             sleepTimer = sleepTimer,
             sleepTimerDuration = sleepTimerDuration,
             playbackSpeed = playbackSpeed,
-            trimSilence = trimSilence,
             isCasting = isCasting,
             isFavorite = isFavorite,
             onEpisodeTitleClicked = onEpisodeTitleClicked,
@@ -244,13 +247,10 @@ private fun PlayerScreenExpanded(
             onPlayClicked = onPlayClicked,
             onSkipClicked = onSkipClicked,
             onSeekValueChange = onSeekValueChange,
-            onPlaybackSpeedSet = onPlaybackSpeedSet,
-            onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
-            onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
-            onToggleTrimSilence = onToggleTrimSilence,
             onFavoriteClicked = onFavoriteClicked,
             onNotFavoriteClicked = onNotFavoriteClicked,
             onShowSleepControl = { showSleepTimerControl = it },
+            onShowSpeedControl = { showSpeedControl = it },
         )
         if (showSleepTimerControl) {
             SleepTimer(
@@ -265,12 +265,53 @@ private fun PlayerScreenExpanded(
                 onSleepTimerControlHeightKnown = { sleepTimerControlHeight = it },
             )
         }
+        if (showSpeedControl) {
+            Speed(
+                speed = playbackSpeed,
+                trimSilence = trimSilence,
+                onSpeedSet = onPlaybackSpeedSet,
+                onTrimSilence = onToggleTrimSilence,
+                onHideSpeedControl = { showSpeedControl = false },
+                onSpeedControlHeightKnown = { speedControlHeight = it },
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
 @Composable
-fun SleepTimer(
+private fun Speed(
+    speed: Int,
+    trimSilence: Boolean,
+    onSpeedSet: (Int) -> Unit,
+    onTrimSilence: () -> Unit,
+    onHideSpeedControl: () -> Unit,
+    onSpeedControlHeightKnown: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier =
+            modifier
+                .onGloballyPositioned {
+                    onSpeedControlHeightKnown(it.size.height)
+                }
+                .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        SpeedControl(
+            selectedValue = speed,
+            trimSilence = trimSilence,
+            onSpeedSet = onSpeedSet,
+            onTrimSilence = onTrimSilence,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        CloseButton(onClick = { onHideSpeedControl() })
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun SleepTimer(
     sleepTimer: SleepTimer,
     sleepTimerDuration: Duration?,
     onTimerDecrement: () -> Unit,
@@ -332,8 +373,7 @@ private fun Player(
     playProgress: Float,
     sleepTimer: SleepTimer,
     sleepTimerDuration: Duration?,
-    playbackSpeed: Float,
-    trimSilence: Boolean,
+    playbackSpeed: Int,
     isCasting: Boolean,
     isFavorite: Boolean,
     onEpisodeTitleClicked: () -> Unit,
@@ -344,18 +384,16 @@ private fun Player(
     onPlayClicked: () -> Unit,
     onSkipClicked: () -> Unit,
     onSeekValueChange: (Float) -> Unit,
-    onPlaybackSpeedSet: (Float) -> Unit,
-    onPlaybackSpeedIncrease: () -> Unit,
-    onPlaybackSpeedDecrease: () -> Unit,
-    onToggleTrimSilence: () -> Unit,
     onFavoriteClicked: () -> Unit,
     onNotFavoriteClicked: () -> Unit,
     onShowSleepControl: (Boolean) -> Unit,
+    onShowSpeedControl: (Boolean) -> Unit,
 ) {
     Box {
         Column(
             modifier =
                 Modifier
+                    .fillMaxWidth()
                     .alpha(if (disableUI) 0.3f else 1f)
                     .offset(
                         y =
@@ -363,6 +401,7 @@ private fun Player(
                                 (-yOffset).toDp()
                             },
                     ),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
                 url = episodeArtwork,
@@ -427,15 +466,11 @@ private fun Player(
             Spacer(modifier = Modifier.height(16.dp))
             SecondaryControls(
                 playbackSpeed = playbackSpeed,
-                trimSilence = trimSilence,
                 sleepTimer = sleepTimer,
                 sleepTimerDuration = sleepTimerDuration,
                 isCasting = isCasting,
-                onPlaybackSpeedSet = onPlaybackSpeedSet,
-                onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
-                onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
-                onToggleTrimSilence = onToggleTrimSilence,
                 onShowSleepControl = onShowSleepControl,
+                onShowSpeedControl = onShowSpeedControl,
             )
         }
         if (disableUI) {
@@ -567,32 +602,23 @@ private fun MainControls(
 @Composable
 private fun SecondaryControls(
     modifier: Modifier = Modifier,
-    playbackSpeed: Float,
-    trimSilence: Boolean,
+    playbackSpeed: Int,
     sleepTimer: SleepTimer,
     sleepTimerDuration: Duration?,
     isCasting: Boolean,
-    onPlaybackSpeedSet: (Float) -> Unit,
-    onPlaybackSpeedIncrease: () -> Unit,
-    onPlaybackSpeedDecrease: () -> Unit,
-    onToggleTrimSilence: () -> Unit,
+    onShowSpeedControl: (Boolean) -> Unit,
     onShowSleepControl: (Boolean) -> Unit,
 ) {
-    var showSpeedControl by remember { mutableStateOf(false) }
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround,
     ) {
-        SpeedControl(
+        SpeedControlButton(
             playbackSpeed = playbackSpeed,
-            trimSilence = trimSilence,
-            showPlaybackControl = showSpeedControl,
-            onPlaybackSpeedSetRequested = onPlaybackSpeedSet,
-            onPlaybackSpeedIncrease = onPlaybackSpeedIncrease,
-            onPlaybackSpeedDecrease = onPlaybackSpeedDecrease,
-            onToggleTrimSilence = onToggleTrimSilence,
-            onToggleMenu = { showSpeedControl = !showSpeedControl },
+            onToggleMenu = {
+                onShowSpeedControl(true)
+            },
         )
         SleepTimerControlButton(
             sleepTimer = sleepTimer,
@@ -634,73 +660,16 @@ private fun SecondaryControls(
 }
 
 @Composable
-fun SpeedControl(
-    playbackSpeed: Float,
-    trimSilence: Boolean,
-    showPlaybackControl: Boolean,
-    onPlaybackSpeedSetRequested: (Float) -> Unit,
-    onPlaybackSpeedIncrease: () -> Unit,
-    onPlaybackSpeedDecrease: () -> Unit,
+fun SpeedControlButton(
+    playbackSpeed: Int,
     onToggleMenu: () -> Unit,
-    onToggleTrimSilence: () -> Unit,
 ) {
     Box {
         TextButton(
             onClick = onToggleMenu,
             colors = ButtonDefaults.textButtonColors().copy(contentColor = MaterialTheme.colorScheme.onBackground),
         ) {
-            Text(text = "${playbackSpeed}x")
-        }
-        DropdownMenu(
-            expanded = showPlaybackControl,
-            onDismissRequest = onToggleMenu,
-        ) {
-            DropdownMenuItem(
-                text = { Text(stringResource(id = R.string.player_playback_speed_1x)) },
-                onClick = {
-                    onToggleMenu()
-                    onPlaybackSpeedSetRequested(1f)
-                },
-            )
-            DropdownMenuItem(
-                text = { Text(stringResource(id = R.string.player_playback_speed_1_5x)) },
-                onClick = {
-                    onToggleMenu()
-                    onPlaybackSpeedSetRequested(1.5f)
-                },
-            )
-            DropdownMenuItem(
-                text = { Text(stringResource(id = R.string.player_playback_speed_2x)) },
-                onClick = {
-                    onToggleMenu()
-                    onPlaybackSpeedSetRequested(2.0f)
-                },
-            )
-            DropdownMenuItem(
-                text = { Text(stringResource(id = R.string.player_playback_speed_increase)) },
-                onClick = onPlaybackSpeedIncrease,
-            )
-            DropdownMenuItem(
-                text = { Text(stringResource(id = R.string.player_playback_speed_decrease)) },
-                onClick = onPlaybackSpeedDecrease,
-            )
-            if (trimSilence) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(id = R.string.player_trim_silence_disable)) },
-                    onClick = {
-                        onToggleMenu()
-                        onToggleTrimSilence()
-                    },
-                )
-            } else {
-                DropdownMenuItem(
-                    text = { Text(stringResource(id = R.string.player_trim_silence_enable)) },
-                    onClick = {
-                        onToggleMenu()
-                        onToggleTrimSilence()
-                    },
-                )
-            }
+            Text(text = "${playbackSpeed.div(10)}.${playbackSpeed.mod(10)}x")
         }
     }
 }
@@ -894,7 +863,7 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
                         playingState = PlayingState.PLAYING,
                         sleepTimer = SleepTimer.None,
                         sleepTimerDuration = null,
-                        playbackSpeed = 1f,
+                        playbackSpeed = 10,
                         isCasting = false,
                     ),
                 onNotExpandedHeightKnown = { },
@@ -907,8 +876,6 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
                 onSkipClicked = { },
                 onSeekValueChange = { },
                 onPlaybackSpeedSet = { },
-                onPlaybackSpeedIncrease = { },
-                onPlaybackSpeedDecrease = { },
                 onToggleTrimSilence = { },
                 onTimerDecrement = { },
                 onTimerIncrement = { },
@@ -935,7 +902,7 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
                         playingState = PlayingState.NOT_PLAYING,
                         sleepTimer = SleepTimer.None,
                         sleepTimerDuration = null,
-                        playbackSpeed = 1f,
+                        playbackSpeed = 10,
                         isCasting = false,
                     ),
                 onNotExpandedHeightKnown = { },
@@ -948,8 +915,6 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
                 onSkipClicked = { },
                 onSeekValueChange = { },
                 onPlaybackSpeedSet = { },
-                onPlaybackSpeedIncrease = { },
-                onPlaybackSpeedDecrease = { },
                 onToggleTrimSilence = { },
                 onTimerDecrement = { },
                 onTimerIncrement = { },
@@ -976,7 +941,7 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
                         playingState = PlayingState.PLAYING,
                         sleepTimer = SleepTimer.None,
                         sleepTimerDuration = null,
-                        playbackSpeed = 1f,
+                        playbackSpeed = 10,
                         isCasting = false,
                     ),
                 onNotExpandedHeightKnown = { },
@@ -989,8 +954,6 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
                 onSkipClicked = { },
                 onSeekValueChange = { },
                 onPlaybackSpeedSet = { },
-                onPlaybackSpeedIncrease = { },
-                onPlaybackSpeedDecrease = { },
                 onToggleTrimSilence = { },
                 onTimerDecrement = { },
                 onTimerIncrement = { },
@@ -1016,7 +979,7 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
                     playingState = PlayingState.NOT_PLAYING,
                     sleepTimer = SleepTimer.None,
                     sleepTimerDuration = null,
-                    playbackSpeed = 1f,
+                    playbackSpeed = 10,
                     isCasting = false,
                 ),
             onNotExpandedHeightKnown = { },
@@ -1029,8 +992,6 @@ private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
             onSkipClicked = { },
             onSeekValueChange = { },
             onPlaybackSpeedSet = { },
-            onPlaybackSpeedIncrease = { },
-            onPlaybackSpeedDecrease = { },
             onToggleTrimSilence = { },
             onTimerDecrement = { },
             onTimerIncrement = { },

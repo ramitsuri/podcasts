@@ -44,8 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -73,6 +71,13 @@ fun SpeedControl(
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = fromIntSpeedToIndex(selectedValue))
+    var initialScrollDone by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        listState.animateScrollToItem(fromIntSpeedToIndex(selectedValue))
+        initialScrollDone = true
+    }
+
     var speedLabel by remember {
         mutableStateOf(
             indexToSpeedForDisplay(
@@ -105,6 +110,7 @@ fun SpeedControl(
         )
         Spacer(modifier = Modifier.height(8.dp))
         SpeedSlider(
+            provideHapticFeedback = initialScrollDone,
             listState = listState,
             onIndexSet = {
                 speedLabel = indexToSpeedForDisplay(it, showX = true)
@@ -165,6 +171,7 @@ fun SpeedControl(
 @Composable
 private fun SpeedSlider(
     modifier: Modifier = Modifier,
+    provideHapticFeedback: Boolean,
     listState: LazyListState,
     totalValues: Int = TOTAL_SPEED_ITEMS,
     onIndexSet: (Int) -> Unit,
@@ -177,21 +184,25 @@ private fun SpeedSlider(
         onIndexSet(selectedIndex)
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(provideHapticFeedback) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .drop(1)
             .collect { index ->
                 when (index) {
                     0, listState.layoutInfo.totalItemsCount - 1 -> {
-                        view.performHapticFeedback(
-                            HapticFeedbackConstantsCompat.LONG_PRESS,
-                        )
+                        if (provideHapticFeedback) {
+                            view.performHapticFeedback(
+                                HapticFeedbackConstantsCompat.LONG_PRESS,
+                            )
+                        }
                     }
 
                     else -> {
-                        view.performHapticFeedback(
-                            HapticFeedbackConstantsCompat.CLOCK_TICK,
-                        )
+                        if (provideHapticFeedback) {
+                            view.performHapticFeedback(
+                                HapticFeedbackConstantsCompat.CLOCK_TICK,
+                            )
+                        }
                     }
                 }
             }
@@ -223,7 +234,6 @@ private fun SpeedSlider(
                     )
                 }
             }
-            EdgeTransparency(modifier = Modifier.height(height))
         }
     }
 }
@@ -341,27 +351,6 @@ private fun SpeedVerticalLineItem(
             textAlign = TextAlign.Center,
         )
     }
-}
-
-@Composable
-private fun EdgeTransparency(modifier: Modifier = Modifier) {
-    Box(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .background(
-                    Brush.horizontalGradient(
-                        listOf(
-                            MaterialTheme.colorScheme.surface,
-                            MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                            Color.Transparent,
-                            Color.Transparent,
-                            MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                            MaterialTheme.colorScheme.surface,
-                        ),
-                    ),
-                ),
-    )
 }
 
 private const val TOTAL_SPEED_ITEMS = 26

@@ -10,7 +10,7 @@ data class PlayerViewState(
     val playingState: PlayingState = PlayingState.NOT_PLAYING,
     val sleepTimer: SleepTimer = SleepTimer.None,
     val sleepTimerDuration: Duration? = null,
-    val playbackSpeed: Float = 1f,
+    val playbackSpeed: Int = 10,
     val isCasting: Boolean = false,
     val trimSilence: Boolean = false,
     val tempPlayProgress: Float? = null,
