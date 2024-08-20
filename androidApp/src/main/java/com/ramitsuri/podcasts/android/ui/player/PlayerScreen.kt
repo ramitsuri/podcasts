@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.android.ui.player
 
+import android.content.Intent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Replay10
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Nightlight
 import androidx.compose.material3.ButtonDefaults
@@ -51,6 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -469,9 +472,12 @@ private fun Player(
                 sleepTimer = sleepTimer,
                 sleepTimerDuration = sleepTimerDuration,
                 isCasting = isCasting,
+                podcastName = podcastName,
+                episodeTitle = episodeTitle,
                 onShowSleepControl = onShowSleepControl,
                 onShowSpeedControl = onShowSpeedControl,
             )
+            Spacer(modifier = Modifier.height(16.dp))
         }
         if (disableUI) {
             val interactionSource = remember { MutableInteractionSource() }
@@ -606,6 +612,8 @@ private fun SecondaryControls(
     sleepTimer: SleepTimer,
     sleepTimerDuration: Duration?,
     isCasting: Boolean,
+    podcastName: String,
+    episodeTitle: String,
     onShowSpeedControl: (Boolean) -> Unit,
     onShowSleepControl: (Boolean) -> Unit,
 ) {
@@ -627,6 +635,7 @@ private fun SecondaryControls(
                 onShowSleepControl(true)
             },
         )
+        ShareButton(podcastName = podcastName, episodeTitle = episodeTitle)
 
         // TODO Hidden until implemented
         if (false) {
@@ -660,7 +669,30 @@ private fun SecondaryControls(
 }
 
 @Composable
-fun SpeedControlButton(
+private fun ShareButton(
+    podcastName: String,
+    episodeTitle: String,
+) {
+    val sendIntent =
+        Intent(Intent.ACTION_SEND).apply {
+            putExtra(Intent.EXTRA_TEXT, "$podcastName: $episodeTitle")
+            type = "text/plain"
+        }
+    val shareIntent = Intent.createChooser(sendIntent, null)
+    val context = LocalContext.current
+    IconButton(onClick = { context.startActivity(shareIntent) }) {
+        Icon(
+            imageVector = Icons.Filled.Share,
+            modifier =
+                Modifier
+                    .size(24.dp),
+            contentDescription = stringResource(id = R.string.episode_controller_share),
+        )
+    }
+}
+
+@Composable
+private fun SpeedControlButton(
     playbackSpeed: Int,
     onToggleMenu: () -> Unit,
 ) {
@@ -675,7 +707,7 @@ fun SpeedControlButton(
 }
 
 @Composable
-fun SleepTimerControlButton(
+private fun SleepTimerControlButton(
     sleepTimer: SleepTimer,
     sleepTimerDuration: Duration?,
     onToggleMenu: () -> Unit,
