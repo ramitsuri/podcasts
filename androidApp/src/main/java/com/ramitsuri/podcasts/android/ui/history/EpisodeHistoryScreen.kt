@@ -80,7 +80,7 @@ fun EpisodeHistoryScreen(
                 stickyHeader {
                     HeaderItem(text = dateFormatted(date))
                 }
-                items(items = episodes, key = { it.id }) {
+                items(items = episodes, key = { date.toString() + it.id }) {
                     ColoredHorizontalDivider()
                     EpisodeItem(
                         episode = it,
