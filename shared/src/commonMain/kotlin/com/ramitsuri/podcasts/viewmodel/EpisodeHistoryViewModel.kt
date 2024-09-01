@@ -1,6 +1,5 @@
 package com.ramitsuri.podcasts.viewmodel
 
-import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeHistory
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.EpisodeHistoryViewState
