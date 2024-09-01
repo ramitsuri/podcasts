@@ -41,13 +41,12 @@ class EpisodeHistoryViewModel internal constructor(
             initialValue = EpisodeHistoryViewState(),
         )
 
-    private fun List<EpisodeHistory>.groupedByDate(): Map<LocalDate, List<Episode>> {
+    private fun List<EpisodeHistory>.groupedByDate(): Map<LocalDate, List<EpisodeHistory>> {
         return groupBy { episodeHistory ->
             episodeHistory.time.toLocalDateTime(timeZone).date
         }.mapValues { (_, episodeHistories) ->
             episodeHistories
                 .sortedByDescending { it.time }
-                .map { it.episode }
         }
     }
 }

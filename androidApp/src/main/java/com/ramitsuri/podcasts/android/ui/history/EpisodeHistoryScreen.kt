@@ -80,28 +80,29 @@ fun EpisodeHistoryScreen(
                 stickyHeader {
                     HeaderItem(text = dateFormatted(date))
                 }
-                items(items = episodes, key = { date.toString() + it.id }) {
+                items(items = episodes, key = { date.toString() + it.episode.id + it.sessionId }) {
+                    val episode = it.episode
                     ColoredHorizontalDivider()
                     EpisodeItem(
-                        episode = it,
+                        episode = episode,
                         playingState =
-                            if (state.currentlyPlayingEpisodeId == it.id) {
+                            if (state.currentlyPlayingEpisodeId == episode.id) {
                                 state.currentlyPlayingEpisodeState
                             } else {
                                 PlayingState.NOT_PLAYING
                             },
-                        onClicked = { onEpisodeClicked(it.id) },
-                        onPlayClicked = { onEpisodePlayClicked(it) },
+                        onClicked = { onEpisodeClicked(episode.id) },
+                        onPlayClicked = { onEpisodePlayClicked(episode) },
                         onPauseClicked = onEpisodePauseClicked,
-                        onAddToQueueClicked = { onEpisodeAddToQueueClicked(it) },
-                        onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(it) },
-                        onDownloadClicked = { onEpisodeDownloadClicked(it) },
-                        onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(it) },
-                        onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(it) },
-                        onPlayedClicked = { onEpisodePlayedClicked(it.id) },
-                        onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
-                        onFavoriteClicked = { onEpisodeFavoriteClicked(it.id) },
-                        onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(it.id) },
+                        onAddToQueueClicked = { onEpisodeAddToQueueClicked(episode) },
+                        onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(episode) },
+                        onDownloadClicked = { onEpisodeDownloadClicked(episode) },
+                        onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(episode) },
+                        onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(episode) },
+                        onPlayedClicked = { onEpisodePlayedClicked(episode.id) },
+                        onNotPlayedClicked = { onEpisodeNotPlayedClicked(episode.id) },
+                        onFavoriteClicked = { onEpisodeFavoriteClicked(episode.id) },
+                        onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(episode.id) },
                     )
                 }
             }
