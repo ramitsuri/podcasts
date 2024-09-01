@@ -152,7 +152,7 @@ class SessionHistoryRepository internal constructor(
                 sessionActionEntities.mapNotNull { sessionActionEntity ->
                     episodesRepository.getEpisode(sessionActionEntity.episodeId)
                         ?.let { episode ->
-                            EpisodeHistory(episode, sessionActionEntity.time)
+                            EpisodeHistory(episode, sessionActionEntity.sessionId, sessionActionEntity.time)
                         }
                 }.mergeConsecutiveDuplicateEpisodes(timeZone)
             }
