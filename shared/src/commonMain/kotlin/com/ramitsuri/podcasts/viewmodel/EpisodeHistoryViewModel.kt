@@ -1,7 +1,9 @@
 package com.ramitsuri.podcasts.viewmodel
 
-import com.ramitsuri.podcasts.model.EpisodeHistory
+import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
+import com.ramitsuri.podcasts.model.SessionEpisode
+import com.ramitsuri.podcasts.model.ui.EpisodeHistory
 import com.ramitsuri.podcasts.model.ui.EpisodeHistoryViewState
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
@@ -23,29 +25,39 @@ class EpisodeHistoryViewModel internal constructor(
 ) : ViewModel(), EpisodeController by episodeController {
     val state =
         combine(
+            // getEpisodesUpdated is being observed so that updates to Episodes table can trigger updates here.
+            episodesRepository.getEpisodesUpdated(),
             repository.getEpisodeHistory(timeZone),
             episodesRepository.getCurrentEpisode(),
             settings.getPlayingStateFlow(),
-        ) { episodeHistories, currentlyPlayingEpisode, playingState ->
+        ) { _, episodeHistories, currentlyPlayingEpisode, playingState ->
             val currentlyPlaying =
                 if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
                     currentlyPlayingEpisode
                 } else {
                     null
                 }
-            EpisodeHistoryViewState(episodeHistories.groupedByDate(), currentlyPlaying?.id, playingState)
+            val episodes = episodesRepository.getEpisodes(episodeHistories.map { it.episodeId }.distinct())
+            EpisodeHistoryViewState(episodeHistories.groupedByDate(episodes), currentlyPlaying?.id, playingState)
         }.stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = EpisodeHistoryViewState(),
         )
 
-    private fun List<EpisodeHistory>.groupedByDate(): Map<LocalDate, List<EpisodeHistory>> {
-        return groupBy { episodeHistory ->
-            episodeHistory.time.toLocalDateTime(timeZone).date
-        }.mapValues { (_, episodeHistories) ->
-            episodeHistories
+    private fun List<SessionEpisode>.groupedByDate(episodes: List<Episode>): Map<LocalDate, List<EpisodeHistory>> {
+        return groupBy { sessionEpisode ->
+            sessionEpisode.time.toLocalDateTime(timeZone).date
+        }.mapValues { (_, sessionEpisodes) ->
+            sessionEpisodes
                 .sortedByDescending { it.time }
+                .map { sessionEpisode ->
+                    EpisodeHistory(
+                        episodes.first { it.id == sessionEpisode.episodeId },
+                        sessionEpisode.sessionId,
+                        sessionEpisode.time,
+                    )
+                }
         }
     }
 }

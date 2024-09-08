@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.database.dao
 import app.cash.sqldelight.Query
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.ramitsuri.podcasts.DbEpisode
 import com.ramitsuri.podcasts.EpisodeAdditionalInfoEntity
@@ -16,6 +17,7 @@ import com.ramitsuri.podcasts.model.EpisodeAndPodcastId
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -53,6 +55,22 @@ internal class EpisodesDaoImpl(
             )
             .asFlow()
             .mapToList(ioDispatcher)
+    }
+
+    override fun getEpisodesUpdatedFlow(): Flow<Unit> {
+        return episodeEntityQueries
+            .getUpdated()
+            .asFlow()
+            .mapToOne(ioDispatcher)
+            .map { }
+    }
+
+    override suspend fun getEpisodes(episodeIds: List<String>): List<DbEpisode> {
+        return withContext(ioDispatcher) {
+            episodeEntityQueries
+                .getEpisodes(episodeIds)
+                .executeAsList()
+        }
     }
 
     override fun getEpisodesForPodcastFlow(

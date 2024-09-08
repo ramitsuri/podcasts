@@ -175,9 +175,6 @@ private fun EpisodeItem(
         Spacer(modifier = Modifier.height(8.dp))
         EpisodeControls(
             episode = episode,
-            showDownloadButton = false,
-            showMenuButton = false,
-            showQueueButton = false,
             playingState = playingState,
             onPlayClicked = onPlayClicked,
             onPauseClicked = onPauseClicked,

@@ -4,8 +4,8 @@ import com.ramitsuri.podcasts.database.dao.interfaces.SessionActionDao
 import com.ramitsuri.podcasts.model.Action
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeAndPodcastId
-import com.ramitsuri.podcasts.model.EpisodeHistory
 import com.ramitsuri.podcasts.model.SessionAction
+import com.ramitsuri.podcasts.model.SessionEpisode
 import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,7 +17,6 @@ import kotlinx.datetime.toLocalDateTime
 
 class SessionHistoryRepository internal constructor(
     private val sessionActionDao: SessionActionDao,
-    private val episodesRepository: EpisodesRepository,
 ) {
     private val mutex = Mutex()
     private var previousEpisode: Episode? = null
@@ -145,15 +144,16 @@ class SessionHistoryRepository internal constructor(
         }
     }
 
-    fun getEpisodeHistory(timeZone: TimeZone): Flow<List<EpisodeHistory>> {
+    fun getEpisodeHistory(timeZone: TimeZone): Flow<List<SessionEpisode>> {
         return sessionActionDao
             .getSessionActionEntities()
             .map { sessionActionEntities ->
-                sessionActionEntities.mapNotNull { sessionActionEntity ->
-                    episodesRepository.getEpisode(sessionActionEntity.episodeId)
-                        ?.let { episode ->
-                            EpisodeHistory(episode, sessionActionEntity.sessionId, sessionActionEntity.time)
-                        }
+                sessionActionEntities.map { sessionActionEntity ->
+                    SessionEpisode(
+                        sessionActionEntity.episodeId,
+                        sessionActionEntity.sessionId,
+                        sessionActionEntity.time,
+                    )
                 }.mergeConsecutiveDuplicateEpisodes(timeZone)
             }
     }
@@ -169,13 +169,13 @@ class SessionHistoryRepository internal constructor(
         sessionActionDao.insert(action)
     }
 
-    private fun List<EpisodeHistory>.mergeConsecutiveDuplicateEpisodes(timeZone: TimeZone): List<EpisodeHistory> {
-        var previous: EpisodeHistory? = null
-        val merged = mutableListOf<EpisodeHistory>()
+    private fun List<SessionEpisode>.mergeConsecutiveDuplicateEpisodes(timeZone: TimeZone): List<SessionEpisode> {
+        var previous: SessionEpisode? = null
+        val merged = mutableListOf<SessionEpisode>()
         forEach { episodeHistory ->
             val previousEpisode = previous
             if (previousEpisode == null ||
-                previousEpisode.episode.id != episodeHistory.episode.id ||
+                previousEpisode.episodeId != episodeHistory.episodeId ||
                 previousEpisode.date(timeZone) != episodeHistory.date(timeZone)
             ) {
                 merged.add(episodeHistory)
@@ -185,7 +185,7 @@ class SessionHistoryRepository internal constructor(
         return merged
     }
 
-    private fun EpisodeHistory.date(timeZone: TimeZone): LocalDate {
+    private fun SessionEpisode.date(timeZone: TimeZone): LocalDate {
         return time.toLocalDateTime(timeZone).date
     }
 

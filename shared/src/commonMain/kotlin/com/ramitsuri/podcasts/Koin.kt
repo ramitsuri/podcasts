@@ -100,7 +100,6 @@ private val coreModule =
         single<SessionHistoryRepository> {
             SessionHistoryRepository(
                 sessionActionDao = get(),
-                episodesRepository = get(),
             )
         }
 
