@@ -61,7 +61,7 @@ class SessionHistoryRepositoryTest : BaseTest() {
             val history = getHistory()
 
             // Assert
-            assertEquals(listOf("P1-E1"), history.map { it.episode.id })
+            assertEquals(listOf("P1-E1"), history.map { it.episodeId })
         }
 
     @Test
@@ -76,7 +76,7 @@ class SessionHistoryRepositoryTest : BaseTest() {
             val history = getHistory()
 
             // Assert
-            assertEquals(listOf("P1-E1", "P1-E1"), history.map { it.episode.id })
+            assertEquals(listOf("P1-E1", "P1-E1"), history.map { it.episodeId })
         }
 
     @Test
@@ -92,7 +92,7 @@ class SessionHistoryRepositoryTest : BaseTest() {
             val history = getHistory()
 
             // Assert
-            assertEquals(listOf("P1-E1", "P1-E2", "P1-E1"), history.map { it.episode.id })
+            assertEquals(listOf("P1-E1", "P1-E2", "P1-E1"), history.map { it.episodeId })
         }
 
     private suspend fun insertSessionAction(
