@@ -112,3 +112,10 @@ getPodcastsThatHaveEpisodes:
 SELECT DISTINCT podcastId
 FROM dbEpisode
 WHERE podcastId IN :podcastIds;
+
+getUpdated:
+SELECT COUNT(*) AS count FROM dbEpisode;
+
+getEpisodes:
+SELECT * FROM dbEpisode
+WHERE id IN :episodeIds;

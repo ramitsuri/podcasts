@@ -85,6 +85,10 @@ class EpisodesRepository internal constructor(
             }
     }
 
+    fun getEpisodesUpdated() = episodesDao.getEpisodesUpdatedFlow()
+
+    suspend fun getEpisodes(episodeIds: List<String>) = episodesDao.getEpisodes(episodeIds).map { Episode(it) }
+
     fun getEpisodesForPodcastsFlow(
         podcastIds: List<Long>,
         page: Long,

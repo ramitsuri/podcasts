@@ -54,9 +54,6 @@ import com.ramitsuri.podcasts.model.PlayingState
 @Composable
 fun EpisodeControls(
     episode: Episode,
-    showQueueButton: Boolean = true,
-    showDownloadButton: Boolean = true,
-    showMenuButton: Boolean = true,
     playingState: PlayingState,
     onPlayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
@@ -98,38 +95,30 @@ fun EpisodeControls(
                 }
             },
         )
-        if (showQueueButton) {
-            QueueButton(
-                queuePosition = episode.queuePosition,
-                onAddToQueueClicked = onAddToQueueClicked,
-                onRemoveFromQueueClicked = onRemoveFromQueueClicked,
-            )
-        }
-
-        if (showDownloadButton) {
-            DownloadButton(
-                downloadStatus = episode.downloadStatus,
-                onDownloadClicked = onDownloadClicked,
-                onCancelDownloadClicked = onCancelDownloadClicked,
-                onRemoveDownloadClicked = onRemoveDownloadClicked,
-            )
-        }
-
-        if (showMenuButton) {
-            Spacer(modifier = Modifier.weight(1f))
-            EpisodeMenu(
-                showMenu = showMenu,
-                onToggleMenu = { showMenu = !showMenu },
-                episodeCompleted = episode.isCompleted,
-                podcastTitle = episode.podcastName,
-                episodeTitle = episode.title,
-                isFavorite = episode.isFavorite,
-                onFavoriteClicked = onFavoriteClicked,
-                onNotFavoriteClicked = onNotFavoriteClicked,
-                onPlayedClicked = onPlayedClicked,
-                onNotPlayedClicked = onNotPlayedClicked,
-            )
-        }
+        QueueButton(
+            queuePosition = episode.queuePosition,
+            onAddToQueueClicked = onAddToQueueClicked,
+            onRemoveFromQueueClicked = onRemoveFromQueueClicked,
+        )
+        DownloadButton(
+            downloadStatus = episode.downloadStatus,
+            onDownloadClicked = onDownloadClicked,
+            onCancelDownloadClicked = onCancelDownloadClicked,
+            onRemoveDownloadClicked = onRemoveDownloadClicked,
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        EpisodeMenu(
+            showMenu = showMenu,
+            onToggleMenu = { showMenu = !showMenu },
+            episodeCompleted = episode.isCompleted,
+            podcastTitle = episode.podcastName,
+            episodeTitle = episode.title,
+            isFavorite = episode.isFavorite,
+            onFavoriteClicked = onFavoriteClicked,
+            onNotFavoriteClicked = onNotFavoriteClicked,
+            onPlayedClicked = onPlayedClicked,
+            onNotPlayedClicked = onNotPlayedClicked,
+        )
     }
 }
 
