@@ -49,6 +49,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
@@ -487,6 +488,9 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         launchSuspend {
             currentlyPlayingEpisode.value?.let { currentEpisode ->
                 episodesRepository.markPlayed(currentEpisode.id)
+            }
+            if (settings.getSleepTimerFlow().first() == SleepTimer.EndOfEpisode) {
+                settings.setSleepTimer(SleepTimer.None)
             }
             onMediaEndedRunning.set(false)
         }
