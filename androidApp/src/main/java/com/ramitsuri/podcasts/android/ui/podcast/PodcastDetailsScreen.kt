@@ -24,18 +24,18 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.ArrowCircleDown
+import androidx.compose.material.icons.outlined.DoNotDisturbOn
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material3.Card
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -71,9 +71,12 @@ import com.ramitsuri.podcasts.android.BuildConfig
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.components.BottomSheetDialog
+import com.ramitsuri.podcasts.android.ui.components.BottomSheetDialogMenuItem
 import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.EpisodeControls
 import com.ramitsuri.podcasts.android.ui.components.Image
+import com.ramitsuri.podcasts.android.ui.components.SwitchState
 import com.ramitsuri.podcasts.android.ui.components.TopAppBar
 import com.ramitsuri.podcasts.android.ui.components.episode
 import com.ramitsuri.podcasts.android.ui.components.podcast
@@ -410,8 +413,8 @@ private fun EpisodesMenu(
                 tint = MaterialTheme.colorScheme.primary,
             )
         }
-        DropdownMenu(
-            expanded = showMenu,
+        BottomSheetDialog(
+            show = showMenu,
             onDismissRequest = onToggleMenu,
         ) {
             // Sort order
@@ -772,40 +775,28 @@ private fun SubscribeButton(
                 style = MaterialTheme.typography.bodySmall,
             )
         }
-        DropdownMenu(
-            expanded = showMenu,
+        BottomSheetDialog(
+            show = showMenu,
             onDismissRequest = { showMenu = !showMenu },
         ) {
-            DropdownMenuItem(
-                text = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Checkbox(checked = autoDownloadNewEpisodes, onCheckedChange = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(id = R.string.auto_download_new_episodes))
-                    }
-                },
+            BottomSheetDialogMenuItem(
+                icon = Icons.Outlined.ArrowCircleDown,
+                text = stringResource(id = R.string.auto_download_new_episodes),
+                switchState = SwitchState(autoDownloadNewEpisodes),
                 onClick = toggleAutoDownloadClicked,
             )
-            DropdownMenuItem(
-                text = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Checkbox(checked = autoAddToQueueNewEpisodes, onCheckedChange = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(id = R.string.auto_add_to_queue_new_episodes))
-                    }
-                },
+            ColoredHorizontalDivider()
+            BottomSheetDialogMenuItem(
+                icon = Icons.AutoMirrored.Default.PlaylistAdd,
+                text = stringResource(id = R.string.auto_add_to_queue_new_episodes),
+                switchState = SwitchState(autoAddToQueueNewEpisodes),
                 onClick = toggleAutoAddToQueueClicked,
             )
             if (subscribed) {
-                HorizontalDivider()
-                DropdownMenuItem(
-                    text = {
-                        Text(stringResource(id = R.string.unsubscribe))
-                    },
+                ColoredHorizontalDivider()
+                BottomSheetDialogMenuItem(
+                    icon = Icons.Outlined.DoNotDisturbOn,
+                    text = stringResource(id = R.string.unsubscribe),
                     onClick = {
                         showMenu = false
                         onUnsubscribeClicked()

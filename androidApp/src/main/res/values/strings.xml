@@ -158,8 +158,8 @@
     <string name="settings_view_source">View source</string>
 
     <!-- Podcast details -->
-    <string name="podcast_details_sort_by_publish_desc">Newest first</string>
-    <string name="podcast_details_sort_by_publish_asc">Oldest first</string>
+    <string name="podcast_details_sort_by_publish_desc">Show newest first</string>
+    <string name="podcast_details_sort_by_publish_asc">Show oldest first</string>
     <string name="podcast_details_select_all_episodes">Select all</string>
     <string name="podcast_details_unselect_all_episodes">Unselect all</string>
     <string name="podcast_details_mark_selected_as_played">Mark played</string>
