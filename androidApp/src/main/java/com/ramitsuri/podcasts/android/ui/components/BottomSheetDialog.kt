@@ -28,8 +28,9 @@ fun BottomSheetDialog(
             windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Bottom),
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth(),
             ) {
                 content()
                 Spacer(modifier = Modifier.height(16.dp).background(MaterialTheme.colorScheme.surface))

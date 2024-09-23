@@ -30,9 +30,9 @@ fun BottomSheetDialogMenuItem(
         text = {
             Row(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(imageVector = icon, contentDescription = null)
@@ -44,17 +44,17 @@ fun BottomSheetDialogMenuItem(
                         checked = it.checked,
                         onCheckedChange = null,
                         thumbContent =
-                        if (it.checked) {
-                            {
-                                Icon(
-                                    imageVector = Icons.Filled.Check,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize),
-                                )
-                            }
-                        } else {
-                            null
-                        },
+                            if (it.checked) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Filled.Check,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
+                                }
+                            } else {
+                                null
+                            },
                     )
                 }
             }
