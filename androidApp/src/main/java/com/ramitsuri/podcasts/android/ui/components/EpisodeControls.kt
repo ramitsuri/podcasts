@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Check
@@ -18,8 +17,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.ArrowCircleDown
 import androidx.compose.material.icons.outlined.Downloading
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -231,12 +228,12 @@ private fun EpisodeMenu(
                 tint = MaterialTheme.colorScheme.primary,
             )
         }
-        DropdownMenu(
-            expanded = showMenu,
+        BottomSheetDialog(
+            show = showMenu,
             onDismissRequest = onToggleMenu,
         ) {
             if (isFavorite) {
-                MenuItem(
+                BottomSheetDialogMenuItem(
                     icon = Icons.Filled.Favorite,
                     text = stringResource(id = R.string.episode_controller_mark_not_favorite),
                     onClick = {
@@ -245,7 +242,7 @@ private fun EpisodeMenu(
                     },
                 )
             } else {
-                MenuItem(
+                BottomSheetDialogMenuItem(
                     icon = Icons.Filled.FavoriteBorder,
                     text = stringResource(id = R.string.episode_controller_mark_favorite),
                     onClick = {
@@ -255,7 +252,7 @@ private fun EpisodeMenu(
                 )
             }
             if (episodeCompleted) {
-                MenuItem(
+                BottomSheetDialogMenuItem(
                     icon = Icons.Filled.Check,
                     text = stringResource(id = R.string.episode_controller_mark_not_played),
                     onClick = {
@@ -264,7 +261,7 @@ private fun EpisodeMenu(
                     },
                 )
             } else {
-                MenuItem(
+                BottomSheetDialogMenuItem(
                     icon = Icons.Filled.Check,
                     text = stringResource(id = R.string.episode_controller_mark_played),
                     onClick = {
@@ -273,7 +270,7 @@ private fun EpisodeMenu(
                     },
                 )
             }
-            MenuItem(
+            BottomSheetDialogMenuItem(
                 icon = Icons.Filled.Share,
                 text = stringResource(id = R.string.episode_controller_share),
                 onClick = {
@@ -283,29 +280,6 @@ private fun EpisodeMenu(
             )
         }
     }
-}
-
-@Composable
-private fun MenuItem(
-    icon: ImageVector,
-    text: String,
-    onClick: () -> Unit,
-) {
-    DropdownMenuItem(
-        text = {
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(imageVector = icon, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text)
-            }
-        },
-        onClick = onClick,
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
