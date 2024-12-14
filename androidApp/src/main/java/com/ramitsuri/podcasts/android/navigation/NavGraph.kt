@@ -1,6 +1,7 @@
 package com.ramitsuri.podcasts.android.navigation
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
@@ -53,6 +54,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
 import com.ramitsuri.podcasts.android.ui.downloads.DownloadsScreen
 import com.ramitsuri.podcasts.android.ui.episode.EpisodeDetailsScreen
 import com.ramitsuri.podcasts.android.ui.favorites.FavoritesScreen
@@ -168,6 +170,9 @@ fun NavGraph(
             targetValue = if (isExpanded) 16.dp else 0.dp,
             label = "rounded_corner_animation",
         )
+        BackHandler(isExpanded) {
+            expandOrCollapsePlayer(false)
+        }
         BottomSheetScaffold(
             scaffoldState = scaffoldSheetState,
             sheetPeekHeight = bottomPadding,
@@ -194,7 +199,10 @@ fun NavGraph(
                                 expandOrCollapsePlayer(expand = false)
                                 val episodeId = playerState.episodeId
                                 if (episodeId != null) {
-                                    navController.navigate(Route.episodeDetails(episodeId))
+                                    navController.navigate(
+                                        Route.episodeDetails(episodeId),
+                                        navOptions { popUpTo(BottomNavItem.HOME.route.value) },
+                                    )
                                 }
                             },
                             onPodcastNameClicked = {
@@ -206,12 +214,16 @@ fun NavGraph(
                                             podcastId = id,
                                             refreshPodcast = false,
                                         ),
+                                        navOptions { popUpTo(BottomNavItem.HOME.route.value) },
                                     )
                                 }
                             },
                             onGoToQueueClicked = {
                                 expandOrCollapsePlayer(expand = false)
-                                navController.navigate(Route.QUEUE.value)
+                                navController.navigate(
+                                    Route.QUEUE.value,
+                                    navOptions { popUpTo(BottomNavItem.HOME.route.value) },
+                                )
                             },
                             onReplayClicked = playerViewModel::onReplayRequested,
                             onPauseClicked = playerViewModel::onPauseClicked,
@@ -272,14 +284,21 @@ fun NavGraph(
                                         podcastId = it,
                                         refreshPodcast = false,
                                     ),
+                                    navOptions { popUpTo(BottomNavItem.HOME.route.value) },
                                 )
                             },
                             onPodcastHasNewSeen = viewModel::markPodcastHasNewSeen,
                             onMorePodcastsClicked = {
-                                navController.navigate(Route.SUBSCRIPTIONS.value)
+                                navController.navigate(
+                                    Route.SUBSCRIPTIONS.value,
+                                    navOptions { popUpTo(BottomNavItem.HOME.route.value) },
+                                )
                             },
                             onEpisodeClicked = {
-                                navController.navigate(Route.episodeDetails(episodeId = it))
+                                navController.navigate(
+                                    Route.episodeDetails(episodeId = it),
+                                    navOptions { popUpTo(BottomNavItem.HOME.route.value) },
+                                )
                             },
                             onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                             onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
@@ -307,7 +326,10 @@ fun NavGraph(
                         SearchScreen(
                             state = state,
                             onSettingsClicked = {
-                                navController.navigate(Route.SETTINGS.value)
+                                navController.navigate(
+                                    Route.SETTINGS.value,
+                                    navOptions { popUpTo(BottomNavItem.EXPLORE.route.value) },
+                                )
                             },
                             onPodcastClicked = {
                                 navController.navigate(
@@ -315,6 +337,7 @@ fun NavGraph(
                                         podcastId = it,
                                         refreshPodcast = true,
                                     ),
+                                    navOptions { popUpTo(BottomNavItem.EXPLORE.route.value) },
                                 )
                             },
                             onSearchTermUpdated = viewModel::onSearchTermUpdated,
@@ -330,13 +353,41 @@ fun NavGraph(
                     composable(route = BottomNavItem.LIBRARY.route.value) {
                         LibraryScreen(
                             onSettingsClicked = {
-                                navController.navigate(Route.SETTINGS.value)
+                                navController.navigate(
+                                    Route.SETTINGS.value,
+                                    navOptions { popUpTo(BottomNavItem.LIBRARY.route.value) },
+                                )
                             },
-                            onSubscriptionsClicked = { navController.navigate(Route.SUBSCRIPTIONS.value) },
-                            onQueueClicked = { navController.navigate(Route.QUEUE.value) },
-                            onDownloadsClicked = { navController.navigate(Route.DOWNLOADS.value) },
-                            onHistoryClicked = { navController.navigate(Route.EPISODE_HISTORY.value) },
-                            onFavoritesClicked = { navController.navigate(Route.FAVORITES.value) },
+                            onSubscriptionsClicked = {
+                                navController.navigate(
+                                    Route.SUBSCRIPTIONS.value,
+                                    navOptions { popUpTo(BottomNavItem.LIBRARY.route.value) },
+                                )
+                            },
+                            onQueueClicked = {
+                                navController.navigate(
+                                    Route.QUEUE.value,
+                                    navOptions { popUpTo(BottomNavItem.LIBRARY.route.value) },
+                                )
+                            },
+                            onDownloadsClicked = {
+                                navController.navigate(
+                                    Route.DOWNLOADS.value,
+                                    navOptions { popUpTo(BottomNavItem.LIBRARY.route.value) },
+                                )
+                            },
+                            onHistoryClicked = {
+                                navController.navigate(
+                                    Route.EPISODE_HISTORY.value,
+                                    navOptions { popUpTo(BottomNavItem.LIBRARY.route.value) },
+                                )
+                            },
+                            onFavoritesClicked = {
+                                navController.navigate(
+                                    Route.FAVORITES.value,
+                                    navOptions { popUpTo(BottomNavItem.LIBRARY.route.value) },
+                                )
+                            },
                             modifier =
                                 Modifier
                                     .statusBarsPadding()
@@ -396,6 +447,12 @@ fun NavGraph(
                                         podcastId = podcastId,
                                         refreshPodcast = false,
                                     ),
+                                    navOptions {
+                                        popUpTo(
+                                            Route.EPISODE_DETAILS.routeWithArgName(),
+                                            popUpToBuilder = { inclusive = true },
+                                        )
+                                    },
                                 )
                             },
                             onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
@@ -441,7 +498,15 @@ fun NavGraph(
                             toggleAutoAddToQueueClicked = viewModel::toggleAutoAddToQueueClicked,
                             toggleShowCompletedEpisodesClicked = viewModel::toggleShowCompletedEpisodes,
                             onEpisodeClicked = {
-                                navController.navigate(Route.episodeDetails(episodeId = it))
+                                navController.navigate(
+                                    Route.episodeDetails(episodeId = it),
+                                    navOptions {
+                                        popUpTo(
+                                            Route.PODCAST_DETAILS.routeWithArgName(),
+                                            popUpToBuilder = { inclusive = true },
+                                        )
+                                    },
+                                )
                             },
                             onEpisodeSelectionChanged = viewModel::onEpisodeSelectionChanged,
                             onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
@@ -484,7 +549,10 @@ fun NavGraph(
                             onBack = { navController.popBackStack() },
                             onEpisodesRearranged = viewModel::onEpisodeRearrangementRequested,
                             onEpisodeClicked = {
-                                navController.navigate(Route.episodeDetails(episodeId = it))
+                                navController.navigate(
+                                    Route.episodeDetails(episodeId = it),
+                                    navOptions { popUpTo(Route.QUEUE.value) },
+                                )
                             },
                             onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                             onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
@@ -522,6 +590,7 @@ fun NavGraph(
                                         podcastId = it,
                                         refreshPodcast = false,
                                     ),
+                                    navOptions { popUpTo(Route.SUBSCRIPTIONS.value) },
                                 )
                             },
                             modifier =
@@ -545,7 +614,10 @@ fun NavGraph(
                             state = state,
                             onBack = { navController.popBackStack() },
                             onEpisodeClicked = {
-                                navController.navigate(Route.episodeDetails(episodeId = it))
+                                navController.navigate(
+                                    Route.episodeDetails(episodeId = it),
+                                    navOptions { popUpTo(Route.DOWNLOADS.value) },
+                                )
                             },
                             onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                             onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
@@ -579,7 +651,10 @@ fun NavGraph(
                             state = state,
                             onBack = { navController.popBackStack() },
                             onEpisodeClicked = {
-                                navController.navigate(Route.episodeDetails(episodeId = it))
+                                navController.navigate(
+                                    Route.episodeDetails(episodeId = it),
+                                    navOptions { popUpTo(Route.FAVORITES.value) },
+                                )
                             },
                             onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                             onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
@@ -613,7 +688,10 @@ fun NavGraph(
                             state = state,
                             onBack = { navController.popBackStack() },
                             onEpisodeClicked = {
-                                navController.navigate(Route.episodeDetails(episodeId = it))
+                                navController.navigate(
+                                    Route.episodeDetails(episodeId = it),
+                                    navOptions { popUpTo(Route.EPISODE_HISTORY.value) },
+                                )
                             },
                             onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
                             onEpisodePauseClicked = viewModel::onEpisodePauseClicked,
