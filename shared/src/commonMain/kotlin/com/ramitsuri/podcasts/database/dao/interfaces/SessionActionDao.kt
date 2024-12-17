@@ -14,4 +14,6 @@ internal interface SessionActionDao {
         episodeIds: List<String>,
         podcastIds: List<Long>,
     ): List<EpisodeAndPodcastId>
+
+    suspend fun getAll(): List<SessionActionEntity>
 }

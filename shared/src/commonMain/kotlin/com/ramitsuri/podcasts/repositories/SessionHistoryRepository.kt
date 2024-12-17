@@ -1,9 +1,11 @@
 package com.ramitsuri.podcasts.repositories
 
+import com.ramitsuri.podcasts.SessionActionEntity
 import com.ramitsuri.podcasts.database.dao.interfaces.SessionActionDao
 import com.ramitsuri.podcasts.model.Action
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeAndPodcastId
+import com.ramitsuri.podcasts.model.Session
 import com.ramitsuri.podcasts.model.SessionAction
 import com.ramitsuri.podcasts.model.SessionEpisode
 import com.ramitsuri.podcasts.utils.LogHelper
@@ -163,6 +165,45 @@ class SessionHistoryRepository internal constructor(
         podcastIds: List<Long>,
     ): List<EpisodeAndPodcastId> {
         return sessionActionDao.getEpisodes(episodeIds = episodeIds, podcastIds = podcastIds)
+    }
+
+    suspend fun getSessions(): List<Session> {
+        var start: SessionActionEntity? = null
+        val sessions = mutableListOf<Session>()
+        sessionActionDao
+            .getAll()
+            .groupBy { it.sessionId }
+            .forEach { (sessionId, sessionActionEntities) ->
+                sessionActionEntities.forEach { sessionActionEntity ->
+                    run innerLoop@{
+                        when (sessionActionEntity.action) {
+                            Action.START -> {
+                                start = sessionActionEntity
+                            }
+
+                            Action.STOP -> {
+                                val startSessionActionEntity = start ?: return@innerLoop
+                                if (sessionActionEntity.episodeId != startSessionActionEntity.episodeId ||
+                                    sessionActionEntity.podcastId != startSessionActionEntity.podcastId
+                                ) {
+                                    return@innerLoop
+                                }
+                                sessions.add(
+                                    Session(
+                                        sessionId = sessionId,
+                                        episodeId = startSessionActionEntity.episodeId,
+                                        podcastId = startSessionActionEntity.podcastId,
+                                        duration = sessionActionEntity.time.minus(startSessionActionEntity.time),
+                                        playbackSpeed = sessionActionEntity.playbackSpeed,
+                                    ),
+                                )
+                                start = null
+                            }
+                        }
+                    }
+                }
+            }
+        return sessions
     }
 
     private suspend fun insert(action: SessionAction) {

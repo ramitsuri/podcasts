@@ -27,6 +27,10 @@ WHERE sessionId = :sessionId AND podcastId = :podcastId AND episodeId = :episode
 ORDER BY time ASC
 LIMIT 1;
 
+getAll:
+SELECT * FROM SessionActionEntity
+ORDER BY time ASC;
+
 getEpisodes:
 SELECT episodeId, podcastId FROM SessionActionEntity
 WHERE

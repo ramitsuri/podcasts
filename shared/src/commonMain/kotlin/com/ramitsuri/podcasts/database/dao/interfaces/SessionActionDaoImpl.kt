@@ -65,4 +65,12 @@ internal class SessionActionDaoImpl(
                 }
         }
     }
+
+    override suspend fun getAll(): List<SessionActionEntity> {
+        return withContext(ioDispatcher) {
+            sessionHistoryQueries
+                .getAll()
+                .executeAsList()
+        }
+    }
 }
