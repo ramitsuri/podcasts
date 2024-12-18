@@ -527,6 +527,7 @@ fun NavGraph(
                             onMarkSelectedEpisodesAsNotPlayed = viewModel::onMarkSelectedAsNotPlayed,
                             onNextPageRequested = viewModel::onNextPageRequested,
                             onLoadOlderEpisodesRequested = viewModel::onLoadOlderEpisodesRequested,
+                            onSearchTermUpdated = viewModel::onSearchTermUpdated,
                             modifier =
                                 Modifier
                                     .statusBarsPadding()

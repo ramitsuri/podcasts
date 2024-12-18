@@ -79,7 +79,7 @@ internal class EpisodesDaoImpl(
         page: Long,
         showCompleted: Boolean,
     ): Flow<List<DbEpisode>> {
-        return getForPodcast(podcastId, sortOrder, page, showCompleted)
+        return getForPodcast(podcastId, sortOrder, page, showCompleted, searchTerm = "")
             .asFlow()
             .mapToList(ioDispatcher)
     }
@@ -89,9 +89,10 @@ internal class EpisodesDaoImpl(
         sortOrder: EpisodeSortOrder,
         page: Long,
         showCompleted: Boolean,
+        searchTerm: String,
     ): List<DbEpisode> {
         return withContext(ioDispatcher) {
-            getForPodcast(podcastId, sortOrder, page, showCompleted)
+            getForPodcast(podcastId, sortOrder, page, showCompleted, searchTerm)
                 .executeAsList()
         }
     }
@@ -369,6 +370,7 @@ internal class EpisodesDaoImpl(
         sortOrder: EpisodeSortOrder,
         page: Long,
         showCompleted: Boolean,
+        searchTerm: String,
     ): Query<DbEpisode> {
         return when (sortOrder) {
             EpisodeSortOrder.DATE_PUBLISHED_DESC -> {
@@ -377,6 +379,7 @@ internal class EpisodesDaoImpl(
                         podcastId = podcastId,
                         limit = page.toLimit,
                         showCompleted = showCompleted.toShowCompletedLong,
+                        query = searchTerm,
                     )
             }
 
@@ -386,6 +389,7 @@ internal class EpisodesDaoImpl(
                         podcastId = podcastId,
                         limit = page.toLimit,
                         showCompleted = showCompleted.toShowCompletedLong,
+                        query = searchTerm,
                     )
             }
         }

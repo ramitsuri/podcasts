@@ -77,9 +77,16 @@ class EpisodesRepository internal constructor(
         sortOrder: EpisodeSortOrder,
         page: Long,
         showCompleted: Boolean,
+        searchTerm: String,
     ): List<Episode> {
         return episodesDao
-            .getEpisodesForPodcast(podcastId, sortOrder, page, showCompleted)
+            .getEpisodesForPodcast(
+                podcastId = podcastId,
+                sortOrder = sortOrder,
+                page = page,
+                showCompleted = showCompleted,
+                searchTerm = searchTerm,
+            )
             .map { dbEpisode ->
                 Episode(dbEpisode)
             }

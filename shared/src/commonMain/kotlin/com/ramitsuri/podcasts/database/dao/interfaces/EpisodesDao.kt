@@ -33,6 +33,7 @@ internal interface EpisodesDao {
         sortOrder: EpisodeSortOrder,
         page: Long,
         showCompleted: Boolean,
+        searchTerm: String,
     ): List<DbEpisode>
 
     suspend fun getMaxDatePublished(podcastId: Long): Long?
