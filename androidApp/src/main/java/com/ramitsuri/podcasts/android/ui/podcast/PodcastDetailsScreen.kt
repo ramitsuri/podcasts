@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.android.ui.podcast
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
@@ -27,7 +28,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ArrowCircleDown
 import androidx.compose.material.icons.outlined.DoNotDisturbOn
 import androidx.compose.material.icons.rounded.CheckCircle
@@ -55,11 +58,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -89,6 +99,7 @@ import com.ramitsuri.podcasts.model.ui.PodcastDetailsViewState
 import com.ramitsuri.podcasts.model.ui.PodcastWithSelectableEpisodes
 import com.ramitsuri.podcasts.model.ui.SelectableEpisode
 import com.ramitsuri.podcasts.utils.LogHelper
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -120,6 +131,7 @@ fun PodcastDetailsScreen(
     onMarkSelectedEpisodesAsNotPlayed: () -> Unit,
     onNextPageRequested: () -> Unit,
     onLoadOlderEpisodesRequested: (Long) -> Unit,
+    onSearchTermUpdated: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (BuildConfig.DEBUG) {
@@ -145,6 +157,7 @@ fun PodcastDetailsScreen(
                 currentlyPlayingEpisodeId = state.currentlyPlayingEpisodeId,
                 currentlyPlayingEpisodeState = state.playingState,
                 episodeSortOrder = state.episodeSortOrder,
+                searchTerm = state.searchTerm,
                 onSubscribeClicked = onSubscribeClicked,
                 onUnsubscribeClicked = onUnsubscribeClicked,
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,
@@ -170,6 +183,7 @@ fun PodcastDetailsScreen(
                 onMarkSelectedEpisodesAsNotPlayed = onMarkSelectedEpisodesAsNotPlayed,
                 onNextPageRequested = onNextPageRequested,
                 onLoadOlderEpisodesRequested = onLoadOlderEpisodesRequested,
+                onSearchTermUpdated = onSearchTermUpdated,
             )
         }
     }
@@ -185,6 +199,7 @@ private fun PodcastDetails(
     currentlyPlayingEpisodeId: String?,
     currentlyPlayingEpisodeState: PlayingState,
     episodeSortOrder: EpisodeSortOrder,
+    searchTerm: String,
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
     toggleAutoDownloadClicked: () -> Unit,
@@ -210,6 +225,7 @@ private fun PodcastDetails(
     onMarkSelectedEpisodesAsNotPlayed: () -> Unit,
     onNextPageRequested: () -> Unit,
     onLoadOlderEpisodesRequested: (Long) -> Unit,
+    onSearchTermUpdated: (String) -> Unit,
 ) {
     val podcast = podcastWithEpisodes.podcast
     val lazyListState = rememberLazyListState()
@@ -234,6 +250,7 @@ private fun PodcastDetails(
                 count = podcastWithEpisodes.episodes.size,
                 selectedCount = podcastWithEpisodes.selectedCount,
                 sortOrder = episodeSortOrder,
+                searchTerm = searchTerm,
                 showCompletedEpisodes = podcast.showCompletedEpisodes,
                 onSortOrderClicked = onEpisodeSortOrderClicked,
                 onSelectAllClicked = onSelectAllEpisodesClicked,
@@ -245,6 +262,7 @@ private fun PodcastDetails(
                 onUnsubscribeClicked = onUnsubscribeClicked,
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,
                 toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
+                onSearchTermUpdated = onSearchTermUpdated,
             )
         }
         items(key = { it.episode.id }, items = podcastWithEpisodes.episodes) {
@@ -383,6 +401,7 @@ private fun LoadEvenOlderEpisodesButton(
     }
 }
 
+// Has 2 states - 1 regular and 1 when episodes are selected
 @Composable
 private fun EpisodesMenu(
     showMenu: Boolean,
@@ -395,12 +414,14 @@ private fun EpisodesMenu(
     showMarkAsNotPlayed: Boolean,
     showCompletedEpisodes: Boolean,
     showCompletedEpisodesMenuItem: Boolean,
+    showSearchEpisodes: Boolean,
     onSortOrderClicked: () -> Unit,
     onSelectAllClicked: () -> Unit,
     onUnselectAllClicked: () -> Unit,
     onMarkSelectedAsPlayed: () -> Unit,
     onMarkSelectedAsNotPlayed: () -> Unit,
     toggleShowCompletedEpisodesClicked: () -> Unit,
+    onSearchEpisodes: () -> Unit,
 ) {
     Box {
         IconButton(onClick = { onToggleMenu() }) {
@@ -446,6 +467,17 @@ private fun EpisodesMenu(
                     onClick = {
                         onToggleMenu()
                         toggleShowCompletedEpisodesClicked()
+                    },
+                )
+            }
+
+            // Show Search Episodes
+            if (showSearchEpisodes) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.podcast_details_search_episodes)) },
+                    onClick = {
+                        onToggleMenu()
+                        onSearchEpisodes()
                     },
                 )
             }
@@ -504,6 +536,7 @@ private fun PodcastHeader(
     selectedCount: Int,
     sortOrder: EpisodeSortOrder,
     showCompletedEpisodes: Boolean,
+    searchTerm: String,
     onSortOrderClicked: () -> Unit,
     onSelectAllClicked: () -> Unit,
     onUnselectAllClicked: () -> Unit,
@@ -514,14 +547,25 @@ private fun PodcastHeader(
     toggleAutoAddToQueueClicked: () -> Unit,
     onSubscribeClicked: () -> Unit,
     onUnsubscribeClicked: () -> Unit,
+    onSearchTermUpdated: (String) -> Unit,
 ) {
     val html = remember(podcast.description) { htmlToAnnotatedString(podcast.description) }
     val collapsedMaxLine = 3
     var isExpanded by remember { mutableStateOf(false) }
     var clickable by remember { mutableStateOf(false) }
     var showMenu by remember { mutableStateOf(false) }
+    var showSearch by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        AnimatedVisibility(showSearch) {
+            SearchRow(
+                term = searchTerm,
+                onSearchTermUpdated = onSearchTermUpdated,
+                onSearchCleared = { onSearchTermUpdated("") },
+                onSearchCanceled = { showSearch = false },
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
         TitleAndImage(podcast = podcast)
         Spacer(modifier = Modifier.height(16.dp))
         Row(
@@ -550,12 +594,14 @@ private fun PodcastHeader(
                     showMarkAsNotPlayed = selectedCount != 0,
                     showCompletedEpisodes = showCompletedEpisodes,
                     showCompletedEpisodesMenuItem = selectedCount == 0,
+                    showSearchEpisodes = selectedCount == 0,
                     onSortOrderClicked = onSortOrderClicked,
                     onSelectAllClicked = onSelectAllClicked,
                     onUnselectAllClicked = onUnselectAllClicked,
                     onMarkSelectedAsPlayed = onMarkSelectedAsPlayed,
                     onMarkSelectedAsNotPlayed = onMarkSelectedAsNotPlayed,
                     toggleShowCompletedEpisodesClicked = toggleShowCompletedEpisodesClicked,
+                    onSearchEpisodes = { showSearch = true },
                 )
             }
         }
@@ -581,6 +627,71 @@ private fun PodcastHeader(
                     }
                 },
             )
+        }
+    }
+}
+
+@Composable
+private fun SearchRow(
+    term: String,
+    onSearchTermUpdated: (String) -> Unit,
+    onSearchCleared: () -> Unit,
+    onSearchCanceled: () -> Unit,
+) {
+    val focusRequester = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
+    var selection by remember { mutableStateOf(TextRange(term.length)) }
+
+    LaunchedEffect(focusRequester) {
+        delay(100)
+        focusRequester.requestFocus()
+        keyboard?.show()
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        OutlinedTextField(
+            value = TextFieldValue(text = term, selection = selection),
+            onValueChange = {
+                onSearchTermUpdated(it.text)
+                selection = it.selection
+            },
+            keyboardOptions =
+                KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Search,
+                ),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = stringResource(id = R.string.search),
+                )
+            },
+            trailingIcon =
+                if (term.isNotEmpty()) {
+                    {
+                        IconButton(onClick = onSearchCleared) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = stringResource(id = R.string.search),
+                            )
+                        }
+                    }
+                } else {
+                    { }
+                },
+            singleLine = true,
+            label = { Text(stringResource(id = R.string.search)) },
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester),
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        TextButton(onClick = onSearchCanceled) {
+            Text(text = stringResource(R.string.cancel))
         }
     }
 }
@@ -854,6 +965,7 @@ private fun PodcastDetailsPreview() {
             onMarkSelectedEpisodesAsNotPlayed = { },
             onNextPageRequested = { },
             onLoadOlderEpisodesRequested = { },
+            onSearchTermUpdated = { },
         )
     }
 }
@@ -905,6 +1017,7 @@ private fun PodcastDetails_WithSelectionPreview() {
             onMarkSelectedEpisodesAsNotPlayed = { },
             onNextPageRequested = { },
             onLoadOlderEpisodesRequested = { },
+            onSearchTermUpdated = { },
         )
     }
 }
