@@ -11,6 +11,7 @@ import com.ramitsuri.podcasts.utils.EpisodeController
 import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -224,15 +225,22 @@ class PodcastDetailsViewModel(
         }
     }
 
+    fun onSearchTermUpdated(searchTerm: String) {
+        _state.update { it.copy(searchTerm = searchTerm) }
+        updatePodcastAndEpisodes()
+    }
+
     private fun updatePodcastAndEpisodes() {
         val podcastId = podcastId ?: return
         val state = _state.value
         val page = state.page
+        val searchTerm = state.searchTerm
         updatePodcastAndEpisodesJob?.cancel()
         updatePodcastAndEpisodesJob =
             viewModelScope.launch {
+                delay(300)
                 combine(
-                    podcastsAndEpisodesRepository.getPodcastWithEpisodesFlow(podcastId, page),
+                    podcastsAndEpisodesRepository.getPodcastWithEpisodesFlow(podcastId, page, searchTerm),
                     episodesRepository.getCurrentEpisode(),
                     settings.getPlayingStateFlow(),
                 ) { podcastWithEpisodes, currentlyPlayingEpisode, playingState ->

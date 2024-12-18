@@ -121,6 +121,7 @@ class PodcastsAndEpisodesRepository internal constructor(
     suspend fun getPodcastWithEpisodesFlow(
         podcastId: Long,
         page: Long,
+        searchTerm: String,
     ): Flow<PodcastWithEpisodes?> {
         return withContext(ioDispatcher) {
             return@withContext combine(
@@ -140,10 +141,11 @@ class PodcastsAndEpisodesRepository internal constructor(
                 } else {
                     val filteredEpisodes =
                         episodesRepository.getEpisodesForPodcast(
-                            podcastId,
-                            podcast.episodeSortOrder,
-                            page,
-                            podcast.showCompletedEpisodes,
+                            podcastId = podcastId,
+                            sortOrder = podcast.episodeSortOrder,
+                            page = page,
+                            showCompleted = podcast.showCompletedEpisodes,
+                            searchTerm = searchTerm,
                         )
                     PodcastWithEpisodes(podcast, filteredEpisodes)
                 }
