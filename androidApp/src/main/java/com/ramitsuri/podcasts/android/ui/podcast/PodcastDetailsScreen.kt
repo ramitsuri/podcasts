@@ -608,16 +608,16 @@ private fun PodcastHeader(
         Spacer(modifier = Modifier.height(16.dp))
         Box(
             modifier =
-            Modifier
-                .clickable(clickable) {
-                    isExpanded = !isExpanded
-                },
+                Modifier
+                    .clickable(clickable) {
+                        isExpanded = !isExpanded
+                    },
         ) {
             Text(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .animateContentSize(),
+                    Modifier
+                        .fillMaxWidth()
+                        .animateContentSize(),
                 text = html,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = if (isExpanded) Int.MAX_VALUE else collapsedMaxLine,
@@ -659,10 +659,10 @@ private fun SearchRow(
                 selection = it.selection
             },
             keyboardOptions =
-            KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
-                imeAction = ImeAction.Search,
-            ),
+                KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Search,
+                ),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
@@ -670,24 +670,24 @@ private fun SearchRow(
                 )
             },
             trailingIcon =
-            if (term.isNotEmpty()) {
-                {
-                    IconButton(onClick = onSearchCleared) {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = stringResource(id = R.string.search),
-                        )
+                if (term.isNotEmpty()) {
+                    {
+                        IconButton(onClick = onSearchCleared) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = stringResource(id = R.string.search),
+                            )
+                        }
                     }
-                }
-            } else {
-                { }
-            },
+                } else {
+                    { }
+                },
             singleLine = true,
             label = { Text(stringResource(id = R.string.search)) },
             modifier =
-            Modifier
-                .weight(1f)
-                .focusRequester(focusRequester),
+                Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester),
         )
         Spacer(modifier = Modifier.width(8.dp))
         TextButton(onClick = onSearchCanceled) {
@@ -703,9 +703,9 @@ private fun TitleAndImage(podcast: Podcast) {
             url = podcast.artwork,
             contentDescription = podcast.title,
             modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .size(64.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .size(64.dp),
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column {
@@ -749,29 +749,29 @@ private fun EpisodeItem(
     val view = LocalView.current
     Column(
         modifier =
-        Modifier
-            .combinedClickable(
-                onClick =
-                if (inSelectionState) {
-                    onSelectionChanged
-                } else {
-                    onClicked
-                },
-                onLongClick = {
-                    onSelectionChanged()
-                    view.performHapticFeedback(HapticFeedbackConstantsCompat.LONG_PRESS)
-                },
-            )
-            .background(
-                color =
-                if (inSelectionState && selected) {
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                } else {
-                    MaterialTheme.colorScheme.background
-                },
-            )
-            .padding(top = 12.dp, bottom = 4.dp)
-            .padding(horizontal = 16.dp),
+            Modifier
+                .combinedClickable(
+                    onClick =
+                        if (inSelectionState) {
+                            onSelectionChanged
+                        } else {
+                            onClicked
+                        },
+                    onLongClick = {
+                        onSelectionChanged()
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.LONG_PRESS)
+                    },
+                )
+                .background(
+                    color =
+                        if (inSelectionState && selected) {
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                        } else {
+                            MaterialTheme.colorScheme.background
+                        },
+                )
+                .padding(top = 12.dp, bottom = 4.dp)
+                .padding(horizontal = 16.dp),
     ) {
         val datePublished = episode.datePublishedInstant
         if (datePublished != null) {
@@ -847,31 +847,31 @@ private fun SubscribeButton(
     Box {
         Row(
             modifier =
-            Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .border(
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)),
-                    shape = RoundedCornerShape(8.dp),
-                )
-                .clickable(
-                    onClick = {
-                        if (subscribed) {
-                            showMenu = true
-                        } else {
-                            onSubscribeClicked()
-                            showMenu = true
-                        }
-                    },
-                )
-                .background(
-                    color =
-                    if (subscribed) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                    } else {
-                        MaterialTheme.colorScheme.background
-                    },
-                )
-                .padding(vertical = 4.dp, horizontal = 8.dp),
+                Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .border(
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)),
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .clickable(
+                        onClick = {
+                            if (subscribed) {
+                                showMenu = true
+                            } else {
+                                onSubscribeClicked()
+                                showMenu = true
+                            }
+                        },
+                    )
+                    .background(
+                        color =
+                            if (subscribed) {
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                            } else {
+                                MaterialTheme.colorScheme.background
+                            },
+                    )
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
@@ -924,21 +924,21 @@ private fun PodcastDetailsPreview() {
     PreviewTheme {
         PodcastDetailsScreen(
             state =
-            PodcastDetailsViewState(
-                podcastWithEpisodes =
-                PodcastWithSelectableEpisodes(
-                    podcast = podcast(),
-                    episodes =
-                    listOf(
-                        SelectableEpisode(false, episode()),
-                        SelectableEpisode(false, episode()),
-                        SelectableEpisode(false, episode()),
-                        SelectableEpisode(false, episode()),
-                    ),
+                PodcastDetailsViewState(
+                    podcastWithEpisodes =
+                        PodcastWithSelectableEpisodes(
+                            podcast = podcast(),
+                            episodes =
+                                listOf(
+                                    SelectableEpisode(false, episode()),
+                                    SelectableEpisode(false, episode()),
+                                    SelectableEpisode(false, episode()),
+                                    SelectableEpisode(false, episode()),
+                                ),
+                        ),
+                    currentlyPlayingEpisodeId = null,
+                    playingState = PlayingState.NOT_PLAYING,
                 ),
-                currentlyPlayingEpisodeId = null,
-                playingState = PlayingState.NOT_PLAYING,
-            ),
             onBack = { },
             onSubscribeClicked = { },
             onUnsubscribeClicked = { },
@@ -976,21 +976,21 @@ private fun PodcastDetails_WithSelectionPreview() {
     PreviewTheme {
         PodcastDetailsScreen(
             state =
-            PodcastDetailsViewState(
-                podcastWithEpisodes =
-                PodcastWithSelectableEpisodes(
-                    podcast = podcast(),
-                    episodes =
-                    listOf(
-                        SelectableEpisode(true, episode()),
-                        SelectableEpisode(false, episode()),
-                        SelectableEpisode(true, episode()),
-                        SelectableEpisode(false, episode()),
-                    ),
+                PodcastDetailsViewState(
+                    podcastWithEpisodes =
+                        PodcastWithSelectableEpisodes(
+                            podcast = podcast(),
+                            episodes =
+                                listOf(
+                                    SelectableEpisode(true, episode()),
+                                    SelectableEpisode(false, episode()),
+                                    SelectableEpisode(true, episode()),
+                                    SelectableEpisode(false, episode()),
+                                ),
+                        ),
+                    currentlyPlayingEpisodeId = null,
+                    playingState = PlayingState.NOT_PLAYING,
                 ),
-                currentlyPlayingEpisodeId = null,
-                playingState = PlayingState.NOT_PLAYING,
-            ),
             onBack = { },
             onSubscribeClicked = { },
             onUnsubscribeClicked = { },

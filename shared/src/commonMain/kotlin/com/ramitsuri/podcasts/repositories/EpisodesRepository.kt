@@ -85,7 +85,7 @@ class EpisodesRepository internal constructor(
                 sortOrder = sortOrder,
                 page = page,
                 showCompleted = showCompleted,
-                searchTerm = searchTerm
+                searchTerm = searchTerm,
             )
             .map { dbEpisode ->
                 Episode(dbEpisode)
