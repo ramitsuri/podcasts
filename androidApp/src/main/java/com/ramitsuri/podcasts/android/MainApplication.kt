@@ -126,7 +126,7 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
                 single<Logger> {
                     AndroidLogger(
                         isDebug = BuildConfig.DEBUG,
-                        enableRemote = !BuildConfig.DEBUG,
+                        enableRemote = false,
                         deviceModel = Build.MODEL,
                     )
                 }

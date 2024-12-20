@@ -71,7 +71,7 @@ class AndroidLogger(
     }
 
     private fun getDb(time: Instant): DatabaseReference {
-        return Firebase.database.getReference("logs/$deviceId/${formatLogParent(time)}")
+        return Firebase.database.getReference("logs-v2/$deviceId/${formatLogParent(time)}")
     }
 
     private fun formatLogTime(time: Instant): String {
