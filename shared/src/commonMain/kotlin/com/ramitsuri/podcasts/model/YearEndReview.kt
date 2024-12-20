@@ -10,7 +10,8 @@ data class YearEndReview(
     val listeningSince: LocalDateTime,
     val mostListenedToPodcasts: List<Long>,
     val totalDurationListened: Duration,
-    val totalActualDurationListened: Duration, // This is if speed was not 1x
+    // This is if speed was not 1x
+    val totalActualDurationListened: Duration,
     val totalEpisodesListened: Int,
     val mostListenedOnDayOfWeek: DayOfWeek,
     val mostListenedOnDay: LocalDate,

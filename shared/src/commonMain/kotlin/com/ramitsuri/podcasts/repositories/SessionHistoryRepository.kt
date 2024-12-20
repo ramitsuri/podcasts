@@ -24,7 +24,6 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.nanoseconds
 
 class SessionHistoryRepository internal constructor(
@@ -191,18 +190,17 @@ class SessionHistoryRepository internal constructor(
                     it.podcastId
                 }
                 .map { (podcastId, sessions) ->
-                    val totalDuration = sessions.fold(Duration.ZERO) { acc, session ->
-                        acc + session.duration
-                    }
-                    podcastId to totalDuration
+                    podcastId to sessions.sumDuration()
                 }
                 .sortedBy { (_, totalDuration) ->
                     totalDuration
                 }
                 .take(3)
-                .map { it.first }
+                .map { (podcastId, _) ->
+                    podcastId
+                }
 
-            val totalDurationListened = sessions.sumDuration(useSpeedMultiplier = false)
+            val totalDurationListened = sessions.sumDuration()
 
             val totalActualDurationListened = sessions.sumDuration(useSpeedMultiplier = true)
 
@@ -213,12 +211,39 @@ class SessionHistoryRepository internal constructor(
 
             val days = getDaysOfYear(year, timeZone)
                 .map { dayOfYear ->
-                    val durationForDay = sessions
-                        .filter {
-                            it.startTime >= dayOfYear.startTime && it.startTime <= dayOfYear.endTime
+                    val startBeforeCurrentDayEndInCurrentDay = sessions
+                        .filter { session ->
+                            session.startTime < dayOfYear.startTime && session.endTime <= dayOfYear.endTime
                         }
-                        .sumDuration(useSpeedMultiplier = false)
-                    dayOfYear.copy(listenDuration = durationForDay)
+                        .sumOf { session ->
+                            session.endTime.minus(dayOfYear.startTime)
+                        }
+                    val startCurrentDayEndAfterCurrentDay = sessions
+                        .filter { session ->
+                            session.startTime >= dayOfYear.startTime && session.endTime > dayOfYear.endTime
+                        }
+                        .sumOf { session ->
+                            dayOfYear.endTime.minus(session.startTime)
+                        }
+                    val startBeforeCurrentDayEndAfterCurrentDay = sessions
+                        .filter { session ->
+                            session.startTime < dayOfYear.startTime && session.endTime > dayOfYear.endTime
+                        }
+                        .sumOf { session ->
+                            dayOfYear.endTime.minus(dayOfYear.startTime)
+                        }
+                    val startCurrentDayEndCurrentDay = sessions
+                        .filter { session ->
+                            session.startTime >= dayOfYear.startTime && session.endTime <= dayOfYear.endTime
+                        }
+                        .sumDuration()
+                    val totalDuration = listOf(
+                        startBeforeCurrentDayEndInCurrentDay,
+                        startCurrentDayEndAfterCurrentDay,
+                        startBeforeCurrentDayEndAfterCurrentDay,
+                        startCurrentDayEndCurrentDay,
+                    ).sumOf { it }
+                    dayOfYear.copy(listenDuration = totalDuration)
                 }
 
             val mostListenedOnDayOfWeek = days
@@ -254,7 +279,7 @@ class SessionHistoryRepository internal constructor(
         }
     }
 
-    private inline fun Iterable<Session>.sumDuration(useSpeedMultiplier: Boolean): Duration {
+    private inline fun Iterable<Session>.sumDuration(useSpeedMultiplier: Boolean = false): Duration {
         return sumOf { session ->
             val speed = (if (useSpeedMultiplier) session.playbackSpeed else 1f).toDouble()
             session.duration.times(speed)
@@ -262,7 +287,7 @@ class SessionHistoryRepository internal constructor(
     }
 
     private inline fun <T> Iterable<T>.sumOf(selector: (T) -> Duration): Duration {
-        var sum: Duration = ZERO
+        var sum: Duration = Duration.ZERO
         for (element in this) {
             sum += selector(element)
         }
@@ -295,12 +320,15 @@ class SessionHistoryRepository internal constructor(
             .getAll()
             .groupBy { it.sessionId }
             // session and its actions
-            .forEach { (sessionId, entitiesForSession) ->
+            .forEach { (_, entitiesForSession) ->
                 entitiesForSession
                     .groupBy { it.episodeId + it.podcastId }
                     // Each episode's actions in each session
                     .forEach { (_, entitiesForEpisode) ->
                         val (startEntities, stopEntities) = entitiesForEpisode.partition { it.action == Action.START }
+                        if (startEntities.size != stopEntities.size) {
+                            LogHelper.v("SessionHistoryRepository", "startEntities.size!=stopEntities.size")
+                        }
                         var index = 0
                         while (index < startEntities.size && index < stopEntities.size) {
                             val start = startEntities[index]

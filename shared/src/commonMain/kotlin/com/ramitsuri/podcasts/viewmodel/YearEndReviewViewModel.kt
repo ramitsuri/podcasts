@@ -15,8 +15,8 @@ class YearEndReviewViewModel internal constructor(
     sessionHistoryRepository: SessionHistoryRepository,
     timeZone: TimeZone,
 ) : ViewModel() {
-    private val _viewState: MutableStateFlow<YearEndReviewViewState> = MutableStateFlow(YearEndReviewViewState.Loading)
-    val state = _viewState.asStateFlow()
+    private val _state: MutableStateFlow<YearEndReviewViewState> = MutableStateFlow(YearEndReviewViewState.Loading)
+    val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -25,7 +25,7 @@ class YearEndReviewViewModel internal constructor(
             val mostListenedToPodcasts = review.mostListenedToPodcasts.mapNotNull { podcastId ->
                 podcastsRepository.get(podcastId)
             }
-            _viewState.update {
+            _state.update {
                 if (mostListenedToPodcasts.isEmpty()) {
                     LogHelper.v(TAG, "No podcasts found for mostListenedToPodcasts")
                     YearEndReviewViewState.Error
