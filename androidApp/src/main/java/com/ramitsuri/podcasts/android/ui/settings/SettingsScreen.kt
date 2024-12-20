@@ -403,10 +403,10 @@ private fun RemoveDownloadsAfterDialog(
 private fun YearEndReview(onYearEndReviewClicked: () -> Unit) {
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onYearEndReviewClicked)
-            .padding(24.dp),
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onYearEndReviewClicked)
+                .padding(24.dp),
     ) {
         Title(text = "Year end review")
     }
