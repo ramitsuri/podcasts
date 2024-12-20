@@ -24,6 +24,7 @@ import com.ramitsuri.podcasts.viewmodel.QueueViewModel
 import com.ramitsuri.podcasts.viewmodel.SearchViewModel
 import com.ramitsuri.podcasts.viewmodel.SettingsViewModel
 import com.ramitsuri.podcasts.viewmodel.SubscriptionsViewModel
+import com.ramitsuri.podcasts.viewmodel.YearEndReviewViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.android.Android
 import kotlinx.coroutines.CoroutineScope
@@ -139,6 +140,14 @@ actual val platformModule =
                 settings = get<Settings>(),
                 episodeFetcher = get<EpisodeFetcher>(),
                 longLivingScope = get<CoroutineScope>(),
+            )
+        }
+
+        viewModel<YearEndReviewViewModel> {
+            YearEndReviewViewModel(
+                podcastsRepository = get<PodcastsRepository>(),
+                sessionHistoryRepository = get<SessionHistoryRepository>(),
+                timeZone = get<TimeZone>(),
             )
         }
 

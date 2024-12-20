@@ -18,6 +18,7 @@ enum class Route(val value: String) {
     FAVORITES("favorites"),
     EPISODE_HISTORY("episode_history"),
     SETTINGS("settings"),
+    YEAR_END_REVIEW("year_end_review"),
     ;
 
     private fun routeWithArgValue(argValues: Map<RouteArgs, String>): String {

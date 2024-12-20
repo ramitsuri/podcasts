@@ -67,6 +67,7 @@ import com.ramitsuri.podcasts.android.ui.library.queue.QueueScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerViewModel
 import com.ramitsuri.podcasts.android.ui.podcast.PodcastDetailsScreen
+import com.ramitsuri.podcasts.android.ui.review.YearEndReviewScreen
 import com.ramitsuri.podcasts.android.ui.search.SearchScreen
 import com.ramitsuri.podcasts.android.ui.settings.SettingsScreen
 import com.ramitsuri.podcasts.android.ui.subscriptions.SubscriptionsScreen
@@ -80,6 +81,7 @@ import com.ramitsuri.podcasts.viewmodel.QueueViewModel
 import com.ramitsuri.podcasts.viewmodel.SearchViewModel
 import com.ramitsuri.podcasts.viewmodel.SettingsViewModel
 import com.ramitsuri.podcasts.viewmodel.SubscriptionsViewModel
+import com.ramitsuri.podcasts.viewmodel.YearEndReviewViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -729,6 +731,26 @@ fun NavGraph(
                             onFetchRequested = viewModel::fetch,
                             onRemoveCompletedAfterSelected = viewModel::setRemoveCompletedAfter,
                             onRemoveUnfinishedAfterSelected = viewModel::setRemoveUnfinishedAfter,
+                            modifier =
+                                Modifier
+                                    .statusBarsPadding()
+                                    .displayCutoutPadding(),
+                        )
+                    }
+
+                    composable(
+                        route = Route.YEAR_END_REVIEW.value,
+                        enterTransition = { enterTransition() },
+                        exitTransition = { exitTransition() },
+                        popEnterTransition = { popEnterTransition() },
+                        popExitTransition = { popExitTransition() },
+                    ) {
+                        val viewmodel = koinViewModel<YearEndReviewViewModel>()
+                        val state by viewmodel.state.collectAsStateWithLifecycle()
+
+                        YearEndReviewScreen(
+                            state = state,
+                            onBack = { navController.popBackStack() },
                             modifier =
                                 Modifier
                                     .statusBarsPadding()

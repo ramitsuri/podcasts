@@ -100,6 +100,7 @@ private val coreModule =
         single<SessionHistoryRepository> {
             SessionHistoryRepository(
                 sessionActionDao = get(),
+                defaultDispatcher = get<DispatcherProvider>().default,
             )
         }
 

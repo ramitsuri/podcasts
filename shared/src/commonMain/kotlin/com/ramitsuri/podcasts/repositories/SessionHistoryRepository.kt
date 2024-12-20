@@ -6,17 +6,29 @@ import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeAndPodcastId
 import com.ramitsuri.podcasts.model.SessionAction
 import com.ramitsuri.podcasts.model.SessionEpisode
+import com.ramitsuri.podcasts.model.YearEndReview
 import com.ramitsuri.podcasts.utils.LogHelper
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.nanoseconds
 
 class SessionHistoryRepository internal constructor(
     private val sessionActionDao: SessionActionDao,
+    private val defaultDispatcher: CoroutineDispatcher,
 ) {
     private val mutex = Mutex()
     private var previousEpisode: Episode? = null
@@ -165,6 +177,196 @@ class SessionHistoryRepository internal constructor(
         return sessionActionDao.getEpisodes(episodeIds = episodeIds, podcastIds = podcastIds)
     }
 
+    suspend fun getReview(
+        year: Int,
+        timeZone: TimeZone,
+    ): YearEndReview {
+        return withContext(defaultDispatcher) {
+            val sessions = getEpisodeSessions()
+
+            val listeningSince =
+                sessions
+                    .minBy { it.startTime }
+                    .startTime
+
+            val mostListenedToPodcasts =
+                sessions
+                    .groupBy {
+                        it.podcastId
+                    }
+                    .map { (podcastId, sessions) ->
+                        podcastId to sessions.sumDuration()
+                    }
+                    .sortedBy { (_, totalDuration) ->
+                        totalDuration
+                    }
+                    .take(3)
+                    .map { (podcastId, _) ->
+                        podcastId
+                    }
+
+            val totalDurationListened = sessions.sumDuration()
+
+            val totalActualDurationListened = sessions.sumDuration(useSpeedMultiplier = true)
+
+            val totalEpisodesListened =
+                sessions
+                    .map { it.episodeId }
+                    .distinct()
+                    .size
+
+            val days =
+                getDaysOfYear(year, timeZone)
+                    .map { dayOfYear ->
+                        val startBeforeCurrentDayEndInCurrentDay =
+                            sessions
+                                .filter { session ->
+                                    session.startTime < dayOfYear.startTime && session.endTime <= dayOfYear.endTime
+                                }
+                                .sumOf { session ->
+                                    session.endTime.minus(dayOfYear.startTime)
+                                }
+                        val startCurrentDayEndAfterCurrentDay =
+                            sessions
+                                .filter { session ->
+                                    session.startTime >= dayOfYear.startTime && session.endTime > dayOfYear.endTime
+                                }
+                                .sumOf { session ->
+                                    dayOfYear.endTime.minus(session.startTime)
+                                }
+                        val startBeforeCurrentDayEndAfterCurrentDay =
+                            sessions
+                                .filter { session ->
+                                    session.startTime < dayOfYear.startTime && session.endTime > dayOfYear.endTime
+                                }
+                                .sumOf { session ->
+                                    dayOfYear.endTime.minus(dayOfYear.startTime)
+                                }
+                        val startCurrentDayEndCurrentDay =
+                            sessions
+                                .filter { session ->
+                                    session.startTime >= dayOfYear.startTime && session.endTime <= dayOfYear.endTime
+                                }
+                                .sumDuration()
+                        val totalDuration =
+                            listOf(
+                                startBeforeCurrentDayEndInCurrentDay,
+                                startCurrentDayEndAfterCurrentDay,
+                                startBeforeCurrentDayEndAfterCurrentDay,
+                                startCurrentDayEndCurrentDay,
+                            ).sumOf { it }
+                        dayOfYear.copy(listenDuration = totalDuration)
+                    }
+
+            val mostListenedOnDayOfWeek =
+                days
+                    .groupBy { it.dayOfWeek }
+                    .maxBy { (_, days) ->
+                        days.sumOf { it.listenDuration }
+                    }
+                    .key
+
+            val mostListenedOnDay =
+                days
+                    .maxBy { it.listenDuration }
+                    .let { day ->
+                        LocalDate(year = year, dayOfMonth = day.dayOfMonth, month = day.month)
+                    }
+
+            val mostListenedMonth =
+                days
+                    .groupBy { it.month }
+                    .maxBy { (_, days) ->
+                        days.sumOf { it.listenDuration }
+                    }
+                    .key
+
+            YearEndReview(
+                listeningSince = listeningSince.toLocalDateTime(timeZone),
+                mostListenedToPodcasts = mostListenedToPodcasts,
+                totalDurationListened = totalDurationListened,
+                totalActualDurationListened = totalActualDurationListened,
+                totalEpisodesListened = totalEpisodesListened,
+                mostListenedOnDayOfWeek = mostListenedOnDayOfWeek,
+                mostListenedOnDay = mostListenedOnDay,
+                mostListenedMonth = mostListenedMonth,
+            )
+        }
+    }
+
+    private inline fun Iterable<Session>.sumDuration(useSpeedMultiplier: Boolean = false): Duration {
+        return sumOf { session ->
+            val speed = (if (useSpeedMultiplier) session.playbackSpeed else 1f).toDouble()
+            session.duration.times(speed)
+        }
+    }
+
+    private inline fun <T> Iterable<T>.sumOf(selector: (T) -> Duration): Duration {
+        var sum: Duration = Duration.ZERO
+        for (element in this) {
+            sum += selector(element)
+        }
+        return sum
+    }
+
+    private fun getDaysOfYear(
+        year: Int,
+        timeZone: TimeZone,
+    ): List<Days> {
+        var date = LocalDate(year, 1, 1)
+        return buildList {
+            while (date.year == year) {
+                val start = date.atStartOfDayIn(timeZone)
+                val end = date.plus(1, DateTimeUnit.DAY).atStartOfDayIn(timeZone).minus(1.nanoseconds)
+                add(
+                    Days(
+                        dayOfMonth = date.dayOfMonth,
+                        month = date.month,
+                        dayOfWeek = date.dayOfWeek,
+                        startTime = start,
+                        endTime = end,
+                    ),
+                )
+                date = date.plus(1, DateTimeUnit.DAY)
+            }
+        }
+    }
+
+    private suspend fun getEpisodeSessions(): List<Session> {
+        val sessions = mutableListOf<Session>()
+        sessionActionDao
+            .getAll()
+            .groupBy { it.sessionId }
+            // session and its actions
+            .forEach { (_, entitiesForSession) ->
+                entitiesForSession
+                    .groupBy { it.episodeId + it.podcastId }
+                    // Each episode's actions in each session
+                    .forEach { (_, entitiesForEpisode) ->
+                        val (startEntities, stopEntities) = entitiesForEpisode.partition { it.action == Action.START }
+                        if (startEntities.size != stopEntities.size) {
+                            LogHelper.v("SessionHistoryRepository", "startEntities.size!=stopEntities.size")
+                        }
+                        var index = 0
+                        while (index < startEntities.size && index < stopEntities.size) {
+                            val start = startEntities[index]
+                            val stop = stopEntities[index]
+                            sessions.add(
+                                Session(
+                                    episodeId = start.episodeId,
+                                    podcastId = start.podcastId,
+                                    playbackSpeed = start.playbackSpeed,
+                                    startTime = start.time,
+                                    endTime = stop.time,
+                                ),
+                            )
+                            index++
+                        }
+                    }
+            }
+        return sessions
+    }
+
     private suspend fun insert(action: SessionAction) {
         sessionActionDao.insert(action)
     }
@@ -196,4 +398,24 @@ class SessionHistoryRepository internal constructor(
     private fun v(message: String) {
         LogHelper.v("SessionHistory", message)
     }
+
+    private data class Session(
+        val episodeId: String,
+        val podcastId: Long,
+        val playbackSpeed: Float,
+        val startTime: Instant,
+        val endTime: Instant,
+    ) {
+        val duration: Duration
+            get() = endTime.minus(startTime)
+    }
+
+    private data class Days(
+        val dayOfMonth: Int,
+        val month: Month,
+        val dayOfWeek: DayOfWeek,
+        val startTime: Instant,
+        val endTime: Instant,
+        val listenDuration: Duration = Duration.ZERO,
+    )
 }
