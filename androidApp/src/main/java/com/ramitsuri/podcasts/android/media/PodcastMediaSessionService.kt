@@ -53,6 +53,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -77,6 +78,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
 
     private var insertStartActionJob: Job? = null
     private var insertStopActionJob: Job? = null
+    private var insertSpeedChangeActionJob: Job? = null
 
     override fun onCreate() {
         LogHelper.d(TAG, "onCreate")
@@ -203,7 +205,20 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 if (session != null) {
                     val player = session.player
                     player.setPlaybackSpeed(speed)
-                    sessionHistoryRepository.speedChange(player.isPlaying, session.id, player.playbackParameters.speed)
+                    insertSpeedChangeActionJob?.cancel()
+                    insertSpeedChangeActionJob =
+                        coroutineScope.launch {
+                            val playerSpeed = player.playbackParameters.speed
+                            val isPlaying = player.isPlaying
+                            withContext(Dispatchers.IO) {
+                                delay(500)
+                                sessionHistoryRepository.speedChange(
+                                    isPlaying,
+                                    session.id,
+                                    playerSpeed,
+                                )
+                            }
+                        }
                 }
             }
         }
