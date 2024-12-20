@@ -32,8 +32,8 @@ fun YearEndReviewScreen(
     var showError by remember { mutableStateOf(false) }
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
     ) {
         TopAppBar(
             onBack = onBack,

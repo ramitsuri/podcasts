@@ -22,9 +22,10 @@ class YearEndReviewViewModel internal constructor(
         viewModelScope.launch {
             val review = sessionHistoryRepository.getReview(YEAR, timeZone)
 
-            val mostListenedToPodcasts = review.mostListenedToPodcasts.mapNotNull { podcastId ->
-                podcastsRepository.get(podcastId)
-            }
+            val mostListenedToPodcasts =
+                review.mostListenedToPodcasts.mapNotNull { podcastId ->
+                    podcastsRepository.get(podcastId)
+                }
             _state.update {
                 if (mostListenedToPodcasts.isEmpty()) {
                     LogHelper.v(TAG, "No podcasts found for mostListenedToPodcasts")
