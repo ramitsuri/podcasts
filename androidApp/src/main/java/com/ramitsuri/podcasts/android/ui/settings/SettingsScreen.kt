@@ -68,6 +68,8 @@ fun SettingsScreen(
     onFetchRequested: () -> Unit,
     onRemoveCompletedAfterSelected: (RemoveDownloadsAfter) -> Unit,
     onRemoveUnfinishedAfterSelected: (RemoveDownloadsAfter) -> Unit,
+    onVersionClicked: () -> Unit,
+    onYearEndReviewClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -98,7 +100,10 @@ fun SettingsScreen(
                 onRemoveUnfinishedAfterSelected = onRemoveUnfinishedAfterSelected,
             )
             ColoredHorizontalDivider()
-            AboutApp()
+            AboutApp(onVersionClicked = onVersionClicked)
+            if (state.showYearEndReview) {
+                YearEndReview(onYearEndReviewClicked = onYearEndReviewClicked)
+            }
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -288,7 +293,7 @@ private fun Subtitle(text: String) {
 }
 
 @Composable
-private fun AboutApp() {
+private fun AboutApp(onVersionClicked: () -> Unit) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val appVersion = context.packageManager.getPackageInfo(context.packageName, 0)?.versionName ?: ""
@@ -305,6 +310,7 @@ private fun AboutApp() {
             modifier =
                 Modifier
                     .fillMaxWidth()
+                    .clickable(onClick = onVersionClicked)
                     .padding(16.dp),
         ) {
             Title(text = stringResource(id = R.string.settings_version))
@@ -394,6 +400,19 @@ private fun RemoveDownloadsAfterDialog(
 }
 
 @Composable
+private fun YearEndReview(onYearEndReviewClicked: () -> Unit) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onYearEndReviewClicked)
+                .padding(24.dp),
+    ) {
+        Title(text = "Year end review")
+    }
+}
+
+@Composable
 private fun RemoveDownloadsAfter.text(): String {
     return when (this) {
         RemoveDownloadsAfter.TWENTY_FOUR_HOURS -> stringResource(id = R.string.settings_remove_after_24_hours)
@@ -414,6 +433,8 @@ private fun SettingsPreview_LastFetchTimeNever() {
             onFetchRequested = { },
             onRemoveCompletedAfterSelected = { },
             onRemoveUnfinishedAfterSelected = { },
+            onVersionClicked = { },
+            onYearEndReviewClicked = { },
         )
     }
 }
@@ -429,6 +450,8 @@ private fun SettingsPreview_LastFetchTimeMinutesAgo() {
             onFetchRequested = { },
             onRemoveCompletedAfterSelected = { },
             onRemoveUnfinishedAfterSelected = { },
+            onVersionClicked = { },
+            onYearEndReviewClicked = { },
         )
     }
 }
@@ -444,6 +467,8 @@ private fun SettingsPreview_Fetching() {
             onFetchRequested = { },
             onRemoveCompletedAfterSelected = { },
             onRemoveUnfinishedAfterSelected = { },
+            onVersionClicked = { },
+            onYearEndReviewClicked = { },
         )
     }
 }
