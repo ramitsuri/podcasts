@@ -221,7 +221,9 @@ class SessionHistoryRepository internal constructor(
                         val startBeforeCurrentDayEndInCurrentDay =
                             sessions
                                 .filter { session ->
-                                    session.startTime < dayOfYear.startTime && session.endTime <= dayOfYear.endTime
+                                    session.startTime < dayOfYear.startTime &&
+                                        session.endTime > dayOfYear.startTime &&
+                                        session.endTime <= dayOfYear.endTime
                                 }
                                 .sumOf { session ->
                                     session.endTime.minus(dayOfYear.startTime)
@@ -229,7 +231,9 @@ class SessionHistoryRepository internal constructor(
                         val startCurrentDayEndAfterCurrentDay =
                             sessions
                                 .filter { session ->
-                                    session.startTime >= dayOfYear.startTime && session.endTime > dayOfYear.endTime
+                                    session.startTime >= dayOfYear.startTime &&
+                                        session.startTime < dayOfYear.endTime &&
+                                        session.endTime > dayOfYear.endTime
                                 }
                                 .sumOf { session ->
                                     dayOfYear.endTime.minus(session.startTime)
@@ -239,7 +243,7 @@ class SessionHistoryRepository internal constructor(
                                 .filter { session ->
                                     session.startTime < dayOfYear.startTime && session.endTime > dayOfYear.endTime
                                 }
-                                .sumOf { session ->
+                                .sumOf {
                                     dayOfYear.endTime.minus(dayOfYear.startTime)
                                 }
                         val startCurrentDayEndCurrentDay =
