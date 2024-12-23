@@ -78,17 +78,17 @@ fun YearEndReviewScreen(
     }
     Column(
         modifier =
-        modifier
-            .fillMaxSize()
-            .background(
-                Brush.linearGradient(
-                    colors = backgroundColors,
-                    start = Offset.Zero,
-                    end = Offset.Infinite,
-                ),
-            )
-            .displayCutoutPadding()
-            .statusBarsPadding(),
+            modifier
+                .fillMaxSize()
+                .background(
+                    Brush.linearGradient(
+                        colors = backgroundColors,
+                        start = Offset.Zero,
+                        end = Offset.Infinite,
+                    ),
+                )
+                .displayCutoutPadding()
+                .statusBarsPadding(),
     ) {
         Column(
             modifier = Modifier.weight(1f),
@@ -99,11 +99,12 @@ fun YearEndReviewScreen(
                 is YearEndReviewViewState.Data -> {
                     LaunchedEffect(state.currentPage) {
                         val colorSets = listOf(greens, blues, reds)
-                        backgroundColors = listOf(
-                            colorSets.random().random(),
-                            colorSets.random().random(),
-                            colorSets.random().random(),
-                        )
+                        backgroundColors =
+                            listOf(
+                                colorSets.random().random(),
+                                colorSets.random().random(),
+                                colorSets.random().random(),
+                            )
                     }
                     YearEndReviewContent(
                         data = state,
@@ -154,32 +155,34 @@ private fun YearEndReviewContent(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier =
-        Modifier
-            .pointerInput(Unit) {
-                val maxWidth = this.size.width
-                detectTapGestures(
-                    onPress = {
-                        isPressed = true
-                        val totalPressTime = measureTime {
-                            this.tryAwaitRelease()
-                        }
-                        if (totalPressTime < 200.milliseconds) {
-                            val isTapOnRight = (it.x > (maxWidth / 2))
-                            if (isTapOnRight) {
-                                onNext()
-                            } else {
-                                onPrevious()
+            Modifier
+                .pointerInput(Unit) {
+                    val maxWidth = this.size.width
+                    detectTapGestures(
+                        onPress = {
+                            isPressed = true
+                            val totalPressTime =
+                                measureTime {
+                                    this.tryAwaitRelease()
+                                }
+                            if (totalPressTime < 200.milliseconds) {
+                                val isTapOnRight = (it.x > (maxWidth / 2))
+                                if (isTapOnRight) {
+                                    onNext()
+                                } else {
+                                    onPrevious()
+                                }
                             }
-                        }
-                        isPressed = false
-                    },
-                )
-            },
+                            isPressed = false
+                        },
+                    )
+                },
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
         ) {
             IconButton(
                 onClick = onExit,
@@ -187,8 +190,9 @@ private fun YearEndReviewContent(
                 Icon(
                     Icons.Outlined.Close,
                     contentDescription = stringResource(id = R.string.back),
-                    modifier = Modifier
-                        .size(24.dp),
+                    modifier =
+                        Modifier
+                            .size(24.dp),
                     tint = Color.White,
                 )
             }
@@ -201,9 +205,10 @@ private fun YearEndReviewContent(
             onCurrentStepAnimationDone = onNext,
         )
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(24.dp),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .padding(24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -318,21 +323,22 @@ private fun MostListenedToPodcastsContent(
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             info.podcasts.forEach { podcast ->
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.White)
-                        .padding(8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color.White)
+                            .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Image(
                         url = podcast.artwork,
                         contentDescription = podcast.title,
                         modifier =
-                        Modifier
-                            .size(88.dp)
-                            .padding(4.dp)
-                            .clip(MaterialTheme.shapes.small),
+                            Modifier
+                                .size(88.dp)
+                                .padding(4.dp)
+                                .clip(MaterialTheme.shapes.small),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -383,17 +389,18 @@ private fun MostListenedDayContent(
         verticalArrangement = Arrangement.Center,
         modifier = modifier,
     ) {
-        val text = buildAnnotatedString {
-            withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
-                append(stringResource(R.string.year_end_most_listened_date_start))
+        val text =
+            buildAnnotatedString {
+                withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
+                    append(stringResource(R.string.year_end_most_listened_date_start))
+                }
+                withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle().copy(fontWeight = FontWeight.Bold)) {
+                    append(dateFormatted(toFormat = info.day, useShortMonthNames = false))
+                }
+                withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
+                    append(stringResource(R.string.year_end_most_listened_date_end))
+                }
             }
-            withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle().copy(fontWeight = FontWeight.Bold)) {
-                append(dateFormatted(toFormat = info.day, useShortMonthNames = false))
-            }
-            withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
-                append(stringResource(R.string.year_end_most_listened_date_end))
-            }
-        }
         Text(
             text = text,
             color = Color.White,
@@ -438,23 +445,24 @@ private fun ConsumedDurationContent(
         verticalArrangement = Arrangement.Center,
         modifier = modifier,
     ) {
-        val text = buildAnnotatedString {
-            withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
-                append(stringResource(R.string.year_end_duration_consumed_start))
+        val text =
+            buildAnnotatedString {
+                withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
+                    append(stringResource(R.string.year_end_duration_consumed_start))
+                }
+                withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle().copy(fontWeight = FontWeight.Bold)) {
+                    append(stringResource(R.string.year_end_duration_consumed_speed, info.speedRounded.toString()))
+                }
+                withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
+                    append(stringResource(R.string.year_end_duration_consumed_middle))
+                }
+                withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle().copy(fontWeight = FontWeight.Bold)) {
+                    append(stringResource(R.string.year_end_minutes_format, info.duration.inWholeMinutes))
+                }
+                withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
+                    append(stringResource(R.string.year_end_duration_consumed_end))
+                }
             }
-            withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle().copy(fontWeight = FontWeight.Bold)) {
-                append(stringResource(R.string.year_end_duration_consumed_speed, info.speedRounded.toString()))
-            }
-            withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
-                append(stringResource(R.string.year_end_duration_consumed_middle))
-            }
-            withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle().copy(fontWeight = FontWeight.Bold)) {
-                append(stringResource(R.string.year_end_minutes_format, info.duration.inWholeMinutes))
-            }
-            withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
-                append(stringResource(R.string.year_end_duration_consumed_end))
-            }
-        }
         Text(
             text = text,
             color = Color.White,
@@ -473,17 +481,18 @@ private fun ListenedDurationContent(
         verticalArrangement = Arrangement.Center,
         modifier = modifier,
     ) {
-        val text = buildAnnotatedString {
-            withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
-                append(stringResource(R.string.year_end_duration_listened_start))
+        val text =
+            buildAnnotatedString {
+                withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
+                    append(stringResource(R.string.year_end_duration_listened_start))
+                }
+                withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle().copy(fontWeight = FontWeight.Bold)) {
+                    append(stringResource(R.string.year_end_minutes_format, info.duration.inWholeMinutes))
+                }
+                withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
+                    append(stringResource(R.string.year_end_duration_listened_end))
+                }
             }
-            withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle().copy(fontWeight = FontWeight.Bold)) {
-                append(stringResource(R.string.year_end_minutes_format, info.duration.inWholeMinutes))
-            }
-            withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
-                append(stringResource(R.string.year_end_duration_listened_end))
-            }
-        }
         Text(
             text = text,
             color = Color.White,
@@ -495,7 +504,7 @@ private fun ListenedDurationContent(
 @Composable
 private fun ListeningSinceContent(
     info: YearEndReviewViewState.Data.PageInfo.ListeningSince,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -517,14 +526,13 @@ private fun ListeningSinceContent(
     }
 }
 
-
 @Suppress("SameParameterValue")
 @Composable
 private fun ProgressBar(
     steps: Int,
     currentStep: Int,
     paused: Boolean,
-    onCurrentStepAnimationDone: () -> Unit
+    onCurrentStepAnimationDone: () -> Unit,
 ) {
     val currentStepValue = remember(currentStep) { Animatable(0f) }
     LaunchedEffect(currentStep, paused) {
@@ -533,38 +541,42 @@ private fun ProgressBar(
         } else {
             currentStepValue.animateTo(
                 targetValue = 1f,
-                animationSpec = tween(
-                    durationMillis = (3000 * (1f - currentStepValue.value)).toInt(),
-                    easing = LinearEasing,
-                ),
+                animationSpec =
+                    tween(
+                        durationMillis = (3000 * (1f - currentStepValue.value)).toInt(),
+                        easing = LinearEasing,
+                    ),
             )
             onCurrentStepAnimationDone()
         }
     }
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .height(48.dp)
-            .padding(horizontal = 24.dp),
+        modifier =
+            Modifier
+                .height(48.dp)
+                .padding(horizontal = 24.dp),
     ) {
         for (index in 1..steps) {
             Row(
-                modifier = Modifier
-                    .height(4.dp)
-                    .clip(RoundedCornerShape(50, 50, 50, 50))
-                    .weight(1f)
-                    .background(Color.White.copy(alpha = 0.4f)),
+                modifier =
+                    Modifier
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(50, 50, 50, 50))
+                        .weight(1f)
+                        .background(Color.White.copy(alpha = 0.4f)),
             ) {
                 Box(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .fillMaxHeight().let {
-                            when (index) {
-                                currentStep -> it.fillMaxWidth(currentStepValue.value)
-                                in 0..currentStep -> it.fillMaxWidth(1f)
-                                else -> it
-                            }
-                        },
+                    modifier =
+                        Modifier
+                            .background(Color.White)
+                            .fillMaxHeight().let {
+                                when (index) {
+                                    currentStep -> it.fillMaxWidth(currentStepValue.value)
+                                    in 0..currentStep -> it.fillMaxWidth(1f)
+                                    else -> it
+                                }
+                            },
                 ) {}
             }
             if (index != steps) {
@@ -574,24 +586,27 @@ private fun ProgressBar(
     }
 }
 
-private val blues = listOf(
-    Color(0xFF0000FF),
-    Color(0xFF0000CC),
-    Color(0xFF0000AA),
-    Color(0xFF000088),
-    Color(0xFF000066),
-)
-private val reds = listOf(
-    Color(0xFFEE4444),
-    Color(0xFFCC0000),
-    Color(0xFFAA0000),
-    Color(0xFF880000),
-    Color(0xFF660000),
-)
-private val greens = listOf(
-    Color(0xFF00CC00),
-    Color(0xFF00AA00),
-    Color(0xFF008800),
-    Color(0xFF006600),
-    Color(0xFF004400),
-)
+private val blues =
+    listOf(
+        Color(0xFF0000FF),
+        Color(0xFF0000CC),
+        Color(0xFF0000AA),
+        Color(0xFF000088),
+        Color(0xFF000066),
+    )
+private val reds =
+    listOf(
+        Color(0xFFEE4444),
+        Color(0xFFCC0000),
+        Color(0xFFAA0000),
+        Color(0xFF880000),
+        Color(0xFF660000),
+    )
+private val greens =
+    listOf(
+        Color(0xFF00CC00),
+        Color(0xFF00AA00),
+        Color(0xFF008800),
+        Color(0xFF006600),
+        Color(0xFF004400),
+    )

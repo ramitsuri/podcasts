@@ -291,18 +291,21 @@ class SessionHistoryRepository internal constructor(
                 totalDurationListened = totalDurationListened,
                 totalConsumedDuration = totalConsumedDuration,
                 totalEpisodesListened = totalEpisodesListened,
-                mostListenedOnDayOfWeek = YearEndReview.MostListenedDayOfWeek(
-                    dayOfWeek = mostListenedOnDayOfWeek.first,
-                    duration = mostListenedOnDayOfWeek.second,
-                ),
-                mostListenedDate = YearEndReview.MostListenedDate(
-                    date = mostListenedOnDay.first,
-                    duration = mostListenedOnDay.second,
-                ),
-                mostListenedMonth = YearEndReview.MostListenedMonth(
-                    month = mostListenedMonth.first,
-                    duration = mostListenedMonth.second,
-                ),
+                mostListenedOnDayOfWeek =
+                    YearEndReview.MostListenedDayOfWeek(
+                        dayOfWeek = mostListenedOnDayOfWeek.first,
+                        duration = mostListenedOnDayOfWeek.second,
+                    ),
+                mostListenedDate =
+                    YearEndReview.MostListenedDate(
+                        date = mostListenedOnDay.first,
+                        duration = mostListenedOnDay.second,
+                    ),
+                mostListenedMonth =
+                    YearEndReview.MostListenedMonth(
+                        month = mostListenedMonth.first,
+                        duration = mostListenedMonth.second,
+                    ),
             )
         }
     }

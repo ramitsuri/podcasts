@@ -161,7 +161,10 @@ fun dateFormatted(
 }
 
 @Composable
-fun monthFormatted(month: Month, useShortMonthNames: Boolean = true): String {
+fun monthFormatted(
+    month: Month,
+    useShortMonthNames: Boolean = true,
+): String {
     return monthNames(useShortMonthNames).names[month.value - 1]
 }
 
