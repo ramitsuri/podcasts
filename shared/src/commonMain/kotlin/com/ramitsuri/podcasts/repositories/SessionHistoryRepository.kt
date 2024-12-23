@@ -207,7 +207,7 @@ class SessionHistoryRepository internal constructor(
 
             val totalDurationListened = sessions.sumDuration()
 
-            val totalActualDurationListened = sessions.sumDuration(useSpeedMultiplier = true)
+            val totalConsumedDuration = sessions.sumDuration(useSpeedMultiplier = true)
 
             val totalEpisodesListened =
                 sessions
@@ -265,35 +265,44 @@ class SessionHistoryRepository internal constructor(
             val mostListenedOnDayOfWeek =
                 days
                     .groupBy { it.dayOfWeek }
-                    .maxBy { (_, days) ->
-                        days.sumOf { it.listenDuration }
+                    .map { (dayOfWeek, days) ->
+                        dayOfWeek to days.sumOf { it.listenDuration }
                     }
-                    .key
+                    .maxBy { it.second }
 
             val mostListenedOnDay =
                 days
                     .maxBy { it.listenDuration }
                     .let { day ->
-                        LocalDate(year = year, dayOfMonth = day.dayOfMonth, month = day.month)
+                        LocalDate(year = year, dayOfMonth = day.dayOfMonth, month = day.month) to day.listenDuration
                     }
 
             val mostListenedMonth =
                 days
                     .groupBy { it.month }
-                    .maxBy { (_, days) ->
-                        days.sumOf { it.listenDuration }
+                    .map { (month, days) ->
+                        month to days.sumOf { it.listenDuration }
                     }
-                    .key
+                    .maxBy { it.second }
 
             YearEndReview(
                 listeningSince = listeningSince.toLocalDateTime(timeZone),
                 mostListenedToPodcasts = mostListenedToPodcasts,
                 totalDurationListened = totalDurationListened,
-                totalActualDurationListened = totalActualDurationListened,
+                totalConsumedDuration = totalConsumedDuration,
                 totalEpisodesListened = totalEpisodesListened,
-                mostListenedOnDayOfWeek = mostListenedOnDayOfWeek,
-                mostListenedOnDay = mostListenedOnDay,
-                mostListenedMonth = mostListenedMonth,
+                mostListenedOnDayOfWeek = YearEndReview.MostListenedDayOfWeek(
+                    dayOfWeek = mostListenedOnDayOfWeek.first,
+                    duration = mostListenedOnDayOfWeek.second,
+                ),
+                mostListenedDate = YearEndReview.MostListenedDate(
+                    date = mostListenedOnDay.first,
+                    duration = mostListenedOnDay.second,
+                ),
+                mostListenedMonth = YearEndReview.MostListenedMonth(
+                    month = mostListenedMonth.first,
+                    duration = mostListenedMonth.second,
+                ),
             )
         }
     }

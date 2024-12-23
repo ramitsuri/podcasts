@@ -188,7 +188,7 @@ private fun SearchOutput(
             val context = LocalContext.current
             LaunchedEffect(searchResult) {
                 if (searchResult is SearchResult.Error) {
-                    Toast.makeText(context, context.getString(R.string.search_error), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.generic_error), Toast.LENGTH_SHORT).show()
                 }
             }
             SearchDefault()
