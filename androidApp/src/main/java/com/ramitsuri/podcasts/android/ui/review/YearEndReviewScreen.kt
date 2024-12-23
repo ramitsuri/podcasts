@@ -132,7 +132,11 @@ fun YearEndReviewScreen(
                 showError = false
             },
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 Text(text = stringResource(R.string.generic_error))
                 Spacer(modifier = Modifier.height(32.dp))
                 TextButton(onClick = onBack) {

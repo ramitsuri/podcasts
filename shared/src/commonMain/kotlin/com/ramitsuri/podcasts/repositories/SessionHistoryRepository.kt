@@ -180,9 +180,12 @@ class SessionHistoryRepository internal constructor(
     suspend fun getReview(
         year: Int,
         timeZone: TimeZone,
-    ): YearEndReview {
+    ): YearEndReview? {
         return withContext(defaultDispatcher) {
             val sessions = getEpisodeSessions()
+            if (sessions.isEmpty()) {
+                return@withContext null
+            }
 
             val listeningSince =
                 sessions
