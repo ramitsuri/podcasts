@@ -15,7 +15,8 @@ class YearEndReviewViewModel internal constructor(
     sessionHistoryRepository: SessionHistoryRepository,
     timeZone: TimeZone,
 ) : ViewModel() {
-    private val _state: MutableStateFlow<YearEndReviewViewState> = MutableStateFlow(YearEndReviewViewState.Loading)
+    private val _state: MutableStateFlow<YearEndReviewViewState> =
+        MutableStateFlow(YearEndReviewViewState.Loading)
     val state = _state.asStateFlow()
 
     init {
@@ -31,19 +32,25 @@ class YearEndReviewViewModel internal constructor(
                     LogHelper.v(TAG, "No podcasts found for mostListenedToPodcasts")
                     YearEndReviewViewState.Error
                 } else {
-                    YearEndReviewViewState.Data(
-                        year = YEAR,
-                        listeningSince = review.listeningSince,
-                        mostListenedToPodcasts = mostListenedToPodcasts,
-                        totalDurationListened = review.totalDurationListened,
-                        totalActualDurationListened = review.totalActualDurationListened,
-                        totalEpisodesListened = review.totalEpisodesListened,
-                        mostListenedOnDayOfWeek = review.mostListenedOnDayOfWeek,
-                        mostListenedOnDay = review.mostListenedOnDay,
-                        mostListenedMonth = review.mostListenedMonth,
-                    )
+                    YearEndReviewViewState.Data(review, mostListenedToPodcasts)
                 }
             }
+        }
+    }
+
+    fun onNextPage() {
+        val data = _state.value as? YearEndReviewViewState.Data ?: return
+        if (data.currentPage == data.totalPages) return
+        _state.update {
+            data.copy(currentPage = data.currentPage + 1)
+        }
+    }
+
+    fun onPreviousPage() {
+        val data = _state.value as? YearEndReviewViewState.Data ?: return
+        if (data.currentPage == 1) return
+        _state.update {
+            data.copy(currentPage = data.currentPage - 1)
         }
     }
 

@@ -31,9 +31,11 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -108,6 +110,7 @@ fun NavGraph(
             }
         }
     }
+    var showBottomNavAndPlayer by remember { mutableStateOf(!isExpanded) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -129,7 +132,7 @@ fun NavGraph(
                 .fillMaxSize(),
         bottomBar = {
             AnimatedVisibility(
-                visible = !isExpanded,
+                visible = showBottomNavAndPlayer,
                 enter = slideInVertically { navBarHeight },
                 exit = slideOutVertically { navBarHeight },
             ) {
@@ -159,7 +162,7 @@ fun NavGraph(
             )
         val playerState by playerViewModel.state.collectAsStateWithLifecycle()
         var peekHeightPx by remember { mutableIntStateOf(0) }
-        val bottomSheetVisible = playerState.hasEverBeenPlayed
+        val bottomSheetVisible = playerState.hasEverBeenPlayed && showBottomNavAndPlayer
         val bottomPadding =
             if (bottomSheetVisible) {
                 with(LocalDensity.current) {
@@ -752,13 +755,17 @@ fun NavGraph(
                         val viewmodel = koinViewModel<YearEndReviewViewModel>()
                         val state by viewmodel.state.collectAsStateWithLifecycle()
 
+                        DisposableEffect(Unit) {
+                            showBottomNavAndPlayer = false
+                            onDispose {
+                                showBottomNavAndPlayer = true
+                            }
+                        }
                         YearEndReviewScreen(
                             state = state,
                             onBack = { navController.popBackStack() },
-                            modifier =
-                                Modifier
-                                    .statusBarsPadding()
-                                    .displayCutoutPadding(),
+                            onNextPage = viewmodel::onNextPage,
+                            onPreviousPage = viewmodel::onPreviousPage,
                         )
                     }
                 }

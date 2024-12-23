@@ -4,10 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.ramitsuri.podcasts.android.R
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.format
@@ -44,7 +46,7 @@ fun friendlyPublishDate(
             return stringResource(id = R.string.days_ago_format, days)
         }
     }
-    val monthNames = monthNames
+    val monthNames = monthNames()
     val format =
         LocalDateTime.Format {
             monthName(monthNames)
@@ -67,7 +69,7 @@ fun friendlyFetchDateTime(
     now: Instant = Clock.System.now(),
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
 ): String {
-    val monthNames = monthNames
+    val monthNames = monthNames()
     val am = stringResource(id = R.string.am)
     val pm = stringResource(id = R.string.pm)
     val format =
@@ -121,6 +123,7 @@ fun dateFormatted(
     toFormat: LocalDate,
     now: Instant = Clock.System.now(),
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    useShortMonthNames: Boolean = true,
 ): String {
     val nowLocalDateTime = LocalDateTime(now.toLocalDateTime(timeZone).date, LocalTime(0, 0))
     val toFormatDateTime = toFormat.atTime(0, 0)
@@ -139,7 +142,7 @@ fun dateFormatted(
         }
 
         else -> {
-            val monthNames = monthNames
+            val monthNames = monthNames(useShortMonthNames)
             val format =
                 LocalDateTime.Format {
                     monthName(monthNames)
@@ -157,10 +160,31 @@ fun dateFormatted(
     }
 }
 
-private val monthNames: MonthNames
-    @Composable
-    get() =
-        MonthNames(
+@Composable
+fun monthFormatted(
+    month: Month,
+    useShortMonthNames: Boolean = true,
+): String {
+    return monthNames(useShortMonthNames).names[month.value - 1]
+}
+
+@Composable
+fun dayOfWeekFormatted(dayOfWeek: DayOfWeek): String {
+    return when (dayOfWeek) {
+        java.time.DayOfWeek.MONDAY -> stringResource(R.string.mondays)
+        java.time.DayOfWeek.TUESDAY -> stringResource(R.string.tuesdays)
+        java.time.DayOfWeek.WEDNESDAY -> stringResource(R.string.wednesdays)
+        java.time.DayOfWeek.THURSDAY -> stringResource(R.string.thursdays)
+        java.time.DayOfWeek.FRIDAY -> stringResource(R.string.fridays)
+        java.time.DayOfWeek.SATURDAY -> stringResource(R.string.saturdays)
+        java.time.DayOfWeek.SUNDAY -> stringResource(R.string.sundays)
+    }
+}
+
+@Composable
+private fun monthNames(useShortNames: Boolean = true): MonthNames {
+    return MonthNames(
+        if (useShortNames) {
             listOf(
                 stringResource(id = R.string.month_jan),
                 stringResource(id = R.string.month_feb),
@@ -174,5 +198,22 @@ private val monthNames: MonthNames
                 stringResource(id = R.string.month_oct),
                 stringResource(id = R.string.month_nov),
                 stringResource(id = R.string.month_dec),
-            ),
-        )
+            )
+        } else {
+            listOf(
+                stringResource(id = R.string.month_jan_full),
+                stringResource(id = R.string.month_feb_full),
+                stringResource(id = R.string.month_mar_full),
+                stringResource(id = R.string.month_apr_full),
+                stringResource(id = R.string.month_may_full),
+                stringResource(id = R.string.month_jun_full),
+                stringResource(id = R.string.month_jul_full),
+                stringResource(id = R.string.month_aug_full),
+                stringResource(id = R.string.month_sep_full),
+                stringResource(id = R.string.month_oct_full),
+                stringResource(id = R.string.month_nov_full),
+                stringResource(id = R.string.month_dec_full),
+            )
+        },
+    )
+}

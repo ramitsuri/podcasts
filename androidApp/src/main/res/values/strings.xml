@@ -27,6 +27,7 @@
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="close">Close</string>
+    <string name="generic_error">Something went wrong</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>
@@ -76,7 +77,6 @@
     <!-- Search screen -->
     <string name="search_tip">Search for your podcasts</string>
     <string name="search_did_not_find_anything">Did not find anything</string>
-    <string name="search_error">Something went wrong</string>
 
     <!-- Episode controller -->
     <string name="episode_controller_add_to_queue">Add to queue</string>
@@ -108,6 +108,27 @@
     <string name="month_oct">Oct</string>
     <string name="month_nov">Nov</string>
     <string name="month_dec">Dec</string>
+
+    <string name="month_jan_full">January</string>
+    <string name="month_feb_full">February</string>
+    <string name="month_mar_full">March</string>
+    <string name="month_apr_full">April</string>
+    <string name="month_may_full">May</string>
+    <string name="month_jun_full">June</string>
+    <string name="month_jul_full">July</string>
+    <string name="month_aug_full">August</string>
+    <string name="month_sep_full">September</string>
+    <string name="month_oct_full">October</string>
+    <string name="month_nov_full">November</string>
+    <string name="month_dec_full">December</string>
+
+    <string name="sundays">Sundays</string>
+    <string name="mondays">mondays</string>
+    <string name="tuesdays">Tuesdays</string>
+    <string name="wednesdays">Wednesdays</string>
+    <string name="thursdays">Thursdays</string>
+    <string name="fridays">Fridays</string>
+    <string name="saturdays">Saturdays</string>
 
     <!-- Subscriptions screen -->
     <string name="subscriptions_empty_title">No subscriptions</string>
@@ -173,4 +194,31 @@
     <string name="podcast_details_load_even_older_episodes_message_already_loaded_count">%1$s most recent episodes loaded right now.</string>
     <string name="podcast_details_load_even_older_episodes_text_field_hint">Additional episodes</string>
     <string name="podcast_details_load_even_older_episodes_load">Load</string>"
+
+    <!-- Year end review -->
+    <string name="year_end_listening_since">Your podcast journey began on</string>
+
+    <string name="year_end_duration_listened_start">"That add up to "</string>
+    <string name="year_end_duration_listened_end">" of listening time"</string>
+
+    <string name="year_end_duration_consumed_start">"At your average listening speed of "</string>
+    <string name="year_end_duration_consumed_speed">%1$sx</string>
+    <string name="year_end_duration_consumed_middle">", that's "</string>
+    <string name="year_end_duration_consumed_end">" of podcasts consumed"</string>
+
+    <string name="year_end_total_episodes_start">"Since then you've tuned in to "</string>
+    <string name="year_end_total_episodes_format">%1$s episodes</string>
+
+    <string name="year_end_most_listened_to_podcasts">Your top podcasts of the year were</string>
+
+    <string name="year_end_most_listened_day_of_week">were your podcast days</string>
+
+    <string name="year_end_most_listened_date_start">"You made "</string>
+    <string name="year_end_most_listened_date_end">" a podcast filled day"</string>
+
+    <string name="year_end_most_listened_month">Your peak podcast month was</string>
+
+    <string name="year_end_bye">Here\'s to many more years of listening</string>
+
+    <string name="year_end_minutes_format">%1$s minutes</string>
 </resources>

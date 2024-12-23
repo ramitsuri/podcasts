@@ -11,9 +11,24 @@ data class YearEndReview(
     val mostListenedToPodcasts: List<Long>,
     val totalDurationListened: Duration,
     // This is if speed was not 1x
-    val totalActualDurationListened: Duration,
+    val totalConsumedDuration: Duration,
     val totalEpisodesListened: Int,
-    val mostListenedOnDayOfWeek: DayOfWeek,
-    val mostListenedOnDay: LocalDate,
-    val mostListenedMonth: Month,
-)
+    val mostListenedOnDayOfWeek: MostListenedDayOfWeek,
+    val mostListenedDate: MostListenedDate,
+    val mostListenedMonth: MostListenedMonth,
+) {
+    data class MostListenedDayOfWeek(
+        val dayOfWeek: DayOfWeek,
+        val duration: Duration,
+    )
+
+    data class MostListenedMonth(
+        val month: Month,
+        val duration: Duration,
+    )
+
+    data class MostListenedDate(
+        val date: LocalDate,
+        val duration: Duration,
+    )
+}
