@@ -101,8 +101,8 @@ fun HomeScreen(
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -152,11 +152,11 @@ fun HomeScreen(
                 EpisodeItem(
                     episode = it,
                     playingState =
-                    if (state.currentlyPlayingEpisodeId == it.id) {
-                        state.currentlyPlayingEpisodeState
-                    } else {
-                        PlayingState.NOT_PLAYING
-                    },
+                        if (state.currentlyPlayingEpisodeId == it.id) {
+                            state.currentlyPlayingEpisodeState
+                        } else {
+                            PlayingState.NOT_PLAYING
+                        },
                     onClicked = { onEpisodeClicked(it.id) },
                     onPlayClicked = { onEpisodePlayClicked(it) },
                     onPauseClicked = onEpisodePauseClicked,
@@ -194,14 +194,14 @@ private fun Subscriptions(
 ) {
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth(),
+            Modifier
+                .fillMaxWidth(),
     ) {
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -254,30 +254,30 @@ private fun SubscribedPodcastItem(
 ) {
     Box(
         modifier =
-        Modifier
-            .clip(MaterialTheme.shapes.small)
-            .combinedClickable(
-                onClick = onClicked,
-                onLongClick = onLongClicked,
-            ),
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .combinedClickable(
+                    onClick = onClicked,
+                    onLongClick = onLongClicked,
+                ),
     ) {
         Image(
             url = artwork,
             contentDescription = title,
             modifier =
-            Modifier
-                .size(88.dp)
-                .padding(4.dp)
-                .clip(MaterialTheme.shapes.small),
+                Modifier
+                    .size(88.dp)
+                    .padding(4.dp)
+                    .clip(MaterialTheme.shapes.small),
         )
         if (hasNewEpisodes) {
             Badge(
                 modifier =
-                Modifier
-                    .size(16.dp)
-                    .border(4.dp, color = MaterialTheme.colorScheme.background, shape = CircleShape)
-                    .align(Alignment.TopEnd)
-                    .clip(MaterialTheme.shapes.small),
+                    Modifier
+                        .size(16.dp)
+                        .border(4.dp, color = MaterialTheme.colorScheme.background, shape = CircleShape)
+                        .align(Alignment.TopEnd)
+                        .clip(MaterialTheme.shapes.small),
             )
         }
     }
@@ -285,54 +285,55 @@ private fun SubscribedPodcastItem(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun YearEndReviewItem(
-    onClicked: () -> Unit,
-) {
-    val brush = Brush.sweepGradient(
-        listOf(
-            Color(0xFF0000FF),
-            Color(0xFFCC0000),
-            Color(0xFF00AA00),
-        ),
-    )
+private fun YearEndReviewItem(onClicked: () -> Unit) {
+    val brush =
+        Brush.sweepGradient(
+            listOf(
+                Color(0xFF0000FF),
+                Color(0xFFCC0000),
+                Color(0xFF00AA00),
+            ),
+        )
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val angle by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(3000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart,
-        ),
+        animationSpec =
+            infiniteRepeatable(
+                animation = tween(3000, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart,
+            ),
         label = "",
     )
 
     Box(
-        modifier = Modifier
-            .clip(MaterialTheme.shapes.small)
-            .clipToBounds()
-            .fillMaxWidth()
-            .size(80.dp)
-            .drawWithContent {
-                rotate(angle) {
-                    drawCircle(
-                        brush = brush,
-                        radius = size.width,
-                        blendMode = BlendMode.SrcIn,
-                    )
+        modifier =
+            Modifier
+                .clip(MaterialTheme.shapes.small)
+                .clipToBounds()
+                .fillMaxWidth()
+                .size(80.dp)
+                .drawWithContent {
+                    rotate(angle) {
+                        drawCircle(
+                            brush = brush,
+                            radius = size.width,
+                            blendMode = BlendMode.SrcIn,
+                        )
+                    }
+                    drawContent()
                 }
-                drawContent()
-            }
-            .combinedClickable(
-                onClick = onClicked,
-            ),
+                .combinedClickable(
+                    onClick = onClicked,
+                ),
     ) {
         Column(
             modifier =
-            Modifier
-                .size(76.dp)
-                .align(Alignment.Center)
-                .clip(MaterialTheme.shapes.small)
-                .background(MaterialTheme.colorScheme.background),
+                Modifier
+                    .size(76.dp)
+                    .align(Alignment.Center)
+                    .clip(MaterialTheme.shapes.small)
+                    .background(MaterialTheme.colorScheme.background),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -365,19 +366,19 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-        Modifier
-            .clickable(onClick = onClicked)
-            .padding(top = 12.dp, bottom = 4.dp)
-            .padding(horizontal = 16.dp),
+            Modifier
+                .clickable(onClick = onClicked)
+                .padding(top = 12.dp, bottom = 4.dp)
+                .padding(horizontal = 16.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 url = episode.podcastImageUrl,
                 contentDescription = episode.title,
                 modifier =
-                Modifier
-                    .clip(MaterialTheme.shapes.extraSmall)
-                    .size(40.dp),
+                    Modifier
+                        .clip(MaterialTheme.shapes.extraSmall)
+                        .size(40.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
