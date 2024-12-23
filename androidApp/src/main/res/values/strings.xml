@@ -196,6 +196,7 @@
     <string name="podcast_details_load_even_older_episodes_load">Load</string>"
 
     <!-- Year end review -->
+    <string name="year_end_review_2024">2024\nReview</string>
     <string name="year_end_listening_since">Your podcast journey began on</string>
 
     <string name="year_end_duration_listened_start">"That add up to "</string>

@@ -31,6 +31,10 @@ getAll:
 SELECT * FROM SessionActionEntity
 ORDER BY time ASC;
 
+getCount:
+SELECT COUNT(*) AS count
+FROM SessionActionEntity;
+
 getEpisodes:
 SELECT episodeId, podcastId FROM SessionActionEntity
 WHERE

@@ -1,6 +1,13 @@
 package com.ramitsuri.podcasts.android.ui.home
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -36,11 +43,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,11 +97,12 @@ fun HomeScreen(
     onEpisodeNotFavoriteClicked: (episodeId: String) -> Unit,
     modifier: Modifier = Modifier,
     onNextPageRequested: () -> Unit,
+    onYearEndReviewClicked: () -> Unit,
 ) {
     Column(
         modifier =
-            modifier
-                .fillMaxSize(),
+        modifier
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -119,6 +134,7 @@ fun HomeScreen(
                 item {
                     Subscriptions(
                         podcasts = state.subscribedPodcasts,
+                        showYearEndReview = state.showYearEndReview,
                         onPodcastClicked = { onPodcastClicked(it.id) },
                         onPodcastLongClicked = {
                             val hadNewEpisodes = onPodcastHasNewSeen(it.id)
@@ -127,6 +143,7 @@ fun HomeScreen(
                             }
                         },
                         onMoreClicked = onMorePodcastsClicked,
+                        onReviewItemClicked = onYearEndReviewClicked,
                     )
                 }
             }
@@ -135,11 +152,11 @@ fun HomeScreen(
                 EpisodeItem(
                     episode = it,
                     playingState =
-                        if (state.currentlyPlayingEpisodeId == it.id) {
-                            state.currentlyPlayingEpisodeState
-                        } else {
-                            PlayingState.NOT_PLAYING
-                        },
+                    if (state.currentlyPlayingEpisodeId == it.id) {
+                        state.currentlyPlayingEpisodeState
+                    } else {
+                        PlayingState.NOT_PLAYING
+                    },
                     onClicked = { onEpisodeClicked(it.id) },
                     onPlayClicked = { onEpisodePlayClicked(it) },
                     onPauseClicked = onEpisodePauseClicked,
@@ -169,20 +186,22 @@ fun HomeScreen(
 @Composable
 private fun Subscriptions(
     podcasts: List<Podcast>,
+    showYearEndReview: Boolean,
     onPodcastClicked: (Podcast) -> Unit,
     onPodcastLongClicked: (Podcast) -> Unit,
     onMoreClicked: () -> Unit,
+    onReviewItemClicked: () -> Unit,
 ) {
     Column(
         modifier =
-            Modifier
-                .fillMaxWidth(),
+        Modifier
+            .fillMaxWidth(),
     ) {
         Row(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -197,9 +216,15 @@ private fun Subscriptions(
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             item {
                 Spacer(modifier = Modifier.width(8.dp))
+            }
+            if (showYearEndReview) {
+                item {
+                    YearEndReviewItem(onClicked = onReviewItemClicked)
+                }
             }
             items(items = podcasts, key = { it.id }) {
                 SubscribedPodcastItem(
@@ -229,30 +254,93 @@ private fun SubscribedPodcastItem(
 ) {
     Box(
         modifier =
-            Modifier
-                .clip(MaterialTheme.shapes.small)
-                .combinedClickable(
-                    onClick = onClicked,
-                    onLongClick = onLongClicked,
-                ),
+        Modifier
+            .clip(MaterialTheme.shapes.small)
+            .combinedClickable(
+                onClick = onClicked,
+                onLongClick = onLongClicked,
+            ),
     ) {
         Image(
             url = artwork,
             contentDescription = title,
             modifier =
-                Modifier
-                    .size(88.dp)
-                    .padding(4.dp)
-                    .clip(MaterialTheme.shapes.small),
+            Modifier
+                .size(88.dp)
+                .padding(4.dp)
+                .clip(MaterialTheme.shapes.small),
         )
         if (hasNewEpisodes) {
             Badge(
                 modifier =
-                    Modifier
-                        .size(16.dp)
-                        .border(4.dp, color = MaterialTheme.colorScheme.background, shape = CircleShape)
-                        .align(Alignment.TopEnd)
-                        .clip(MaterialTheme.shapes.small),
+                Modifier
+                    .size(16.dp)
+                    .border(4.dp, color = MaterialTheme.colorScheme.background, shape = CircleShape)
+                    .align(Alignment.TopEnd)
+                    .clip(MaterialTheme.shapes.small),
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun YearEndReviewItem(
+    onClicked: () -> Unit,
+) {
+    val brush = Brush.sweepGradient(
+        listOf(
+            Color(0xFF0000FF),
+            Color(0xFFCC0000),
+            Color(0xFF00AA00),
+        ),
+    )
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(3000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "",
+    )
+
+    Box(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.small)
+            .clipToBounds()
+            .fillMaxWidth()
+            .size(80.dp)
+            .drawWithContent {
+                rotate(angle) {
+                    drawCircle(
+                        brush = brush,
+                        radius = size.width,
+                        blendMode = BlendMode.SrcIn,
+                    )
+                }
+                drawContent()
+            }
+            .combinedClickable(
+                onClick = onClicked,
+            ),
+    ) {
+        Column(
+            modifier =
+            Modifier
+                .size(76.dp)
+                .align(Alignment.Center)
+                .clip(MaterialTheme.shapes.small)
+                .background(MaterialTheme.colorScheme.background),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold,
+                text = stringResource(R.string.year_end_review_2024),
+                textAlign = TextAlign.Center,
             )
         }
     }
@@ -277,19 +365,19 @@ private fun EpisodeItem(
 ) {
     Column(
         modifier =
-            Modifier
-                .clickable(onClick = onClicked)
-                .padding(top = 12.dp, bottom = 4.dp)
-                .padding(horizontal = 16.dp),
+        Modifier
+            .clickable(onClick = onClicked)
+            .padding(top = 12.dp, bottom = 4.dp)
+            .padding(horizontal = 16.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 url = episode.podcastImageUrl,
                 contentDescription = episode.title,
                 modifier =
-                    Modifier
-                        .clip(MaterialTheme.shapes.extraSmall)
-                        .size(40.dp),
+                Modifier
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .size(40.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
