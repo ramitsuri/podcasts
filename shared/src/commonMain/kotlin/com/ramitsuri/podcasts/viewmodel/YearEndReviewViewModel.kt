@@ -22,6 +22,12 @@ class YearEndReviewViewModel internal constructor(
     init {
         viewModelScope.launch {
             val review = sessionHistoryRepository.getReview(YEAR, timeZone)
+            if (review == null) {
+                _state.update {
+                    YearEndReviewViewState.Error
+                }
+                return@launch
+            }
 
             val mostListenedToPodcasts =
                 review.mostListenedToPodcasts.mapNotNull { podcastId ->
