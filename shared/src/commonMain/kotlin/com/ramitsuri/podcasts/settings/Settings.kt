@@ -145,12 +145,4 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
     suspend fun removeLegacySettings() {
         keyValueStore.removeInt(Key.PODCAST_DETAILS_EPISODE_SORT_ORDER)
     }
-
-    fun showYearEndReview(): Flow<Boolean> {
-        return keyValueStore.getBooleanFlow(Key.SHOW_YEAR_END_REVIEW, false)
-    }
-
-    suspend fun setShowYearEndReview(showYearEndReview: Boolean) {
-        keyValueStore.putBoolean(Key.SHOW_YEAR_END_REVIEW, showYearEndReview)
-    }
 }
