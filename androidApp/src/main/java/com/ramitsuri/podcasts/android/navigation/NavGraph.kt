@@ -31,7 +31,6 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -118,10 +117,8 @@ fun NavGraph(
     fun expandOrCollapsePlayer(expand: Boolean) {
         coroutineScope.launch {
             if (expand) {
-                canShowBottomNav = false
                 scaffoldSheetState.bottomSheetState.expand()
             } else {
-                canShowBottomNav = true
                 scaffoldSheetState.bottomSheetState.partialExpand()
             }
         }
@@ -135,7 +132,7 @@ fun NavGraph(
             .fillMaxSize(),
         bottomBar = {
             AnimatedVisibility(
-                visible = canShowBottomNav,
+                visible = canShowBottomNav && !isExpanded,
                 enter = slideInVertically { navBarHeight },
                 exit = slideOutVertically { navBarHeight },
             ) {
@@ -321,6 +318,8 @@ fun NavGraph(
                             onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                             onNextPageRequested = viewModel::onNextPageRequested,
                             onYearEndReviewClicked = {
+                                canShowPlayer = false
+                                canShowBottomNav = false
                                 navController.navigate(Route.YEAR_END_REVIEW.value)
                             },
                             modifier =
@@ -758,17 +757,13 @@ fun NavGraph(
                         val viewmodel = koinViewModel<YearEndReviewViewModel>()
                         val state by viewmodel.state.collectAsStateWithLifecycle()
 
-                        DisposableEffect(Unit) {
-                            canShowPlayer = false
-                            canShowBottomNav = false
-                            onDispose {
-                                canShowPlayer = true
-                                canShowBottomNav = true
-                            }
-                        }
                         YearEndReviewScreen(
                             state = state,
-                            onBack = { navController.popBackStack() },
+                            onBack = {
+                                canShowPlayer = true
+                                canShowBottomNav = true
+                                navController.popBackStack()
+                            },
                             onNextPage = viewmodel::onNextPage,
                             onPreviousPage = viewmodel::onPreviousPage,
                         )
