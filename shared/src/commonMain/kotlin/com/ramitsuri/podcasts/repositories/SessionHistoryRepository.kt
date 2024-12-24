@@ -313,6 +313,8 @@ class SessionHistoryRepository internal constructor(
         }
     }
 
+    fun hasSessions() = sessionActionDao.hasSessions()
+
     private inline fun Iterable<Session>.sumDuration(useSpeedMultiplier: Boolean = false): Duration {
         return sumOf { session ->
             val speed = (if (useSpeedMultiplier) session.playbackSpeed else 1f).toDouble()

@@ -9,4 +9,5 @@ data class HomeViewState(
     val episodes: List<Episode> = listOf(),
     val currentlyPlayingEpisodeId: String? = null,
     val currentlyPlayingEpisodeState: PlayingState = PlayingState.NOT_PLAYING,
+    val showYearEndReview: Boolean = false,
 )

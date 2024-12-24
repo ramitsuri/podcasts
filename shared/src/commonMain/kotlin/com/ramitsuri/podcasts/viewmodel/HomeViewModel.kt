@@ -5,6 +5,7 @@ import com.ramitsuri.podcasts.model.ui.HomeViewState
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
+import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.EpisodeController
 import com.ramitsuri.podcasts.utils.LogHelper
@@ -15,6 +16,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 class HomeViewModel internal constructor(
     private val podcastsAndEpisodesRepository: PodcastsAndEpisodesRepository,
@@ -22,6 +25,8 @@ class HomeViewModel internal constructor(
     private val episodesRepository: EpisodesRepository,
     private val settings: Settings,
     private val podcastsRepository: PodcastsRepository,
+    private val sessionHistoryRepository: SessionHistoryRepository,
+    private val clock: Clock,
 ) : ViewModel(), EpisodeController by episodeController {
     private val page = MutableStateFlow(1L)
     private var availableEpisodeCount: Long = 0
@@ -34,7 +39,8 @@ class HomeViewModel internal constructor(
                     podcastsAndEpisodesRepository.getSubscribedFlow(page),
                     episodesRepository.getCurrentEpisode(),
                     settings.getPlayingStateFlow(),
-                ) { subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState ->
+                    sessionHistoryRepository.hasSessions(),
+                ) { subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState, hasSessions ->
                     LogHelper.d(TAG, "Total episodes being shown: ${subscribedEpisodes.size}")
                     val currentlyPlaying =
                         if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
@@ -47,6 +53,7 @@ class HomeViewModel internal constructor(
                         episodes = subscribedEpisodes,
                         currentlyPlayingEpisodeId = currentlyPlaying?.id,
                         currentlyPlayingEpisodeState = playingState,
+                        showYearEndReview = hasSessions && clock.now() < Instant.parse(SHOW_REVIEW_UNTIL),
                     )
                 }
             }
@@ -82,5 +89,6 @@ class HomeViewModel internal constructor(
 
     companion object {
         private const val TAG = "HomeViewModel"
+        private const val SHOW_REVIEW_UNTIL = "2025-01-10T12:00:00Z"
     }
 }

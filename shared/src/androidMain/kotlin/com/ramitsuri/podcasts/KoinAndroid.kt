@@ -64,6 +64,8 @@ actual val platformModule =
                 episodesRepository = get<EpisodesRepository>(),
                 settings = get<Settings>(),
                 podcastsRepository = get<PodcastsRepository>(),
+                sessionHistoryRepository = get<SessionHistoryRepository>(),
+                clock = get<Clock>(),
             )
         }
 
