@@ -16,4 +16,6 @@ internal interface SessionActionDao {
     ): List<EpisodeAndPodcastId>
 
     suspend fun getAll(): List<SessionActionEntity>
+
+    fun hasSessions(): Flow<Boolean>
 }

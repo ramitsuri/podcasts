@@ -317,6 +317,9 @@ fun NavGraph(
                             onEpisodeFavoriteClicked = viewModel::onEpisodeMarkFavorite,
                             onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                             onNextPageRequested = viewModel::onNextPageRequested,
+                            onYearEndReviewClicked = {
+                                navController.navigate(Route.YEAR_END_REVIEW.value)
+                            },
                             modifier =
                                 Modifier
                                     .statusBarsPadding()

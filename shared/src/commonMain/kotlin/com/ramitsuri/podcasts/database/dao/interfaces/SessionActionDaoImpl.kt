@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.database.dao.interfaces
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOne
 import com.ramitsuri.podcasts.SessionActionEntity
 import com.ramitsuri.podcasts.SessionHistoryQueries
 import com.ramitsuri.podcasts.model.EpisodeAndPodcastId
@@ -72,5 +73,13 @@ internal class SessionActionDaoImpl(
                 .getAll()
                 .executeAsList()
         }
+    }
+
+    override fun hasSessions(): Flow<Boolean> {
+        return sessionHistoryQueries
+            .getCount()
+            .asFlow()
+            .mapToOne(ioDispatcher)
+            .map { it > 0 }
     }
 }
