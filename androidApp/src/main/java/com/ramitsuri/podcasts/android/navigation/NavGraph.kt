@@ -31,7 +31,6 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -110,7 +109,8 @@ fun NavGraph(
             }
         }
     }
-    var showBottomNavAndPlayer by remember { mutableStateOf(!isExpanded) }
+    var canShowBottomNav by remember { mutableStateOf(!isExpanded) }
+    var canShowPlayer by remember { mutableStateOf(!isExpanded) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -132,7 +132,7 @@ fun NavGraph(
                 .fillMaxSize(),
         bottomBar = {
             AnimatedVisibility(
-                visible = showBottomNavAndPlayer,
+                visible = canShowBottomNav && !isExpanded,
                 enter = slideInVertically { navBarHeight },
                 exit = slideOutVertically { navBarHeight },
             ) {
@@ -162,7 +162,7 @@ fun NavGraph(
             )
         val playerState by playerViewModel.state.collectAsStateWithLifecycle()
         var peekHeightPx by remember { mutableIntStateOf(0) }
-        val bottomSheetVisible = playerState.hasEverBeenPlayed && showBottomNavAndPlayer
+        val bottomSheetVisible = playerState.hasEverBeenPlayed && canShowPlayer
         val bottomPadding =
             if (bottomSheetVisible) {
                 with(LocalDensity.current) {
@@ -318,6 +318,8 @@ fun NavGraph(
                             onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                             onNextPageRequested = viewModel::onNextPageRequested,
                             onYearEndReviewClicked = {
+                                canShowPlayer = false
+                                canShowBottomNav = false
                                 navController.navigate(Route.YEAR_END_REVIEW.value)
                             },
                             modifier =
@@ -755,15 +757,13 @@ fun NavGraph(
                         val viewmodel = koinViewModel<YearEndReviewViewModel>()
                         val state by viewmodel.state.collectAsStateWithLifecycle()
 
-                        DisposableEffect(Unit) {
-                            showBottomNavAndPlayer = false
-                            onDispose {
-                                showBottomNavAndPlayer = true
-                            }
-                        }
                         YearEndReviewScreen(
                             state = state,
-                            onBack = { navController.popBackStack() },
+                            onBack = {
+                                canShowPlayer = true
+                                canShowBottomNav = true
+                                navController.popBackStack()
+                            },
                             onNextPage = viewmodel::onNextPage,
                             onPreviousPage = viewmodel::onPreviousPage,
                         )
