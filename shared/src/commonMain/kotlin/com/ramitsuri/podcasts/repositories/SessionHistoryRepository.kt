@@ -200,8 +200,14 @@ class SessionHistoryRepository internal constructor(
                     .map { (podcastId, sessions) ->
                         podcastId to sessions.sumDuration()
                     }
-                    .sortedBy { (_, totalDuration) ->
+                    .sortedByDescending { (_, totalDuration) ->
                         totalDuration
+                    }
+                    .also {
+                        LogHelper.v(
+                            "SessionRepository",
+                            "mostListenedToPodcasts: ${it.joinToString { (id, duration) -> "id: $id duration: $duration" }}",
+                        )
                     }
                     .take(3)
                     .map { (podcastId, _) ->

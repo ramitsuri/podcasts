@@ -38,6 +38,7 @@ class YearEndReviewViewModel internal constructor(
                     LogHelper.v(TAG, "No podcasts found for mostListenedToPodcasts")
                     YearEndReviewViewState.Error
                 } else {
+                    LogHelper.v(TAG, "Review: $review")
                     YearEndReviewViewState.Data(review, mostListenedToPodcasts)
                 }
             }
