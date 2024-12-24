@@ -26,6 +26,7 @@ import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.AndroidLogger
 import com.ramitsuri.podcasts.utils.EpisodeFetcher
+import com.ramitsuri.podcasts.utils.LogHelper
 import com.ramitsuri.podcasts.utils.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,6 +54,8 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
         EpisodeFetchWorker.enqueuePeriodic(this)
         longLivingScope.launch {
             settings.removeLegacySettings()
+            val remoteLoggingEnabled = settings.isRemoteLoggingEnabled().first()
+            LogHelper.toggleRemoteLogging(remoteLoggingEnabled)
         }
     }
 

@@ -145,4 +145,12 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
     suspend fun removeLegacySettings() {
         keyValueStore.removeInt(Key.PODCAST_DETAILS_EPISODE_SORT_ORDER)
     }
+
+    fun isRemoteLoggingEnabled(): Flow<Boolean> {
+        return keyValueStore.getBooleanFlow(Key.REMOTE_LOGGING_ENABLED, true)
+    }
+
+    suspend fun setIsRemoteLoggingEnabled(remoteLoggingEnabled: Boolean) {
+        keyValueStore.putBoolean(Key.REMOTE_LOGGING_ENABLED, remoteLoggingEnabled)
+    }
 }

@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -85,7 +86,11 @@ class SettingsViewModel internal constructor(
         }
         clickCount++
         if (clickCount >= 7) {
-            LogHelper.toggleRemoteLogging(enable = true)
+            longLivingScope.launch {
+                val remoteLoggingEnabled = settings.isRemoteLoggingEnabled().first()
+                settings.setIsRemoteLoggingEnabled(!remoteLoggingEnabled)
+                LogHelper.toggleRemoteLogging(!remoteLoggingEnabled)
+            }
         }
     }
 }

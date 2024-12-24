@@ -79,7 +79,7 @@ class HomeViewModel internal constructor(
 
     fun onNextPageRequested() {
         if (state.value.episodes.size.toLong() == availableEpisodeCount) {
-            LogHelper.v(TAG, "Episodes next page requested but no more episodes")
+            LogHelper.d(TAG, "Episodes next page requested but no more episodes")
             return
         }
         val newPage = page.value + 1
