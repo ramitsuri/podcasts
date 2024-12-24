@@ -206,7 +206,10 @@ class SessionHistoryRepository internal constructor(
                     .also {
                         LogHelper.v(
                             "SessionRepository",
-                            "mostListenedToPodcasts: ${it.joinToString { (id, duration) -> "id: $id duration: $duration" }}",
+                            "mostListenedToPodcasts: ${it.joinToString {
+                                    (id, duration) ->
+                                "id: $id duration: $duration"
+                            }}",
                         )
                     }
                     .take(3)
