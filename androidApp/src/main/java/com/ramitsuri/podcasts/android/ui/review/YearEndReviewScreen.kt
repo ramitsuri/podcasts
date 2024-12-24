@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.components.Image
 import com.ramitsuri.podcasts.android.utils.dateFormatted
@@ -408,6 +409,7 @@ private fun MostListenedDayContent(
         Text(
             text = text,
             color = Color.White,
+            lineHeight = 40.sp,
             textAlign = TextAlign.Center,
         )
     }
@@ -470,6 +472,7 @@ private fun ConsumedDurationContent(
         Text(
             text = text,
             color = Color.White,
+            lineHeight = 40.sp,
             textAlign = TextAlign.Center,
         )
     }
@@ -500,6 +503,7 @@ private fun ListenedDurationContent(
         Text(
             text = text,
             color = Color.White,
+            lineHeight = 40.sp,
             textAlign = TextAlign.Center,
         )
     }
