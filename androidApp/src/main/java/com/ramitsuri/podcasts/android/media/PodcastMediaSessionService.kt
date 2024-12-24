@@ -151,7 +151,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             }
         }
 
-        LogHelper.v(TAG, "Create with media session id: ${mediaSession?.id}")
+        LogHelper.d(TAG, "Create with media session id: ${mediaSession?.id}")
     }
 
     override fun onStartCommand(
