@@ -10,5 +10,4 @@ data class SettingsViewState(
     val fetching: Boolean = false,
     val removeCompletedAfter: RemoveDownloadsAfter = RemoveDownloadsAfter.THIRTY_DAYS,
     val removeUnfinishedAfter: RemoveDownloadsAfter = RemoveDownloadsAfter.THIRTY_DAYS,
-    val showYearEndReview: Boolean = false,
 )
