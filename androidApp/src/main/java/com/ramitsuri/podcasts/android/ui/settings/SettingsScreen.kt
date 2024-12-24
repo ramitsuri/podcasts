@@ -69,7 +69,6 @@ fun SettingsScreen(
     onRemoveCompletedAfterSelected: (RemoveDownloadsAfter) -> Unit,
     onRemoveUnfinishedAfterSelected: (RemoveDownloadsAfter) -> Unit,
     onVersionClicked: () -> Unit,
-    onYearEndReviewClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -101,9 +100,6 @@ fun SettingsScreen(
             )
             ColoredHorizontalDivider()
             AboutApp(onVersionClicked = onVersionClicked)
-            if (state.showYearEndReview) {
-                YearEndReview(onYearEndReviewClicked = onYearEndReviewClicked)
-            }
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -400,19 +396,6 @@ private fun RemoveDownloadsAfterDialog(
 }
 
 @Composable
-private fun YearEndReview(onYearEndReviewClicked: () -> Unit) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onYearEndReviewClicked)
-                .padding(24.dp),
-    ) {
-        Title(text = "Year end review")
-    }
-}
-
-@Composable
 private fun RemoveDownloadsAfter.text(): String {
     return when (this) {
         RemoveDownloadsAfter.TWENTY_FOUR_HOURS -> stringResource(id = R.string.settings_remove_after_24_hours)
@@ -434,7 +417,6 @@ private fun SettingsPreview_LastFetchTimeNever() {
             onRemoveCompletedAfterSelected = { },
             onRemoveUnfinishedAfterSelected = { },
             onVersionClicked = { },
-            onYearEndReviewClicked = { },
         )
     }
 }
@@ -451,7 +433,6 @@ private fun SettingsPreview_LastFetchTimeMinutesAgo() {
             onRemoveCompletedAfterSelected = { },
             onRemoveUnfinishedAfterSelected = { },
             onVersionClicked = { },
-            onYearEndReviewClicked = { },
         )
     }
 }
@@ -468,7 +449,6 @@ private fun SettingsPreview_Fetching() {
             onRemoveCompletedAfterSelected = { },
             onRemoveUnfinishedAfterSelected = { },
             onVersionClicked = { },
-            onYearEndReviewClicked = { },
         )
     }
 }

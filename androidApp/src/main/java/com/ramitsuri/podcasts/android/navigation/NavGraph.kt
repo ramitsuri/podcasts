@@ -738,9 +738,6 @@ fun NavGraph(
                             onRemoveCompletedAfterSelected = viewModel::setRemoveCompletedAfter,
                             onRemoveUnfinishedAfterSelected = viewModel::setRemoveUnfinishedAfter,
                             onVersionClicked = viewModel::onVersionClicked,
-                            onYearEndReviewClicked = {
-                                navController.navigate(Route.YEAR_END_REVIEW.value)
-                            },
                             modifier =
                                 Modifier
                                     .statusBarsPadding()
