@@ -56,6 +56,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.ramitsuri.podcasts.android.ui.backuprestore.BackupRestoreScreen
+import com.ramitsuri.podcasts.android.ui.backuprestore.BackupRestoreViewModel
 import com.ramitsuri.podcasts.android.ui.downloads.DownloadsScreen
 import com.ramitsuri.podcasts.android.ui.episode.EpisodeDetailsScreen
 import com.ramitsuri.podcasts.android.ui.favorites.FavoritesScreen
@@ -740,6 +742,11 @@ fun NavGraph(
                             onRemoveCompletedAfterSelected = viewModel::setRemoveCompletedAfter,
                             onRemoveUnfinishedAfterSelected = viewModel::setRemoveUnfinishedAfter,
                             onVersionClicked = viewModel::onVersionClicked,
+                            onBackupRestoreClicked = {
+                                canShowBottomNav = false
+                                canShowPlayer = false
+                                navController.navigate(Route.BACKUP_RESTORE.value)
+                            },
                             modifier =
                                 Modifier
                                     .statusBarsPadding()
@@ -766,6 +773,31 @@ fun NavGraph(
                             },
                             onNextPage = viewmodel::onNextPage,
                             onPreviousPage = viewmodel::onPreviousPage,
+                        )
+                    }
+
+                    composable(
+                        route = Route.BACKUP_RESTORE.value,
+                        enterTransition = { enterTransition() },
+                        exitTransition = { exitTransition() },
+                        popEnterTransition = { popEnterTransition() },
+                        popExitTransition = { popExitTransition() },
+                    ) {
+                        val viewmodel =
+                            viewModel<BackupRestoreViewModel>(
+                                factory = BackupRestoreViewModel.factory(),
+                            )
+                        val state by viewmodel.state.collectAsStateWithLifecycle()
+
+                        BackupRestoreScreen(
+                            state = state,
+                            onRestoreFilePicked = viewmodel::onRestoreFilePicked,
+                            onBackupFilePicked = viewmodel::onBackupFilePicked,
+                            onBack = {
+                                canShowBottomNav = true
+                                canShowPlayer = true
+                                navController.popBackStack()
+                            },
                         )
                     }
                 }

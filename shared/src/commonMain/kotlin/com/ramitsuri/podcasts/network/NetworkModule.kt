@@ -28,6 +28,7 @@ internal fun provideHttpClient(
     podcastIndexSecret: String = BuildKonfig.PODCAST_INDEX_SECRET,
     clock: Clock = Clock.System,
     clientEngine: HttpClientEngine,
+    json: Json,
 ): HttpClient {
     return HttpClient(clientEngine) {
         val log =
@@ -36,13 +37,7 @@ internal fun provideHttpClient(
                 "Http",
             )
         install(ContentNegotiation) {
-            json(
-                Json {
-                    prettyPrint = true
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                },
-            )
+            json(json)
         }
 
         install(Logging) {

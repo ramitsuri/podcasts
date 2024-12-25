@@ -69,6 +69,7 @@ fun SettingsScreen(
     onRemoveCompletedAfterSelected: (RemoveDownloadsAfter) -> Unit,
     onRemoveUnfinishedAfterSelected: (RemoveDownloadsAfter) -> Unit,
     onVersionClicked: () -> Unit,
+    onBackupRestoreClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -99,8 +100,32 @@ fun SettingsScreen(
                 onRemoveUnfinishedAfterSelected = onRemoveUnfinishedAfterSelected,
             )
             ColoredHorizontalDivider()
+            BackupRestore(onBackupRestoreClicked = onBackupRestoreClicked)
+            ColoredHorizontalDivider()
             AboutApp(onVersionClicked = onVersionClicked)
             Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+private fun BackupRestore(onBackupRestoreClicked: () -> Unit) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+    ) {
+        CategoryTitle(text = stringResource(id = R.string.backup_restore_backup_and_restore))
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onBackupRestoreClicked)
+                    .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Title(text = stringResource(id = R.string.backup_restore_backup_and_restore))
         }
     }
 }
@@ -417,6 +442,7 @@ private fun SettingsPreview_LastFetchTimeNever() {
             onRemoveCompletedAfterSelected = { },
             onRemoveUnfinishedAfterSelected = { },
             onVersionClicked = { },
+            onBackupRestoreClicked = { },
         )
     }
 }
@@ -433,6 +459,7 @@ private fun SettingsPreview_LastFetchTimeMinutesAgo() {
             onRemoveCompletedAfterSelected = { },
             onRemoveUnfinishedAfterSelected = { },
             onVersionClicked = { },
+            onBackupRestoreClicked = { },
         )
     }
 }
@@ -449,6 +476,7 @@ private fun SettingsPreview_Fetching() {
             onRemoveCompletedAfterSelected = { },
             onRemoveUnfinishedAfterSelected = { },
             onVersionClicked = { },
+            onBackupRestoreClicked = { },
         )
     }
 }

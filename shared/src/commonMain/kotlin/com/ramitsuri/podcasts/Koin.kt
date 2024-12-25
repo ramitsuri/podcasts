@@ -1,9 +1,11 @@
 package com.ramitsuri.podcasts
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import com.ramitsuri.podcasts.database.dao.BackupRestoreDaoImpl
 import com.ramitsuri.podcasts.database.dao.CategoryDaoImpl
 import com.ramitsuri.podcasts.database.dao.EpisodesDaoImpl
 import com.ramitsuri.podcasts.database.dao.PodcastsDaoImpl
+import com.ramitsuri.podcasts.database.dao.interfaces.BackupRestoreDao
 import com.ramitsuri.podcasts.database.dao.interfaces.CategoryDao
 import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.database.dao.interfaces.PodcastsDao
@@ -18,11 +20,13 @@ import com.ramitsuri.podcasts.network.api.interfaces.CategoriesApi
 import com.ramitsuri.podcasts.network.api.interfaces.EpisodesApi
 import com.ramitsuri.podcasts.network.api.interfaces.PodcastsApi
 import com.ramitsuri.podcasts.network.provideHttpClient
+import com.ramitsuri.podcasts.repositories.BackupRestoreRepository
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
 import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
 import com.ramitsuri.podcasts.settings.DataStoreKeyValueStore
+import com.ramitsuri.podcasts.settings.KeyValueStore
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.DispatcherProvider
 import com.ramitsuri.podcasts.utils.EpisodeController
@@ -35,6 +39,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
+import kotlinx.serialization.json.Json
 import okio.Path
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
@@ -56,12 +61,20 @@ fun initKoin(appModule: KoinApplication.() -> Module): KoinApplication {
 
 private val coreModule =
     module {
+        single<Json> {
+            Json {
+                prettyPrint = true
+                isLenient = true
+                ignoreUnknownKeys = true
+            }
+        }
 
         single<HttpClient> {
             provideHttpClient(
                 isDebug = get<AppInfo>().isDebug,
                 clock = get(),
                 clientEngine = get(),
+                json = get(),
             )
         }
 
@@ -104,6 +117,14 @@ private val coreModule =
             )
         }
 
+        single<BackupRestoreRepository> {
+            BackupRestoreRepository(
+                backupRestoreDao = get(),
+                json = get(),
+                keyValueStore = get(),
+            )
+        }
+
         single<PodcastsDao> {
             PodcastsDaoImpl(
                 podcastEntityQueries = get<PodcastsDatabase>().podcastEntityQueries,
@@ -134,6 +155,13 @@ private val coreModule =
             )
         }
 
+        single<BackupRestoreDao> {
+            BackupRestoreDaoImpl(
+                ioDispatcher = get<DispatcherProvider>().io,
+                backupDataQueries = get<PodcastsDatabase>().backupDataQueries,
+            )
+        }
+
         single<Clock> {
             Clock.System
         }
@@ -142,10 +170,13 @@ private val coreModule =
             TimeZone.currentSystemDefault()
         }
 
-        single<Settings> {
+        single<KeyValueStore> {
             val dataStore = PreferenceDataStoreFactory.createWithPath(produceFile = { get<Path>() })
-            val keyValueStore = DataStoreKeyValueStore(dataStore)
-            Settings(keyValueStore)
+            DataStoreKeyValueStore(dataStore)
+        }
+
+        single<Settings> {
+            Settings(get<KeyValueStore>())
         }
 
         single<CoroutineScope> {
