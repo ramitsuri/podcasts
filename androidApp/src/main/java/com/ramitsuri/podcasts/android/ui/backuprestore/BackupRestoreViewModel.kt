@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.BackupRestoreRepository
 import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,7 @@ import java.io.IOException
 class BackupRestoreViewModel(
     application: Application,
     private val backupRestoreRepository: BackupRestoreRepository,
+    private val playerController: PlayerController,
 ) : AndroidViewModel(application) {
     val state =
         MutableStateFlow(
@@ -28,6 +30,7 @@ class BackupRestoreViewModel(
         ).asStateFlow()
 
     fun onBackupFilePicked(uri: Uri) {
+        playerController.pause()
         viewModelScope.launch {
             getApplication<Application>()
                 .contentResolver
@@ -46,6 +49,7 @@ class BackupRestoreViewModel(
     }
 
     fun onRestoreFilePicked(uri: Uri) {
+        playerController.pause()
         viewModelScope.launch {
             getApplication<Application>()
                 .contentResolver
@@ -75,6 +79,7 @@ class BackupRestoreViewModel(
                     return BackupRestoreViewModel(
                         application = get(),
                         backupRestoreRepository = get(),
+                        playerController = get(),
                     ) as T
                 }
             }
