@@ -1,0 +1,52 @@
+getCategoryEntities:
+SELECT * FROM CategoryEntity;
+removeCategoryEntities:
+DELETE FROM CategoryEntity;
+insertCategoryEntity:
+INSERT INTO CategoryEntity(id, name)
+VALUES ?;
+
+getEpisodeAdditionalEntities:
+SELECT * FROM EpisodeAdditionalInfoEntity;
+removeEpisodeAdditionalEntities:
+DELETE FROM EpisodeAdditionalInfoEntity;
+insertEpisodeAdditionalInfoEntity:
+INSERT INTO
+EpisodeAdditionalInfoEntity(id, playProgress, downloadStatus, downloadProgress, downloadBlocked, downloadedAt, queuePosition, completedAt, isFavorite, needsDownload)
+VALUES ?;
+
+getEpisodeEntities:
+SELECT * FROM EpisodeEntity;
+removeEpisodeEntities:
+DELETE FROM EpisodeEntity;
+insertEpisodeEntity:
+INSERT INTO
+EpisodeEntity(id, podcastId, title, description, link, enclosureUrl, datePublished, duration, explicit, episode, season)
+VALUES ?;
+
+removePodcastAdditionalInfoEntities:
+DELETE FROM PodcastAdditionalInfoEntity;
+getPodcastAdditionalInfoEntities:
+SELECT * FROM PodcastAdditionalInfoEntity;
+insertPodcastAdditionalInfoEntity:
+INSERT INTO
+PodcastAdditionalInfoEntity(id, subscribed, autoDownloadEpisodes, newEpisodeNotification, subscribedDate, hasNewEpisodes, autoAddToQueue, showCompletedEpisodes, episodeSortOrder)
+VALUES ?;
+
+removePodcastEntities:
+DELETE FROM PodcastEntity;
+getPodcastEntities:
+SELECT * FROM PodcastEntity;
+insertPodcastEntity:
+INSERT INTO
+PodcastEntity(id, guid, title, description, author, owner, url, link, image, artwork, explicit, episodeCount, categories)
+VALUES ?;
+
+removeSessionActionEntities:
+DELETE FROM SessionActionEntity;
+getSessionActionEntities:
+SELECT * FROM SessionActionEntity;
+insertSessionActionEntity:
+INSERT INTO
+SessionActionEntity(sessionId, podcastId, episodeId, time, action, playbackSpeed)
+VALUES (?, ?, ?, ?, ?, ?);

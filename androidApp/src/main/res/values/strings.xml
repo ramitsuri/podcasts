@@ -222,4 +222,9 @@
     <string name="year_end_bye">Here\'s to many more years of listening</string>
 
     <string name="year_end_minutes_format">%1$s minutes</string>
+
+    <!-- Backup/Restore -->
+    <string name="backup_restore_backup_and_restore">Backup &amp; Restore</string>
+    <string name="backup_restore_backup">Backup</string>
+    <string name="backup_restore_restore">Restore</string>
 </resources>

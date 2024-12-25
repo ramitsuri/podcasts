@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 internal class DataStoreKeyValueStore(
@@ -103,6 +104,16 @@ internal class DataStoreKeyValueStore(
 
     override suspend fun removeInt(key: Key) {
         remove(intPreferencesKey(key.value))
+    }
+
+    override suspend fun getAll(): Map<String, Any> {
+        return dataStore.data.firstOrNull()?.asMap()?.mapKeys { it.key.name } ?: mapOf()
+    }
+
+    override suspend fun removeAll() {
+        dataStore.edit {
+            it.clear()
+        }
     }
 
     private suspend fun <T> remove(key: Preferences.Key<T>) {
