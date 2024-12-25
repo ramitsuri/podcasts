@@ -24,19 +24,19 @@ fun BackupRestoreScreen(
     onBack: () -> Unit,
     onBackupFilePicked: (Uri) -> Unit,
     onRestoreFilePicked: (Uri) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier =
-        modifier
-            .fillMaxSize(),
+            modifier
+                .fillMaxSize(),
     ) {
         TopAppBar(onBack = onBack)
         Column(
             modifier =
-            modifier
-                .fillMaxWidth()
-                .weight(1f),
+                modifier
+                    .fillMaxWidth()
+                    .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -57,7 +57,7 @@ fun BackupRestoreScreen(
 private fun BackupButton(
     suggestedFileName: String,
     mimeType: String,
-    onBackupFilePicked: (Uri) -> Unit
+    onBackupFilePicked: (Uri) -> Unit,
 ) {
     val filePicker =
         rememberLauncherForActivityResult(
@@ -76,7 +76,7 @@ private fun BackupButton(
 @Composable
 private fun RestoreButton(
     mimeType: String,
-    onRestoreFilePicked: (Uri) -> Unit
+    onRestoreFilePicked: (Uri) -> Unit,
 ) {
     val filePicker =
         rememberLauncherForActivityResult(

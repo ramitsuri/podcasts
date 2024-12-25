@@ -112,17 +112,17 @@ fun SettingsScreen(
 private fun BackupRestore(onBackupRestoreClicked: () -> Unit) {
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
     ) {
         CategoryTitle(text = stringResource(id = R.string.backup_restore_backup_and_restore))
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onBackupRestoreClicked)
-                .padding(16.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onBackupRestoreClicked)
+                    .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Title(text = stringResource(id = R.string.backup_restore_backup_and_restore))

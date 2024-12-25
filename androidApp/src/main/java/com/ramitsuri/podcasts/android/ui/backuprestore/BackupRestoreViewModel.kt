@@ -19,13 +19,13 @@ class BackupRestoreViewModel(
     application: Application,
     private val backupRestoreRepository: BackupRestoreRepository,
 ) : AndroidViewModel(application) {
-
-    val state = MutableStateFlow(
-        BackupRestoreViewState(
-            backupSuggestedFileName = BACKUP_FILE_NAME,
-            mimeType = MIME_TYPE,
-        ),
-    ).asStateFlow()
+    val state =
+        MutableStateFlow(
+            BackupRestoreViewState(
+                backupSuggestedFileName = BACKUP_FILE_NAME,
+                mimeType = MIME_TYPE,
+            ),
+        ).asStateFlow()
 
     fun onBackupFilePicked(uri: Uri) {
         viewModelScope.launch {

@@ -14,45 +14,50 @@ class BackupRestoreDaoImpl(
     private val ioDispatcher: CoroutineDispatcher,
     private val backupDataQueries: BackupDataQueries,
 ) : BackupRestoreDao {
-
     override suspend fun getData(): BackupData {
         return withContext(ioDispatcher) {
-            val podcasts = async {
-                backupDataQueries
-                    .getPodcastEntities()
-                    .executeAsList()
-                    .map { it.fromEntity() }
-            }
-            val podcastAdditionalInfo = async {
-                backupDataQueries
-                    .getPodcastAdditionalInfoEntities()
-                    .executeAsList()
-                    .map { it.fromEntity() }
-            }
-            val episodes = async {
-                backupDataQueries
-                    .getEpisodeEntities()
-                    .executeAsList()
-                    .map { it.fromEntity() }
-            }
-            val episodeAdditionalInfo = async {
-                backupDataQueries
-                    .getEpisodeAdditionalEntities()
-                    .executeAsList()
-                    .map { it.fromEntity() }
-            }
-            val sessionActions = async {
-                backupDataQueries
-                    .getSessionActionEntities()
-                    .executeAsList()
-                    .map { it.fromEntity() }
-            }
-            val categories = async {
-                backupDataQueries
-                    .getCategoryEntities()
-                    .executeAsList()
-                    .map { it.fromEntity() }
-            }
+            val podcasts =
+                async {
+                    backupDataQueries
+                        .getPodcastEntities()
+                        .executeAsList()
+                        .map { it.fromEntity() }
+                }
+            val podcastAdditionalInfo =
+                async {
+                    backupDataQueries
+                        .getPodcastAdditionalInfoEntities()
+                        .executeAsList()
+                        .map { it.fromEntity() }
+                }
+            val episodes =
+                async {
+                    backupDataQueries
+                        .getEpisodeEntities()
+                        .executeAsList()
+                        .map { it.fromEntity() }
+                }
+            val episodeAdditionalInfo =
+                async {
+                    backupDataQueries
+                        .getEpisodeAdditionalEntities()
+                        .executeAsList()
+                        .map { it.fromEntity() }
+                }
+            val sessionActions =
+                async {
+                    backupDataQueries
+                        .getSessionActionEntities()
+                        .executeAsList()
+                        .map { it.fromEntity() }
+                }
+            val categories =
+                async {
+                    backupDataQueries
+                        .getCategoryEntities()
+                        .executeAsList()
+                        .map { it.fromEntity() }
+                }
 
             BackupData(
                 podcasts = podcasts.await(),

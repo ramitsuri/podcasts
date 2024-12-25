@@ -14,7 +14,6 @@ class BackupRestoreRepository internal constructor(
     private val json: Json,
     private val keyValueStore: KeyValueStore,
 ) {
-
     suspend fun getBackupData(): ByteArray {
         val dbData = backupRestoreDao.getData()
         val settingsData = keyValueStore.getAll()
@@ -23,40 +22,41 @@ class BackupRestoreRepository internal constructor(
         return jsonString.toByteArray()
     }
 
-    suspend fun restoreBackupData(bytes: ByteArray) = coroutineScope {
-        val jsonString = bytes.decodeToString()
-        val data = runCatching { json.decodeFromString<BackupData>(jsonString) }.getOrNull()
-        if (data == null) {
-            return@coroutineScope
-        }
-        // Restore database
-        backupRestoreDao.removeData()
-        backupRestoreDao.addData(data)
+    suspend fun restoreBackupData(bytes: ByteArray) =
+        coroutineScope {
+            val jsonString = bytes.decodeToString()
+            val data = runCatching { json.decodeFromString<BackupData>(jsonString) }.getOrNull()
+            if (data == null) {
+                return@coroutineScope
+            }
+            // Restore database
+            backupRestoreDao.removeData()
+            backupRestoreDao.addData(data)
 
-        // Restore prefs
-        keyValueStore.removeAll()
-        data.prefs.forEach { (key, value, type) ->
-            val prefKey = Key.fromStringKey(key) ?: return@forEach
-            when (type) {
-                BackupData.STRING -> {
-                    keyValueStore.putString(prefKey, value)
-                }
+            // Restore prefs
+            keyValueStore.removeAll()
+            data.prefs.forEach { (key, value, type) ->
+                val prefKey = Key.fromStringKey(key) ?: return@forEach
+                when (type) {
+                    BackupData.STRING -> {
+                        keyValueStore.putString(prefKey, value)
+                    }
 
-                BackupData.FLOAT -> {
-                    val floatValue = value.toFloatOrNull() ?: return@forEach
-                    keyValueStore.putFloat(prefKey, floatValue)
-                }
+                    BackupData.FLOAT -> {
+                        val floatValue = value.toFloatOrNull() ?: return@forEach
+                        keyValueStore.putFloat(prefKey, floatValue)
+                    }
 
-                BackupData.BOOL -> {
-                    val booleanValue = value.toBooleanStrictOrNull() ?: return@forEach
-                    keyValueStore.putBoolean(prefKey, booleanValue)
-                }
+                    BackupData.BOOL -> {
+                        val booleanValue = value.toBooleanStrictOrNull() ?: return@forEach
+                        keyValueStore.putBoolean(prefKey, booleanValue)
+                    }
 
-                BackupData.INT -> {
-                    val intValue = value.toIntOrNull() ?: return@forEach
-                    keyValueStore.putInt(prefKey, intValue)
+                    BackupData.INT -> {
+                        val intValue = value.toIntOrNull() ?: return@forEach
+                        keyValueStore.putInt(prefKey, intValue)
+                    }
                 }
             }
         }
-    }
 }

@@ -176,151 +176,164 @@ data class BackupData(
     }
 }
 
-fun BackupData.PodcastData.toEntity() = PodcastEntity(
-    id = this.id,
-    guid = this.guid,
-    title = this.title,
-    description = this.description,
-    author = this.author,
-    owner = this.owner,
-    url = this.url,
-    link = this.link,
-    image = this.image,
-    artwork = this.artwork,
-    explicit = this.explicit,
-    episodeCount = this.episodeCount,
-    categories = this.categories,
-)
+fun BackupData.PodcastData.toEntity() =
+    PodcastEntity(
+        id = this.id,
+        guid = this.guid,
+        title = this.title,
+        description = this.description,
+        author = this.author,
+        owner = this.owner,
+        url = this.url,
+        link = this.link,
+        image = this.image,
+        artwork = this.artwork,
+        explicit = this.explicit,
+        episodeCount = this.episodeCount,
+        categories = this.categories,
+    )
 
-fun PodcastEntity.fromEntity() = BackupData.PodcastData(
-    id = this.id,
-    guid = this.guid,
-    title = this.title,
-    description = this.description,
-    author = this.author,
-    owner = this.owner,
-    url = this.url,
-    link = this.link,
-    image = this.image,
-    artwork = this.artwork,
-    explicit = this.explicit,
-    episodeCount = this.episodeCount,
-    categories = this.categories,
-)
+fun PodcastEntity.fromEntity() =
+    BackupData.PodcastData(
+        id = this.id,
+        guid = this.guid,
+        title = this.title,
+        description = this.description,
+        author = this.author,
+        owner = this.owner,
+        url = this.url,
+        link = this.link,
+        image = this.image,
+        artwork = this.artwork,
+        explicit = this.explicit,
+        episodeCount = this.episodeCount,
+        categories = this.categories,
+    )
 
-fun BackupData.PodcastAdditionalInfoData.toEntity() = PodcastAdditionalInfoEntity(
-    id = this.id,
-    subscribed = this.subscribed,
-    autoDownloadEpisodes = this.autoDownloadEpisodes,
-    newEpisodeNotification = this.newEpisodeNotification,
-    subscribedDate = this.subscribedDate,
-    hasNewEpisodes = this.hasNewEpisodes,
-    autoAddToQueue = this.autoAddToQueue,
-    showCompletedEpisodes = this.showCompletedEpisodes,
-    episodeSortOrder = this.episodeSortOrder,
-)
+fun BackupData.PodcastAdditionalInfoData.toEntity() =
+    PodcastAdditionalInfoEntity(
+        id = this.id,
+        subscribed = this.subscribed,
+        autoDownloadEpisodes = this.autoDownloadEpisodes,
+        newEpisodeNotification = this.newEpisodeNotification,
+        subscribedDate = this.subscribedDate,
+        hasNewEpisodes = this.hasNewEpisodes,
+        autoAddToQueue = this.autoAddToQueue,
+        showCompletedEpisodes = this.showCompletedEpisodes,
+        episodeSortOrder = this.episodeSortOrder,
+    )
 
-fun PodcastAdditionalInfoEntity.fromEntity() = BackupData.PodcastAdditionalInfoData(
-    id = this.id,
-    subscribed = this.subscribed,
-    autoDownloadEpisodes = this.autoDownloadEpisodes,
-    newEpisodeNotification = this.newEpisodeNotification,
-    subscribedDate = this.subscribedDate,
-    hasNewEpisodes = this.hasNewEpisodes,
-    autoAddToQueue = this.autoAddToQueue,
-    showCompletedEpisodes = this.showCompletedEpisodes,
-    episodeSortOrder = this.episodeSortOrder,
-)
+fun PodcastAdditionalInfoEntity.fromEntity() =
+    BackupData.PodcastAdditionalInfoData(
+        id = this.id,
+        subscribed = this.subscribed,
+        autoDownloadEpisodes = this.autoDownloadEpisodes,
+        newEpisodeNotification = this.newEpisodeNotification,
+        subscribedDate = this.subscribedDate,
+        hasNewEpisodes = this.hasNewEpisodes,
+        autoAddToQueue = this.autoAddToQueue,
+        showCompletedEpisodes = this.showCompletedEpisodes,
+        episodeSortOrder = this.episodeSortOrder,
+    )
 
-fun BackupData.EpisodeData.toEntity() = EpisodeEntity(
-    id = this.id,
-    podcastId = this.podcastId,
-    title = this.title,
-    description = this.description,
-    link = this.link,
-    enclosureUrl = this.enclosureUrl,
-    datePublished = this.datePublished,
-    duration = this.duration,
-    explicit = this.explicit,
-    episode = this.episode,
-    season = this.season,
-)
+fun BackupData.EpisodeData.toEntity() =
+    EpisodeEntity(
+        id = this.id,
+        podcastId = this.podcastId,
+        title = this.title,
+        description = this.description,
+        link = this.link,
+        enclosureUrl = this.enclosureUrl,
+        datePublished = this.datePublished,
+        duration = this.duration,
+        explicit = this.explicit,
+        episode = this.episode,
+        season = this.season,
+    )
 
-fun EpisodeEntity.fromEntity() = BackupData.EpisodeData(
-    id = this.id,
-    podcastId = this.podcastId,
-    title = this.title,
-    description = this.description,
-    link = this.link,
-    enclosureUrl = this.enclosureUrl,
-    datePublished = this.datePublished,
-    duration = this.duration,
-    explicit = this.explicit,
-    episode = this.episode,
-    season = this.season,
-)
+fun EpisodeEntity.fromEntity() =
+    BackupData.EpisodeData(
+        id = this.id,
+        podcastId = this.podcastId,
+        title = this.title,
+        description = this.description,
+        link = this.link,
+        enclosureUrl = this.enclosureUrl,
+        datePublished = this.datePublished,
+        duration = this.duration,
+        explicit = this.explicit,
+        episode = this.episode,
+        season = this.season,
+    )
 
-fun BackupData.EpisodeAdditionalInfoData.toEntity() = EpisodeAdditionalInfoEntity(
-    id = this.id,
-    playProgress = this.playProgress,
-    downloadStatus = this.downloadStatus,
-    downloadProgress = this.downloadProgress,
-    downloadBlocked = this.downloadBlocked,
-    downloadedAt = this.downloadedAt,
-    queuePosition = this.queuePosition,
-    completedAt = this.completedAt,
-    isFavorite = this.isFavorite,
-    needsDownload = this.needsDownload,
-)
+fun BackupData.EpisodeAdditionalInfoData.toEntity() =
+    EpisodeAdditionalInfoEntity(
+        id = this.id,
+        playProgress = this.playProgress,
+        downloadStatus = this.downloadStatus,
+        downloadProgress = this.downloadProgress,
+        downloadBlocked = this.downloadBlocked,
+        downloadedAt = this.downloadedAt,
+        queuePosition = this.queuePosition,
+        completedAt = this.completedAt,
+        isFavorite = this.isFavorite,
+        needsDownload = this.needsDownload,
+    )
 
-fun EpisodeAdditionalInfoEntity.fromEntity() = BackupData.EpisodeAdditionalInfoData(
-    id = this.id,
-    playProgress = this.playProgress,
-    downloadStatus = this.downloadStatus,
-    downloadProgress = this.downloadProgress,
-    downloadBlocked = this.downloadBlocked,
-    downloadedAt = this.downloadedAt,
-    queuePosition = this.queuePosition,
-    completedAt = this.completedAt,
-    isFavorite = this.isFavorite,
-    needsDownload = this.needsDownload,
-)
+fun EpisodeAdditionalInfoEntity.fromEntity() =
+    BackupData.EpisodeAdditionalInfoData(
+        id = this.id,
+        playProgress = this.playProgress,
+        downloadStatus = this.downloadStatus,
+        downloadProgress = this.downloadProgress,
+        downloadBlocked = this.downloadBlocked,
+        downloadedAt = this.downloadedAt,
+        queuePosition = this.queuePosition,
+        completedAt = this.completedAt,
+        isFavorite = this.isFavorite,
+        needsDownload = this.needsDownload,
+    )
 
-fun SessionActionEntity.fromEntity() = BackupData.SessionActionData(
-    id = this.id,
-    sessionId = this.sessionId,
-    podcastId = this.podcastId,
-    episodeId = this.episodeId,
-    time = this.time,
-    action = this.action,
-    playbackSpeed = this.playbackSpeed,
-)
+fun SessionActionEntity.fromEntity() =
+    BackupData.SessionActionData(
+        id = this.id,
+        sessionId = this.sessionId,
+        podcastId = this.podcastId,
+        episodeId = this.episodeId,
+        time = this.time,
+        action = this.action,
+        playbackSpeed = this.playbackSpeed,
+    )
 
-fun BackupData.CategoryData.toEntity() = CategoryEntity(
-    id = id,
-    name = name,
-)
+fun BackupData.CategoryData.toEntity() =
+    CategoryEntity(
+        id = id,
+        name = name,
+    )
 
-fun CategoryEntity.fromEntity() = BackupData.CategoryData(
-    id = id,
-    name = name,
-)
+fun CategoryEntity.fromEntity() =
+    BackupData.CategoryData(
+        id = id,
+        name = name,
+    )
 
-fun Map<String, Any>.fromMap() = mapNotNull { (key, value) ->
-    val type = when (value) {
-        is String -> BackupData.STRING
-        is Float -> BackupData.FLOAT
-        is Boolean -> BackupData.BOOL
-        is Int -> BackupData.INT
-        else -> null
+fun Map<String, Any>.fromMap() =
+    mapNotNull { (key, value) ->
+        val type =
+            when (value) {
+                is String -> BackupData.STRING
+                is Float -> BackupData.FLOAT
+                is Boolean -> BackupData.BOOL
+                is Int -> BackupData.INT
+                else -> null
+            }
+        if (type != null) {
+            BackupData.PreferenceData(
+                key = key,
+                value = value.toString(),
+                type = type,
+            )
+        } else {
+            null
+        }
     }
-    if (type != null) {
-        BackupData.PreferenceData(
-            key = key,
-            value = value.toString(),
-            type = type,
-        )
-    } else {
-        null
-    }
-}
