@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.network.api
 
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.network.api.interfaces.EpisodesApi
+import com.ramitsuri.podcasts.network.model.EpisodeResponseDto
 import com.ramitsuri.podcasts.network.model.EpisodesResponseDto
 import com.ramitsuri.podcasts.network.model.GetEpisodesRequest
 import com.ramitsuri.podcasts.network.utils.apiRequest
@@ -29,6 +30,22 @@ internal class EpisodesApiImpl(
                         }
                         append("max", request.max.toString())
                         append("fulltext", "true")
+                    }
+                }
+            }
+        }
+    }
+
+    override suspend fun getById(
+        id: String,
+        podcastId: Long,
+    ): PodcastResult<EpisodeResponseDto> {
+        return apiRequest(ioDispatcher) {
+            httpClient.get(urlString = "$baseUrl/episodes/byguid") {
+                url {
+                    parameters.apply {
+                        append("guid", id)
+                        append("feedid", podcastId.toString())
                     }
                 }
             }

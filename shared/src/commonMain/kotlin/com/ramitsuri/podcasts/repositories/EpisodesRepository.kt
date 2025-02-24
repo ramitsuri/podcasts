@@ -323,6 +323,17 @@ class EpisodesRepository internal constructor(
         episodesDao.remove(episodeIds)
     }
 
+    suspend fun load(
+        id: String,
+        podcastId: Long,
+    ) {
+        (episodesApi.getById(id = id, podcastId = podcastId) as? PodcastResult.Success)
+            ?.data
+            ?.let {
+                episodesDao.insert(listOf(Episode(it.episode)))
+            }
+    }
+
     companion object {
         private const val TAG = "EpisodesRepo"
     }

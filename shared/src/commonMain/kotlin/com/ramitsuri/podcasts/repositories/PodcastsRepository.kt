@@ -30,7 +30,7 @@ class PodcastsRepository internal constructor(
         }
     }
 
-    suspend fun getFlow(id: Long): Flow<Podcast?> {
+    fun getFlow(id: Long): Flow<Podcast?> {
         return podcastsDao
             .getFlow(id)
             .map { dbPodcast ->
@@ -168,5 +168,13 @@ class PodcastsRepository internal constructor(
 
     suspend fun remove(podcastIds: List<Long>) {
         podcastsDao.remove(podcastIds)
+    }
+
+    suspend fun load(id: Long) {
+        (podcastsApi.getById(id) as? PodcastResult.Success)
+            ?.data
+            ?.let {
+                podcastsDao.insert(listOf(Podcast(it.podcast)))
+            }
     }
 }

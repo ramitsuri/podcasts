@@ -55,6 +55,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import com.ramitsuri.podcasts.android.ui.backuprestore.BackupRestoreScreen
 import com.ramitsuri.podcasts.android.ui.backuprestore.BackupRestoreViewModel
@@ -440,15 +441,21 @@ fun NavGraph(
                         exitTransition = { exitTransition() },
                         popEnterTransition = { popEnterTransition() },
                         popExitTransition = { popExitTransition() },
+                        deepLinks =
+                            listOf(
+                                navDeepLink {
+                                    uriPattern = Route.EPISODE_DETAILS.deepLinkWithArgName()
+                                },
+                            ),
                     ) { backStackEntry ->
-                        val episodeId = backStackEntry.arguments?.getString(RouteArgs.EPISODE_ID.value)
-                        val decoded =
-                            if (episodeId == null) {
-                                null
-                            } else {
-                                Uri.decode(episodeId)
+                        val viewModel =
+                            backStackEntry.arguments.let { arg ->
+                                val episodeId = arg?.getString(RouteArgs.EPISODE_ID.value)?.let { Uri.decode(it) }
+                                val podcastId = arg?.getString(RouteArgs.PODCAST_ID.value)?.toLongOrNull()
+                                koinViewModel<EpisodeDetailsViewModel>(
+                                    parameters = { parametersOf(episodeId, podcastId) },
+                                )
                             }
-                        val viewModel = koinViewModel<EpisodeDetailsViewModel>(parameters = { parametersOf(decoded) })
                         val state by viewModel.state.collectAsStateWithLifecycle()
                         EpisodeDetailsScreen(
                             state = state,
