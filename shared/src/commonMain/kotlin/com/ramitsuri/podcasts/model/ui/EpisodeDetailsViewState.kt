@@ -4,6 +4,7 @@ import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
 
 data class EpisodeDetailsViewState(
+    val loading: Boolean = true,
     val episode: Episode? = null,
     val playingState: PlayingState = PlayingState.NOT_PLAYING,
 )

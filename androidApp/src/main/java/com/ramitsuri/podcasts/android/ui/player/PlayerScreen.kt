@@ -1,6 +1,5 @@
 package com.ramitsuri.podcasts.android.ui.player
 
-import android.content.Intent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -62,12 +61,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
 import com.ramitsuri.podcasts.android.R
+import com.ramitsuri.podcasts.android.navigation.shareText
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.Image
 import com.ramitsuri.podcasts.android.ui.components.SleepTimerControl
 import com.ramitsuri.podcasts.android.ui.components.SpeedControl
 import com.ramitsuri.podcasts.android.ui.components.SquigglySlider
+import com.ramitsuri.podcasts.android.utils.sharePodcast
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.PlayerViewState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
@@ -133,6 +134,7 @@ fun PlayerScreen(
                         .padding(16.dp)
                         .alpha(alphaExpandedPlayer),
                 isExpanded = isExpanded,
+                shareText = state.episode.shareText(),
                 episodeTitle = state.episodeTitle,
                 episodeArtwork = state.episodeArtworkUrl,
                 podcastName = state.podcastName,
@@ -171,6 +173,7 @@ fun PlayerScreen(
 @Composable
 private fun PlayerScreenExpanded(
     modifier: Modifier = Modifier,
+    shareText: String,
     isExpanded: Boolean,
     episodeTitle: String,
     episodeArtwork: String,
@@ -242,6 +245,7 @@ private fun PlayerScreenExpanded(
             playbackSpeed = playbackSpeed,
             isCasting = isCasting,
             isFavorite = isFavorite,
+            shareText = shareText,
             onEpisodeTitleClicked = onEpisodeTitleClicked,
             onPodcastNameClicked = onPodcastNameClicked,
             onGoToQueueClicked = onGoToQueueClicked,
@@ -379,6 +383,7 @@ private fun Player(
     playbackSpeed: Int,
     isCasting: Boolean,
     isFavorite: Boolean,
+    shareText: String,
     onEpisodeTitleClicked: () -> Unit,
     onPodcastNameClicked: () -> Unit,
     onGoToQueueClicked: () -> Unit,
@@ -472,8 +477,7 @@ private fun Player(
                 sleepTimer = sleepTimer,
                 sleepTimerDuration = sleepTimerDuration,
                 isCasting = isCasting,
-                podcastName = podcastName,
-                episodeTitle = episodeTitle,
+                shareText = shareText,
                 onShowSleepControl = onShowSleepControl,
                 onShowSpeedControl = onShowSpeedControl,
             )
@@ -612,8 +616,7 @@ private fun SecondaryControls(
     sleepTimer: SleepTimer,
     sleepTimerDuration: Duration?,
     isCasting: Boolean,
-    podcastName: String,
-    episodeTitle: String,
+    shareText: String,
     onShowSpeedControl: (Boolean) -> Unit,
     onShowSleepControl: (Boolean) -> Unit,
 ) {
@@ -635,7 +638,7 @@ private fun SecondaryControls(
                 onShowSleepControl(true)
             },
         )
-        ShareButton(podcastName = podcastName, episodeTitle = episodeTitle)
+        ShareButton(shareText)
 
         // TODO Hidden until implemented
         if (false) {
@@ -669,18 +672,9 @@ private fun SecondaryControls(
 }
 
 @Composable
-private fun ShareButton(
-    podcastName: String,
-    episodeTitle: String,
-) {
-    val sendIntent =
-        Intent(Intent.ACTION_SEND).apply {
-            putExtra(Intent.EXTRA_TEXT, "$podcastName: $episodeTitle")
-            type = "text/plain"
-        }
-    val shareIntent = Intent.createChooser(sendIntent, null)
+private fun ShareButton(shareText: String) {
     val context = LocalContext.current
-    IconButton(onClick = { context.startActivity(shareIntent) }) {
+    IconButton(onClick = { context.sharePodcast(shareText) }) {
         Icon(
             imageVector = Icons.Filled.Share,
             modifier =

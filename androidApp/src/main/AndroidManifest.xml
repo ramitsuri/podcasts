@@ -16,11 +16,22 @@
         android:theme="@style/Theme.Podcasts.Splash">
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTop"
             android:exported="true">
+            <tools:validation testUrl="https://ramitsuri.github.io/podcasts?episode_id=7d9ae4e1-65fa-45df-94cc-d0f608593704&amp;podcast_id=563572" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="ramitsuri.github.io" />
+                <data android:pathPrefix="/podcasts" />
             </intent-filter>
         </activity>
 

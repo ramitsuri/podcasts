@@ -9,6 +9,9 @@ import com.ramitsuri.podcasts.model.PodcastWithEpisodes
 import com.ramitsuri.podcasts.model.RemoveDownloadsAfter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -118,37 +121,35 @@ class PodcastsAndEpisodesRepository internal constructor(
         }
     }
 
-    suspend fun getPodcastWithEpisodesFlow(
+    fun getPodcastWithEpisodesFlow(
         podcastId: Long,
         page: Long,
         searchTerm: String,
     ): Flow<PodcastWithEpisodes?> {
-        return withContext(ioDispatcher) {
-            return@withContext combine(
-                podcastsRepository.getFlow(podcastId),
-                // Use showCompleted = true to listen to any changes in episode list for podcast so that flow can
-                // trigger and then get for real value of podcast.showCompletedEpisodes. This is because we want the
-                // showCompleted filter to live in the sql layer. But we don't have access to the value here yet.
-                episodesRepository.getEpisodesForPodcastFlow(
-                    podcastId,
-                    EpisodeSortOrder.default,
-                    page,
-                    showCompleted = true,
-                ),
-            ) { podcast, _ ->
-                if (podcast == null) {
-                    null
-                } else {
-                    val filteredEpisodes =
-                        episodesRepository.getEpisodesForPodcast(
-                            podcastId = podcastId,
-                            sortOrder = podcast.episodeSortOrder,
-                            page = page,
-                            showCompleted = podcast.showCompletedEpisodes,
-                            searchTerm = searchTerm,
-                        )
-                    PodcastWithEpisodes(podcast, filteredEpisodes)
-                }
+        return combine(
+            podcastsRepository.getFlow(podcastId),
+            // Use showCompleted = true to listen to any changes in episode list for podcast so that flow can
+            // trigger and then get for real value of podcast.showCompletedEpisodes. This is because we want the
+            // showCompleted filter to live in the sql layer. But we don't have access to the value here yet.
+            episodesRepository.getEpisodesForPodcastFlow(
+                podcastId,
+                EpisodeSortOrder.default,
+                page,
+                showCompleted = true,
+            ),
+        ) { podcast, _ ->
+            if (podcast == null) {
+                null
+            } else {
+                val filteredEpisodes =
+                    episodesRepository.getEpisodesForPodcast(
+                        podcastId = podcastId,
+                        sortOrder = podcast.episodeSortOrder,
+                        page = page,
+                        showCompleted = podcast.showCompletedEpisodes,
+                        searchTerm = searchTerm,
+                    )
+                PodcastWithEpisodes(podcast, filteredEpisodes)
             }
         }
     }
@@ -165,6 +166,16 @@ class PodcastsAndEpisodesRepository internal constructor(
                 val subscribedPodcastIds = podcasts.map { it.id }
                 episodesRepository.getEpisodesForPodcastsFlow(subscribedPodcastIds, page, showCompleted = false)
             }
+    }
+
+    suspend fun loadMissingEpisode(
+        podcastId: Long,
+        episodeId: String,
+    ) = coroutineScope {
+        listOf(
+            async { podcastsRepository.load(podcastId) },
+            async { episodesRepository.load(episodeId, podcastId) },
+        ).awaitAll()
     }
 
     suspend fun getEpisodeCountForSubscribedPodcasts(): Long {

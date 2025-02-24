@@ -1,6 +1,5 @@
 package com.ramitsuri.podcasts.android.ui.components
 
-import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -41,9 +40,11 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
 import com.ramitsuri.podcasts.android.R
+import com.ramitsuri.podcasts.android.navigation.shareText
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.greenColor
+import com.ramitsuri.podcasts.android.utils.sharePodcast
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
@@ -108,8 +109,7 @@ fun EpisodeControls(
             showMenu = showMenu,
             onToggleMenu = { showMenu = !showMenu },
             episodeCompleted = episode.isCompleted,
-            podcastTitle = episode.podcastName,
-            episodeTitle = episode.title,
+            shareText = episode.shareText(),
             isFavorite = episode.isFavorite,
             onFavoriteClicked = onFavoriteClicked,
             onNotFavoriteClicked = onNotFavoriteClicked,
@@ -201,20 +201,13 @@ private fun EpisodeMenu(
     showMenu: Boolean,
     onToggleMenu: () -> Unit,
     episodeCompleted: Boolean,
-    podcastTitle: String,
-    episodeTitle: String,
     isFavorite: Boolean,
+    shareText: String,
     onFavoriteClicked: () -> Unit,
     onNotFavoriteClicked: () -> Unit,
     onPlayedClicked: () -> Unit,
     onNotPlayedClicked: () -> Unit,
 ) {
-    val sendIntent =
-        Intent(Intent.ACTION_SEND).apply {
-            putExtra(Intent.EXTRA_TEXT, "$podcastTitle: $episodeTitle")
-            type = "text/plain"
-        }
-    val shareIntent = Intent.createChooser(sendIntent, null)
     val context = LocalContext.current
 
     Box {
@@ -275,7 +268,7 @@ private fun EpisodeMenu(
                 text = stringResource(id = R.string.episode_controller_share),
                 onClick = {
                     onToggleMenu()
-                    context.startActivity(shareIntent)
+                    context.sharePodcast(shareText)
                 },
             )
         }

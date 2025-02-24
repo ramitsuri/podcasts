@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.ramitsuri.podcasts.model.Episode
 
 enum class Route(val value: String) {
     HOME("home"),
@@ -42,12 +43,41 @@ enum class Route(val value: String) {
         }
     }
 
+    fun deepLinkWithValue(argValues: Map<RouteArgs, String>): String? {
+        return if (this == EPISODE_DETAILS) {
+            DEEP_LINK_BASE_URL
+                .plus("?${RouteArgs.EPISODE_ID.value}")
+                .plus("=${argValues[RouteArgs.EPISODE_ID]}")
+                .plus("&${RouteArgs.PODCAST_ID.value}")
+                .plus("=${argValues[RouteArgs.PODCAST_ID]}")
+        } else {
+            null
+        }
+    }
+
+    fun deepLinkWithArgName(): String? {
+        return if (this == EPISODE_DETAILS) {
+            DEEP_LINK_BASE_URL
+                .plus("?${RouteArgs.EPISODE_ID.value}")
+                .plus("={${RouteArgs.EPISODE_ID.value}}")
+                .plus("&${RouteArgs.PODCAST_ID.value}")
+                .plus("={${RouteArgs.PODCAST_ID.value}}")
+        } else {
+            null
+        }
+    }
+
     fun navArgs(): List<NamedNavArgument> {
         return if (this == EPISODE_DETAILS) {
             listOf(
                 navArgument(RouteArgs.EPISODE_ID.value) {
                     type = NavType.StringType
                     nullable = false
+                },
+                navArgument(RouteArgs.PODCAST_ID.value) {
+                    // String even though this is a long because cannot have nullable long in nav args
+                    type = NavType.StringType
+                    nullable = true
                 },
             )
         } else if (this == PODCAST_DETAILS) {
@@ -67,6 +97,8 @@ enum class Route(val value: String) {
     }
 
     companion object {
+        private const val DEEP_LINK_BASE_URL = "https://ramitsuri.github.io/podcasts"
+
         fun episodeDetails(episodeId: String): String {
             val encoded = Uri.encode(episodeId)
             return EPISODE_DETAILS.routeWithArgValue(mapOf(RouteArgs.EPISODE_ID to encoded))
@@ -84,4 +116,18 @@ enum class Route(val value: String) {
             )
         }
     }
+}
+
+fun Episode?.shareText(): String {
+    if (this == null) {
+        return ""
+    }
+    val url =
+        Route.EPISODE_DETAILS.deepLinkWithValue(
+            mapOf(
+                RouteArgs.EPISODE_ID to Uri.encode(id),
+                RouteArgs.PODCAST_ID to podcastId.toString(),
+            ),
+        )
+    return "$podcastName: ${title}\n$url"
 }
