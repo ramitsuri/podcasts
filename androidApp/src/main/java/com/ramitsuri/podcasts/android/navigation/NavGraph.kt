@@ -178,9 +178,6 @@ fun NavGraph(
             targetValue = if (isExpanded) 16.dp else 0.dp,
             label = "rounded_corner_animation",
         )
-        BackHandler(isExpanded) {
-            expandOrCollapsePlayer(false)
-        }
         BottomSheetScaffold(
             scaffoldState = scaffoldSheetState,
             sheetPeekHeight = bottomPadding,
@@ -808,7 +805,9 @@ fun NavGraph(
                         )
                     }
                 }
-
+                BackHandler(isExpanded) {
+                    expandOrCollapsePlayer(false)
+                }
                 AnimatedVisibility(
                     visible = isExpanded,
                     enter = fadeIn(),
