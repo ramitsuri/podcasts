@@ -4,10 +4,12 @@ import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
@@ -40,6 +42,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -842,16 +845,12 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() =
         tween(300),
     )
 
-private fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition() =
-    slideIntoContainer(
-        AnimatedContentTransitionScope.SlideDirection.End,
-        tween(300),
-    )
+private fun popEnterTransition() = EnterTransition.None
 
-private fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition() =
-    slideOutOfContainer(
-        AnimatedContentTransitionScope.SlideDirection.End,
-        tween(300),
+private fun popExitTransition() =
+    scaleOut(
+        targetScale = 0.9f,
+        transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 0.5f),
     )
 
 @Composable
