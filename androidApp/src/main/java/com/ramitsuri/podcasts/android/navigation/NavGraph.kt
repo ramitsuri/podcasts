@@ -112,8 +112,8 @@ fun NavGraph(
             }
         }
     }
-    var canShowBottomNav by remember { mutableStateOf(!isExpanded) }
-    var canShowPlayer by remember { mutableStateOf(!isExpanded) }
+    var canShowBottomNav by remember(scaffoldSheetState.bottomSheetState) { mutableStateOf(!isExpanded) }
+    var canShowPlayer by remember(scaffoldSheetState.bottomSheetState) { mutableStateOf(!isExpanded) }
 
     val coroutineScope = rememberCoroutineScope()
 
