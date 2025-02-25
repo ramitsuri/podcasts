@@ -27,12 +27,16 @@ class EpisodeDetailsViewModel internal constructor(
             settings.getPlayingStateFlow(),
         ) { episode, currentlyPlayingEpisode, playingState ->
             if (episode == null) {
+                LogHelper.v(TAG, "Episode is null")
                 if (alreadyAttemptedToLoadMissing) {
                     // do nothing
+                    LogHelper.v(TAG, "Already attempted to load missing episode once")
                 } else if (podcastId != null && episodeId != null) {
+                    LogHelper.v(TAG, "Loading missing episode")
                     podcastsAndEpisodesRepository.loadMissingEpisode(podcastId = podcastId, episodeId = episodeId)
                     alreadyAttemptedToLoadMissing = true
                 } else {
+                    LogHelper.v(TAG, "Not loading missing episode because podcast id or episode id is null")
                     alreadyAttemptedToLoadMissing = true
                 }
             }
