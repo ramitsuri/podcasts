@@ -34,12 +34,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -98,6 +100,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     onNextPageRequested: () -> Unit,
     onYearEndReviewClicked: () -> Unit,
+    onRefresh: () -> Unit,
 ) {
     Column(
         modifier =
@@ -129,50 +132,56 @@ fun HomeScreen(
                 onSettingsClicked = onSettingsClicked,
             )
         }
-        LazyColumn(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), state = lazyListState) {
-            if (state.subscribedPodcasts.isNotEmpty()) {
-                item {
-                    Subscriptions(
-                        podcasts = state.subscribedPodcasts,
-                        showYearEndReview = state.showYearEndReview,
-                        onPodcastClicked = { onPodcastClicked(it.id) },
-                        onPodcastLongClicked = {
-                            val hadNewEpisodes = onPodcastHasNewSeen(it.id)
-                            if (hadNewEpisodes) {
-                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                            }
-                        },
-                        onMoreClicked = onMorePodcastsClicked,
-                        onReviewItemClicked = onYearEndReviewClicked,
+        PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = onRefresh,
+            modifier = modifier,
+        ) {
+            LazyColumn(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), state = lazyListState) {
+                if (state.subscribedPodcasts.isNotEmpty()) {
+                    item {
+                        Subscriptions(
+                            podcasts = state.subscribedPodcasts,
+                            showYearEndReview = state.showYearEndReview,
+                            onPodcastClicked = { onPodcastClicked(it.id) },
+                            onPodcastLongClicked = {
+                                val hadNewEpisodes = onPodcastHasNewSeen(it.id)
+                                if (hadNewEpisodes) {
+                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                                }
+                            },
+                            onMoreClicked = onMorePodcastsClicked,
+                            onReviewItemClicked = onYearEndReviewClicked,
+                        )
+                    }
+                }
+                items(key = { it.id }, items = state.episodes) {
+                    ColoredHorizontalDivider()
+                    EpisodeItem(
+                        episode = it,
+                        playingState =
+                            if (state.currentlyPlayingEpisodeId == it.id) {
+                                state.currentlyPlayingEpisodeState
+                            } else {
+                                PlayingState.NOT_PLAYING
+                            },
+                        onClicked = { onEpisodeClicked(it.id) },
+                        onPlayClicked = { onEpisodePlayClicked(it) },
+                        onPauseClicked = onEpisodePauseClicked,
+                        onAddToQueueClicked = { onEpisodeAddToQueueClicked(it) },
+                        onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(it) },
+                        onDownloadClicked = { onEpisodeDownloadClicked(it) },
+                        onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(it) },
+                        onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(it) },
+                        onPlayedClicked = { onEpisodePlayedClicked(it.id) },
+                        onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
+                        onFavoriteClicked = { onEpisodeFavoriteClicked(it.id) },
+                        onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(it.id) },
                     )
                 }
-            }
-            items(key = { it.id }, items = state.episodes) {
-                ColoredHorizontalDivider()
-                EpisodeItem(
-                    episode = it,
-                    playingState =
-                        if (state.currentlyPlayingEpisodeId == it.id) {
-                            state.currentlyPlayingEpisodeState
-                        } else {
-                            PlayingState.NOT_PLAYING
-                        },
-                    onClicked = { onEpisodeClicked(it.id) },
-                    onPlayClicked = { onEpisodePlayClicked(it) },
-                    onPauseClicked = onEpisodePauseClicked,
-                    onAddToQueueClicked = { onEpisodeAddToQueueClicked(it) },
-                    onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(it) },
-                    onDownloadClicked = { onEpisodeDownloadClicked(it) },
-                    onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(it) },
-                    onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(it) },
-                    onPlayedClicked = { onEpisodePlayedClicked(it.id) },
-                    onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
-                    onFavoriteClicked = { onEpisodeFavoriteClicked(it.id) },
-                    onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(it.id) },
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
         }
         if (state.episodes.isEmpty()) {

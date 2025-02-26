@@ -8,10 +8,11 @@ import com.ramitsuri.podcasts.repositories.PodcastsRepository
 import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.EpisodeController
+import com.ramitsuri.podcasts.utils.EpisodeFetcher
 import com.ramitsuri.podcasts.utils.LogHelper
+import com.ramitsuri.podcasts.utils.combine
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -27,9 +28,11 @@ class HomeViewModel internal constructor(
     private val podcastsRepository: PodcastsRepository,
     private val sessionHistoryRepository: SessionHistoryRepository,
     private val clock: Clock,
+    private val episodeFetcher: EpisodeFetcher,
 ) : ViewModel(), EpisodeController by episodeController {
     private val page = MutableStateFlow(1L)
     private var availableEpisodeCount: Long = 0
+    private val isRefreshing = MutableStateFlow(false)
 
     val state =
         page
@@ -40,7 +43,10 @@ class HomeViewModel internal constructor(
                     episodesRepository.getCurrentEpisode(),
                     settings.getPlayingStateFlow(),
                     sessionHistoryRepository.hasSessions(),
-                ) { subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState, hasSessions ->
+                    isRefreshing,
+                ) { subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState, hasSessions,
+                    isRefreshing,
+                    ->
                     LogHelper.d(TAG, "Total episodes being shown: ${subscribedEpisodes.size}")
                     val currentlyPlaying =
                         if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
@@ -54,6 +60,7 @@ class HomeViewModel internal constructor(
                         currentlyPlayingEpisodeId = currentlyPlaying?.id,
                         currentlyPlayingEpisodeState = playingState,
                         showYearEndReview = hasSessions && clock.now() < Instant.parse(SHOW_REVIEW_UNTIL),
+                        isRefreshing = isRefreshing,
                     )
                 }
             }
@@ -85,6 +92,14 @@ class HomeViewModel internal constructor(
         val newPage = page.value + 1
         LogHelper.d(TAG, "Episodes next page requested: $newPage")
         page.update { newPage }
+    }
+
+    fun onRefresh() {
+        viewModelScope.launch {
+            isRefreshing.update { true }
+            episodeFetcher.fetchPodcastsIfNecessary(forced = true, downloaderTasksAllowed = true)
+            isRefreshing.update { false }
+        }
     }
 
     companion object {

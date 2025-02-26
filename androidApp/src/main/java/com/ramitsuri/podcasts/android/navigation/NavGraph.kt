@@ -325,6 +325,7 @@ fun NavGraph(
                                 canShowBottomNav = false
                                 navController.navigate(Route.YEAR_END_REVIEW.value)
                             },
+                            onRefresh = viewModel::onRefresh,
                             modifier =
                                 Modifier
                                     .statusBarsPadding()
