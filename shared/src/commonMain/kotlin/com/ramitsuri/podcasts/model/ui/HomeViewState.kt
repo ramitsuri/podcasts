@@ -10,4 +10,5 @@ data class HomeViewState(
     val currentlyPlayingEpisodeId: String? = null,
     val currentlyPlayingEpisodeState: PlayingState = PlayingState.NOT_PLAYING,
     val showYearEndReview: Boolean = false,
+    val isRefreshing: Boolean = false,
 )
