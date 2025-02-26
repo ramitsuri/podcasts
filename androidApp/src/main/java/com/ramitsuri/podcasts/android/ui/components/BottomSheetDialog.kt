@@ -25,7 +25,7 @@ fun BottomSheetDialog(
     if (show) {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
-            windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Bottom),
+            contentWindowInsets = { BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Bottom) },
         ) {
             Column(
                 modifier =
