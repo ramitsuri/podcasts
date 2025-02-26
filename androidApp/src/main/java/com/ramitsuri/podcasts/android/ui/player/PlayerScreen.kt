@@ -230,18 +230,16 @@ private fun PlayerScreenExpanded(
     LaunchedEffect(showSleepTimerControl) {
         if (showSleepTimerControl) {
             offset.animateTo(Offset(0f, sleepTimerControlHeight.toFloat()))
-        } else
-            {
-                offset.animateTo(Offset(0f, 0f))
-            }
+        } else {
+            offset.animateTo(Offset(0f, 0f))
+        }
     }
     LaunchedEffect(showSpeedControl) {
         if (showSpeedControl) {
             offset.animateTo(Offset(0f, speedControlHeight.toFloat()))
-        } else
-            {
-                offset.animateTo(Offset(0f, 0f))
-            }
+        } else {
+            offset.animateTo(Offset(0f, 0f))
+        }
     }
     Box(
         modifier = modifier.fillMaxWidth(),
