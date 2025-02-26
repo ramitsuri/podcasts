@@ -294,8 +294,8 @@ private fun PlayerScreenExpanded(
         }
         AnimatedVisibility(
             visible = showSpeedControl,
-            enter = slideInVertically(initialOffsetY = { sleepTimerControlHeight }) + fadeIn(),
-            exit = slideOutVertically(targetOffsetY = { sleepTimerControlHeight }) + fadeOut(),
+            enter = slideInVertically(initialOffsetY = { speedControlHeight }) + fadeIn(),
+            exit = slideOutVertically(targetOffsetY = { speedControlHeight }) + fadeOut(),
         ) {
             Speed(
                 speed = playbackSpeed,
