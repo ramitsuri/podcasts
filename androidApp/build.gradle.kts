@@ -89,6 +89,7 @@ dependencies {
     implementation(libs.splash)
     implementation(libs.work)
     debugImplementation(libs.compose.ui.tooling)
+    implementation(libs.composables)
 }
 
 detekt {
