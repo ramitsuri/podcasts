@@ -1,6 +1,12 @@
 package com.ramitsuri.podcasts.android.ui.player
 
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -77,7 +83,7 @@ import kotlin.time.Duration
 
 @Composable
 fun PlayerScreen(
-    isExpanded: Boolean,
+    expandProgress: Float,
     state: PlayerViewState,
     modifier: Modifier = Modifier,
     onNotExpandedHeightKnown: (Int) -> Unit,
@@ -100,40 +106,34 @@ fun PlayerScreen(
     onFavoriteClicked: () -> Unit,
     onNotFavoriteClicked: () -> Unit,
 ) {
-    val alphaExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 1f else 0f, label = "player visibility")
-    val alphaNotExpandedPlayer: Float by animateFloatAsState(if (isExpanded) 0f else 1f, label = "player visibility")
     Box(
         modifier =
             modifier
                 .fillMaxWidth(),
         contentAlignment = Alignment.TopCenter,
     ) {
-        if (!isExpanded) {
-            if (state.hasEverBeenPlayed) {
-                PlayerScreenNotExpanded(
-                    modifier =
-                        Modifier
-                            .onGloballyPositioned {
-                                onNotExpandedHeightKnown(it.size.height)
-                            }
-                            .alpha(alphaNotExpandedPlayer),
-                    episodeTitle = state.episodeTitle,
-                    episodeArtwork = state.episodeArtworkUrl,
-                    playingState = state.playingState,
-                    playProgress = state.progress,
-                    onPlayClicked = onPlayClicked,
-                    onPauseClicked = onPauseClicked,
-                    onClicked = onNotExpandedPlayerClicked,
-                )
-            }
-        }
         if (state.hasEverBeenPlayed) {
+            PlayerScreenNotExpanded(
+                modifier =
+                    Modifier
+                        .onGloballyPositioned {
+                            onNotExpandedHeightKnown(it.size.height)
+                        }
+                        .alpha(1f - expandProgress),
+                episodeTitle = state.episodeTitle,
+                episodeArtwork = state.episodeArtworkUrl,
+                playingState = state.playingState,
+                playProgress = state.progress,
+                onPlayClicked = onPlayClicked,
+                onPauseClicked = onPauseClicked,
+                onClicked = onNotExpandedPlayerClicked,
+            )
             PlayerScreenExpanded(
                 modifier =
                     Modifier
                         .padding(16.dp)
-                        .alpha(alphaExpandedPlayer),
-                isExpanded = isExpanded,
+                        .alpha(expandProgress),
+                isCollapsed = expandProgress == 0f,
                 shareText = state.episode.shareText(),
                 episodeTitle = state.episodeTitle,
                 episodeArtwork = state.episodeArtworkUrl,
@@ -174,7 +174,7 @@ fun PlayerScreen(
 private fun PlayerScreenExpanded(
     modifier: Modifier = Modifier,
     shareText: String,
-    isExpanded: Boolean,
+    isCollapsed: Boolean,
     episodeTitle: String,
     episodeArtwork: String,
     podcastName: String,
@@ -212,27 +212,35 @@ private fun PlayerScreenExpanded(
     var showSpeedControl by remember { mutableStateOf(false) }
     var speedControlHeight by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(isExpanded) {
-        if (!isExpanded) {
+    val offset = remember { Animatable(Offset(0f, 0f), Offset.VectorConverter) }
+
+    LaunchedEffect(isCollapsed) {
+        if (isCollapsed) {
             showSleepTimerControl = false
             showSpeedControl = false
+        }
+    }
+    LaunchedEffect(showSleepTimerControl) {
+        if (showSleepTimerControl) {
+            offset.animateTo(Offset(0f, sleepTimerControlHeight.toFloat()))
+        } else {
+            offset.animateTo(Offset(0f, 0f))
+        }
+    }
+    LaunchedEffect(showSpeedControl) {
+        if (showSpeedControl) {
+            offset.animateTo(Offset(0f, speedControlHeight.toFloat()))
+        } else {
+            offset.animateTo(Offset(0f, 0f))
         }
     }
     Box(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.BottomCenter,
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
         Player(
             disableUI = showSleepTimerControl || showSpeedControl,
-            yOffset =
-                if (showSleepTimerControl) {
-                    sleepTimerControlHeight
-                } else if (showSpeedControl) {
-                    speedControlHeight
-                } else {
-                    0
-                },
+            yOffset = offset.value.y.toInt(),
             episodeTitle = episodeTitle,
             episodeArtwork = episodeArtwork,
             podcastName = podcastName,
@@ -259,7 +267,11 @@ private fun PlayerScreenExpanded(
             onShowSleepControl = { showSleepTimerControl = it },
             onShowSpeedControl = { showSpeedControl = it },
         )
-        if (showSleepTimerControl) {
+        AnimatedVisibility(
+            visible = showSleepTimerControl,
+            enter = slideInVertically(initialOffsetY = { sleepTimerControlHeight }) + fadeIn(),
+            exit = slideOutVertically(targetOffsetY = { sleepTimerControlHeight }) + fadeOut(),
+        ) {
             SleepTimer(
                 sleepTimer = sleepTimer,
                 sleepTimerDuration = sleepTimerDuration,
@@ -272,7 +284,11 @@ private fun PlayerScreenExpanded(
                 onSleepTimerControlHeightKnown = { sleepTimerControlHeight = it },
             )
         }
-        if (showSpeedControl) {
+        AnimatedVisibility(
+            visible = showSpeedControl,
+            enter = slideInVertically(initialOffsetY = { speedControlHeight }) + fadeIn(),
+            exit = slideOutVertically(targetOffsetY = { speedControlHeight }) + fadeOut(),
+        ) {
             Speed(
                 speed = playbackSpeed,
                 trimSilence = trimSilence,
@@ -411,6 +427,7 @@ private fun Player(
                     ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
             Image(
                 url = episodeArtwork,
                 contentDescription = episodeTitle,
@@ -883,7 +900,7 @@ private fun PlayerScreenPreview_IsPlaying_NotExpanded() {
     PreviewTheme {
         Column(modifier = Modifier.fillMaxWidth()) {
             PlayerScreen(
-                isExpanded = false,
+                expandProgress = 0f,
                 state =
                     PlayerViewState(
                         playingState = PlayingState.PLAYING,
@@ -922,7 +939,7 @@ private fun PlayerScreenPreview_IsNotPlaying_NotExpanded() {
     PreviewTheme {
         Column(modifier = Modifier.fillMaxWidth()) {
             PlayerScreen(
-                isExpanded = false,
+                expandProgress = 0f,
                 state =
                     PlayerViewState(
                         playingState = PlayingState.NOT_PLAYING,
@@ -961,7 +978,7 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
     PreviewTheme {
         Column(modifier = Modifier.fillMaxWidth()) {
             PlayerScreen(
-                isExpanded = true,
+                expandProgress = 1f,
                 state =
                     PlayerViewState(
                         playingState = PlayingState.PLAYING,
@@ -999,7 +1016,7 @@ private fun PlayerScreenPreview_IsPlaying_Expanded() {
 private fun PlayerScreenPreview_IsNotPlaying_Expanded() {
     PreviewTheme {
         PlayerScreen(
-            isExpanded = true,
+            expandProgress = 1f,
             state =
                 PlayerViewState(
                     playingState = PlayingState.NOT_PLAYING,

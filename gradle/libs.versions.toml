@@ -8,6 +8,7 @@ androidx-activityCompose = "1.9.0"
 androidx-lifecycle = "2.8.3"
 build-konfig = "0.15.1"
 coil = "2.6.0"
+composables = "1.20.1"
 compose-navigation = "2.8.5"
 compose-lifecycle = "2.8.3"
 coroutines-guava = "1.8.0"
@@ -37,6 +38,7 @@ androidx-lifecycle = { module = "androidx.lifecycle:lifecycle-process", version.
 
 coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
+composables = { module = "com.composables:core", version.ref = "composables" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
