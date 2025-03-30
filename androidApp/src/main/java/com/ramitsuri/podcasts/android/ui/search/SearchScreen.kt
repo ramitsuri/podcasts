@@ -267,7 +267,7 @@ private fun SearchResults(
                 PodcastInfoItem(it, onClick = onPodcastClicked)
             }
             item {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(128.dp))
             }
         }
     } else {
