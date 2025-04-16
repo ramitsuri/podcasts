@@ -117,6 +117,10 @@ open class BaseTest(private val initDatabase: Boolean = true) : KoinTest {
                         override fun cancel(episode: Episode) {
                             println("Cancel episode ${episode.id} download")
                         }
+
+                        override fun setAllowOnWifiOnly(onWifiOnly: Boolean) {
+                            println("Set allow on wifi only: $onWifiOnly")
+                        }
                     }
                 }
 

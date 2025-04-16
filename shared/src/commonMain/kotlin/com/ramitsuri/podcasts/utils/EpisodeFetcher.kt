@@ -20,6 +20,14 @@ class EpisodeFetcher(
 ) {
     private val refreshPodcastsMutex = Mutex()
 
+    init {
+        longLivingScope.launch {
+            settings.shouldDownloadOnWifiOnly().collect { onWifiOnly ->
+                repository.setAllowDownloadOnWifiOnly(onWifiOnly)
+            }
+        }
+    }
+
     fun startForegroundStateBasedFetcher() {
         longLivingScope.launch {
             foregroundStateObserver.state.collect { foregroundState ->

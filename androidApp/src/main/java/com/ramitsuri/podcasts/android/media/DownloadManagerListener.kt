@@ -3,9 +3,12 @@ package com.ramitsuri.podcasts.android.media
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
+import androidx.media3.exoplayer.scheduler.Requirements
+import com.ramitsuri.podcasts.android.BuildConfig
 import com.ramitsuri.podcasts.android.utils.Constants
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
+import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -72,5 +75,32 @@ class DownloadManagerListener(
                 episodesRepository.updateNeedsDownload(episodeId, needsDownload)
             }
         }
+    }
+
+    override fun onRequirementsStateChanged(
+        downloadManager: DownloadManager,
+        requirements: Requirements,
+        notMetRequirements: Int,
+    ) {
+        super.onRequirementsStateChanged(downloadManager, requirements, notMetRequirements)
+        if (BuildConfig.DEBUG) {
+            val requirementsString =
+                buildString {
+                    append("IsIdleRequired: ${requirements.isIdleRequired}")
+                    appendLine()
+                    append("IsNetworkRequired: ${requirements.isNetworkRequired}")
+                    appendLine()
+                    append("IsUnmeteredNetworkRequired: ${requirements.isUnmeteredNetworkRequired}")
+                    appendLine()
+                    append("IsStorageNotLowRequiredRequired: ${requirements.isStorageNotLowRequired}")
+                    appendLine()
+                    append("IsChargingRequired: ${requirements.isChargingRequired}")
+                }
+            LogHelper.d(TAG, requirementsString)
+        }
+    }
+
+    companion object {
+        private const val TAG = "DownloadManagerListener"
     }
 }

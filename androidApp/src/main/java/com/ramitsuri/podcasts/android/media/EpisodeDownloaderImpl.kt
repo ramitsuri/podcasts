@@ -6,6 +6,7 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
+import androidx.media3.exoplayer.scheduler.Requirements
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.utils.Constants
@@ -57,6 +58,22 @@ class EpisodeDownloaderImpl(private val appContext: Context) : EpisodeDownloader
             PodcastDownloadService::class.java,
             episode.id,
             Constants.DOWNLOAD_CANCELED_REASON,
+            false,
+        )
+    }
+
+    override fun setAllowOnWifiOnly(onWifiOnly: Boolean) {
+        LogHelper.d(TAG, "Changing allow on wifi only: $onWifiOnly")
+        val requirements =
+            if (onWifiOnly) {
+                Requirements(Requirements.NETWORK_UNMETERED)
+            } else {
+                Requirements(Requirements.NETWORK)
+            }
+        DownloadService.sendSetRequirements(
+            appContext,
+            PodcastDownloadService::class.java,
+            requirements,
             false,
         )
     }

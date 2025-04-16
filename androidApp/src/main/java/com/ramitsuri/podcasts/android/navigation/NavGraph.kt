@@ -674,6 +674,7 @@ fun NavGraph(
                             canShowPlayer = false
                             navController.navigate(Route.BACKUP_RESTORE.value)
                         },
+                        toggleShouldDownloadOnWifiOnly = viewModel::toggleShouldDownloadOnWifiOnly,
                         modifier =
                             Modifier
                                 .statusBarsPadding()
