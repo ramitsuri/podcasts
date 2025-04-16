@@ -2,7 +2,7 @@ package com.ramitsuri.podcasts.android.utils
 
 object Constants {
     const val DOWNLOAD_CANCELED_REASON = 1
-    const val GITHUB_LINK = "https://github.com/ramitsuri/podcasts"
+    const val GITHUB_LINK = "https://github.com/ramitsuri/podcasts/issues"
 }
 
 object NotificationId {
