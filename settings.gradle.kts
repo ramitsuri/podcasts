@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 rootProject.name = "Podcasts"
 include(":androidApp")
 include(":shared")
+include(":widget")
