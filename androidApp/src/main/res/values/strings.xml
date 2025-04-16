@@ -176,6 +176,8 @@
     <string name="settings_remove_after_90_days">After 90 days</string>
     <string name="settings_about">About</string>
     <string name="settings_version">Version</string>
+    <string name="settings_view_source">View source</string>
+    <string name="settings_should_download_on_wifi_only">Download on Wi-Fi only</string>
     <string name="settings_report_bug">Report a bug</string>
 
     <!-- Podcast details -->

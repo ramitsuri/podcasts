@@ -5,10 +5,10 @@ import com.ramitsuri.podcasts.model.ui.SettingsViewState
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.EpisodeFetcher
 import com.ramitsuri.podcasts.utils.LogHelper
+import com.ramitsuri.podcasts.utils.combine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -30,14 +30,17 @@ class SettingsViewModel internal constructor(
             settings.getLastEpisodeFetchTime(),
             settings.getRemoveCompletedEpisodesAfter(),
             settings.getRemoveUnfinishedEpisodesAfter(),
+            settings.shouldDownloadOnWifiOnly(),
             fetching,
-        ) { autoPlayNextInQueue, lastFetchTime, removeCompletedAfter, removeUnfinishedAfter, fetching,
+        ) { autoPlayNextInQueue, lastFetchTime, removeCompletedAfter, removeUnfinishedAfter, shouldDownloadOnWifiOnly,
+            fetching,
             ->
             SettingsViewState(
                 autoPlayNextInQueue = autoPlayNextInQueue,
                 lastFetchTime = lastFetchTime,
                 removeCompletedAfter = removeCompletedAfter,
                 removeUnfinishedAfter = removeUnfinishedAfter,
+                shouldDownloadOnWifiOnly = shouldDownloadOnWifiOnly,
                 fetching = fetching,
             )
         }.stateIn(
@@ -50,6 +53,13 @@ class SettingsViewModel internal constructor(
         val currentAutoPlayNextInQueue = state.value.autoPlayNextInQueue
         longLivingScope.launch {
             settings.setAutoPlayNextInQueue(autoPlayNextInQueue = !currentAutoPlayNextInQueue)
+        }
+    }
+
+    fun toggleShouldDownloadOnWifiOnly() {
+        val currentShouldDownloadOnWifiOnly = state.value.shouldDownloadOnWifiOnly
+        longLivingScope.launch {
+            settings.setShouldDownloadOnWifiOnly(shouldDownloadOnWifiOnly = !currentShouldDownloadOnWifiOnly)
         }
     }
 

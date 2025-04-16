@@ -65,6 +65,7 @@ fun SettingsScreen(
     state: SettingsViewState,
     onBack: () -> Unit,
     toggleAutoPlayNextInQueue: () -> Unit,
+    toggleShouldDownloadOnWifiOnly: () -> Unit,
     onFetchRequested: () -> Unit,
     onRemoveCompletedAfterSelected: (RemoveDownloadsAfter) -> Unit,
     onRemoveUnfinishedAfterSelected: (RemoveDownloadsAfter) -> Unit,
@@ -92,10 +93,12 @@ fun SettingsScreen(
             ColoredHorizontalDivider()
             FetchSettings(
                 fetching = state.fetching,
+                shouldDownloadOnWifiOnly = state.shouldDownloadOnWifiOnly,
                 lastFetchTime = state.lastFetchTime,
                 removeCompletedAfter = state.removeCompletedAfter,
                 removeUnfinishedAfter = state.removeUnfinishedAfter,
                 onFetchRequested = onFetchRequested,
+                toggleShouldDownloadOnWifiOnly = toggleShouldDownloadOnWifiOnly,
                 onRemoveCompletedAfterSelected = onRemoveCompletedAfterSelected,
                 onRemoveUnfinishedAfterSelected = onRemoveUnfinishedAfterSelected,
             )
@@ -175,9 +178,11 @@ private fun PlaybackSettings(
 @Composable
 private fun FetchSettings(
     fetching: Boolean,
+    shouldDownloadOnWifiOnly: Boolean,
     lastFetchTime: Instant,
     removeCompletedAfter: RemoveDownloadsAfter,
     removeUnfinishedAfter: RemoveDownloadsAfter,
+    toggleShouldDownloadOnWifiOnly: () -> Unit,
     onFetchRequested: () -> Unit,
     onRemoveCompletedAfterSelected: (RemoveDownloadsAfter) -> Unit,
     onRemoveUnfinishedAfterSelected: (RemoveDownloadsAfter) -> Unit,
@@ -249,6 +254,33 @@ private fun FetchSettings(
         ) {
             Title(text = stringResource(id = R.string.settings_remove_unfinished))
             Subtitle(text = removeUnfinishedAfter.text())
+        }
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = toggleShouldDownloadOnWifiOnly)
+                    .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Title(text = stringResource(id = R.string.settings_should_download_on_wifi_only))
+            Spacer(modifier = Modifier.weight(1f))
+            Switch(
+                checked = shouldDownloadOnWifiOnly,
+                onCheckedChange = null,
+                thumbContent =
+                    if (shouldDownloadOnWifiOnly) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        }
+                    } else {
+                        null
+                    },
+            )
         }
     }
 
@@ -443,6 +475,7 @@ private fun SettingsPreview_LastFetchTimeNever() {
             onRemoveUnfinishedAfterSelected = { },
             onVersionClicked = { },
             onBackupRestoreClicked = { },
+            toggleShouldDownloadOnWifiOnly = { },
         )
     }
 }
@@ -460,6 +493,7 @@ private fun SettingsPreview_LastFetchTimeMinutesAgo() {
             onRemoveUnfinishedAfterSelected = { },
             onVersionClicked = { },
             onBackupRestoreClicked = { },
+            toggleShouldDownloadOnWifiOnly = { },
         )
     }
 }
@@ -477,6 +511,7 @@ private fun SettingsPreview_Fetching() {
             onRemoveUnfinishedAfterSelected = { },
             onVersionClicked = { },
             onBackupRestoreClicked = { },
+            toggleShouldDownloadOnWifiOnly = { },
         )
     }
 }

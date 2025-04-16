@@ -8,4 +8,6 @@ interface EpisodeDownloader {
     fun remove(episode: Episode)
 
     fun cancel(episode: Episode)
+
+    fun setAllowOnWifiOnly(onWifiOnly: Boolean)
 }

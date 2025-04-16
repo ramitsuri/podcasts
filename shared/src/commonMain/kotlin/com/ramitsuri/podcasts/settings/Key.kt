@@ -12,6 +12,7 @@ internal enum class Key(val value: String) {
     REMOVE_COMPLETED_EPISODES_AFTER("remove_completed_episodes_after"),
     REMOVE_UNFINISHED_EPISODES_AFTER("remove_unfinished_episodes_after"),
     REMOTE_LOGGING_ENABLED("remote_logging_enabled"),
+    SHOULD_DOWNLOAD_ON_WIFI_ONLY("should_download_on_wifi_only"),
     ;
 
     companion object {

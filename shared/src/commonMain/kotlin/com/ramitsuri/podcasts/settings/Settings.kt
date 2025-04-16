@@ -153,4 +153,12 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
     suspend fun setIsRemoteLoggingEnabled(remoteLoggingEnabled: Boolean) {
         keyValueStore.putBoolean(Key.REMOTE_LOGGING_ENABLED, remoteLoggingEnabled)
     }
+
+    fun shouldDownloadOnWifiOnly(): Flow<Boolean> {
+        return keyValueStore.getBooleanFlow(Key.SHOULD_DOWNLOAD_ON_WIFI_ONLY, false)
+    }
+
+    suspend fun setShouldDownloadOnWifiOnly(shouldDownloadOnWifiOnly: Boolean) {
+        keyValueStore.putBoolean(Key.SHOULD_DOWNLOAD_ON_WIFI_ONLY, shouldDownloadOnWifiOnly)
+    }
 }

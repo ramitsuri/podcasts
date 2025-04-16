@@ -183,6 +183,10 @@ class PodcastsAndEpisodesRepository internal constructor(
         return episodesRepository.getAvailableEpisodeCount(subscribedPodcastIds)
     }
 
+    fun setAllowDownloadOnWifiOnly(allow: Boolean) {
+        episodeDownloader.setAllowOnWifiOnly(allow)
+    }
+
     internal suspend fun removeIrrelevantPodcastsAndEpisodes() {
         // Begin with podcasts that haven't been subscribed to
         val unsubscribedPodcasts = podcastsRepository.getAllUnsubscribed()
