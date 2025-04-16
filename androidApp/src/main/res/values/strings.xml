@@ -178,6 +178,7 @@
     <string name="settings_version">Version</string>
     <string name="settings_view_source">View source</string>
     <string name="settings_should_download_on_wifi_only">Download on Wi-Fi only</string>
+    <string name="settings_report_bug">Report a bug</string>
 
     <!-- Podcast details -->
     <string name="podcast_details_sort_by_publish_desc">Show newest first</string>

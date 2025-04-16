@@ -106,7 +106,7 @@ fun SettingsScreen(
             BackupRestore(onBackupRestoreClicked = onBackupRestoreClicked)
             ColoredHorizontalDivider()
             AboutApp(onVersionClicked = onVersionClicked)
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(128.dp))
         }
     }
 }
@@ -380,7 +380,7 @@ private fun AboutApp(onVersionClicked: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Title(text = stringResource(id = R.string.settings_view_source))
+            Title(text = stringResource(id = R.string.settings_report_bug))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.OpenInNew,
                 contentDescription = null,

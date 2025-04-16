@@ -96,6 +96,7 @@ fun EpisodeDetailsScreen(
                 onFavoriteClicked = { onEpisodeFavoriteClicked(episode.id) },
                 onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(episode.id) },
             )
+            Spacer(modifier = Modifier.height(128.dp))
         } else if (state.loading) {
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
