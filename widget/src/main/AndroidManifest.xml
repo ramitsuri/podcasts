@@ -13,7 +13,7 @@
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/jetcaster_info" />
+                android:resource="@xml/widget_info" />
         </receiver>
     </application>
 

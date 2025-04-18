@@ -50,10 +50,20 @@ import coil.request.ErrorResult
 import coil.request.ImageRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
+import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.height
+import androidx.glance.layout.width
 
 class AppWidget : GlanceAppWidget() {
     override val sizeMode: SizeMode
-        get() = SizeMode.Exact
+        get() = SizeMode.Responsive(
+            setOf(
+                SMALL_SQUARE,
+                HORIZONTAL_RECTANGLE,
+                BIG_SQUARE,
+            ),
+        )
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
 
@@ -63,92 +73,75 @@ class AppWidget : GlanceAppWidget() {
             podcastTitle = "Now in Android",
             isPlaying = false,
             albumArtUri = "https://static.libsyn.com/p/assets/9/f/f/3/" +
-                    "9ff3cb5dc6cfb3e2e5bbc093207a2619/NIA000_PodcastThumbnail.png",
+                "9ff3cb5dc6cfb3e2e5bbc093207a2619/NIA000_PodcastThumbnail.png",
         )
 
         provideContent {
-            val sizeBucket = calculateSizeBucket()
+            val size = LocalSize.current
             val playPauseIcon = if (testState.isPlaying) PlayPauseIcon.Pause else PlayPauseIcon.Play
-            val artUri = Uri.parse(testState.albumArtUri)
+            val artUri = testState.albumArtUri.toUri()
 
             GlanceTheme {
-                when (sizeBucket) {
-                    SizeBucket.Invalid -> WidgetUiInvalidSize()
-                    SizeBucket.Narrow -> Widget(
-                        iconSize = Sizes.medium,
-                        imageUri = artUri,
-                        playPauseIcon = playPauseIcon,
-                    )
+                Scaffold {
+                    Column(
+                        GlanceModifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        when {
+                            size.height >= BIG_SQUARE.height && size.width >= BIG_SQUARE.width -> {
+                                AlbumArt(artUri, GlanceModifier.size(BIG_SQUARE.width))
+                                Spacer(GlanceModifier.height(24.dp))
+                                Row(
+                                    modifier = GlanceModifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                    PlayPauseButton(modifier = GlanceModifier.size(64.dp), state = playPauseIcon) { }
+                                }
+                            }
 
-                    SizeBucket.Normal -> WidgetUiNormal(
-                        iconSize = Sizes.normal,
-                        title = testState.episodeTitle,
-                        subtitle = testState.podcastTitle,
-                        imageUri = artUri,
-                        playPauseIcon = playPauseIcon,
-                    )
+                            size.height >= SMALL_SQUARE.height && size.width >= SMALL_SQUARE.width -> {
+                                AlbumArt(artUri, GlanceModifier.size(SMALL_SQUARE.width))
+                                Spacer(GlanceModifier.height(8.dp))
+                                Row(
+                                    modifier = GlanceModifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                    PlayPauseButton(modifier = GlanceModifier.size(64.dp), state = playPauseIcon) { }
+                                }
+                            }
 
-                    SizeBucket.NarrowShort -> Widget(
-                        iconSize = Sizes.condensed,
-                        imageUri = artUri,
-                        playPauseIcon = playPauseIcon,
-                    )
+                            size.height >= HORIZONTAL_RECTANGLE.height && size.width >= HORIZONTAL_RECTANGLE.width -> {
+                                Row(
+                                    modifier = GlanceModifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    AlbumArt(artUri, GlanceModifier.size(HORIZONTAL_RECTANGLE.height))
+                                    Spacer(GlanceModifier.width(8.dp))
+                                    PlayPauseButton(modifier = GlanceModifier.size(40.dp), state = playPauseIcon) { }
+                                }
+                            }
 
-                    SizeBucket.NormalShort -> WidgetUiNormal(
-                        iconSize = Sizes.condensed,
-                        title = testState.episodeTitle,
-                        subtitle = testState.podcastTitle,
-                        imageUri = artUri,
-                        playPauseIcon = playPauseIcon,
-                    )
+                            else -> {
+                                Row(
+                                    modifier = GlanceModifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                    PlayPauseButton(modifier = GlanceModifier.size(40.dp), state = playPauseIcon) { }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
-}
 
-@Composable
-private fun WidgetUiNormal(
-    title: String,
-    subtitle: String,
-    imageUri: Uri,
-    playPauseIcon: PlayPauseIcon,
-    iconSize: Dp,
-) {
-
-    Scaffold {
-        Row (
-            GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.Vertical.CenterVertically,
-        ) {
-            AlbumArt(imageUri, GlanceModifier.size(iconSize))
-            PodcastText(title, subtitle, modifier = GlanceModifier.padding(16.dp).defaultWeight())
-            PlayPauseButton(GlanceModifier.size(iconSize), playPauseIcon, {})
-        }
-    }
-}
-
-@Composable
-private fun Widget(
-    iconSize: Dp,
-    imageUri: Uri,
-    playPauseIcon: PlayPauseIcon,
-) {
-    Scaffold(titleBar = {} /* title bar will be optional in scaffold in glance 1.1.0-beta3*/) {
-        Row(
-            modifier = GlanceModifier.fillMaxSize(),
-            verticalAlignment = Alignment.Vertical.CenterVertically,
-        ) {
-            AlbumArt(imageUri, GlanceModifier.size(iconSize))
-            Spacer(GlanceModifier.defaultWeight())
-            PlayPauseButton(GlanceModifier.size(iconSize), playPauseIcon, {})
-        }
-    }
-}
-
-@Composable
-private fun WidgetUiInvalidSize() {
-    Box(modifier = GlanceModifier.fillMaxSize().background(ColorProvider(Color.Magenta))) {
-        Text("invalid size")
+    companion object {
+        private val HORIZONTAL_RECTANGLE = DpSize(150.dp, 100.dp)
+        private val SMALL_SQUARE = DpSize(150.dp, 150.dp)
+        private val BIG_SQUARE = DpSize(250.dp, 250.dp)
     }
 }
 
@@ -157,7 +150,7 @@ private fun AlbumArt(
     imageUri: Uri,
     modifier: GlanceModifier = GlanceModifier
 ) {
-    WidgetAsyncImage(uri = imageUri, contentDescription = null, modifier = modifier)
+    WidgetAsyncImage(uri = imageUri, modifier = modifier)
 }
 
 @Composable
@@ -225,37 +218,32 @@ enum class PlayPauseIcon { Play, Pause }
 @Composable
 private fun WidgetAsyncImage(
     uri: Uri,
-    contentDescription: String?,
     modifier: GlanceModifier = GlanceModifier
 ) {
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-
     LaunchedEffect(key1 = uri) {
         val request = ImageRequest.Builder(context)
             .data(uri)
-            .size(200, 200)
+            .size(1000, 1000)
             .target { data: Drawable ->
                 bitmap = (data as BitmapDrawable).bitmap
             }
             .build()
 
-        scope.launch(Dispatchers.IO) {
-            val result = ImageLoader(context).execute(request)
-            if (result is ErrorResult) {
-                val t = result.throwable
-                Log.e(TAG, "Image request error:", t)
-            }
+        val result = ImageLoader(context).execute(request)
+        if (result is ErrorResult) {
+            val t = result.throwable
+            Log.e(TAG, "Image request error:", t)
         }
     }
 
     bitmap?.let { bitmap ->
         Image(
             provider = ImageProvider(bitmap),
-            contentDescription = contentDescription,
-            contentScale = ContentScale.FillBounds,
-            modifier = modifier.cornerRadius(12.dp), // TODO: confirm radius with design
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = modifier.cornerRadius(12.dp),
         )
     }
 }
@@ -279,21 +267,5 @@ private object Sizes {
     val condensed = 48.dp
 }
 
-private enum class SizeBucket { Invalid, Narrow, Normal, NarrowShort, NormalShort }
 
-@Composable
-private fun calculateSizeBucket(): SizeBucket {
-    val size: DpSize = LocalSize.current
-    val width = size.width
-    val height = size.height
-
-    return when {
-        width < Sizes.minWidth -> SizeBucket.Invalid
-        width <= Sizes.smallBucketCutoffWidth ->
-            if (height >= Sizes.short) SizeBucket.Narrow else SizeBucket.NarrowShort
-
-        else ->
-            if (height >= Sizes.short) SizeBucket.Normal else SizeBucket.NormalShort
-    }
-}
 

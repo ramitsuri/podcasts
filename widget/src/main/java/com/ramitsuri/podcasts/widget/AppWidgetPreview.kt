@@ -39,24 +39,22 @@ private object SizesPreview {
  *
  * In a real application, this would be called whenever the widget's state changes.
  */
-fun updateWidgetPreview(context: Context) {
+suspend fun updateWidgetPreview(context: Context) {
 
     if (Build.VERSION.SDK_INT >= 35) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val appwidgetManager = AppWidgetManager.getInstance(context)
+        try {
+            val appwidgetManager = AppWidgetManager.getInstance(context)
 
-                appwidgetManager.setWidgetPreview(
-                    ComponentName(context, WidgetReceiver::class.java),
-                    AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN,
-                    WidgetPreview().compose(
-                        context,
-                        size = DpSize(160.dp, 64.dp)
-                    ),
-                )
-            } catch (e: Exception) {
-                Log.e("TAG", e.message, e)
-            }
+            appwidgetManager.setWidgetPreview(
+                ComponentName(context, WidgetReceiver::class.java),
+                AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN,
+                WidgetPreview().compose(
+                    context,
+                    size = DpSize(160.dp, 64.dp),
+                ),
+            )
+        } catch (e: Exception) {
+            Log.e("TAG", e.message, e)
         }
     }
 }
@@ -81,19 +79,19 @@ private fun Widget() {
     Scaffold {
         Row(
             modifier = GlanceModifier.fillMaxSize(),
-            verticalAlignment = Alignment.Vertical.CenterVertically
+            verticalAlignment = Alignment.Vertical.CenterVertically,
         ) {
             Image(
                 modifier = GlanceModifier.wrapContentSize().size(SizesPreview.medium),
                 provider = ImageProvider(R.drawable.widget_preview_thumbnail),
-                contentDescription = ""
+                contentDescription = "",
             )
             Spacer(GlanceModifier.defaultWeight())
             SquareIconButton(
                 modifier = GlanceModifier.size(SizesPreview.medium),
                 imageProvider = ImageProvider(R.drawable.outline_play_arrow_24),
                 contentDescription = "",
-                onClick = { }
+                onClick = { },
             )
         }
     }
