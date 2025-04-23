@@ -9,7 +9,6 @@ import com.ramitsuri.podcasts.model.ui.SleepTimer
 import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
-import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -17,16 +16,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import kotlin.math.roundToInt
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 class PlayerViewModel(
     private val playerController: PlayerController,
@@ -87,51 +83,23 @@ class PlayerViewModel(
     }
 
     fun onPlayClicked() {
-        longLivingScope.launch {
-            val episode = episodesRepository.getCurrentEpisode().firstOrNull()
-            if (episode != null) {
-                if (episode.isCompleted) {
-                    episodesRepository.markNotPlayed(episode.id)
-                }
-                playerController.play(episode)
-            }
-        }
+        playerController.playCurrentEpisode()
     }
 
     fun onPauseClicked() {
         playerController.pause()
     }
 
-    fun onSkipRequested(by: Duration = 30.seconds) {
+    fun onSkipRequested() {
         viewModelScope.launch {
-            val episode = _state.value.episode
-            if (episode == null) {
-                LogHelper.v(TAG, "Skip requested but episode is null")
-                return@launch
-            }
-            if (episode.isCompleted) {
-                episodesRepository.markNotPlayed(episode.id)
-            }
-            val newPlayProgress = (episode.progressInSeconds.seconds + by).coerceAtMost((episode.duration ?: 0).seconds)
-            episodesRepository.updatePlayProgress(episode.id, newPlayProgress.inWholeSeconds.toInt())
-            playerController.seek(newPlayProgress)
+            playerController.skip()
             _state.update { it.copy(tempPlayProgress = null) }
         }
     }
 
-    fun onReplayRequested(by: Duration = 10.seconds) {
+    fun onReplayRequested() {
         viewModelScope.launch {
-            val episode = _state.value.episode
-            if (episode == null) {
-                LogHelper.v(TAG, "Replay requested but episode is null")
-                return@launch
-            }
-            if (episode.isCompleted) {
-                episodesRepository.markNotPlayed(episode.id)
-            }
-            val newPlayProgress = (episode.progressInSeconds.seconds - by).coerceAtLeast(0.seconds)
-            episodesRepository.updatePlayProgress(episode.id, newPlayProgress.inWholeSeconds.toInt())
-            playerController.seek(newPlayProgress)
+            playerController.replay()
             _state.update { it.copy(tempPlayProgress = null) }
         }
     }
@@ -142,22 +110,7 @@ class PlayerViewModel(
         updateSeekJob =
             viewModelScope.launch {
                 delay(300)
-                val episode = _state.value.episode
-                if (episode == null) {
-                    LogHelper.v(TAG, "Seek requested but episode is null")
-                    return@launch
-                }
-                val duration = episode.duration?.seconds
-                if (duration == null) {
-                    LogHelper.v(TAG, "Seek requested but no duration")
-                    return@launch
-                }
-                if (episode.isCompleted) {
-                    episodesRepository.markNotPlayed(episode.id)
-                }
-                val playProgress = duration.times(toPercentOfDuration.toDouble())
-                episodesRepository.updatePlayProgress(episode.id, playProgress.inWholeSeconds.toInt())
-                playerController.seek(playProgress)
+                playerController.seek(toPercentOfDuration)
                 _state.update { it.copy(tempPlayProgress = null) }
             }
     }

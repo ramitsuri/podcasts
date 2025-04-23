@@ -113,10 +113,8 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
                     PlayerControllerImpl(
                         context = get<Application>(),
                         coroutineScope = get<CoroutineScope>(),
-                        shouldAutoPlayNextInQueue = { settings.autoPlayNextInQueue().first() },
-                        getSleepTimer = { settings.getSleepTimerFlow().first() },
-                        getAppQueue = { get<EpisodesRepository>().getQueue() },
-                        getCurrentlyPlayingEpisode = { get<EpisodesRepository>().getCurrentEpisode().first() },
+                        episodesRepository = get<EpisodesRepository>(),
+                        settings = get<Settings>(),
                     )
                 }
 
