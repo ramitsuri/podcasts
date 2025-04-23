@@ -1,7 +1,6 @@
 package com.ramitsuri.podcasts.player
 
 import com.ramitsuri.podcasts.model.Episode
-import kotlin.time.Duration
 
 interface PlayerController {
     fun initializePlayer()
@@ -10,9 +9,15 @@ interface PlayerController {
 
     fun play(episode: Episode)
 
+    fun playCurrentEpisode()
+
     fun pause()
 
-    fun seek(to: Duration)
+    suspend fun seek(byPercentOfDuration: Float)
+
+    suspend fun skip()
+
+    suspend fun replay()
 
     fun updateQueue()
 

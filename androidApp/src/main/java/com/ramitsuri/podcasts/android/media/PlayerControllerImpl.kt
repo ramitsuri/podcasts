@@ -10,19 +10,21 @@ import com.google.common.util.concurrent.MoreExecutors
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.ui.SleepTimer
 import com.ramitsuri.podcasts.player.PlayerController
+import com.ramitsuri.podcasts.repositories.EpisodesRepository
+import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 class PlayerControllerImpl(
     context: Context,
-    private val shouldAutoPlayNextInQueue: suspend () -> Boolean,
-    private val getSleepTimer: suspend () -> SleepTimer,
-    private val getAppQueue: suspend () -> List<Episode>,
-    private val getCurrentlyPlayingEpisode: suspend () -> Episode?,
+    private val episodesRepository: EpisodesRepository,
+    private val settings: Settings,
     private val coroutineScope: CoroutineScope,
 ) : PlayerController {
     private val appContext = context.applicationContext
@@ -59,21 +61,35 @@ class PlayerControllerImpl(
         updateQueue()
     }
 
+    override fun playCurrentEpisode() {
+        coroutineScope.launch {
+            val episode = getCurrentEpisode()
+            if (episode != null) {
+                if (episode.isCompleted) {
+                    episodesRepository.markNotPlayed(episode.id)
+                }
+                play(episode)
+            } else {
+                LogHelper.v(TAG, "Current episode is null")
+            }
+        }
+    }
+
     override fun updateQueue() {
         updateQueueJob?.cancel()
         updateQueueJob =
             coroutineScope.launch {
                 delay(300)
-                val currentEpisode = getCurrentlyPlayingEpisode()
+                val currentEpisode = episodesRepository.getCurrentEpisode().first()
                 val playerQueue =
                     if (currentEpisode == null ||
                         currentEpisode.queuePosition == Episode.NOT_IN_QUEUE ||
-                        shouldAutoPlayNextInQueue().not() ||
-                        getSleepTimer() is SleepTimer.EndOfEpisode
+                        settings.autoPlayNextInQueue().first().not() ||
+                        settings.getSleepTimerFlow().first() is SleepTimer.EndOfEpisode
                     ) {
                         emptyList()
                     } else {
-                        getAppQueue().filter { it.queuePosition > currentEpisode.queuePosition }
+                        episodesRepository.getQueue().filter { it.queuePosition > currentEpisode.queuePosition }
                     }
                 removeEverythingButCurrentEpisode()
                 addEpisodes(playerQueue)
@@ -116,13 +132,53 @@ class PlayerControllerImpl(
         controller?.pause()
     }
 
-    override fun seek(to: Duration) {
+    override suspend fun seek(byPercentOfDuration: Float) {
+        seek(SeekType.Percent(byPercentOfDuration))
+    }
+
+    override suspend fun skip() {
+        val by = 30.seconds
+        seek(SeekType.Absolute(by))
+    }
+
+    override suspend fun replay() {
+        val by = (-10).seconds
+        seek(SeekType.Absolute(by))
+    }
+
+    private suspend fun seek(type: SeekType) {
         if (controller?.isCommandAvailable(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) != true) {
             LogHelper.d(TAG, "Seek requested but not allowed")
             return
         }
-        val newPosition = to.inWholeMilliseconds.coerceIn(0, controller?.duration ?: 0)
-        controller?.seekTo(newPosition)
+        val episode = getCurrentEpisode()
+        if (episode == null) {
+            LogHelper.v(TAG, "Seek requested but episode is null")
+            return
+        }
+        if (episode.isCompleted) {
+            episodesRepository.markNotPlayed(episode.id)
+        }
+
+        val newPlayProgress =
+            when (type) {
+                is SeekType.Absolute -> {
+                    episode.progressInSeconds.seconds + type.to
+                }
+
+                is SeekType.Percent -> {
+                    val duration = episode.duration?.seconds
+                    if (duration == null) {
+                        LogHelper.v(TAG, "Seek requested but no duration")
+                        return
+                    }
+                    duration.times(type.percent.toDouble())
+                }
+            }
+                .inWholeSeconds
+                .coerceIn(0, controller?.duration ?: 0)
+        episodesRepository.updatePlayProgress(episode.id, newPlayProgress.toInt())
+        controller?.seekTo(newPlayProgress * 1000) // This is in milliseconds
     }
 
     override fun releasePlayer() {
@@ -145,6 +201,14 @@ class PlayerControllerImpl(
             episode.asMediaItem(artworkUriOverride = with(appContext) { episode.cachedArtworkUri }),
             episode.progressInSeconds.times(1000).toLong(),
         )
+    }
+
+    private suspend fun getCurrentEpisode() = episodesRepository.getCurrentEpisode().first()
+
+    private sealed interface SeekType {
+        data class Absolute(val to: Duration) : SeekType
+
+        data class Percent(val percent: Float) : SeekType
     }
 
     companion object {
