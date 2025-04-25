@@ -1,0 +1,6 @@
+<resources>
+    <style name="MyWidgetTheme" parent="Theme.Material3.DynamicColors.DayNight">
+        <!-- Override default colorBackground attribute with custom color. -->
+        <item name="colorSurface">@color/light_purple</item>
+    </style>
+</resources>

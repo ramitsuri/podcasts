@@ -59,6 +59,7 @@ android {
 
 dependencies {
     implementation(projects.shared)
+    implementation(projects.widget)
 
     val composeBom = platform(libs.compose.bom)
     implementation(composeBom)
