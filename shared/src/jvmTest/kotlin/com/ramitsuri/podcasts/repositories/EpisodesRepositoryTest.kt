@@ -7,6 +7,8 @@ import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.Podcast
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.test.get
 import kotlin.test.Test
@@ -60,6 +62,31 @@ class EpisodesRepositoryTest : BaseTest() {
 
             swapQueuePositions("5", "4")
             assertQueueOrder("2", "4", "5", "3", "1")
+        }
+
+    @Test
+    fun testSimultaneousAddToQueue(): Unit =
+        runBlocking {
+            // Arrange
+            val repository = get<EpisodesRepository>()
+            insert(id = "1", queuePosition = Episode.NOT_IN_QUEUE)
+            insert(id = "2", queuePosition = Episode.NOT_IN_QUEUE)
+
+            // Act
+            val job1 =
+                launch {
+                    repository.addToQueue(id = "1")
+                }
+            val job2 =
+                launch {
+                    repository.addToQueue(id = "2")
+                }
+            joinAll(job1, job2)
+
+            // Assert
+            val queuePositions = repository.getQueue().map { it.queuePosition }
+            assertEquals(2, queuePositions.size)
+            assert(queuePositions[0] != queuePositions[1])
         }
 
     private suspend fun swapQueuePositions(

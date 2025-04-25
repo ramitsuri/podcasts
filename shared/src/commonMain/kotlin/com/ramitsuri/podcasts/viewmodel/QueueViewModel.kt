@@ -21,6 +21,17 @@ class QueueViewModel internal constructor(
     private val queueRearrangementHelper =
         QueueRearrangementHelper(viewModelScope, episodesRepository, playerController)
 
+    init {
+        viewModelScope.launch {
+            if (!settings.isDuplicateQueuePositionsIssueFixed()) {
+                episodesRepository.getQueue().forEachIndexed { index, episode ->
+                    episodesRepository.updateQueuePosition(episode.id, index)
+                }
+                settings.setIsDuplicateQueuePositionsIssueFixed(true)
+            }
+        }
+    }
+
     val state =
         combine(
             queueRearrangementHelper.queuePositions,
