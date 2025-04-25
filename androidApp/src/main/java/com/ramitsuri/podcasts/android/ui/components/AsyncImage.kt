@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import com.ramitsuri.podcasts.utils.imageRequest
 
 @Composable
 fun Image(
@@ -16,9 +16,8 @@ fun Image(
 ) {
     AsyncImage(
         model =
-            ImageRequest.Builder(LocalContext.current)
-                .setHeader("User-Agent", "Podcasts")
-                .data(url)
+            LocalContext.current
+                .imageRequest(url)
                 .crossfade(true)
                 .build(),
         contentDescription = contentDescription,
