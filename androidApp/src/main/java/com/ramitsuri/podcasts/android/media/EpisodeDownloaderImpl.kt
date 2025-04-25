@@ -8,11 +8,11 @@ import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.Requirements
 import coil.imageLoader
-import coil.request.ImageRequest
 import com.ramitsuri.podcasts.android.utils.Constants
 import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.utils.LogHelper
+import com.ramitsuri.podcasts.utils.imageRequest
 
 @OptIn(UnstableApi::class)
 class EpisodeDownloaderImpl(private val appContext: Context) : EpisodeDownloader {
@@ -35,8 +35,8 @@ class EpisodeDownloaderImpl(private val appContext: Context) : EpisodeDownloader
 
         // Image download
         val imageRequest =
-            ImageRequest.Builder(appContext)
-                .data(episode.podcastImageUrl)
+            appContext
+                .imageRequest(episode.podcastImageUrl)
                 .build()
         appContext.imageLoader.enqueue(imageRequest)
     }

@@ -54,6 +54,7 @@ kotlin {
 
         commonMain.dependencies {
             implementation(libs.datastore.preferences)
+            implementation(libs.coil)
             implementation(libs.koin.core)
             implementation(libs.ktor.core)
             implementation(libs.ktor.content.negotation)
