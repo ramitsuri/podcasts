@@ -7,6 +7,7 @@ import com.ramitsuri.podcasts.utils.Constants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Clock
@@ -160,5 +161,13 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
 
     suspend fun setShouldDownloadOnWifiOnly(shouldDownloadOnWifiOnly: Boolean) {
         keyValueStore.putBoolean(Key.SHOULD_DOWNLOAD_ON_WIFI_ONLY, shouldDownloadOnWifiOnly)
+    }
+
+    suspend fun isDuplicateQueuePositionsIssueFixed(): Boolean {
+        return keyValueStore.getBooleanFlow(Key.IS_DUPLICATE_QUEUE_POSITIONS_FIXED, false).first()
+    }
+
+    suspend fun setIsDuplicateQueuePositionsIssueFixed(fixed: Boolean) {
+        keyValueStore.putBoolean(Key.IS_DUPLICATE_QUEUE_POSITIONS_FIXED, fixed)
     }
 }

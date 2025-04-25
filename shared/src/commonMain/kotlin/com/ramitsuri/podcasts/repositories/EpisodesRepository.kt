@@ -13,6 +13,8 @@ import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlin.time.Duration.Companion.hours
@@ -22,6 +24,8 @@ class EpisodesRepository internal constructor(
     private val episodesApi: EpisodesApi,
     private val settings: Settings,
 ) {
+    private val addToQueueMutex = Mutex()
+
     // Should be called via PodcastsAndEpisodesRepository when necessary because that does other things like
     // marking podcasts having new episodes
     suspend fun refreshForPodcastId(
@@ -258,7 +262,18 @@ class EpisodesRepository internal constructor(
     }
 
     suspend fun addToQueue(id: String) {
-        episodesDao.addToQueue(id)
+        // Adding with mutex because it relies on the latest value already written to the db for generating next
+        // episode's queue position
+        addToQueueMutex.withLock {
+            episodesDao.addToQueue(id)
+        }
+    }
+
+    suspend fun updateQueuePosition(
+        id: String,
+        position: Int,
+    ) {
+        episodesDao.updateQueuePosition(id, position)
     }
 
     suspend fun removeFromQueue(id: String) {
