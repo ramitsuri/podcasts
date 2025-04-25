@@ -5,8 +5,6 @@ import com.ramitsuri.podcasts.model.Episode
 interface PlayerController {
     fun initializePlayer()
 
-    fun releasePlayer()
-
     fun play(episode: Episode)
 
     fun playCurrentEpisode()
