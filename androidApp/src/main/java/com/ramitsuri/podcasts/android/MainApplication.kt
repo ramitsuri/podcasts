@@ -46,6 +46,7 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
     private val episodeFetcher by inject<EpisodeFetcher>()
     private val settings by inject<Settings>()
     private val longLivingScope by inject<CoroutineScope>()
+    private val playerController by inject<PlayerController>()
 
     override fun onCreate() {
         super.onCreate()
@@ -57,6 +58,7 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
             val remoteLoggingEnabled = settings.isRemoteLoggingEnabled().first()
             LogHelper.toggleRemoteLogging(remoteLoggingEnabled)
         }
+        playerController.initializePlayer()
     }
 
     override fun newImageLoader(): ImageLoader {

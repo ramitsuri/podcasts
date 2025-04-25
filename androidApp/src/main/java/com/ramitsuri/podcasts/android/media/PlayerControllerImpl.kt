@@ -181,13 +181,6 @@ class PlayerControllerImpl(
         controller?.seekTo(newPlayProgress * 1000) // This is in milliseconds
     }
 
-    override fun releasePlayer() {
-        LogHelper.d(TAG, "Release player")
-        controllerFuture?.let {
-            MediaController.releaseFuture(it)
-        }
-    }
-
     override fun playNext() {
         controller?.seekToNextMediaItem()
     }

@@ -202,7 +202,6 @@ class PlayerViewModel(
     }
 
     fun viewStarted() {
-        playerController.initializePlayer()
         startUpdatingQueue()
     }
 
