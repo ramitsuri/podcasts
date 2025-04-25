@@ -23,6 +23,10 @@ class EpisodeFetcher(
     init {
         longLivingScope.launch {
             settings.shouldDownloadOnWifiOnly().collect { onWifiOnly ->
+                if (!foregroundStateObserver.state.value.isInForeground) {
+                    LogHelper.d(TAG, "App in background, cannot update allow on wifi setting")
+                    return@collect
+                }
                 repository.setAllowDownloadOnWifiOnly(onWifiOnly)
             }
         }
@@ -32,7 +36,7 @@ class EpisodeFetcher(
         longLivingScope.launch {
             foregroundStateObserver.state.collect { foregroundState ->
                 if (!foregroundState.isInForeground) {
-                    LogHelper.d(TAG, "App in background")
+                    LogHelper.d(TAG, "App in background, cannot fetch episodes")
                     return@collect
                 }
                 LogHelper.d(TAG, "App in foreground, will fetch episodes if necessary")
