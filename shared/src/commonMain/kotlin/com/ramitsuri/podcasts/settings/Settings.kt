@@ -170,4 +170,12 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
     suspend fun setIsDuplicateQueuePositionsIssueFixed(fixed: Boolean) {
         keyValueStore.putBoolean(Key.IS_DUPLICATE_QUEUE_POSITIONS_FIXED, fixed)
     }
+
+    fun hasSeenWidgetItem(): Flow<Boolean> {
+        return keyValueStore.getBooleanFlow(Key.HAS_SEEN_WIDGET_ITEM, false)
+    }
+
+    suspend fun setHasSeenWidgetItem() {
+        keyValueStore.putBoolean(Key.HAS_SEEN_WIDGET_ITEM, true)
+    }
 }

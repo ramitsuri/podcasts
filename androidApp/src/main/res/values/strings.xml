@@ -28,6 +28,7 @@
     <string name="stop">Stop</string>
     <string name="close">Close</string>
     <string name="generic_error">Something went wrong</string>
+    <string name="new_badge">NEW</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>
@@ -180,6 +181,9 @@
     <string name="settings_should_download_on_wifi_only">Download on Wi-Fi only</string>
     <string name="settings_report_bug">Report a bug</string>
     <string name="settings_backup_and_restore">Backup &amp; Restore</string>
+    <string name="settings_widget">Widget</string>
+    <string name="settings_widget_title">Home screen widget</string>
+    <string name="settings_widget_subtitle">Tap to add</string>
 
     <!-- Podcast details -->
     <string name="podcast_details_sort_by_publish_desc">Show newest first</string>

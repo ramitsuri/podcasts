@@ -1,5 +1,7 @@
 package com.ramitsuri.podcasts.android.ui.settings
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,6 +34,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,10 +55,12 @@ import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.TopAppBar
+import com.ramitsuri.podcasts.android.ui.utils.isVisible
 import com.ramitsuri.podcasts.android.utils.friendlyFetchDateTime
 import com.ramitsuri.podcasts.model.RemoveDownloadsAfter
 import com.ramitsuri.podcasts.model.ui.SettingsViewState
 import com.ramitsuri.podcasts.utils.Constants
+import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlin.time.Duration.Companion.minutes
@@ -73,8 +78,17 @@ fun SettingsScreen(
     onRemoveUnfinishedAfterSelected: (RemoveDownloadsAfter) -> Unit,
     onVersionClicked: () -> Unit,
     onBackupRestoreClicked: () -> Unit,
+    onAddWidgetClicked: () -> Unit,
+    onWidgetItemSeen: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var markWidgetItemSeen by remember { mutableStateOf(false) }
+    LaunchedEffect(markWidgetItemSeen) {
+        if (markWidgetItemSeen) {
+            delay(2000)
+            onWidgetItemSeen()
+        }
+    }
     Column(
         modifier =
             modifier
@@ -106,10 +120,22 @@ fun SettingsScreen(
             )
             ColoredHorizontalDivider()
             General(
+                showWidgetNewBadge = state.showWidgetNewBadge,
                 onBackupRestoreClicked = onBackupRestoreClicked,
                 onVersionClicked = onVersionClicked,
+                onAddWidgetClicked = onAddWidgetClicked,
             )
-            Spacer(modifier = Modifier.height(128.dp))
+            Spacer(
+                modifier =
+                    Modifier
+                        .height(128.dp)
+                        .isVisible {
+                            // Marking it seen here because even items behind player and bottom nav bar are considered
+                            // visible. So if spacer (which is at the bottom of screen) is seen, widget item definitely was
+                            // seen.
+                            markWidgetItemSeen = it
+                        },
+            )
         }
     }
 }
@@ -248,13 +274,22 @@ private fun Subtitle(text: String) {
 
 @Composable
 private fun General(
+    showWidgetNewBadge: Boolean,
     onBackupRestoreClicked: () -> Unit,
     onVersionClicked: () -> Unit,
+    onAddWidgetClicked: () -> Unit,
 ) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val appVersion = context.packageManager.getPackageInfo(context.packageName, 0)?.versionName ?: ""
     Section(title = stringResource(id = R.string.settings_general)) {
+        // Widget
+        TitleSubtitleRow(
+            title = stringResource(id = R.string.settings_widget_title),
+            subtitle = stringResource(id = R.string.settings_widget_subtitle),
+            hasNewBadge = showWidgetNewBadge,
+            onClick = onAddWidgetClicked,
+        )
         // Backup and restore
         TitleSubtitleRow(
             title = stringResource(id = R.string.settings_backup_and_restore),
@@ -296,6 +331,7 @@ private fun Section(
 private fun TitleSubtitleRow(
     title: String,
     subtitle: String = "",
+    hasNewBadge: Boolean = false,
     onClick: () -> Unit,
 ) {
     Column(
@@ -305,7 +341,12 @@ private fun TitleSubtitleRow(
                 .clickable(onClick = onClick)
                 .padding(16.dp),
     ) {
-        Title(text = title)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Title(text = title)
+            AnimatedVisibility(hasNewBadge) {
+                NewBadge()
+            }
+        }
         if (subtitle.isNotEmpty()) {
             Subtitle(text = subtitle)
         }
@@ -461,6 +502,25 @@ private fun RemoveDownloadsAfterDialog(
 }
 
 @Composable
+private fun NewBadge() {
+    Row {
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = stringResource(R.string.new_badge),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier =
+                Modifier
+                    .background(
+                        MaterialTheme.colorScheme.primary,
+                        shape = MaterialTheme.shapes.small,
+                    )
+                    .padding(vertical = 2.dp, horizontal = 8.dp),
+        )
+    }
+}
+
+@Composable
 private fun RemoveDownloadsAfter.text(): String {
     return when (this) {
         RemoveDownloadsAfter.TWENTY_FOUR_HOURS -> stringResource(id = R.string.settings_remove_after_24_hours)
@@ -484,6 +544,8 @@ private fun SettingsPreview_LastFetchTimeNever() {
             onVersionClicked = { },
             onBackupRestoreClicked = { },
             toggleShouldDownloadOnWifiOnly = { },
+            onAddWidgetClicked = { },
+            onWidgetItemSeen = { },
         )
     }
 }
@@ -502,6 +564,8 @@ private fun SettingsPreview_LastFetchTimeMinutesAgo() {
             onVersionClicked = { },
             onBackupRestoreClicked = { },
             toggleShouldDownloadOnWifiOnly = { },
+            onAddWidgetClicked = { },
+            onWidgetItemSeen = { },
         )
     }
 }
@@ -520,6 +584,8 @@ private fun SettingsPreview_Fetching() {
             onVersionClicked = { },
             onBackupRestoreClicked = { },
             toggleShouldDownloadOnWifiOnly = { },
+            onAddWidgetClicked = { },
+            onWidgetItemSeen = { },
         )
     }
 }
