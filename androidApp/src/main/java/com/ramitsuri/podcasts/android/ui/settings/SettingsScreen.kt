@@ -105,21 +105,12 @@ fun SettingsScreen(
                 onRemoveUnfinishedAfterSelected = onRemoveUnfinishedAfterSelected,
             )
             ColoredHorizontalDivider()
-            BackupRestore(onBackupRestoreClicked = onBackupRestoreClicked)
-            ColoredHorizontalDivider()
-            AboutApp(onVersionClicked = onVersionClicked)
+            General(
+                onBackupRestoreClicked = onBackupRestoreClicked,
+                onVersionClicked = onVersionClicked,
+            )
             Spacer(modifier = Modifier.height(128.dp))
         }
-    }
-}
-
-@Composable
-private fun BackupRestore(onBackupRestoreClicked: () -> Unit) {
-    Section(title = stringResource(id = R.string.backup_restore_backup_and_restore)) {
-        TitleSubtitleRow(
-            title = stringResource(id = R.string.backup_restore_backup_and_restore),
-            onClick = onBackupRestoreClicked,
-        )
     }
 }
 
@@ -256,11 +247,19 @@ private fun Subtitle(text: String) {
 }
 
 @Composable
-private fun AboutApp(onVersionClicked: () -> Unit) {
+private fun General(
+    onBackupRestoreClicked: () -> Unit,
+    onVersionClicked: () -> Unit,
+) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val appVersion = context.packageManager.getPackageInfo(context.packageName, 0)?.versionName ?: ""
-    Section(title = stringResource(id = R.string.settings_about)) {
+    Section(title = stringResource(id = R.string.settings_general)) {
+        // Backup and restore
+        TitleSubtitleRow(
+            title = stringResource(id = R.string.settings_backup_and_restore),
+            onClick = onBackupRestoreClicked,
+        )
         // Version
         TitleSubtitleRow(
             title = stringResource(id = R.string.settings_version),

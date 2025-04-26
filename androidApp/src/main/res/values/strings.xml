@@ -174,11 +174,12 @@
     <string name="settings_remove_after_7_days">After 7 days</string>
     <string name="settings_remove_after_30_days">After 30 days</string>
     <string name="settings_remove_after_90_days">After 90 days</string>
-    <string name="settings_about">About</string>
+    <string name="settings_general">General</string>
     <string name="settings_version">Version</string>
     <string name="settings_view_source">View source</string>
     <string name="settings_should_download_on_wifi_only">Download on Wi-Fi only</string>
     <string name="settings_report_bug">Report a bug</string>
+    <string name="settings_backup_and_restore">Backup &amp; Restore</string>
 
     <!-- Podcast details -->
     <string name="podcast_details_sort_by_publish_desc">Show newest first</string>
@@ -226,7 +227,6 @@
     <string name="year_end_minutes_format">%1$s minutes</string>
 
     <!-- Backup/Restore -->
-    <string name="backup_restore_backup_and_restore">Backup &amp; Restore</string>
     <string name="backup_restore_backup">Backup</string>
     <string name="backup_restore_restore">Restore</string>
 </resources>
