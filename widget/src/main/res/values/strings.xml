@@ -1,3 +1,4 @@
 <resources>
-
+    <string name="description">Podcasts widget</string>
+    <string name="open_app">Tap to open the app and play a podcast</string>
 </resources>

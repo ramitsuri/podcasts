@@ -43,6 +43,7 @@ import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.LogHelper
 import com.ramitsuri.podcasts.utils.getEpisodeDeepLinkIntent
+import com.ramitsuri.podcasts.widget.AppWidget.Companion.updateWidget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -162,6 +163,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 .filterNotNull()
                 .collect { (episode, playing) ->
                     LogHelper.d(TAG, "Updating session activity - episode: ${episode.title}, playing: $playing")
+                    updateWidget(episode, playing)
                     getEpisodeDeepLinkIntent(episode)?.let { pendingIntent ->
                         mediaSession?.setSessionActivity(pendingIntent)
                     }
