@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.android.media
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.annotation.OptIn
@@ -31,15 +32,17 @@ import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
-import com.ramitsuri.podcasts.android.MainActivity
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
+import com.ramitsuri.podcasts.navigation.Route
+import com.ramitsuri.podcasts.navigation.RouteArgs
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.LogHelper
+import com.ramitsuri.podcasts.utils.getEpisodeDeepLinkIntent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -49,6 +52,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.guava.future
@@ -131,14 +136,6 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                 .setId(UUID.randomUUID().toString())
                 .setCallback(MediaSessionCallback())
                 .setCustomLayout(customLayout)
-                .setSessionActivity(
-                    PendingIntent.getActivity(
-                        this,
-                        0,
-                        Intent(this, MainActivity::class.java),
-                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-                    ),
-                )
                 .build()
 
         launchSuspend {
@@ -149,6 +146,26 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             episodesRepository.getCurrentEpisode().collectLatest { currentEpisode ->
                 currentlyPlayingEpisode.update { currentEpisode }
             }
+        }
+
+        launchSuspend {
+            combine(
+                episodesRepository.getCurrentEpisode(),
+                settings.getPlayingStateFlow(),
+            ) { episode, playingState ->
+                if (episode == null) {
+                    return@combine null
+                }
+                val playing = playingState == PlayingState.PLAYING
+                episode to playing
+            }
+                .filterNotNull()
+                .collect { (episode, playing) ->
+                    LogHelper.d(TAG, "Updating session activity - episode: ${episode.title}, playing: $playing")
+                    getEpisodeDeepLinkIntent(episode)?.let { pendingIntent ->
+                        mediaSession?.setSessionActivity(pendingIntent)
+                    }
+                }
         }
 
         LogHelper.d(TAG, "Create with media session id: ${mediaSession?.id}")
@@ -515,6 +532,17 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
         return coroutineScope.launch {
             block()
         }
+    }
+
+    private fun getEpisodeDeepLinkIntent(episode: Episode): PendingIntent? {
+        val navDeepLink =
+            Route.EPISODE_DETAILS.deepLinkWithValue(
+                mapOf(
+                    RouteArgs.EPISODE_ID to Uri.encode(episode.id),
+                    RouteArgs.PODCAST_ID to episode.podcastId.toString(),
+                ),
+            ) ?: return null
+        return getEpisodeDeepLinkIntent(navDeepLink)
     }
 
     companion object {

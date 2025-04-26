@@ -67,7 +67,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
 import com.ramitsuri.podcasts.android.R
-import com.ramitsuri.podcasts.android.navigation.shareText
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.Image
@@ -78,6 +77,7 @@ import com.ramitsuri.podcasts.android.utils.sharePodcast
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.PlayerViewState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
+import com.ramitsuri.podcasts.navigation.shareText
 import java.util.Locale
 import kotlin.time.Duration
 
