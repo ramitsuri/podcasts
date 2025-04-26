@@ -10,6 +10,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.VideoLibrary
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.ramitsuri.podcasts.android.R
+import com.ramitsuri.podcasts.navigation.Route
 
 enum class BottomNavItem(
     val route: Route,
