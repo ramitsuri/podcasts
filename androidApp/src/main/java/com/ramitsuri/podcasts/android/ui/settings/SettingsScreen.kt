@@ -341,7 +341,7 @@ private fun TitleSwitchRow(
     title: String,
     switchChecked: Boolean,
     onClick: () -> Unit,
-)  {
+) {
     Row(
         modifier =
             Modifier
