@@ -3,6 +3,7 @@ package com.ramitsuri.podcasts.android.ui.settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -113,23 +115,11 @@ fun SettingsScreen(
 
 @Composable
 private fun BackupRestore(onBackupRestoreClicked: () -> Unit) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-    ) {
-        CategoryTitle(text = stringResource(id = R.string.backup_restore_backup_and_restore))
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onBackupRestoreClicked)
-                    .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Title(text = stringResource(id = R.string.backup_restore_backup_and_restore))
-        }
+    Section(title = stringResource(id = R.string.backup_restore_backup_and_restore)) {
+        TitleSubtitleRow(
+            title = stringResource(id = R.string.backup_restore_backup_and_restore),
+            onClick = onBackupRestoreClicked,
+        )
     }
 }
 
@@ -138,40 +128,12 @@ private fun PlaybackSettings(
     autoPlayNextInQueue: Boolean,
     toggleAutoPlayNextInQueue: () -> Unit,
 ) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-    ) {
-        CategoryTitle(text = stringResource(id = R.string.settings_playback))
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = toggleAutoPlayNextInQueue)
-                    .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Title(text = stringResource(id = R.string.settings_auto_play_next_in_queue))
-            Spacer(modifier = Modifier.weight(1f))
-            Switch(
-                checked = autoPlayNextInQueue,
-                onCheckedChange = null,
-                thumbContent =
-                    if (autoPlayNextInQueue) {
-                        {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        }
-                    } else {
-                        null
-                    },
-            )
-        }
+    Section(title = stringResource(id = R.string.settings_playback)) {
+        TitleSwitchRow(
+            title = stringResource(id = R.string.settings_auto_play_next_in_queue),
+            switchChecked = autoPlayNextInQueue,
+            onClick = toggleAutoPlayNextInQueue,
+        )
     }
 }
 
@@ -190,98 +152,46 @@ private fun FetchSettings(
     var showRemoveCompletedDialog by remember { mutableStateOf(false) }
     var showRemoveUnfinishedDialog by remember { mutableStateOf(false) }
 
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-    ) {
-        CategoryTitle(text = stringResource(id = R.string.settings_fetch))
+    Section(title = stringResource(id = R.string.settings_fetch)) {
         // Download now
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        enabled = !fetching,
-                        onClick = onFetchRequested,
-                    )
-                    .padding(16.dp),
-        ) {
-            Title(text = stringResource(id = R.string.settings_fetch_now))
-            if (fetching) {
-                Spacer(modifier = Modifier.height(8.dp))
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        val text =
+            if (lastFetchTime == Constants.NEVER_FETCHED_TIME) {
+                stringResource(id = R.string.settings_last_fetched_never)
             } else {
-                val text =
-                    if (lastFetchTime == Constants.NEVER_FETCHED_TIME) {
-                        stringResource(id = R.string.settings_last_fetched_never)
-                    } else {
-                        stringResource(
-                            id = R.string.settings_last_fetched_at_time_format,
-                            friendlyFetchDateTime(
-                                fetchDateTime = lastFetchTime,
-                            ),
-                        )
-                    }
-                Subtitle(text = text)
+                stringResource(
+                    id = R.string.settings_last_fetched_at_time_format,
+                    friendlyFetchDateTime(
+                        fetchDateTime = lastFetchTime,
+                    ),
+                )
             }
-        }
+        TitleProgressBarRow(
+            title = stringResource(id = R.string.settings_fetch_now),
+            showProgress = fetching,
+            subtitle = text,
+            onClick = onFetchRequested,
+        )
 
         // Remove completed episodes
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        onClick = { showRemoveCompletedDialog = true },
-                    )
-                    .padding(16.dp),
-        ) {
-            Title(text = stringResource(id = R.string.settings_remove_completed))
-            Subtitle(text = removeCompletedAfter.text())
-        }
+        TitleSubtitleRow(
+            title = stringResource(id = R.string.settings_remove_completed),
+            subtitle = removeCompletedAfter.text(),
+            onClick = { showRemoveCompletedDialog = true },
+        )
 
         // Remove unfinished episodes
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        onClick = { showRemoveUnfinishedDialog = true },
-                    )
-                    .padding(16.dp),
-        ) {
-            Title(text = stringResource(id = R.string.settings_remove_unfinished))
-            Subtitle(text = removeUnfinishedAfter.text())
-        }
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = toggleShouldDownloadOnWifiOnly)
-                    .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Title(text = stringResource(id = R.string.settings_should_download_on_wifi_only))
-            Spacer(modifier = Modifier.weight(1f))
-            Switch(
-                checked = shouldDownloadOnWifiOnly,
-                onCheckedChange = null,
-                thumbContent =
-                    if (shouldDownloadOnWifiOnly) {
-                        {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        }
-                    } else {
-                        null
-                    },
-            )
-        }
+        TitleSubtitleRow(
+            title = stringResource(id = R.string.settings_remove_unfinished),
+            subtitle = removeUnfinishedAfter.text(),
+            onClick = { showRemoveUnfinishedDialog = true },
+        )
+
+        // Download on Wifi only
+        TitleSwitchRow(
+            title = stringResource(id = R.string.settings_should_download_on_wifi_only),
+            switchChecked = shouldDownloadOnWifiOnly,
+            onClick = toggleShouldDownloadOnWifiOnly,
+        )
     }
 
     if (showRemoveCompletedDialog) {
@@ -350,41 +260,140 @@ private fun AboutApp(onVersionClicked: () -> Unit) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val appVersion = context.packageManager.getPackageInfo(context.packageName, 0)?.versionName ?: ""
+    Section(title = stringResource(id = R.string.settings_about)) {
+        // Version
+        TitleSubtitleRow(
+            title = stringResource(id = R.string.settings_version),
+            subtitle = appVersion,
+            onClick = onVersionClicked,
+        )
+
+        // Report bug
+        TitleIconRow(
+            title = stringResource(id = R.string.settings_report_bug),
+            icon = Icons.AutoMirrored.Filled.OpenInNew,
+            onClick = { uriHandler.openUri(AppConstants.GITHUB_LINK) },
+        )
+    }
+}
+
+@Composable
+private fun Section(
+    title: String,
+    content: @Composable ColumnScope.() -> Unit,
+) {
     Column(
         modifier =
             Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
     ) {
-        CategoryTitle(text = stringResource(id = R.string.settings_about))
+        CategoryTitle(text = title)
+        content()
+    }
+}
 
-        // Version
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onVersionClicked)
-                    .padding(16.dp),
-        ) {
-            Title(text = stringResource(id = R.string.settings_version))
-            Subtitle(text = appVersion)
+@Composable
+private fun TitleSubtitleRow(
+    title: String,
+    subtitle: String = "",
+    onClick: () -> Unit,
+) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(16.dp),
+    ) {
+        Title(text = title)
+        if (subtitle.isNotEmpty()) {
+            Subtitle(text = subtitle)
         }
+    }
+}
 
-        // View source
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable { uriHandler.openUri(AppConstants.GITHUB_LINK) }
-                    .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Title(text = stringResource(id = R.string.settings_report_bug))
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-                contentDescription = null,
-            )
+@Composable
+private fun TitleIconRow(
+    title: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Title(text = title)
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+        )
+    }
+}
+
+@Composable
+private fun TitleSwitchRow(
+    title: String,
+    switchChecked: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Title(text = title)
+        Spacer(modifier = Modifier.weight(1f))
+        Switch(
+            checked = switchChecked,
+            onCheckedChange = null,
+            thumbContent =
+                if (switchChecked) {
+                    {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
+                    }
+                } else {
+                    null
+                },
+        )
+    }
+}
+
+@Composable
+private fun TitleProgressBarRow(
+    title: String,
+    showProgress: Boolean,
+    subtitle: String,
+    onClick: () -> Unit,
+) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(
+                    enabled = !showProgress,
+                    onClick = onClick,
+                )
+                .padding(16.dp),
+    ) {
+        Title(text = title)
+        if (showProgress) {
+            Spacer(modifier = Modifier.height(8.dp))
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        } else {
+            Subtitle(text = subtitle)
         }
     }
 }
