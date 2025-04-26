@@ -31,9 +31,10 @@ class SettingsViewModel internal constructor(
             settings.getRemoveCompletedEpisodesAfter(),
             settings.getRemoveUnfinishedEpisodesAfter(),
             settings.shouldDownloadOnWifiOnly(),
+            settings.hasSeenWidgetItem(),
             fetching,
         ) { autoPlayNextInQueue, lastFetchTime, removeCompletedAfter, removeUnfinishedAfter, shouldDownloadOnWifiOnly,
-            fetching,
+            hasSeenWidgetItem, fetching,
             ->
             SettingsViewState(
                 autoPlayNextInQueue = autoPlayNextInQueue,
@@ -41,6 +42,7 @@ class SettingsViewModel internal constructor(
                 removeCompletedAfter = removeCompletedAfter,
                 removeUnfinishedAfter = removeUnfinishedAfter,
                 shouldDownloadOnWifiOnly = shouldDownloadOnWifiOnly,
+                showWidgetNewBadge = !hasSeenWidgetItem,
                 fetching = fetching,
             )
         }.stateIn(
@@ -80,6 +82,12 @@ class SettingsViewModel internal constructor(
     fun setRemoveUnfinishedAfter(removeUnfinishedAfter: RemoveDownloadsAfter) {
         longLivingScope.launch {
             settings.setRemoveUnfinishedEpisodesAfter(removeUnfinishedAfter)
+        }
+    }
+
+    fun onWidgetItemSeen() {
+        viewModelScope.launch {
+            settings.setHasSeenWidgetItem()
         }
     }
 

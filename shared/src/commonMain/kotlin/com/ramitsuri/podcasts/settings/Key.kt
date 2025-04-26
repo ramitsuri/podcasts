@@ -14,6 +14,7 @@ internal enum class Key(val value: String) {
     REMOTE_LOGGING_ENABLED("remote_logging_enabled"),
     SHOULD_DOWNLOAD_ON_WIFI_ONLY("should_download_on_wifi_only"),
     IS_DUPLICATE_QUEUE_POSITIONS_FIXED("is_duplicate_queue_positions_fixed"),
+    HAS_SEEN_WIDGET_ITEM("has_seen_widget_item"),
     ;
 
     companion object {

@@ -44,8 +44,9 @@ class HomeViewModel internal constructor(
                     settings.getPlayingStateFlow(),
                     sessionHistoryRepository.hasSessions(),
                     isRefreshing,
+                    settings.hasSeenWidgetItem(),
                 ) { subscribedPodcasts, subscribedEpisodes, currentlyPlayingEpisode, playingState, hasSessions,
-                    isRefreshing,
+                    isRefreshing, hasSeenWidgetItem,
                     ->
                     LogHelper.d(TAG, "Total episodes being shown: ${subscribedEpisodes.size}")
                     val currentlyPlaying =
@@ -61,6 +62,7 @@ class HomeViewModel internal constructor(
                         currentlyPlayingEpisodeState = playingState,
                         showYearEndReview = hasSessions && clock.now() < Instant.parse(SHOW_REVIEW_UNTIL),
                         isRefreshing = isRefreshing,
+                        showSettingsBadge = !hasSeenWidgetItem,
                     )
                 }
             }

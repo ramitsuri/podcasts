@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
@@ -88,6 +89,7 @@ import com.ramitsuri.podcasts.viewmodel.SearchViewModel
 import com.ramitsuri.podcasts.viewmodel.SettingsViewModel
 import com.ramitsuri.podcasts.viewmodel.SubscriptionsViewModel
 import com.ramitsuri.podcasts.viewmodel.YearEndReviewViewModel
+import com.ramitsuri.podcasts.widget.AppWidget.Companion.addWidget
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -97,6 +99,7 @@ fun NavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
+    val context = LocalContext.current
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
     var bottomPadding by remember { mutableStateOf(0.dp) }
     val bottomSheetDetentPeek =
@@ -677,6 +680,13 @@ fun NavGraph(
                             navController.navigate(Route.BACKUP_RESTORE.value)
                         },
                         toggleShouldDownloadOnWifiOnly = viewModel::toggleShouldDownloadOnWifiOnly,
+                        onAddWidgetClicked = {
+                            coroutineScope.launch {
+                                context.addWidget()
+                                viewModel.onWidgetItemSeen()
+                            }
+                        },
+                        onWidgetItemSeen = viewModel::onWidgetItemSeen,
                         modifier =
                             Modifier
                                 .statusBarsPadding()

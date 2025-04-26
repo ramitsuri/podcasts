@@ -129,6 +129,7 @@ fun HomeScreen(
         if (state.subscribedPodcasts.isNotEmpty()) {
             CenteredTitleTopAppBar(
                 scrollBehavior = scrollBehavior,
+                settingsHasBadge = state.showSettingsBadge,
                 onSettingsClicked = onSettingsClicked,
             )
         }
@@ -281,6 +282,7 @@ private fun SubscribedPodcastItem(
         )
         if (hasNewEpisodes) {
             Badge(
+                containerColor = MaterialTheme.colorScheme.primary,
                 modifier =
                     Modifier
                         .size(16.dp)
