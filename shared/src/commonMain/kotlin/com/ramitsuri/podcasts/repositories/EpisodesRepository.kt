@@ -233,7 +233,7 @@ class EpisodesRepository internal constructor(
         episodesDao.updateDownloadProgress(id, progress)
     }
 
-    suspend fun updateDownloadBlocked(
+    private suspend fun updateDownloadBlocked(
         id: String,
         blocked: Boolean,
     ) {
@@ -245,6 +245,14 @@ class EpisodesRepository internal constructor(
         downloadedAt: Instant? = Clock.System.now(),
     ) {
         episodesDao.updateDownloadedAt(id, downloadedAt)
+    }
+
+    suspend fun updateDownloadRemoved(id: String) {
+        updateDownloadBlocked(id, true)
+        updateDownloadStatus(id, DownloadStatus.NOT_DOWNLOADED)
+        updateDownloadProgress(id, 0.0)
+        updateDownloadedAt(id, null)
+        updateNeedsDownload(id, false)
     }
 
     suspend fun updateQueuePositions(

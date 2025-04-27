@@ -21,13 +21,10 @@ class DownloadManagerListener(
         downloadManager: DownloadManager,
         download: Download,
     ) {
+        LogHelper.d(TAG, "onDownloadRemoved: $download")
         longLivingScope.launch {
             val episodeId = download.request.id
-            episodesRepository.updateDownloadBlocked(episodeId, true)
-            episodesRepository.updateDownloadStatus(episodeId, DownloadStatus.NOT_DOWNLOADED)
-            episodesRepository.updateDownloadProgress(episodeId, 0.0)
-            episodesRepository.updateDownloadedAt(episodeId, null)
-            episodesRepository.updateNeedsDownload(episodeId, false)
+            episodesRepository.updateDownloadRemoved(episodeId)
         }
     }
 
@@ -36,6 +33,7 @@ class DownloadManagerListener(
         download: Download,
         finalException: Exception?,
     ) {
+        LogHelper.d(TAG, "onDownloadChanged: $download")
         val (state, needsDownload) =
             when (download.state) {
                 Download.STATE_QUEUED -> Pair(DownloadStatus.QUEUED, null)
