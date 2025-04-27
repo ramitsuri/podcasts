@@ -123,6 +123,9 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
                 single<EpisodeDownloader> {
                     EpisodeDownloaderImpl(
                         appContext = get<Application>(),
+                        downloadManager = get<DownloadManager>(),
+                        episodesRepository = get<EpisodesRepository>(),
+                        coroutineScope = get<CoroutineScope>(),
                     )
                 }
 

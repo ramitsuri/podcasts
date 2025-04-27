@@ -284,14 +284,18 @@ fun EpisodeAdditionalInfoEntity.fromEntity() =
     BackupData.EpisodeAdditionalInfoData(
         id = this.id,
         playProgress = this.playProgress,
-        downloadStatus = this.downloadStatus,
-        downloadProgress = this.downloadProgress,
+        // When backing up, the actual download files are not backed up, so download status is NOT_DOWNLOADED
+        downloadStatus = DownloadStatus.NOT_DOWNLOADED,
+        downloadProgress = 0.0,
         downloadBlocked = this.downloadBlocked,
-        downloadedAt = this.downloadedAt,
+        downloadedAt = null,
         queuePosition = this.queuePosition,
         completedAt = this.completedAt,
         isFavorite = this.isFavorite,
-        needsDownload = this.needsDownload,
+        needsDownload =
+            this.needsDownload ||
+                this.downloadStatus == DownloadStatus.DOWNLOADED ||
+                this.downloadStatus == DownloadStatus.DOWNLOADING,
     )
 
 fun SessionActionEntity.fromEntity() =
