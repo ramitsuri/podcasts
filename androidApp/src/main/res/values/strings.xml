@@ -29,6 +29,7 @@
     <string name="close">Close</string>
     <string name="generic_error">Something went wrong</string>
     <string name="new_badge">NEW</string>
+    <string name="sort">Sort</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>
@@ -74,6 +75,11 @@
     <!-- Queue screen -->
     <string name="queue_empty_title">Your queue is empty</string>
     <string name="queue_empty_info">Tap this button on any episode to add yo your queue</string>
+    <string name="queue_sort_duration_shortest">Shortest first</string>
+    <string name="queue_sort_duration_longest">Longest first</string>
+    <string name="queue_sort_podcast">Podcast</string>
+    <string name="queue_sort_oldest">Oldest first</string>
+    <string name="queue_sort_newest">Newest first</string>
 
     <!-- Search screen -->
     <string name="search_tip">Search for your podcasts</string>

@@ -1,6 +1,7 @@
 package com.ramitsuri.podcasts.viewmodel
 
 import com.ramitsuri.podcasts.model.PlayingState
+import com.ramitsuri.podcasts.model.QueueSort
 import com.ramitsuri.podcasts.model.ui.QueueViewState
 import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 class QueueViewModel internal constructor(
     episodeController: EpisodeController,
     settings: Settings,
-    episodesRepository: EpisodesRepository,
+    private val episodesRepository: EpisodesRepository,
     playerController: PlayerController,
 ) : ViewModel(), EpisodeController by episodeController {
     private val queueRearrangementHelper =
@@ -75,6 +76,21 @@ class QueueViewModel internal constructor(
                     currentlyAtPosition2.id,
                     currentlyAtPosition1.queuePosition,
                 )
+            }
+        }
+    }
+
+    fun onEpisodesSortRequested(queueSort: QueueSort) {
+        val episodes = state.value.episodes
+        viewModelScope.launch {
+            when (queueSort) {
+                QueueSort.SHORTEST -> episodes.sortedBy { it.remainingDuration }
+                QueueSort.LONGEST -> episodes.sortedByDescending { it.remainingDuration }
+                QueueSort.OLDEST -> episodes.sortedBy { it.datePublished }
+                QueueSort.NEWEST -> episodes.sortedByDescending { it.datePublished }
+                QueueSort.PODCAST -> episodes.sortedWith(compareBy({ it.podcastName }, { it.datePublished }))
+            }.forEachIndexed { index, episode ->
+                episodesRepository.updateQueuePosition(episode.id, index)
             }
         }
     }
