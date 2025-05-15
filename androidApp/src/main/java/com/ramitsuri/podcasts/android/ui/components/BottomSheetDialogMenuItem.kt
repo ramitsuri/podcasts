@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun BottomSheetDialogMenuItem(
-    icon: ImageVector,
+    icon: ImageVector? = null,
     text: String,
     switchState: SwitchState? = null,
     onClick: () -> Unit,
@@ -35,8 +35,10 @@ fun BottomSheetDialogMenuItem(
                         .padding(vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(imageVector = icon, contentDescription = null)
-                Spacer(modifier = Modifier.width(16.dp))
+                icon?.let {
+                    Icon(imageVector = it, contentDescription = null)
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
                 Text(text)
                 Spacer(modifier = Modifier.weight(1f))
                 switchState?.let {
