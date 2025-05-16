@@ -133,6 +133,8 @@ fun NavGraph(
         }
     }
 
+    var scrollToTop by remember { mutableStateOf(false) }
+
     var navBarHeight by remember { mutableIntStateOf(0) }
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -153,7 +155,9 @@ fun NavGraph(
                             }.offset { IntOffset(x = 0, navBarHeight.times(sheetExpandProgress).toInt()) },
                     selectedTabRoute = currentDestination,
                     onHomeTabClicked = {
-                        navController.navigateToMainDestination(BottomNavItem.HOME)
+                        if (!navController.navigateToMainDestination(BottomNavItem.HOME)) {
+                            scrollToTop = true
+                        }
                     },
                     onExploreClicked = {
                         navController.navigateToMainDestination(BottomNavItem.EXPLORE)
@@ -204,6 +208,8 @@ fun NavGraph(
 
                     HomeScreen(
                         state = state,
+                        scrollToTop = scrollToTop,
+                        onScrolledToTop = { scrollToTop = false },
                         onSettingsClicked = {
                             navController.navigate(Route.SETTINGS.value)
                         },
@@ -905,14 +911,15 @@ private fun BottomNavBar(
     }
 }
 
-private fun NavHostController.navigateToMainDestination(to: BottomNavItem) {
+private fun NavHostController.navigateToMainDestination(to: BottomNavItem): Boolean {
     val currentDestination = currentBackStackEntry?.destination?.route
     if (currentDestination == to.route.value) {
-        return
+        return false
     }
     navigate(to.route.value) {
         // So that pressing back from any main bottom tab item leads user to home tab first
         popUpTo(BottomNavItem.HOME.route.value)
         launchSingleTop = true
     }
+    return true
 }
