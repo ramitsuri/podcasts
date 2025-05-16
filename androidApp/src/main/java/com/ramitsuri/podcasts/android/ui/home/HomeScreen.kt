@@ -80,6 +80,8 @@ import com.ramitsuri.podcasts.model.ui.HomeViewState
 @Composable
 fun HomeScreen(
     state: HomeViewState,
+    scrollToTop: Boolean,
+    onScrolledToTop: () -> Unit,
     onSettingsClicked: () -> Unit,
     onImportSubscriptionsClicked: () -> Unit,
     onPodcastClicked: (podcastId: Long) -> Unit,
@@ -110,6 +112,12 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val lazyListState = rememberLazyListState()
+        LaunchedEffect(scrollToTop) {
+            if (scrollToTop) {
+                lazyListState.animateScrollToItem(0)
+                onScrolledToTop()
+            }
+        }
         val shouldLoadMoreItems by remember {
             derivedStateOf {
                 val lastVisibleItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
