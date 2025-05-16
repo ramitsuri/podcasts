@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
@@ -20,7 +21,7 @@ internal class DataStoreKeyValueStore(
     ): Flow<String?> {
         return dataStore
             .data
-            .map {
+            .mapDistinct {
                 it[stringPreferencesKey(key.value)] ?: defaultValue
             }
     }
@@ -44,7 +45,7 @@ internal class DataStoreKeyValueStore(
     ): Flow<Float?> {
         return dataStore
             .data
-            .map {
+            .mapDistinct {
                 it[floatPreferencesKey(key.value)] ?: defaultValue
             }
     }
@@ -68,7 +69,7 @@ internal class DataStoreKeyValueStore(
     ): Flow<Boolean> {
         return dataStore
             .data
-            .map {
+            .mapDistinct {
                 it[booleanPreferencesKey(key.value)] ?: defaultValue
             }
     }
@@ -88,7 +89,7 @@ internal class DataStoreKeyValueStore(
     ): Flow<Int> {
         return dataStore
             .data
-            .map {
+            .mapDistinct {
                 it[intPreferencesKey(key.value)] ?: defaultValue
             }
     }
@@ -121,4 +122,7 @@ internal class DataStoreKeyValueStore(
             it.remove(key)
         }
     }
+
+    private inline fun <T, R> Flow<T>.mapDistinct(crossinline transform: suspend (value: T) -> R) =
+        map(transform).distinctUntilChanged()
 }
