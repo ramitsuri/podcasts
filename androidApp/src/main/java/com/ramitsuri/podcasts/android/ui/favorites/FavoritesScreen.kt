@@ -38,7 +38,7 @@ import com.ramitsuri.podcasts.model.ui.FavoritesViewState
 fun FavoritesScreen(
     state: FavoritesViewState,
     onBack: () -> Unit,
-    onEpisodeClicked: (episodeId: String) -> Unit,
+    onEpisodeClicked: (episodeId: String, podcastId: Long) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
     onEpisodePauseClicked: () -> Unit,
     onEpisodeAddToQueueClicked: (episode: Episode) -> Unit,
@@ -74,7 +74,7 @@ fun FavoritesScreen(
                         } else {
                             PlayingState.NOT_PLAYING
                         },
-                    onClicked = { onEpisodeClicked(it.id) },
+                    onClicked = { onEpisodeClicked(it.id, it.podcastId) },
                     onPlayClicked = { onEpisodePlayClicked(it) },
                     onPauseClicked = onEpisodePauseClicked,
                     onAddToQueueClicked = { onEpisodeAddToQueueClicked(it) },

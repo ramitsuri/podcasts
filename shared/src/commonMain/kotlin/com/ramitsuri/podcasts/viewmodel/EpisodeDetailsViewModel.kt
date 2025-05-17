@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
 class EpisodeDetailsViewModel internal constructor(
-    episodeId: String?,
-    podcastId: Long?,
+    episodeId: String,
+    podcastId: Long,
     repository: EpisodesRepository,
     podcastsAndEpisodesRepository: PodcastsAndEpisodesRepository,
     episodeController: EpisodeController,
@@ -22,7 +22,7 @@ class EpisodeDetailsViewModel internal constructor(
     private var alreadyAttemptedToLoadMissing: Boolean = false
     val state =
         combine(
-            repository.getEpisodeFlow(episodeId ?: ""),
+            repository.getEpisodeFlow(episodeId),
             repository.getCurrentEpisode(),
             settings.getPlayingStateFlow(),
         ) { episode, currentlyPlayingEpisode, playingState ->
@@ -31,12 +31,9 @@ class EpisodeDetailsViewModel internal constructor(
                 if (alreadyAttemptedToLoadMissing) {
                     // do nothing
                     LogHelper.v(TAG, "Already attempted to load missing episode once")
-                } else if (podcastId != null && episodeId != null) {
+                } else {
                     LogHelper.v(TAG, "Loading missing episode")
                     podcastsAndEpisodesRepository.loadMissingEpisode(podcastId = podcastId, episodeId = episodeId)
-                    alreadyAttemptedToLoadMissing = true
-                } else {
-                    LogHelper.v(TAG, "Not loading missing episode because podcast id or episode id is null")
                     alreadyAttemptedToLoadMissing = true
                 }
             }
@@ -56,12 +53,6 @@ class EpisodeDetailsViewModel internal constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = EpisodeDetailsViewState(),
         )
-
-    init {
-        if (episodeId == null) {
-            LogHelper.v(TAG, "Episode id is null")
-        }
-    }
 
     companion object {
         private const val TAG = "EpisodeDetails"

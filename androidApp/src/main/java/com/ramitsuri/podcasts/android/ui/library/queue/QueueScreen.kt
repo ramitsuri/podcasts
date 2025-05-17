@@ -68,7 +68,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun QueueScreen(
     state: QueueViewState,
     onBack: () -> Unit,
-    onEpisodeClicked: (episodeId: String) -> Unit,
+    onEpisodeClicked: (episodeId: String, podcastId: Long) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
     onEpisodePauseClicked: () -> Unit,
     onEpisodeRemoveFromQueueClicked: (episode: Episode) -> Unit,
@@ -129,7 +129,7 @@ fun QueueScreen(
                         } else {
                             PlayingState.NOT_PLAYING
                         },
-                    onClicked = { onEpisodeClicked(it.id) },
+                    onClicked = { onEpisodeClicked(it.id, it.podcastId) },
                     onPlayClicked = { onEpisodePlayClicked(it) },
                     onPauseClicked = onEpisodePauseClicked,
                     onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(it) },
@@ -320,7 +320,7 @@ private fun QueuePreview_Empty() {
             state = QueueViewState(),
             onBack = { },
             onEpisodesRearranged = { _, _ -> },
-            onEpisodeClicked = { },
+            onEpisodeClicked = { _, _ -> },
             onEpisodePlayClicked = { },
             onEpisodePauseClicked = { },
             onEpisodeRemoveFromQueueClicked = { },
@@ -347,7 +347,7 @@ private fun QueuePreview_NotEmpty() {
                 ),
             onBack = { },
             onEpisodesRearranged = { _, _ -> },
-            onEpisodeClicked = { },
+            onEpisodeClicked = { _, _ -> },
             onEpisodePlayClicked = { },
             onEpisodePauseClicked = { },
             onEpisodeRemoveFromQueueClicked = { },

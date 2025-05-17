@@ -232,9 +232,9 @@ fun NavGraph(
                                 navOptions { popUpTo(BottomNavItem.HOME.route.value) },
                             )
                         },
-                        onEpisodeClicked = {
+                        onEpisodeClicked = { episodeId, podcastId ->
                             navController.navigate(
-                                Route.episodeDetails(episodeId = it),
+                                Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
                                 navOptions { popUpTo(BottomNavItem.HOME.route.value) },
                             )
                         },
@@ -382,7 +382,7 @@ fun NavGraph(
                     val viewModel =
                         backStackEntry.arguments.let { arg ->
                             val episodeId = arg?.getString(RouteArgs.EPISODE_ID.value)?.let { Uri.decode(it) }
-                            val podcastId = arg?.getString(RouteArgs.PODCAST_ID.value)?.toLongOrNull()
+                            val podcastId = arg?.getString(RouteArgs.PODCAST_ID.value)?.toLong()
                             koinViewModel<EpisodeDetailsViewModel>(
                                 parameters = { parametersOf(episodeId, podcastId) },
                             )
@@ -447,9 +447,9 @@ fun NavGraph(
                         toggleAutoDownloadClicked = viewModel::toggleAutoDownloadClicked,
                         toggleAutoAddToQueueClicked = viewModel::toggleAutoAddToQueueClicked,
                         toggleShowCompletedEpisodesClicked = viewModel::toggleShowCompletedEpisodes,
-                        onEpisodeClicked = {
+                        onEpisodeClicked = { episodeId, podcastId ->
                             navController.navigate(
-                                Route.episodeDetails(episodeId = it),
+                                Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
                                 navOptions {
                                     popUpTo(
                                         Route.PODCAST_DETAILS.routeWithArgName(),
@@ -499,9 +499,9 @@ fun NavGraph(
                         state = state,
                         onBack = { navController.popBackStack() },
                         onEpisodesRearranged = viewModel::onEpisodeRearrangementRequested,
-                        onEpisodeClicked = {
+                        onEpisodeClicked = { episodeId, podcastId ->
                             navController.navigate(
-                                Route.episodeDetails(episodeId = it),
+                                Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
                                 navOptions { popUpTo(Route.QUEUE.value) },
                             )
                         },
@@ -565,9 +565,9 @@ fun NavGraph(
                     DownloadsScreen(
                         state = state,
                         onBack = { navController.popBackStack() },
-                        onEpisodeClicked = {
+                        onEpisodeClicked = { episodeId, podcastId ->
                             navController.navigate(
-                                Route.episodeDetails(episodeId = it),
+                                Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
                                 navOptions { popUpTo(Route.DOWNLOADS.value) },
                             )
                         },
@@ -602,9 +602,9 @@ fun NavGraph(
                     FavoritesScreen(
                         state = state,
                         onBack = { navController.popBackStack() },
-                        onEpisodeClicked = {
+                        onEpisodeClicked = { episodeId, podcastId ->
                             navController.navigate(
-                                Route.episodeDetails(episodeId = it),
+                                Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
                                 navOptions { popUpTo(Route.FAVORITES.value) },
                             )
                         },
@@ -639,9 +639,9 @@ fun NavGraph(
                     EpisodeHistoryScreen(
                         state = state,
                         onBack = { navController.popBackStack() },
-                        onEpisodeClicked = {
+                        onEpisodeClicked = { episodeId, podcastId ->
                             navController.navigate(
-                                Route.episodeDetails(episodeId = it),
+                                Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
                                 navOptions { popUpTo(Route.EPISODE_HISTORY.value) },
                             )
                         },
@@ -793,9 +793,10 @@ fun NavGraph(
                             onEpisodeTitleClicked = {
                                 expandOrCollapsePlayer(expand = false)
                                 val episodeId = playerState.episodeId
-                                if (episodeId != null) {
+                                val podcastId = playerState.podcastId
+                                if (episodeId != null && podcastId != null) {
                                     navController.navigate(
-                                        Route.episodeDetails(episodeId),
+                                        Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
                                         navOptions { popUpTo(BottomNavItem.HOME.route.value) },
                                     )
                                 }
@@ -922,4 +923,16 @@ private fun NavHostController.navigateToMainDestination(to: BottomNavItem): Bool
         launchSingleTop = true
     }
     return true
+}
+
+fun NavHostController.episodeDetailsDeepLink(): String? {
+    val args = currentBackStackEntry?.arguments ?: return null
+    val episodeId = args.getString(RouteArgs.EPISODE_ID.value) ?: return null
+    val podcastId = args.getString(RouteArgs.PODCAST_ID.value) ?: return null
+    return Route.EPISODE_DETAILS.deepLinkWithValue(
+        mapOf(
+            RouteArgs.EPISODE_ID to Uri.decode(episodeId),
+            RouteArgs.PODCAST_ID to podcastId,
+        ),
+    )
 }

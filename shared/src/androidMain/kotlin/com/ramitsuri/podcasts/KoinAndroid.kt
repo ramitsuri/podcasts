@@ -86,7 +86,7 @@ actual val platformModule =
                 episodeController = get<EpisodeController>(),
                 settings = get<Settings>(),
                 podcastsAndEpisodesRepository = get<PodcastsAndEpisodesRepository>(),
-                podcastId = parameters.getOrNull(),
+                podcastId = parameters.get(),
             )
         }
 

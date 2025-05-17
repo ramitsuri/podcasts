@@ -50,7 +50,7 @@ import com.ramitsuri.podcasts.model.ui.EpisodeHistoryViewState
 fun EpisodeHistoryScreen(
     state: EpisodeHistoryViewState,
     onBack: () -> Unit,
-    onEpisodeClicked: (episodeId: String) -> Unit,
+    onEpisodeClicked: (episodeId: String, podcastId: Long) -> Unit,
     onEpisodePlayClicked: (episode: Episode) -> Unit,
     onEpisodePauseClicked: () -> Unit,
     onEpisodeAddToQueueClicked: (episode: Episode) -> Unit,
@@ -91,7 +91,7 @@ fun EpisodeHistoryScreen(
                             } else {
                                 PlayingState.NOT_PLAYING
                             },
-                        onClicked = { onEpisodeClicked(episode.id) },
+                        onClicked = { onEpisodeClicked(episode.id, episode.podcastId) },
                         onPlayClicked = { onEpisodePlayClicked(episode) },
                         onPauseClicked = onEpisodePauseClicked,
                         onAddToQueueClicked = { onEpisodeAddToQueueClicked(episode) },
