@@ -7,6 +7,7 @@ import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.model.PodcastWithEpisodes
 import com.ramitsuri.podcasts.model.RemoveDownloadsAfter
+import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -36,6 +37,7 @@ class PodcastsAndEpisodesRepository internal constructor(
     ): PodcastResult<List<Episode>> {
         val result = episodesRepository.refreshForPodcastId(podcastId, episodesToLoad, fetchSinceMostRecentEpisode)
         val episodes = (result as? PodcastResult.Success)?.data ?: listOf()
+        podcastsRepository.load(podcastId)
         if (episodes.isNotEmpty()) {
             podcastsRepository.updateHasNewEpisodes(podcastId, true)
         }
@@ -139,6 +141,7 @@ class PodcastsAndEpisodesRepository internal constructor(
             ),
         ) { podcast, _ ->
             if (podcast == null) {
+                LogHelper.v(TAG, "Podcast with episodes requested but podcast is null")
                 null
             } else {
                 val filteredEpisodes =
@@ -229,5 +232,9 @@ class PodcastsAndEpisodesRepository internal constructor(
                 podcastsThatHaveEpisodes.contains(it).not()
             }
         podcastsRepository.remove(podcastsThatCanBeRemoved)
+    }
+
+    companion object {
+        private const val TAG = "PodcastsAndEpisodesRepository"
     }
 }
