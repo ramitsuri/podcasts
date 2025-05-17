@@ -7,24 +7,43 @@ import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.utils.Logger
+import com.ramitsuri.podcasts.utils.TestClock
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import okio.Path
+import okio.Path.Companion.toOkioPath
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.get
+import org.koin.test.mock.declare
+import java.nio.file.Paths
+import java.util.UUID
+import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.Path
 import kotlin.io.path.deleteIfExists
+import kotlin.io.path.deleteRecursively
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 
-open class BaseTest(private val initDatabase: Boolean = true) : KoinTest {
+open class BaseTest(
+    private val initDatabase: Boolean = true,
+    private val timeZone: TimeZone = TimeZone.of("America/Los_Angeles"),
+) : KoinTest {
+    @OptIn(ExperimentalPathApi::class)
     @AfterTest
     fun tearDown() {
         stopKoin()
         if (Path("test.db").deleteIfExists()) {
             println("deleted database file")
         }
+        Paths.get(TEMP_DIR).deleteRecursively()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeTest
     fun setup() {
         initKoin()
@@ -32,6 +51,10 @@ open class BaseTest(private val initDatabase: Boolean = true) : KoinTest {
             println("creating database")
             PodcastsDatabase.Schema.create(get<SqlDriver>())
         }
+        declare<TimeZone> { timeZone }
+        declare<Clock> { TestClock() }
+        declare<Path> { Paths.get(TEMP_DIR).resolve("${UUID.randomUUID()}.preferences_pb").toOkioPath() }
+        Dispatchers.setMain(Dispatchers.Unconfined)
     }
 
     protected fun podcast(
@@ -147,5 +170,9 @@ open class BaseTest(private val initDatabase: Boolean = true) : KoinTest {
                 }
             }
         }
+    }
+
+    companion object {
+        const val TEMP_DIR = "temp"
     }
 }
