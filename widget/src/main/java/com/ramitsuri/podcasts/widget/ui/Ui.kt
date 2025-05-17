@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -108,7 +107,7 @@ private fun CurrentlyPlayingUi(
     state: WidgetState.CurrentlyPlaying,
     size: DpSize,
 ) {
-    val artUri = state.albumArtUri.toUri()
+    val artUri = state.albumArtUri
     val uri = state.deepLinkUrl.toUri()
     val intent = Intent(Intent.ACTION_VIEW, uri)
     Column(
@@ -125,7 +124,7 @@ private fun CurrentlyPlayingUi(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    AlbumArt(imageUri = artUri, size = 100.dp)
+                    AlbumArt(imageUrl = artUri, size = 100.dp)
                     Spacer(GlanceModifier.width(8.dp))
                     Title(
                         text = state.episodeTitle,
@@ -162,7 +161,7 @@ private fun CurrentlyPlayingUi(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    AlbumArt(imageUri = artUri, size = 56.dp)
+                    AlbumArt(imageUrl = artUri, size = 56.dp)
                     Spacer(GlanceModifier.defaultWeight())
                     ReplayButton(size = 48.dp)
                     Spacer(GlanceModifier.width(8.dp))
@@ -187,7 +186,7 @@ private fun CurrentlyPlayingUi(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    AlbumArt(imageUri = artUri, size = 64.dp)
+                    AlbumArt(imageUrl = artUri, size = 64.dp)
                     Spacer(GlanceModifier.defaultWeight())
                     PlayPauseButton(size = 64.dp, state.isPlaying)
                 }
@@ -215,7 +214,7 @@ private fun CurrentlyPlayingUi(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    AlbumArt(imageUri = artUri, size = 48.dp)
+                    AlbumArt(imageUrl = artUri, size = 48.dp)
                     Spacer(GlanceModifier.width(8.dp))
                     PlayPauseButton(size = 48.dp, state.isPlaying)
                 }
@@ -226,10 +225,10 @@ private fun CurrentlyPlayingUi(
 
 @Composable
 private fun AlbumArt(
-    imageUri: Uri,
+    imageUrl: String,
     size: Dp,
 ) {
-    WidgetAsyncImage(uri = imageUri, modifier = GlanceModifier.size(size))
+    WidgetAsyncImage(url = imageUrl, modifier = GlanceModifier.size(size))
 }
 
 @Composable
@@ -330,16 +329,16 @@ private fun SecondaryButton(
 
 @Composable
 private fun WidgetAsyncImage(
-    uri: Uri,
+    url: String,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
-    LaunchedEffect(key1 = uri) {
-        LogHelper.d("WidgetAsyncImage", "Fetching new image: $uri")
+    LaunchedEffect(key1 = url) {
+        LogHelper.d("WidgetAsyncImage", "Fetching new image: $url")
         val request =
             context
-                .imageRequest(uri)
+                .imageRequest(url)
                 .size(600, 600)
                 .target { data: Drawable ->
                     bitmap = (data as BitmapDrawable).bitmap
