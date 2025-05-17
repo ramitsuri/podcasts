@@ -29,6 +29,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
@@ -69,7 +70,7 @@ fun SubscriptionsScreen(
             items(items = state.subscribedPodcasts, key = { it.id }) { podcast ->
                 SubscribedPodcastItem(podcast = podcast, onClicked = { onPodcastClicked(it.id) })
             }
-            fullWidthSpacer()
+            fullWidthSpacer(height = 128.dp)
         }
         if (state.subscribedPodcasts.isEmpty()) {
             SubscriptionsEmpty()
@@ -77,13 +78,13 @@ fun SubscriptionsScreen(
     }
 }
 
-private fun LazyGridScope.fullWidthSpacer() {
+private fun LazyGridScope.fullWidthSpacer(height: Dp = 16.dp) {
     item(
         span = {
             GridItemSpan(maxLineSpan)
         },
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(height))
     }
 }
 
