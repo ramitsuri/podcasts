@@ -18,7 +18,7 @@ fun Route.navArgs(): List<NamedNavArgument> {
             navArgument(RouteArgs.PODCAST_ID.value) {
                 // String even though this is a long because cannot have nullable long in nav args
                 type = NavType.StringType
-                nullable = true
+                nullable = false
             },
         )
     } else if (this == PODCAST_DETAILS) {

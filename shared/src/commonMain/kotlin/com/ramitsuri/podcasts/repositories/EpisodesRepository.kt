@@ -350,11 +350,13 @@ class EpisodesRepository internal constructor(
         id: String,
         podcastId: Long,
     ) {
-        (episodesApi.getById(id = id, podcastId = podcastId) as? PodcastResult.Success)
-            ?.data
-            ?.let {
-                episodesDao.insert(listOf(Episode(it.episode)))
-            }
+        if (episodesDao.getEpisode(id) == null) {
+            (episodesApi.getById(id = id, podcastId = podcastId) as? PodcastResult.Success)
+                ?.data
+                ?.let {
+                    episodesDao.insert(listOf(Episode(it.episode)))
+                }
+        }
     }
 
     companion object {

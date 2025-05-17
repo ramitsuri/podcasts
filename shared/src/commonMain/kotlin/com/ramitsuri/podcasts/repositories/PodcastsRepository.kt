@@ -171,10 +171,12 @@ class PodcastsRepository internal constructor(
     }
 
     suspend fun load(id: Long) {
-        (podcastsApi.getById(id) as? PodcastResult.Success)
-            ?.data
-            ?.let {
-                podcastsDao.insert(listOf(Podcast(it.podcast)))
-            }
+        if (podcastsDao.get(id) == null) {
+            (podcastsApi.getById(id) as? PodcastResult.Success)
+                ?.data
+                ?.let {
+                    podcastsDao.insert(listOf(Podcast(it.podcast)))
+                }
+        }
     }
 }

@@ -22,9 +22,13 @@ enum class Route(val value: String) {
 
     private fun routeWithArgValue(argValues: Map<RouteArgs, String>): String {
         return if (this == EPISODE_DETAILS) {
-            value.plus("/${argValues[RouteArgs.EPISODE_ID]}")
+            value
+                .plus("/${argValues[RouteArgs.EPISODE_ID]}")
+                .plus("/${argValues[RouteArgs.PODCAST_ID]}")
         } else if (this == PODCAST_DETAILS) {
-            value.plus("/${argValues[RouteArgs.PODCAST_ID]}/${argValues[RouteArgs.REFRESH_PODCAST]}")
+            value
+                .plus("/${argValues[RouteArgs.PODCAST_ID]}")
+                .plus("/${argValues[RouteArgs.REFRESH_PODCAST]}")
         } else {
             value
         }
@@ -32,9 +36,13 @@ enum class Route(val value: String) {
 
     fun routeWithArgName(): String {
         return if (this == EPISODE_DETAILS) {
-            value.plus("/{${RouteArgs.EPISODE_ID.value}}")
+            value
+                .plus("/{${RouteArgs.EPISODE_ID.value}}")
+                .plus("/{${RouteArgs.PODCAST_ID.value}}")
         } else if (this == PODCAST_DETAILS) {
-            value.plus("/{${RouteArgs.PODCAST_ID.value}}/{${RouteArgs.REFRESH_PODCAST.value}}")
+            value
+                .plus("/{${RouteArgs.PODCAST_ID.value}}")
+                .plus("/{${RouteArgs.REFRESH_PODCAST.value}}")
         } else {
             value
         }
@@ -67,9 +75,17 @@ enum class Route(val value: String) {
     companion object {
         private const val DEEP_LINK_BASE_URL = "https://ramitsuri.github.io/podcasts"
 
-        fun episodeDetails(episodeId: String): String {
+        fun episodeDetails(
+            episodeId: String,
+            podcastId: Long,
+        ): String {
             val encoded = Uri.encode(episodeId)
-            return EPISODE_DETAILS.routeWithArgValue(mapOf(RouteArgs.EPISODE_ID to encoded))
+            return EPISODE_DETAILS.routeWithArgValue(
+                mapOf(
+                    RouteArgs.EPISODE_ID to encoded,
+                    RouteArgs.PODCAST_ID to podcastId.toString(),
+                ),
+            )
         }
 
         fun podcastDetails(
