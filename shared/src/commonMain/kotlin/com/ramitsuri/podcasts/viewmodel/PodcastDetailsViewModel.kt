@@ -58,6 +58,7 @@ class PodcastDetailsViewModel(
                     loadingOlderEpisodes,
                 ) { podcastWithEpisodes, currentlyPlayingEpisode, playingState, selections, loadingOlderEpisodes ->
                     if (podcastWithEpisodes == null) {
+                        LogHelper.v(TAG, "Podcast with episodes is null")
                         PodcastDetailsViewState()
                     } else {
                         val podcastWithSelectableEpisodes =
