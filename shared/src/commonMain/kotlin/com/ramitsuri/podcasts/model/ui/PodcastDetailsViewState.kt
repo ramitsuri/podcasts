@@ -4,7 +4,6 @@ import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.Podcast
-import com.ramitsuri.podcasts.model.PodcastWithEpisodes
 
 data class PodcastDetailsViewState(
     val podcastWithEpisodes: PodcastWithSelectableEpisodes? = null,
@@ -27,38 +26,9 @@ data class PodcastWithSelectableEpisodes(
     val inSelectionState = episodes.any { it.selected }
 
     val selectedCount = episodes.count { it.selected }
-
-    constructor(podcastWithEpisodes: PodcastWithEpisodes) : this(
-        podcast = podcastWithEpisodes.podcast,
-        episodes = podcastWithEpisodes.episodes.map { SelectableEpisode(it) },
-    )
-
-    companion object {
-        fun PodcastWithSelectableEpisodes?.mergeWithNew(
-            newPodcastWithEpisodes: PodcastWithEpisodes?,
-        ): PodcastWithSelectableEpisodes? {
-            if (newPodcastWithEpisodes == null) {
-                return this
-            }
-            if (this == null) {
-                return PodcastWithSelectableEpisodes(newPodcastWithEpisodes)
-            }
-            val currentEpisodes = this.episodes
-            val newEpisodes =
-                newPodcastWithEpisodes.episodes.map { episode ->
-                    SelectableEpisode(
-                        episode = episode,
-                        selected = currentEpisodes.firstOrNull { it.episode.id == episode.id }?.selected ?: false,
-                    )
-                }
-            return PodcastWithSelectableEpisodes(newPodcastWithEpisodes.podcast, newEpisodes)
-        }
-    }
 }
 
 data class SelectableEpisode(
     val selected: Boolean,
     val episode: Episode,
-) {
-    constructor(episode: Episode) : this(selected = false, episode = episode)
-}
+)

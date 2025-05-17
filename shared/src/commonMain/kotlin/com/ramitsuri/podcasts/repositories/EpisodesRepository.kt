@@ -351,6 +351,7 @@ class EpisodesRepository internal constructor(
         podcastId: Long,
     ) {
         if (episodesDao.getEpisode(id) == null) {
+            LogHelper.v(TAG, "Episode not available in db, loading episode with id: $id")
             (episodesApi.getById(id = id, podcastId = podcastId) as? PodcastResult.Success)
                 ?.data
                 ?.let {

@@ -10,6 +10,7 @@ import com.ramitsuri.podcasts.model.PodcastError
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.network.api.interfaces.PodcastsApi
 import com.ramitsuri.podcasts.network.model.SearchPodcastsRequest
+import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -172,11 +173,16 @@ class PodcastsRepository internal constructor(
 
     suspend fun load(id: Long) {
         if (podcastsDao.get(id) == null) {
+            LogHelper.v(TAG, "Podcast not available in db, loading podcast with id: $id")
             (podcastsApi.getById(id) as? PodcastResult.Success)
                 ?.data
                 ?.let {
                     podcastsDao.insert(listOf(Podcast(it.podcast)))
                 }
         }
+    }
+
+    companion object {
+        private const val TAG = "PodcastsRepository"
     }
 }
