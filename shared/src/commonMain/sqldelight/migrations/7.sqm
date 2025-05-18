@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS TrendingPodcastEntity (
+    id INTEGER NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    author TEXT NOT NULL,
+    url TEXT NOT NULL,
+    image TEXT NOT NULL,
+    artwork TEXT NOT NULL,
+    trendScore INTEGER NOT NULL,
+    categories TEXT AS List<Int> NOT NULL
+);

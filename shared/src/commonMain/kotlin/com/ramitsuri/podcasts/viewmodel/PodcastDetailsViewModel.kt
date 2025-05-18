@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
@@ -85,12 +84,6 @@ class PodcastDetailsViewModel(
                             searchTerm = searchTerm,
                         )
                     }
-                }.onEach {
-                    LogHelper.v(
-                        TAG,
-                        "State updated: ${it.podcastWithEpisodes?.podcast?.title}, " +
-                            "${it.podcastWithEpisodes?.episodes?.size} episodes",
-                    )
                 }
             }
         }.stateIn(

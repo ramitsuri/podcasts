@@ -23,7 +23,7 @@ internal class PodcastsApiImpl(
             httpClient.get(urlString = "$baseUrl/podcasts/trending") {
                 url {
                     parameters.apply {
-                        append("max", MAX_COUNT.toString())
+                        append("max", request.maxResults.toString())
                         append("since", request.sinceEpochSeconds.toString())
                     }
                 }
@@ -69,9 +69,5 @@ internal class PodcastsApiImpl(
         } catch (e: Exception) {
             PodcastResult.Failure(PodcastError.Unknown(null))
         }
-    }
-
-    companion object {
-        private const val MAX_COUNT = 50
     }
 }

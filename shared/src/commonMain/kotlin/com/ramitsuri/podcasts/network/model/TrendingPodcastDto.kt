@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class TrendingPodcastDto(
     @SerialName("id")
-    val id: Int,
+    val id: Long,
     @SerialName("title")
     val title: String,
     @SerialName("description")
@@ -21,7 +21,7 @@ internal data class TrendingPodcastDto(
     @SerialName("artwork")
     val artwork: String,
     @SerialName("trendScore")
-    val trendScore: Int,
+    val trendScore: Long,
     @Serializable(with = CategoriesDeserializer::class)
     @SerialName("categories")
     val categories: List<CategoryDto>,
