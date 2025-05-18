@@ -1,6 +1,5 @@
 package com.ramitsuri.podcasts.android.ui.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.horizontalScroll
@@ -167,7 +166,6 @@ fun SpeedControl(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SpeedSlider(
     modifier: Modifier = Modifier,
@@ -338,7 +336,7 @@ private fun SpeedVerticalLineItem(
         Box(
             modifier =
                 Modifier
-                    .padding(horizontal = 12.dp)
+                    .padding(horizontal = 16.dp)
                     .height(40.dp)
                     .width(2.dp)
                     .background(MaterialTheme.colorScheme.onBackground, shape = CircleShape),

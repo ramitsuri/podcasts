@@ -1,6 +1,5 @@
 package com.ramitsuri.podcasts.android.ui.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -186,7 +185,6 @@ private fun SleepTimerCustom(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SleepTimerNotSet(
     modifier: Modifier = Modifier,
@@ -332,7 +330,7 @@ private fun TimerVerticalLineItem(
         Box(
             modifier =
                 Modifier
-                    .padding(horizontal = 12.dp)
+                    .padding(horizontal = 16.dp)
                     .height(40.dp)
                     .width(2.dp)
                     .background(MaterialTheme.colorScheme.onBackground, shape = CircleShape),
