@@ -1,4 +1,4 @@
-package com.ramitsuri.podcasts.android.ui.search
+package com.ramitsuri.podcasts.android.ui.explore
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -56,14 +56,14 @@ import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.PodcastInfoItem
 import com.ramitsuri.podcasts.android.ui.components.podcast
 import com.ramitsuri.podcasts.model.Podcast
+import com.ramitsuri.podcasts.model.ui.ExploreViewState
 import com.ramitsuri.podcasts.model.ui.SearchResult
-import com.ramitsuri.podcasts.model.ui.SearchViewState
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(
-    state: SearchViewState,
+fun ExploreScreen(
+    state: ExploreViewState,
     modifier: Modifier = Modifier,
     onSettingsClicked: () -> Unit,
     onPodcastClicked: (Long) -> Unit,
@@ -300,8 +300,8 @@ private fun SearchResultsEmpty() {
 @Composable
 private fun SearchScreenPreview_Default() {
     PreviewTheme {
-        SearchScreen(
-            state = SearchViewState(term = ""),
+        ExploreScreen(
+            state = ExploreViewState(term = ""),
             onSettingsClicked = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
@@ -315,8 +315,8 @@ private fun SearchScreenPreview_Default() {
 @Composable
 private fun SearchScreenPreview_Default_SearchTermNotEmpty() {
     PreviewTheme {
-        SearchScreen(
-            state = SearchViewState(term = "Science Vs"),
+        ExploreScreen(
+            state = ExploreViewState(term = "Science Vs"),
             onSettingsClicked = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
@@ -330,8 +330,8 @@ private fun SearchScreenPreview_Default_SearchTermNotEmpty() {
 @Composable
 private fun SearchScreenPreview_Loading() {
     PreviewTheme {
-        SearchScreen(
-            state = SearchViewState(term = "", result = SearchResult.Searching),
+        ExploreScreen(
+            state = ExploreViewState(term = "", result = SearchResult.Searching),
             onSettingsClicked = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
@@ -345,8 +345,8 @@ private fun SearchScreenPreview_Loading() {
 @Composable
 private fun SearchScreenPreview_Error() {
     PreviewTheme {
-        SearchScreen(
-            state = SearchViewState(term = "", result = SearchResult.Error),
+        ExploreScreen(
+            state = ExploreViewState(term = "", result = SearchResult.Error),
             onSettingsClicked = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
@@ -360,8 +360,8 @@ private fun SearchScreenPreview_Error() {
 @Composable
 private fun SearchScreenPreview_Success_Empty() {
     PreviewTheme {
-        SearchScreen(
-            state = SearchViewState(term = "", result = SearchResult.Success(listOf())),
+        ExploreScreen(
+            state = ExploreViewState(term = "", result = SearchResult.Success(listOf())),
             onSettingsClicked = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
@@ -375,9 +375,9 @@ private fun SearchScreenPreview_Success_Empty() {
 @Composable
 private fun SearchScreenPreview_Success_NotEmpty() {
     PreviewTheme {
-        SearchScreen(
+        ExploreScreen(
             state =
-                SearchViewState(
+                ExploreViewState(
                     term = "",
                     result =
                         SearchResult.Success(

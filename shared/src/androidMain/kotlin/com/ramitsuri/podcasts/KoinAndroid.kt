@@ -17,11 +17,11 @@ import com.ramitsuri.podcasts.utils.ForegroundStateObserver
 import com.ramitsuri.podcasts.viewmodel.DownloadsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeHistoryViewModel
+import com.ramitsuri.podcasts.viewmodel.ExploreViewModel
 import com.ramitsuri.podcasts.viewmodel.FavoritesViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.QueueViewModel
-import com.ramitsuri.podcasts.viewmodel.SearchViewModel
 import com.ramitsuri.podcasts.viewmodel.SettingsViewModel
 import com.ramitsuri.podcasts.viewmodel.SubscriptionsViewModel
 import com.ramitsuri.podcasts.viewmodel.YearEndReviewViewModel
@@ -90,8 +90,8 @@ actual val platformModule =
             )
         }
 
-        viewModel<SearchViewModel> {
-            SearchViewModel(
+        viewModel<ExploreViewModel> {
+            ExploreViewModel(
                 podcastsRepository = get<PodcastsRepository>(),
             )
         }

@@ -62,6 +62,7 @@ import com.ramitsuri.podcasts.android.ui.backuprestore.BackupRestoreScreen
 import com.ramitsuri.podcasts.android.ui.backuprestore.BackupRestoreViewModel
 import com.ramitsuri.podcasts.android.ui.downloads.DownloadsScreen
 import com.ramitsuri.podcasts.android.ui.episode.EpisodeDetailsScreen
+import com.ramitsuri.podcasts.android.ui.explore.ExploreScreen
 import com.ramitsuri.podcasts.android.ui.favorites.FavoritesScreen
 import com.ramitsuri.podcasts.android.ui.history.EpisodeHistoryScreen
 import com.ramitsuri.podcasts.android.ui.home.HomeScreen
@@ -73,7 +74,6 @@ import com.ramitsuri.podcasts.android.ui.player.PlayerScreen
 import com.ramitsuri.podcasts.android.ui.player.PlayerViewModel
 import com.ramitsuri.podcasts.android.ui.podcast.PodcastDetailsScreen
 import com.ramitsuri.podcasts.android.ui.review.YearEndReviewScreen
-import com.ramitsuri.podcasts.android.ui.search.SearchScreen
 import com.ramitsuri.podcasts.android.ui.settings.SettingsScreen
 import com.ramitsuri.podcasts.android.ui.subscriptions.SubscriptionsScreen
 import com.ramitsuri.podcasts.navigation.Route
@@ -81,11 +81,11 @@ import com.ramitsuri.podcasts.navigation.RouteArgs
 import com.ramitsuri.podcasts.viewmodel.DownloadsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeHistoryViewModel
+import com.ramitsuri.podcasts.viewmodel.ExploreViewModel
 import com.ramitsuri.podcasts.viewmodel.FavoritesViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.QueueViewModel
-import com.ramitsuri.podcasts.viewmodel.SearchViewModel
 import com.ramitsuri.podcasts.viewmodel.SettingsViewModel
 import com.ramitsuri.podcasts.viewmodel.SubscriptionsViewModel
 import com.ramitsuri.podcasts.viewmodel.YearEndReviewViewModel
@@ -264,10 +264,10 @@ fun NavGraph(
                 }
 
                 composable(route = BottomNavItem.EXPLORE.route.value) {
-                    val viewModel = koinViewModel<SearchViewModel>()
+                    val viewModel = koinViewModel<ExploreViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
-                    SearchScreen(
+                    ExploreScreen(
                         state = state,
                         onSettingsClicked = {
                             navController.navigate(

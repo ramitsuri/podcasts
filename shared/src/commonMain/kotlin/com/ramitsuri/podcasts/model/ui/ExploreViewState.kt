@@ -2,7 +2,7 @@ package com.ramitsuri.podcasts.model.ui
 
 import com.ramitsuri.podcasts.model.Podcast
 
-data class SearchViewState(
+data class ExploreViewState(
     val term: String = "",
     val result: SearchResult = SearchResult.Default,
 )

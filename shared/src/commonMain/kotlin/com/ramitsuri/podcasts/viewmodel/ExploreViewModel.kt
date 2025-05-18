@@ -1,8 +1,8 @@
 package com.ramitsuri.podcasts.viewmodel
 
 import com.ramitsuri.podcasts.model.PodcastResult
+import com.ramitsuri.podcasts.model.ui.ExploreViewState
 import com.ramitsuri.podcasts.model.ui.SearchResult
-import com.ramitsuri.podcasts.model.ui.SearchViewState
 import com.ramitsuri.podcasts.network.model.SearchPodcastsRequest
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SearchViewModel(
+class ExploreViewModel(
     private val podcastsRepository: PodcastsRepository,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(SearchViewState())
+    private val _state = MutableStateFlow(ExploreViewState())
     val state = _state.asStateFlow()
 
     fun onSearchTermUpdated(searchTerm: String) {
