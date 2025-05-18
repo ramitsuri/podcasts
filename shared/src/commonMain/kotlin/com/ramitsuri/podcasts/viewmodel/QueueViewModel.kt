@@ -17,7 +17,7 @@ class QueueViewModel internal constructor(
     episodeController: EpisodeController,
     settings: Settings,
     private val episodesRepository: EpisodesRepository,
-    playerController: PlayerController,
+    private val playerController: PlayerController,
 ) : ViewModel(), EpisodeController by episodeController {
     private val queueRearrangementHelper =
         QueueRearrangementHelper(viewModelScope, episodesRepository, playerController)
@@ -92,6 +92,7 @@ class QueueViewModel internal constructor(
             }.forEachIndexed { index, episode ->
                 episodesRepository.updateQueuePosition(episode.id, index)
             }
+            playerController.updateQueue()
         }
     }
 }
