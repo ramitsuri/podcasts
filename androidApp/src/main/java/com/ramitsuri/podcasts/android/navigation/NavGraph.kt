@@ -62,6 +62,7 @@ import com.ramitsuri.podcasts.android.ui.backuprestore.BackupRestoreScreen
 import com.ramitsuri.podcasts.android.ui.backuprestore.BackupRestoreViewModel
 import com.ramitsuri.podcasts.android.ui.downloads.DownloadsScreen
 import com.ramitsuri.podcasts.android.ui.episode.EpisodeDetailsScreen
+import com.ramitsuri.podcasts.android.ui.explore.ExploreScreen
 import com.ramitsuri.podcasts.android.ui.favorites.FavoritesScreen
 import com.ramitsuri.podcasts.android.ui.history.EpisodeHistoryScreen
 import com.ramitsuri.podcasts.android.ui.home.HomeScreen
@@ -81,6 +82,7 @@ import com.ramitsuri.podcasts.navigation.RouteArgs
 import com.ramitsuri.podcasts.viewmodel.DownloadsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeHistoryViewModel
+import com.ramitsuri.podcasts.viewmodel.ExploreViewModel
 import com.ramitsuri.podcasts.viewmodel.FavoritesViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
@@ -264,10 +266,10 @@ fun NavGraph(
                 }
 
                 composable(route = BottomNavItem.EXPLORE.route.value) {
-                    val viewModel = koinViewModel<SearchViewModel>()
+                    val viewModel = koinViewModel<ExploreViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
-                    SearchScreen(
+                    ExploreScreen(
                         state = state,
                         onSettingsClicked = {
                             navController.navigate(
@@ -284,9 +286,16 @@ fun NavGraph(
                                 navOptions { popUpTo(BottomNavItem.EXPLORE.route.value) },
                             )
                         },
-                        onSearchTermUpdated = viewModel::onSearchTermUpdated,
-                        onSearchRequested = viewModel::search,
-                        onSearchCleared = viewModel::clearSearch,
+                        onSearchClicked = { removeFromBackstack ->
+                            navController.navigate(
+                                Route.SEARCH.value,
+                                navOptions {
+                                    popUpTo(BottomNavItem.EXPLORE.route.value) {
+                                        inclusive = removeFromBackstack
+                                    }
+                                },
+                            )
+                        },
                         modifier =
                             Modifier
                                 .statusBarsPadding()
@@ -332,6 +341,34 @@ fun NavGraph(
                                 navOptions { popUpTo(BottomNavItem.LIBRARY.route.value) },
                             )
                         },
+                        modifier =
+                            Modifier
+                                .statusBarsPadding()
+                                .displayCutoutPadding(),
+                    )
+                }
+
+                composable(route = Route.SEARCH.value) {
+                    val viewModel = koinViewModel<SearchViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    SearchScreen(
+                        state = state,
+                        onBack = {
+                            navController.navigateUp()
+                        },
+                        onPodcastClicked = {
+                            navController.navigate(
+                                Route.podcastDetails(
+                                    podcastId = it,
+                                    refreshPodcast = true,
+                                ),
+                                navOptions { popUpTo(Route.SEARCH.value) },
+                            )
+                        },
+                        onSearchTermUpdated = viewModel::onSearchTermUpdated,
+                        onSearchRequested = viewModel::search,
+                        onSearchCleared = viewModel::clearSearch,
                         modifier =
                             Modifier
                                 .statusBarsPadding()
