@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.network.utils
 
 import com.ramitsuri.podcasts.model.PodcastError
 import com.ramitsuri.podcasts.model.PodcastResult
+import com.ramitsuri.podcasts.utils.LogHelper
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
@@ -41,6 +42,7 @@ internal suspend inline fun <reified T> apiRequest(
             }
         } catch (e: Exception) {
             exception = e
+            LogHelper.v("NetworkUtils", e.message.toString())
             PodcastResult.Failure(PodcastError.Unknown(exception))
         }
     }

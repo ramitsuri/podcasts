@@ -8,6 +8,7 @@ import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
 import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
+import com.ramitsuri.podcasts.repositories.TrendingPodcastsRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.AndroidForegroundStateObserver
 import com.ramitsuri.podcasts.utils.DispatcherProvider
@@ -17,6 +18,7 @@ import com.ramitsuri.podcasts.utils.ForegroundStateObserver
 import com.ramitsuri.podcasts.viewmodel.DownloadsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeHistoryViewModel
+import com.ramitsuri.podcasts.viewmodel.ExploreViewModel
 import com.ramitsuri.podcasts.viewmodel.FavoritesViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
@@ -93,6 +95,14 @@ actual val platformModule =
         viewModel<SearchViewModel> {
             SearchViewModel(
                 podcastsRepository = get<PodcastsRepository>(),
+            )
+        }
+
+        viewModel<ExploreViewModel> {
+            ExploreViewModel(
+                trendingPodcastsRepository = get<TrendingPodcastsRepository>(),
+                settings = get<Settings>(),
+                clock = get<Clock>(),
             )
         }
 

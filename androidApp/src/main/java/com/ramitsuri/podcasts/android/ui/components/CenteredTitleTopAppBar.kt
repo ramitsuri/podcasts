@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Badge
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -30,6 +31,7 @@ fun CenteredTitleTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
     settingsHasBadge: Boolean = false,
     onSettingsClicked: () -> Unit,
+    onSearchClicked: (() -> Unit)? = null,
 ) {
     CenterAlignedTopAppBar(
         colors =
@@ -44,6 +46,16 @@ fun CenteredTitleTopAppBar(
             )
         },
         actions = {
+            onSearchClicked?.let {
+                Box {
+                    IconButton(onClick = it) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = stringResource(id = R.string.search),
+                        )
+                    }
+                }
+            }
             Box {
                 IconButton(onClick = onSettingsClicked) {
                     Icon(

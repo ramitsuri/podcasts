@@ -51,9 +51,9 @@ import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
-import com.ramitsuri.podcasts.android.ui.components.CenteredTitleTopAppBar
 import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.PodcastInfoItem
+import com.ramitsuri.podcasts.android.ui.components.TopAppBar
 import com.ramitsuri.podcasts.android.ui.components.podcast
 import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.model.ui.SearchResult
@@ -65,7 +65,7 @@ import kotlinx.coroutines.delay
 fun SearchScreen(
     state: SearchViewState,
     modifier: Modifier = Modifier,
-    onSettingsClicked: () -> Unit,
+    onBack: () -> Unit,
     onPodcastClicked: (Long) -> Unit,
     onSearchTermUpdated: (String) -> Unit,
     onSearchRequested: () -> Unit,
@@ -78,9 +78,9 @@ fun SearchScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-        CenteredTitleTopAppBar(
+        TopAppBar(
+            onBack = onBack,
             scrollBehavior = scrollBehavior,
-            onSettingsClicked = onSettingsClicked,
         )
         if (state.result !is SearchResult.Searching) {
             Spacer(modifier = Modifier.height(16.dp))
@@ -302,7 +302,7 @@ private fun SearchScreenPreview_Default() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = ""),
-            onSettingsClicked = { },
+            onBack = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
             onSearchCleared = { },
@@ -317,7 +317,7 @@ private fun SearchScreenPreview_Default_SearchTermNotEmpty() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = "Science Vs"),
-            onSettingsClicked = { },
+            onBack = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
             onSearchCleared = { },
@@ -332,7 +332,7 @@ private fun SearchScreenPreview_Loading() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = "", result = SearchResult.Searching),
-            onSettingsClicked = { },
+            onBack = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
             onSearchCleared = { },
@@ -347,7 +347,7 @@ private fun SearchScreenPreview_Error() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = "", result = SearchResult.Error),
-            onSettingsClicked = { },
+            onBack = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
             onSearchCleared = { },
@@ -362,7 +362,7 @@ private fun SearchScreenPreview_Success_Empty() {
     PreviewTheme {
         SearchScreen(
             state = SearchViewState(term = "", result = SearchResult.Success(listOf())),
-            onSettingsClicked = { },
+            onBack = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
             onSearchCleared = { },
@@ -391,7 +391,7 @@ private fun SearchScreenPreview_Success_NotEmpty() {
                             ),
                         ),
                 ),
-            onSettingsClicked = { },
+            onBack = { },
             onSearchTermUpdated = { },
             onSearchRequested = { },
             onSearchCleared = { },
