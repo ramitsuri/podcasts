@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.android.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import com.ramitsuri.podcasts.model.Podcast
 @Composable
 fun PodcastInfoItem(
     podcast: Podcast,
+    paddingValues: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
     onClick: ((Long) -> Unit)? = null,
 ) {
     val modifier =
@@ -35,7 +37,7 @@ fun PodcastInfoItem(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         PodcastInfo(podcast = podcast)

@@ -9,6 +9,7 @@ import com.ramitsuri.podcasts.PodcastAdditionalInfoEntity
 import com.ramitsuri.podcasts.PodcastEntity
 import com.ramitsuri.podcasts.PodcastsDatabase
 import com.ramitsuri.podcasts.SessionActionEntity
+import com.ramitsuri.podcasts.TrendingPodcastEntity
 import com.ramitsuri.podcasts.model.Action
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
@@ -60,6 +61,10 @@ internal fun provideDatabase(driver: SqlDriver): PodcastsDatabase {
                 timeAdapter = instantToLongAdapter,
                 actionAdapter = actionToStringAdapter,
                 playbackSpeedAdapter = floatToDoubleAdapter,
+            ),
+        TrendingPodcastEntityAdapter =
+            TrendingPodcastEntity.Adapter(
+                categoriesAdapter = intListToStringAdapter,
             ),
     )
 }

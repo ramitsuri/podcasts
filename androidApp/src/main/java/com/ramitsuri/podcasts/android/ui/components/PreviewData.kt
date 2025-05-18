@@ -4,6 +4,7 @@ import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.Podcast
+import com.ramitsuri.podcasts.model.TrendingPodcast
 import java.util.UUID
 
 fun episode(
@@ -45,29 +46,46 @@ fun episode(
     needsDownload = false,
 )
 
-fun podcast(hasNewEpisodes: Boolean = false) =
-    Podcast(
-        id = 1,
-        guid = "guid",
+fun podcast(
+    id: Long = 1,
+    hasNewEpisodes: Boolean = false,
+) = Podcast(
+    id = id,
+    guid = "guid",
+    title = "Stuff You Should Know",
+    description = "Description",
+    author = "iHeartPodcasts",
+    owner = "iHeartPodcasts",
+    url = "",
+    link = "",
+    image = "",
+    artwork =
+        "https://www.omnycontent.com/d/programs/e73c998e-6e60-432f-8610-ae210140c5b1/" +
+            "a91018a4-ea4f-4130-bf55-ae270180c327/image.jpg?t=1684846432&size=Large",
+    explicit = false,
+    episodeCount = 100,
+    categories = listOf(),
+    subscribed = false,
+    autoDownloadEpisodes = false,
+    newEpisodeNotifications = false,
+    subscribedDate = null,
+    hasNewEpisodes = hasNewEpisodes,
+    autoAddToQueue = false,
+    showCompletedEpisodes = true,
+    episodeSortOrder = EpisodeSortOrder.default,
+)
+
+fun trendingPodcast(id: Long = 1) =
+    TrendingPodcast(
+        id = id,
         title = "Stuff You Should Know",
         description = "Description",
         author = "iHeartPodcasts",
-        owner = "iHeartPodcasts",
         url = "",
-        link = "",
         image = "",
         artwork =
             "https://www.omnycontent.com/d/programs/e73c998e-6e60-432f-8610-ae210140c5b1/" +
                 "a91018a4-ea4f-4130-bf55-ae270180c327/image.jpg?t=1684846432&size=Large",
-        explicit = false,
-        episodeCount = 100,
+        trendScore = 1,
         categories = listOf(),
-        subscribed = false,
-        autoDownloadEpisodes = false,
-        newEpisodeNotifications = false,
-        subscribedDate = null,
-        hasNewEpisodes = hasNewEpisodes,
-        autoAddToQueue = false,
-        showCompletedEpisodes = true,
-        episodeSortOrder = EpisodeSortOrder.default,
     )

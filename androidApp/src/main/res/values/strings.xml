@@ -30,6 +30,7 @@
     <string name="generic_error">Something went wrong</string>
     <string name="new_badge">NEW</string>
     <string name="sort">Sort</string>
+    <string name="trending">Trending Podcasts</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>

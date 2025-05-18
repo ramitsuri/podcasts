@@ -5,12 +5,14 @@ import com.ramitsuri.podcasts.database.dao.BackupRestoreDaoImpl
 import com.ramitsuri.podcasts.database.dao.CategoryDaoImpl
 import com.ramitsuri.podcasts.database.dao.EpisodesDaoImpl
 import com.ramitsuri.podcasts.database.dao.PodcastsDaoImpl
+import com.ramitsuri.podcasts.database.dao.TrendingPodcastsDaoImpl
 import com.ramitsuri.podcasts.database.dao.interfaces.BackupRestoreDao
 import com.ramitsuri.podcasts.database.dao.interfaces.CategoryDao
 import com.ramitsuri.podcasts.database.dao.interfaces.EpisodesDao
 import com.ramitsuri.podcasts.database.dao.interfaces.PodcastsDao
 import com.ramitsuri.podcasts.database.dao.interfaces.SessionActionDao
 import com.ramitsuri.podcasts.database.dao.interfaces.SessionActionDaoImpl
+import com.ramitsuri.podcasts.database.dao.interfaces.TrendingPodcastsDao
 import com.ramitsuri.podcasts.database.provideDatabase
 import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.network.api.CategoriesApiImpl
@@ -25,6 +27,7 @@ import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
 import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
+import com.ramitsuri.podcasts.repositories.TrendingPodcastsRepository
 import com.ramitsuri.podcasts.settings.DataStoreKeyValueStore
 import com.ramitsuri.podcasts.settings.KeyValueStore
 import com.ramitsuri.podcasts.settings.Settings
@@ -125,6 +128,15 @@ private val coreModule =
             )
         }
 
+        single<TrendingPodcastsRepository> {
+            TrendingPodcastsRepository(
+                podcastsApi = get(),
+                trendingPodcastsDao = get(),
+                categoryDao = get(),
+                clock = get(),
+            )
+        }
+
         single<PodcastsDao> {
             PodcastsDaoImpl(
                 podcastEntityQueries = get<PodcastsDatabase>().podcastEntityQueries,
@@ -159,6 +171,13 @@ private val coreModule =
             BackupRestoreDaoImpl(
                 ioDispatcher = get<DispatcherProvider>().io,
                 backupDataQueries = get<PodcastsDatabase>().backupDataQueries,
+            )
+        }
+
+        single<TrendingPodcastsDao> {
+            TrendingPodcastsDaoImpl(
+                trendingPodcastsEntityQueries = get<PodcastsDatabase>().trendingPodcastEntityQueries,
+                ioDispatcher = get<DispatcherProvider>().io,
             )
         }
 

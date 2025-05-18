@@ -178,4 +178,20 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
     suspend fun setHasSeenWidgetItem() {
         keyValueStore.putBoolean(Key.HAS_SEEN_WIDGET_ITEM, true)
     }
+
+    suspend fun getLastTrendingPodcastsFetchTime(): Instant {
+        return keyValueStore.getStringFlow(Key.LAST_TRENDING_PODCASTS_FETCH_TIME, null)
+            .map { stringTime ->
+                if (stringTime == null) {
+                    Constants.NEVER_FETCHED_TIME
+                } else {
+                    runCatching { Instant.parse(stringTime) }.getOrNull() ?: Constants.NEVER_FETCHED_TIME
+                }
+            }
+            .first()
+    }
+
+    suspend fun setLastTrendingPodcastsFetchTime(time: Instant = Clock.System.now()) {
+        keyValueStore.putString(Key.LAST_TRENDING_PODCASTS_FETCH_TIME, time.toString())
+    }
 }
