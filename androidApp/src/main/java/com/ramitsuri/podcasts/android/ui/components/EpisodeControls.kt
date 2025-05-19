@@ -227,7 +227,7 @@ private fun EpisodeMenu(
         ) {
             if (isFavorite) {
                 BottomSheetDialogMenuItem(
-                    icon = Icons.Filled.Favorite,
+                    startIcon = Icons.Filled.Favorite,
                     text = stringResource(id = R.string.episode_controller_mark_not_favorite),
                     onClick = {
                         onToggleMenu()
@@ -236,7 +236,7 @@ private fun EpisodeMenu(
                 )
             } else {
                 BottomSheetDialogMenuItem(
-                    icon = Icons.Filled.FavoriteBorder,
+                    startIcon = Icons.Filled.FavoriteBorder,
                     text = stringResource(id = R.string.episode_controller_mark_favorite),
                     onClick = {
                         onToggleMenu()
@@ -246,7 +246,7 @@ private fun EpisodeMenu(
             }
             if (episodeCompleted) {
                 BottomSheetDialogMenuItem(
-                    icon = Icons.Filled.Check,
+                    startIcon = Icons.Filled.Check,
                     text = stringResource(id = R.string.episode_controller_mark_not_played),
                     onClick = {
                         onToggleMenu()
@@ -255,7 +255,7 @@ private fun EpisodeMenu(
                 )
             } else {
                 BottomSheetDialogMenuItem(
-                    icon = Icons.Filled.Check,
+                    startIcon = Icons.Filled.Check,
                     text = stringResource(id = R.string.episode_controller_mark_played),
                     onClick = {
                         onToggleMenu()
@@ -264,7 +264,7 @@ private fun EpisodeMenu(
                 )
             }
             BottomSheetDialogMenuItem(
-                icon = Icons.Filled.Share,
+                startIcon = Icons.Filled.Share,
                 text = stringResource(id = R.string.episode_controller_share),
                 onClick = {
                     onToggleMenu()

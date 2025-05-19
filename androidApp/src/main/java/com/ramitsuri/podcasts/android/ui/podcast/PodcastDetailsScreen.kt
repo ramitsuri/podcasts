@@ -891,14 +891,14 @@ private fun SubscribeButton(
             onDismissRequest = { showMenu = !showMenu },
         ) {
             BottomSheetDialogMenuItem(
-                icon = Icons.Outlined.ArrowCircleDown,
+                startIcon = Icons.Outlined.ArrowCircleDown,
                 text = stringResource(id = R.string.auto_download_new_episodes),
                 switchState = SwitchState(autoDownloadNewEpisodes),
                 onClick = toggleAutoDownloadClicked,
             )
             ColoredHorizontalDivider()
             BottomSheetDialogMenuItem(
-                icon = Icons.AutoMirrored.Default.PlaylistAdd,
+                startIcon = Icons.AutoMirrored.Default.PlaylistAdd,
                 text = stringResource(id = R.string.auto_add_to_queue_new_episodes),
                 switchState = SwitchState(autoAddToQueueNewEpisodes),
                 onClick = toggleAutoAddToQueueClicked,
@@ -906,7 +906,7 @@ private fun SubscribeButton(
             if (subscribed) {
                 ColoredHorizontalDivider()
                 BottomSheetDialogMenuItem(
-                    icon = Icons.Outlined.DoNotDisturbOn,
+                    startIcon = Icons.Outlined.DoNotDisturbOn,
                     text = stringResource(id = R.string.unsubscribe),
                     onClick = {
                         showMenu = false
