@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.ramitsuri.podcasts.model.Podcast
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
+import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -102,31 +103,39 @@ class ImportSubscriptionsViewModel(
     private fun parseInputStream(inputStream: InputStream): List<SubscriptionData> {
         val subscriptionDataList = mutableListOf<SubscriptionData>()
 
-        val factory = XmlPullParserFactory.newInstance()
-        factory.isNamespaceAware = true
-        val parser = factory.newPullParser()
-        parser.setInput(inputStream, null)
+        try {
+            val factory = XmlPullParserFactory.newInstance()
+            factory.isNamespaceAware = true
+            val parser = factory.newPullParser()
+            parser.setInput(inputStream, null)
 
-        var event = parser.eventType
-        while (event != XmlPullParser.END_DOCUMENT) {
-            if (event == XmlPullParser.START_TAG) {
-                if (parser.name == "outline") {
-                    val text = parser.getAttributeValue(null, "text")
-                    val xmlUrl = parser.getAttributeValue(null, "xmlUrl")
+            var event = parser.eventType
+            while (event != XmlPullParser.END_DOCUMENT) {
+                if (event == XmlPullParser.START_TAG) {
+                    if (parser.name == "outline") {
+                        val text = parser.getAttributeValue(null, "text")
+                        val xmlUrl = parser.getAttributeValue(null, "xmlUrl")
 
-                    if (text != null && xmlUrl != null) {
-                        subscriptionDataList.add(SubscriptionData(text, xmlUrl))
+                        if (text != null && xmlUrl != null) {
+                            subscriptionDataList.add(SubscriptionData(text, xmlUrl))
+                        }
                     }
                 }
+                event = parser.next()
             }
-            event = parser.next()
+            return subscriptionDataList
+        } catch (e: Exception) {
+            LogHelper.v(TAG, "Failed to read file: ${e.message}")
+            _state.update { it.copy(failure = true) }
+            return listOf()
         }
-        return subscriptionDataList
     }
 
     private data class SubscriptionData(val text: String, val xmlUrl: String)
 
     companion object {
+        private const val TAG = "ImportSubscriptionsViewModel"
+
         fun factory(): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory, KoinComponent {
                 @Suppress("UNCHECKED_CAST")
