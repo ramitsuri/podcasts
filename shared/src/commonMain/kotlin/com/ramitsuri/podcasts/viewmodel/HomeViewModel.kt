@@ -60,6 +60,7 @@ class HomeViewModel internal constructor(
                         episodes = subscribedEpisodes,
                         currentlyPlayingEpisodeId = currentlyPlaying?.id,
                         currentlyPlayingEpisodeState = playingState,
+                        currentlyPlayingEpisodeArtworkUrl = currentlyPlaying?.podcastImageUrl,
                         showYearEndReview = hasSessions && clock.now() < Instant.parse(SHOW_REVIEW_UNTIL),
                         isRefreshing = isRefreshing,
                         showSettingsBadge = !hasSeenWidgetItem,

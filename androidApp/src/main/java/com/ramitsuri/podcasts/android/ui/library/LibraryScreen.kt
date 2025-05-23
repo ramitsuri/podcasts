@@ -30,11 +30,13 @@ import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.components.CenteredTitleTopAppBar
 import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
+import com.ramitsuri.podcasts.model.ui.LibraryViewState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryScreen(
     modifier: Modifier = Modifier,
+    state: LibraryViewState,
     onSettingsClicked: () -> Unit,
     onSubscriptionsClicked: () -> Unit,
     onQueueClicked: () -> Unit,
@@ -48,6 +50,7 @@ fun LibraryScreen(
                 .fillMaxSize(),
     ) {
         CenteredTitleTopAppBar(
+            currentlyPlayingArtworkUrl = state.currentlyPlayingEpisodeArtworkUrl,
             onSettingsClicked = onSettingsClicked,
         )
         ColoredHorizontalDivider()
@@ -116,6 +119,10 @@ private fun Item(
 private fun LibraryScreenPreview() {
     PreviewTheme {
         LibraryScreen(
+            state =
+                LibraryViewState(
+                    currentlyPlayingEpisodeArtworkUrl = null,
+                ),
             onSettingsClicked = { },
             onSubscriptionsClicked = { },
             onQueueClicked = { },

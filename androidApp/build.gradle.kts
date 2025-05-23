@@ -89,8 +89,9 @@ dependencies {
     implementation(libs.reorderable)
     implementation(libs.splash)
     implementation(libs.work)
-    debugImplementation(libs.compose.ui.tooling)
     implementation(libs.composables)
+    implementation(libs.androidx.palette.ktx)
+    debugImplementation(libs.compose.ui.tooling)
 }
 
 detekt {

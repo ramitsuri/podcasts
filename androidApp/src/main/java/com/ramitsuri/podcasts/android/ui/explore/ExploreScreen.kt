@@ -87,6 +87,7 @@ fun ExploreScreen(
     ) {
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
         CenteredTitleTopAppBar(
+            currentlyPlayingArtworkUrl = state.currentlyPlayingEpisodeArtworkUrl,
             scrollBehavior = scrollBehavior,
             onSearchClicked = onSearchClicked,
             onSettingsClicked = onSettingsClicked,
