@@ -1,8 +1,6 @@
 package com.ramitsuri.podcasts.repositories
 
-import com.ramitsuri.podcasts.database.dao.interfaces.CategoryDao
 import com.ramitsuri.podcasts.database.dao.interfaces.PodcastsDao
-import com.ramitsuri.podcasts.model.Category
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.ImportedPodcast
 import com.ramitsuri.podcasts.model.Podcast
@@ -10,6 +8,7 @@ import com.ramitsuri.podcasts.model.PodcastError
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.network.api.interfaces.PodcastsApi
 import com.ramitsuri.podcasts.network.model.SearchPodcastsRequest
+import com.ramitsuri.podcasts.utils.CategoryHelper
 import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,7 +16,7 @@ import kotlinx.coroutines.flow.map
 class PodcastsRepository internal constructor(
     private val podcastsApi: PodcastsApi,
     private val podcastsDao: PodcastsDao,
-    private val categoryDao: CategoryDao,
+    private val categoryHelper: CategoryHelper,
 ) {
     suspend fun get(id: Long): Podcast? {
         val dbPodcast =
@@ -26,7 +25,7 @@ class PodcastsRepository internal constructor(
         return if (dbPodcast == null) {
             null
         } else {
-            val categories = categoryDao.get(dbPodcast.categories).map { Category(it.id, it.name) }
+            val categories = categoryHelper.get(dbPodcast.categories)
             Podcast(dbPodcast, categories)
         }
     }
@@ -38,7 +37,7 @@ class PodcastsRepository internal constructor(
                 if (dbPodcast == null) {
                     null
                 } else {
-                    val categories = categoryDao.get(dbPodcast.categories).map { Category(it.id, it.name) }
+                    val categories = categoryHelper.get(dbPodcast.categories)
                     Podcast(dbPodcast, categories)
                 }
             }
@@ -48,7 +47,7 @@ class PodcastsRepository internal constructor(
         return podcastsDao.getAllSubscribed()
             .map { dbPodcast ->
                 val categories =
-                    categoryDao.get(dbPodcast.categories).map { Category(it.id, it.name) }
+                    categoryHelper.get(dbPodcast.categories)
                 Podcast(dbPodcast, categories)
             }
     }
@@ -58,7 +57,7 @@ class PodcastsRepository internal constructor(
             .map { list ->
                 list.map { dbPodcast ->
                     val categories =
-                        categoryDao.get(dbPodcast.categories).map { Category(it.id, it.name) }
+                        categoryHelper.get(dbPodcast.categories)
                     Podcast(dbPodcast, categories)
                 }
             }
