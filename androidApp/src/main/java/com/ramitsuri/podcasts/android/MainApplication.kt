@@ -18,6 +18,7 @@ import com.ramitsuri.podcasts.AppInfo
 import com.ramitsuri.podcasts.android.media.DownloadManagerListener
 import com.ramitsuri.podcasts.android.media.EpisodeDownloaderImpl
 import com.ramitsuri.podcasts.android.media.PlayerControllerImpl
+import com.ramitsuri.podcasts.android.utils.AndroidLanguageHelper
 import com.ramitsuri.podcasts.android.utils.EpisodeFetchWorker
 import com.ramitsuri.podcasts.download.EpisodeDownloader
 import com.ramitsuri.podcasts.initKoin
@@ -26,6 +27,7 @@ import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.AndroidLogger
 import com.ramitsuri.podcasts.utils.EpisodeFetcher
+import com.ramitsuri.podcasts.utils.LanguageHelper
 import com.ramitsuri.podcasts.utils.LogHelper
 import com.ramitsuri.podcasts.utils.Logger
 import kotlinx.coroutines.CoroutineScope
@@ -135,6 +137,10 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
                         enableRemote = false,
                         deviceModel = Build.MODEL,
                     )
+                }
+
+                factory<LanguageHelper> {
+                    AndroidLanguageHelper()
                 }
 
                 factory<AppInfo> {
