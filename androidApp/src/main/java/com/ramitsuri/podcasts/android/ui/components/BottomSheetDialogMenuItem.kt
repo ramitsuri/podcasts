@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Badge
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.ui.PreviewTheme
@@ -33,6 +36,7 @@ fun BottomSheetDialogMenuItem(
     text: String,
     subtitle: String? = null,
     switchState: SwitchState? = null,
+    hasBadge: Boolean = false,
     onClick: () -> Unit,
 ) {
     DropdownMenuItem(
@@ -44,6 +48,16 @@ fun BottomSheetDialogMenuItem(
                         .padding(vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                if (hasBadge) {
+                    Badge(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        modifier =
+                            Modifier
+                                .size(12.dp)
+                                .clip(MaterialTheme.shapes.small),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
                 startIcon?.let {
                     Icon(imageVector = it, contentDescription = null)
                     Spacer(modifier = Modifier.width(16.dp))
@@ -99,6 +113,12 @@ private fun MenuItem() {
                 text = "Text",
                 subtitle = "Subtitle",
                 switchState = SwitchState(checked = true),
+                onClick = {},
+            )
+            BottomSheetDialogMenuItem(
+                startIcon = Icons.Filled.Settings,
+                text = "Text",
+                hasBadge = true,
                 onClick = {},
             )
             BottomSheetDialogMenuItem(
