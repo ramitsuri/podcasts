@@ -41,6 +41,7 @@ class CategoryHelper(
     }
 
     companion object {
+        // From https://github.com/Podcastindex-org/podcast-namespace/blob/main/categories.json
         private val categoriesJson =
             """
             {
