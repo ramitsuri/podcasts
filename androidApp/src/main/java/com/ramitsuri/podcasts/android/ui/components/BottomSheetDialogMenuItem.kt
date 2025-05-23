@@ -48,14 +48,13 @@ fun BottomSheetDialogMenuItem(
                     Icon(imageVector = it, contentDescription = null)
                     Spacer(modifier = Modifier.width(16.dp))
                 }
-                Column {
-                    Text(text)
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text, maxLines = 2)
                     subtitle?.let {
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(text = it, style = MaterialTheme.typography.bodySmall)
+                        Text(text = it, style = MaterialTheme.typography.bodySmall, maxLines = 1)
                     }
                 }
-                Spacer(modifier = Modifier.weight(1f))
                 switchState?.let {
                     Switch(
                         checked = it.checked,
@@ -122,6 +121,11 @@ private fun MenuItem() {
             )
             BottomSheetDialogMenuItem(
                 text = "Text",
+                endIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                onClick = {},
+            )
+            BottomSheetDialogMenuItem(
+                text = "Very very very very very very very very very very very very very long text",
                 endIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 onClick = {},
             )
