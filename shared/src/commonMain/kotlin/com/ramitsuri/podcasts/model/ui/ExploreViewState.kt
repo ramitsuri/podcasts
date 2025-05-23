@@ -2,8 +2,11 @@ package com.ramitsuri.podcasts.model.ui
 
 import com.ramitsuri.podcasts.model.TrendingPodcast
 
-sealed interface ExploreViewState {
-    data object Loading : ExploreViewState
-
-    data class Success(val podcasts: List<TrendingPodcast>) : ExploreViewState
-}
+data class ExploreViewState(
+    val isRefreshing: Boolean = true,
+    val podcastsByCategory: Map<String, List<TrendingPodcast>> = mapOf(),
+    val languages: List<String> = emptyList(),
+    val selectedLanguage: String = "English",
+    val categories: List<String> = emptyList(),
+    val selectedCategories: List<String> = emptyList(),
+)

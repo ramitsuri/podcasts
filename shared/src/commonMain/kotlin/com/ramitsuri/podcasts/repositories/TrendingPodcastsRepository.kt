@@ -28,13 +28,18 @@ class TrendingPodcastsRepository internal constructor(
             }
     }
 
-    suspend fun refresh(): Boolean {
+    suspend fun refresh(
+        languages: List<String>,
+        categories: List<String>,
+    ): Boolean {
         LogHelper.d(TAG, "Refreshing trending podcasts")
         val result =
             podcastsApi.getTrending(
                 request =
                     TrendingPodcastsRequest(
                         sinceEpochSeconds = clock.now().epochSeconds - REFRESH_SINCE,
+                        languages = languages,
+                        categories = categories,
                     ),
             )
         return when (result) {

@@ -194,4 +194,28 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
     suspend fun setLastTrendingPodcastsFetchTime(time: Instant = Clock.System.now()) {
         keyValueStore.putString(Key.LAST_TRENDING_PODCASTS_FETCH_TIME, time.toString())
     }
+
+    fun getTrendingPodcastsLanguage(): Flow<String> {
+        return keyValueStore
+            .getStringFlow(Key.TRENDING_PODCASTS_LANGUAGE, null)
+            .map {
+                it ?: "English"
+            }
+    }
+
+    suspend fun setTrendingPodcastsLanguage(language: String) {
+        keyValueStore.putString(Key.TRENDING_PODCASTS_LANGUAGE, language)
+    }
+
+    fun getTrendingPodcastsCategories(defaultCategories: List<String>): Flow<List<String>> {
+        return keyValueStore
+            .getStringFlow(Key.TRENDING_PODCASTS_CATEGORIES, null)
+            .map { categoriesString ->
+                categoriesString?.split(";;;")?.filter { it.isNotBlank() } ?: defaultCategories
+            }
+    }
+
+    suspend fun setTrendingPodcastsCategories(categories: List<String>) {
+        keyValueStore.putString(Key.TRENDING_PODCASTS_CATEGORIES, categories.joinToString(";;;"))
+    }
 }

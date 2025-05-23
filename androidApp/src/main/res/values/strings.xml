@@ -30,7 +30,9 @@
     <string name="generic_error">Something went wrong</string>
     <string name="new_badge">NEW</string>
     <string name="sort">Sort</string>
-    <string name="trending">Trending Podcasts</string>
+    <string name="trending">Trending</string>
+    <string name="language">Language</string>
+    <string name="categories">Categories</string>
 
     <!-- Home Screen -->
     <string name="home_import_subscriptions">Import subscriptions</string>
@@ -241,4 +243,8 @@
     <!-- Backup/Restore -->
     <string name="backup_restore_backup">Backup</string>
     <string name="backup_restore_restore">Restore</string>
+
+    <!-- Trending -->
+    <string name="trending_five_categories">Select up to 5 categories</string>
+    <string name="trending_podcasts_unavailable">No podcasts available.\nAdjust settings and try again!</string>
 </resources>
