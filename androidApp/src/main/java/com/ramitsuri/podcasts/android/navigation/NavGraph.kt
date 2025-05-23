@@ -85,6 +85,7 @@ import com.ramitsuri.podcasts.viewmodel.EpisodeHistoryViewModel
 import com.ramitsuri.podcasts.viewmodel.ExploreViewModel
 import com.ramitsuri.podcasts.viewmodel.FavoritesViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
+import com.ramitsuri.podcasts.viewmodel.LibraryViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.QueueViewModel
 import com.ramitsuri.podcasts.viewmodel.SearchViewModel
@@ -303,7 +304,11 @@ fun NavGraph(
                 }
 
                 composable(route = BottomNavItem.LIBRARY.route.value) {
+                    val viewModel = koinViewModel<LibraryViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
                     LibraryScreen(
+                        state = state,
                         onSettingsClicked = {
                             navController.navigate(
                                 Route.SETTINGS.value,

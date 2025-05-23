@@ -1,14 +1,16 @@
 package com.ramitsuri.podcasts.viewmodel
 
+import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.ExploreViewState
+import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.TrendingPodcastsRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.CategoryHelper
 import com.ramitsuri.podcasts.utils.LanguageHelper
 import com.ramitsuri.podcasts.utils.LogHelper
+import com.ramitsuri.podcasts.utils.combine
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -17,6 +19,7 @@ import kotlin.time.Duration.Companion.hours
 
 class ExploreViewModel(
     private val trendingPodcastsRepository: TrendingPodcastsRepository,
+    episodesRepository: EpisodesRepository,
     private val settings: Settings,
     private val clock: Clock,
     private val languageHelper: LanguageHelper,
@@ -27,10 +30,12 @@ class ExploreViewModel(
     val state =
         combine(
             trendingPodcastsRepository.getAllFlow(),
+            episodesRepository.getCurrentEpisode(),
+            settings.getPlayingStateFlow(),
             settings.getTrendingPodcastsLanguage(),
             settings.getTrendingPodcastsCategories(categoryHelper.defaultCategories),
             isRefreshing,
-        ) { podcasts, selectedLanguage, selectedCategories, isRefreshing ->
+        ) { podcasts, currentlyPlayingEpisode, playingState, selectedLanguage, selectedCategories, isRefreshing ->
             val podcastsByCategory =
                 selectedCategories
                     .sorted()
@@ -40,6 +45,12 @@ class ExploreViewModel(
                                 .filter { podcast -> podcast.categories.map { it.name }.contains(category) }
                         category to podcastsWithCategory
                     }.associate { it }
+            val currentlyPlaying =
+                if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
+                    currentlyPlayingEpisode
+                } else {
+                    null
+                }
             ExploreViewState(
                 isRefreshing = isRefreshing,
                 podcastsByCategory = podcastsByCategory,
@@ -47,6 +58,7 @@ class ExploreViewModel(
                 selectedLanguage = selectedLanguage,
                 categories = categoryHelper.categories,
                 selectedCategories = selectedCategories.sorted(),
+                currentlyPlayingEpisodeArtworkUrl = currentlyPlaying?.podcastImageUrl,
             )
         }.onStart {
             refreshIfNecessary()

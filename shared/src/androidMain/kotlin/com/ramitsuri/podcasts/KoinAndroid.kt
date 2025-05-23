@@ -23,6 +23,7 @@ import com.ramitsuri.podcasts.viewmodel.EpisodeHistoryViewModel
 import com.ramitsuri.podcasts.viewmodel.ExploreViewModel
 import com.ramitsuri.podcasts.viewmodel.FavoritesViewModel
 import com.ramitsuri.podcasts.viewmodel.HomeViewModel
+import com.ramitsuri.podcasts.viewmodel.LibraryViewModel
 import com.ramitsuri.podcasts.viewmodel.PodcastDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.QueueViewModel
 import com.ramitsuri.podcasts.viewmodel.SearchViewModel
@@ -103,6 +104,7 @@ actual val platformModule =
         viewModel<ExploreViewModel> {
             ExploreViewModel(
                 trendingPodcastsRepository = get<TrendingPodcastsRepository>(),
+                episodesRepository = get<EpisodesRepository>(),
                 settings = get<Settings>(),
                 clock = get<Clock>(),
                 languageHelper = get<LanguageHelper>(),
@@ -169,6 +171,13 @@ actual val platformModule =
                 podcastsRepository = get<PodcastsRepository>(),
                 sessionHistoryRepository = get<SessionHistoryRepository>(),
                 timeZone = get<TimeZone>(),
+            )
+        }
+
+        viewModel<LibraryViewModel> {
+            LibraryViewModel(
+                episodesRepository = get<EpisodesRepository>(),
+                settings = get<Settings>(),
             )
         }
 
