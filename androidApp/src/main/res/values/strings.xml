@@ -41,6 +41,7 @@
     <string name="import_subscriptions_failed_to_import">Failed to import:</string>
     <string name="import_subscriptions_failed_import_confirm_suggestion">Confirm</string>
     <string name="import_subscriptions_imported">Imported:</string>
+    <string name="import_error">Failed to read file</string>
 
     <!-- Download service -->
     <string name="download_notification_channel_name">Downloads</string>

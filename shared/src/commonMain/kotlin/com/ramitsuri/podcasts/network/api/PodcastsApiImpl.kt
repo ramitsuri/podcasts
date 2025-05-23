@@ -62,7 +62,7 @@ internal class PodcastsApiImpl(
             apiRequest(ioDispatcher) {
                 httpClient.get(urlString = "$baseUrl/podcasts/byfeedurl") {
                     url {
-                        parameters.append("url", url)
+                        encodedParameters.append("url", url)
                     }
                 }
             }

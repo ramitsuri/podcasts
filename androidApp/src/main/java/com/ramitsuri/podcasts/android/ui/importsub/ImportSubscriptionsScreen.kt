@@ -1,6 +1,7 @@
 package com.ramitsuri.podcasts.android.ui.importsub
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,9 +46,10 @@ fun ImportSubscriptionsScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     val filePicker =
         rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent(),
+            contract = ActivityResultContracts.OpenDocument(),
             onResult = { uri ->
                 if (uri == null) {
                     onBack()
@@ -56,10 +59,14 @@ fun ImportSubscriptionsScreen(
             },
         )
     LaunchedEffect(Unit) {
-        filePicker.launch("text/xml")
+        filePicker.launch(arrayOf("*/*"))
     }
     LaunchedEffect(viewState) {
         if (viewState.subscribed) {
+            onBack()
+        }
+        if (viewState.failure) {
+            Toast.makeText(context, R.string.import_error, Toast.LENGTH_SHORT).show()
             onBack()
         }
     }
