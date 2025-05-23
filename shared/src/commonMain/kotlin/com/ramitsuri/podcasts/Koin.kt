@@ -31,6 +31,7 @@ import com.ramitsuri.podcasts.repositories.TrendingPodcastsRepository
 import com.ramitsuri.podcasts.settings.DataStoreKeyValueStore
 import com.ramitsuri.podcasts.settings.KeyValueStore
 import com.ramitsuri.podcasts.settings.Settings
+import com.ramitsuri.podcasts.utils.CategoryHelper
 import com.ramitsuri.podcasts.utils.DispatcherProvider
 import com.ramitsuri.podcasts.utils.EpisodeController
 import com.ramitsuri.podcasts.utils.EpisodeControllerImpl
@@ -91,7 +92,7 @@ private val coreModule =
             PodcastsRepository(
                 podcastsApi = get(),
                 podcastsDao = get(),
-                categoryDao = get(),
+                categoryHelper = get(),
             )
         }
 
@@ -132,7 +133,7 @@ private val coreModule =
             TrendingPodcastsRepository(
                 podcastsApi = get(),
                 trendingPodcastsDao = get(),
-                categoryDao = get(),
+                categoryHelper = get(),
                 clock = get(),
             )
         }
@@ -218,6 +219,12 @@ private val coreModule =
                 clock = get<Clock>(),
                 foregroundStateObserver = get<ForegroundStateObserver>(),
                 longLivingScope = get<CoroutineScope>(),
+            )
+        }
+
+        single<CategoryHelper> {
+            CategoryHelper(
+                json = get<Json>(),
             )
         }
 

@@ -1,12 +1,11 @@
 package com.ramitsuri.podcasts.repositories
 
-import com.ramitsuri.podcasts.database.dao.interfaces.CategoryDao
 import com.ramitsuri.podcasts.database.dao.interfaces.TrendingPodcastsDao
-import com.ramitsuri.podcasts.model.Category
 import com.ramitsuri.podcasts.model.PodcastResult
 import com.ramitsuri.podcasts.model.TrendingPodcast
 import com.ramitsuri.podcasts.network.api.interfaces.PodcastsApi
 import com.ramitsuri.podcasts.network.model.TrendingPodcastsRequest
+import com.ramitsuri.podcasts.utils.CategoryHelper
 import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -15,7 +14,7 @@ import kotlinx.datetime.Clock
 class TrendingPodcastsRepository internal constructor(
     private val podcastsApi: PodcastsApi,
     private val trendingPodcastsDao: TrendingPodcastsDao,
-    private val categoryDao: CategoryDao,
+    private val categoryHelper: CategoryHelper,
     private val clock: Clock,
 ) {
     fun getAllFlow(): Flow<List<TrendingPodcast>> {
@@ -23,7 +22,7 @@ class TrendingPodcastsRepository internal constructor(
             .getAll()
             .map { trendingPodcasts ->
                 trendingPodcasts.map { trendingPodcastEntity ->
-                    val categories = categoryDao.get(trendingPodcastEntity.categories).map { Category(it.id, it.name) }
+                    val categories = categoryHelper.get(trendingPodcastEntity.categories)
                     TrendingPodcast(trendingPodcastEntity, categories)
                 }
             }
