@@ -286,16 +286,15 @@ fun NavGraph(
                                 navOptions { popUpTo(BottomNavItem.EXPLORE.route.value) },
                             )
                         },
-                        onSearchClicked = { removeFromBackstack ->
+                        onSearchClicked = {
                             navController.navigate(
                                 Route.SEARCH.value,
-                                navOptions {
-                                    popUpTo(BottomNavItem.EXPLORE.route.value) {
-                                        inclusive = removeFromBackstack
-                                    }
-                                },
+                                navOptions { popUpTo(BottomNavItem.EXPLORE.route.value) },
                             )
                         },
+                        onLanguageClicked = viewModel::onLanguageClicked,
+                        onCategoryClicked = viewModel::onCategoryClicked,
+                        onRefresh = viewModel::onRefresh,
                         modifier =
                             Modifier
                                 .statusBarsPadding()

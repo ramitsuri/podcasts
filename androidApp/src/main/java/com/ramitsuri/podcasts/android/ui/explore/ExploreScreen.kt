@@ -1,40 +1,69 @@
 package com.ramitsuri.podcasts.android.ui.explore
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SearchOff
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ramitsuri.podcasts.android.R
+import com.ramitsuri.podcasts.android.ui.PreviewTheme
+import com.ramitsuri.podcasts.android.ui.ThemePreview
+import com.ramitsuri.podcasts.android.ui.components.BottomSheetDialog
+import com.ramitsuri.podcasts.android.ui.components.BottomSheetDialogMenuItem
 import com.ramitsuri.podcasts.android.ui.components.CenteredTitleTopAppBar
+import com.ramitsuri.podcasts.android.ui.components.ColoredHorizontalDivider
 import com.ramitsuri.podcasts.android.ui.components.Image
+import com.ramitsuri.podcasts.android.ui.components.trendingPodcast
 import com.ramitsuri.podcasts.model.TrendingPodcast
 import com.ramitsuri.podcasts.model.ui.ExploreViewState
 
@@ -43,9 +72,12 @@ import com.ramitsuri.podcasts.model.ui.ExploreViewState
 fun ExploreScreen(
     state: ExploreViewState,
     modifier: Modifier = Modifier,
-    onSearchClicked: (removeFromBackstack: Boolean) -> Unit,
+    onSearchClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     onPodcastClicked: (Long) -> Unit,
+    onLanguageClicked: (String) -> Unit,
+    onCategoryClicked: (String) -> Unit,
+    onRefresh: () -> Unit,
 ) {
     Column(
         modifier =
@@ -56,78 +88,198 @@ fun ExploreScreen(
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
         CenteredTitleTopAppBar(
             scrollBehavior = scrollBehavior,
-            onSearchClicked = { onSearchClicked(false) },
+            onSearchClicked = onSearchClicked,
             onSettingsClicked = onSettingsClicked,
         )
         ExploreContent(
             state = state,
             scrollBehavior = scrollBehavior,
             onPodcastClicked = onPodcastClicked,
-            navToSearch = { onSearchClicked(true) },
+            onLanguageClicked = onLanguageClicked,
+            onCategoryClicked = onCategoryClicked,
+            onRefresh = onRefresh,
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ColumnScope.ExploreContent(
+private fun ExploreContent(
     state: ExploreViewState,
     scrollBehavior: TopAppBarScrollBehavior,
     onPodcastClicked: (Long) -> Unit,
-    navToSearch: () -> Unit,
+    onLanguageClicked: (String) -> Unit,
+    onCategoryClicked: (String) -> Unit,
+    onRefresh: () -> Unit,
 ) {
-    when (state) {
-        is ExploreViewState.Loading -> {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+    var showLanguageCategoriesSelector by remember { mutableStateOf(false) }
+    var showLanguageSelector by remember { mutableStateOf(false) }
+    var showCategoriesSelector by remember { mutableStateOf(false) }
+
+    PullToRefreshBox(
+        isRefreshing = state.isRefreshing,
+        onRefresh = onRefresh,
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            TrendingPodcastsHeader(
+                onShowLanguageCategoriesSelector = { showLanguageCategoriesSelector = true },
+            )
+            if (state.podcastsByCategory.isEmpty()) {
+                EmptyItem(
+                    modifier =
+                        Modifier
+                            .weight(1f),
+                )
+            } else {
+                TrendingPodcasts(
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .nestedScroll(scrollBehavior.nestedScrollConnection),
+                    podcastsByCategory = state.podcastsByCategory,
+                    onPodcastClicked = onPodcastClicked,
+                )
             }
         }
+    }
+    LanguageCategoriesSelector(
+        show = showLanguageCategoriesSelector,
+        selectedLanguage = state.selectedLanguage,
+        selectedCategories = state.selectedCategories,
+        onDismissRequest = { showLanguageCategoriesSelector = false },
+        onLanguageSelectorClicked = {
+            showLanguageCategoriesSelector = false
+            showLanguageSelector = true
+        },
+        onCategorySelectorClicked = {
+            showLanguageCategoriesSelector = false
+            showCategoriesSelector = true
+        },
+    )
+    LanguageSelector(
+        show = showLanguageSelector,
+        selectedLanguage = state.selectedLanguage,
+        languages = state.languages,
+        onLanguageClicked = {
+            showLanguageSelector = false
+            onLanguageClicked(it)
+        },
+        onDismissRequest = { showLanguageSelector = false },
+    )
+    CategoriesSelector(
+        show = showCategoriesSelector,
+        selectedCategories = state.selectedCategories,
+        categories = state.categories,
+        onCategoryClicked = {
+            onCategoryClicked(it)
+        },
+        onDismissRequest = { showCategoriesSelector = false },
+    )
+}
 
-        is ExploreViewState.Success -> {
-            LaunchedEffect(state) {
-                if (state.podcasts.isEmpty()) {
-                    navToSearch()
-                }
-            }
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 112.dp),
-                modifier =
-                    Modifier
-                        .nestedScroll(scrollBehavior.nestedScrollConnection),
-                contentPadding = PaddingValues(horizontal = 8.dp),
-            ) {
-                fullWidthItem {
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun TrendingPodcasts(
+    modifier: Modifier = Modifier,
+    podcastsByCategory: Map<String, List<TrendingPodcast>>,
+    onPodcastClicked: (Long) -> Unit,
+) {
+    LazyColumn(
+        modifier = modifier,
+    ) {
+        podcastsByCategory
+            .forEach { (category, podcasts) ->
+                stickyHeader {
                     Text(
-                        text = stringResource(id = R.string.trending),
+                        text = category,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 8.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(16.dp),
                     )
                 }
-                fullWidthItem {
+                item {
+                    PodcastsRow(podcasts = podcasts, onPodcastClicked = onPodcastClicked)
+                }
+                item {
                     Spacer(modifier = Modifier.height(16.dp))
-                }
-                items(items = state.podcasts, key = { it.id }) { podcast ->
-                    TrendingPodcastItem(
-                        podcast = podcast,
-                        onClicked = { onPodcastClicked(it.id) },
-                    )
-                }
-                fullWidthItem {
-                    Spacer(modifier = Modifier.height(128.dp))
+                    ColoredHorizontalDivider()
                 }
             }
+        item {
+            Spacer(modifier = Modifier.height(128.dp))
         }
     }
 }
 
-private fun LazyGridScope.fullWidthItem(content: @Composable () -> Unit) {
-    item(
-        span = {
-            GridItemSpan(maxLineSpan)
-        },
+@Composable
+private fun TrendingPodcastsHeader(onShowLanguageCategoriesSelector: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        content()
+        Text(
+            text = stringResource(id = R.string.trending),
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        IconButton(onClick = onShowLanguageCategoriesSelector) {
+            Icon(
+                imageVector = Icons.Filled.Tune,
+                contentDescription = stringResource(id = R.string.settings),
+            )
+        }
+        Spacer(modifier = Modifier.width(4.dp))
+    }
+}
+
+@Composable
+private fun EmptyItem(modifier: Modifier = Modifier) {
+    Column(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Icon(
+            imageVector = Icons.Default.SearchOff,
+            contentDescription = stringResource(id = R.string.trending_podcasts_unavailable),
+            modifier = Modifier.size(96.dp),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(id = R.string.trending_podcasts_unavailable),
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Composable
+private fun PodcastsRow(
+    podcasts: List<TrendingPodcast>,
+    onPodcastClicked: (Long) -> Unit,
+) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp),
+    ) {
+        items(podcasts) { podcast ->
+            TrendingPodcastItem(
+                podcast = podcast,
+                onClicked = { onPodcastClicked(it.id) },
+            )
+        }
     }
 }
 
@@ -141,7 +293,8 @@ private fun TrendingPodcastItem(
             Modifier
                 .clip(MaterialTheme.shapes.small)
                 .clickable(onClick = { onClicked(podcast) })
-                .padding(8.dp),
+                .padding(8.dp)
+                .sizeIn(maxWidth = 112.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
@@ -164,6 +317,243 @@ private fun TrendingPodcastItem(
             maxLines = 1,
             text = podcast.author,
             modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+@Composable
+private fun LanguageCategoriesSelector(
+    show: Boolean,
+    selectedLanguage: String,
+    selectedCategories: List<String>,
+    onDismissRequest: () -> Unit,
+    onLanguageSelectorClicked: () -> Unit,
+    onCategorySelectorClicked: () -> Unit,
+) {
+    BottomSheetDialog(
+        show = show,
+        onDismissRequest = onDismissRequest,
+        content = {
+            BottomSheetDialogMenuItem(
+                text = stringResource(id = R.string.language),
+                subtitle = selectedLanguage,
+                endIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                onClick = onLanguageSelectorClicked,
+            )
+            BottomSheetDialogMenuItem(
+                text = stringResource(id = R.string.categories),
+                subtitle = selectedCategories.joinToString(", "),
+                endIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                onClick = onCategorySelectorClicked,
+            )
+        },
+    )
+}
+
+@Composable
+private fun LanguageSelector(
+    show: Boolean,
+    selectedLanguage: String,
+    languages: List<String>,
+    onLanguageClicked: (String) -> Unit,
+    onDismissRequest: () -> Unit,
+) {
+    BottomSheetDialog(
+        show = show,
+        onDismissRequest = onDismissRequest,
+        content = {
+            var searchText by remember { mutableStateOf("") }
+            SearchTextInput(
+                term = searchText,
+                onSearchTermUpdated = { searchText = it },
+                onSearchCleared = { searchText = "" },
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            LazyColumn {
+                items(
+                    items = languages.filter { it.lowercase().startsWith(searchText.lowercase()) },
+                    key = { it },
+                ) { language ->
+                    BottomSheetDialogMenuItem(
+                        text = language,
+                        endIcon =
+                            if (selectedLanguage == language) {
+                                Icons.Default.Check
+                            } else {
+                                null
+                            },
+                        onClick = { onLanguageClicked(language) },
+                    )
+                }
+            }
+        },
+    )
+}
+
+@Composable
+private fun CategoriesSelector(
+    show: Boolean,
+    selectedCategories: List<String>,
+    categories: List<String>,
+    onCategoryClicked: (String) -> Unit,
+    onDismissRequest: () -> Unit,
+) {
+    BottomSheetDialog(
+        show = show,
+        onDismissRequest = onDismissRequest,
+        content = {
+            var searchText by remember { mutableStateOf("") }
+            SearchTextInput(
+                term = searchText,
+                onSearchTermUpdated = { searchText = it },
+                onSearchCleared = { searchText = "" },
+            )
+            Text(
+                text = stringResource(R.string.trending_five_categories),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(16.dp),
+            )
+            LazyColumn {
+                items(
+                    items = categories.filter { it.lowercase().startsWith(searchText.lowercase()) },
+                    key = { it },
+                ) { category ->
+                    BottomSheetDialogMenuItem(
+                        text = category,
+                        endIcon =
+                            if (selectedCategories.contains(category)) {
+                                Icons.Default.Check
+                            } else {
+                                null
+                            },
+                        onClick = { onCategoryClicked(category) },
+                    )
+                }
+            }
+        },
+    )
+}
+
+@Composable
+private fun SearchTextInput(
+    term: String,
+    onSearchTermUpdated: (String) -> Unit,
+    onSearchCleared: () -> Unit,
+) {
+    var selection by remember { mutableStateOf(TextRange(term.length)) }
+
+    OutlinedTextField(
+        value = TextFieldValue(text = term, selection = selection),
+        onValueChange = {
+            onSearchTermUpdated(it.text)
+            selection = it.selection
+        },
+        keyboardOptions =
+            KeyboardOptions(
+                capitalization = KeyboardCapitalization.Sentences,
+                imeAction = ImeAction.Search,
+            ),
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = stringResource(id = R.string.search),
+            )
+        },
+        trailingIcon =
+            if (term.isNotEmpty()) {
+                {
+                    IconButton(onClick = onSearchCleared) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = stringResource(id = R.string.search),
+                        )
+                    }
+                }
+            } else {
+                { }
+            },
+        singleLine = true,
+        label = { Text(stringResource(id = R.string.search)) },
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+    )
+}
+
+@ThemePreview
+@Composable
+private fun PreviewExploreScreen() {
+    PreviewTheme {
+        ExploreScreen(
+            state =
+                ExploreViewState(
+                    isRefreshing = false,
+                    podcastsByCategory =
+                        mapOf(
+                            "News" to
+                                listOf(
+                                    trendingPodcast(id = 1),
+                                    trendingPodcast(id = 2),
+                                    trendingPodcast(id = 3),
+                                ),
+                            "Music" to
+                                listOf(
+                                    trendingPodcast(id = 1),
+                                    trendingPodcast(id = 2),
+                                    trendingPodcast(id = 3),
+                                ),
+                            "Politics" to
+                                listOf(
+                                    trendingPodcast(id = 1),
+                                    trendingPodcast(id = 2),
+                                    trendingPodcast(id = 3),
+                                ),
+                            "Entertainment" to
+                                listOf(
+                                    trendingPodcast(id = 1),
+                                    trendingPodcast(id = 2),
+                                    trendingPodcast(id = 3),
+                                ),
+                            "Sports" to
+                                listOf(
+                                    trendingPodcast(id = 1),
+                                    trendingPodcast(id = 2),
+                                    trendingPodcast(id = 3),
+                                ),
+                        ),
+                    languages = listOf(),
+                    selectedLanguage = "English",
+                ),
+            onSearchClicked = {},
+            onSettingsClicked = {},
+            onPodcastClicked = {},
+            onLanguageClicked = {},
+            onCategoryClicked = {},
+            onRefresh = {},
+        )
+    }
+}
+
+@ThemePreview
+@Composable
+private fun PreviewExploreScreenPodcastsEmpty() {
+    PreviewTheme {
+        ExploreScreen(
+            state =
+                ExploreViewState(
+                    isRefreshing = false,
+                    podcastsByCategory =
+                        mapOf(),
+                    languages = listOf(),
+                    selectedLanguage = "English",
+                ),
+            onSearchClicked = {},
+            onSettingsClicked = {},
+            onPodcastClicked = {},
+            onLanguageClicked = {},
+            onCategoryClicked = {},
+            onRefresh = {},
         )
     }
 }

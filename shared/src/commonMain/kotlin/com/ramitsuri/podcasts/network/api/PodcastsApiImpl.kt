@@ -25,6 +25,10 @@ internal class PodcastsApiImpl(
                     parameters.apply {
                         append("max", request.maxResults.toString())
                         append("since", request.sinceEpochSeconds.toString())
+                        append("lang", request.languages.joinToString(separator = ","))
+                        if (request.categories.isNotEmpty()) {
+                            append("cat", request.categories.joinToString(separator = ","))
+                        }
                     }
                 }
             }

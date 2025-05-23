@@ -11,10 +11,12 @@ import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
 import com.ramitsuri.podcasts.repositories.TrendingPodcastsRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.AndroidForegroundStateObserver
+import com.ramitsuri.podcasts.utils.CategoryHelper
 import com.ramitsuri.podcasts.utils.DispatcherProvider
 import com.ramitsuri.podcasts.utils.EpisodeController
 import com.ramitsuri.podcasts.utils.EpisodeFetcher
 import com.ramitsuri.podcasts.utils.ForegroundStateObserver
+import com.ramitsuri.podcasts.utils.LanguageHelper
 import com.ramitsuri.podcasts.viewmodel.DownloadsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeHistoryViewModel
@@ -103,6 +105,8 @@ actual val platformModule =
                 trendingPodcastsRepository = get<TrendingPodcastsRepository>(),
                 settings = get<Settings>(),
                 clock = get<Clock>(),
+                languageHelper = get<LanguageHelper>(),
+                categoryHelper = get<CategoryHelper>(),
             )
         }
 

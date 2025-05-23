@@ -16,6 +16,8 @@ internal enum class Key(val value: String) {
     IS_DUPLICATE_QUEUE_POSITIONS_FIXED("is_duplicate_queue_positions_fixed"),
     HAS_SEEN_WIDGET_ITEM("has_seen_widget_item"),
     LAST_TRENDING_PODCASTS_FETCH_TIME("last_trending_podcasts_fetch_time"),
+    TRENDING_PODCASTS_LANGUAGE("trending_podcasts_language"),
+    TRENDING_PODCASTS_CATEGORIES("trending_podcasts_categories"),
     ;
 
     companion object {
