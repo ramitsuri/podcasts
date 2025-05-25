@@ -22,7 +22,7 @@ internal class PodcastsApiImpl(
         return apiRequest(ioDispatcher) {
             httpClient.get(urlString = "$baseUrl/podcasts/trending") {
                 url {
-                    parameters.apply {
+                    encodedParameters.apply {
                         append("max", request.maxResults.toString())
                         append("since", request.sinceEpochSeconds.toString())
                         append("lang", request.languages.joinToString(separator = ","))
