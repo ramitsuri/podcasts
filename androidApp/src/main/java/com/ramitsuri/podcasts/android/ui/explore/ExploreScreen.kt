@@ -270,6 +270,12 @@ private fun PodcastsRow(
     podcasts: List<TrendingPodcast>,
     onPodcastClicked: (Long) -> Unit,
 ) {
+    if (podcasts.isEmpty()) {
+        Text(
+            text = stringResource(R.string.trending_podcasts_no_podcasts_for_category),
+            modifier = Modifier.padding(24.dp),
+        )
+    }
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -499,11 +505,7 @@ private fun PreviewExploreScreen() {
                                     trendingPodcast(id = 3),
                                 ),
                             "Music" to
-                                listOf(
-                                    trendingPodcast(id = 1),
-                                    trendingPodcast(id = 2),
-                                    trendingPodcast(id = 3),
-                                ),
+                                listOf(),
                             "Politics" to
                                 listOf(
                                     trendingPodcast(id = 1),
