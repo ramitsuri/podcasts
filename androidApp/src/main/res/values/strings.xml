@@ -84,6 +84,10 @@
     <string name="queue_sort_podcast">Podcast</string>
     <string name="queue_sort_oldest">Oldest first</string>
     <string name="queue_sort_newest">Newest first</string>
+    <plurals name="queue_items_in_queue">
+        <item quantity="one">1 item in queue</item>
+        <item quantity="other">%1$s items in queue</item>
+    </plurals>
 
     <!-- Search screen -->
     <string name="search_tip">Search for your podcasts</string>
