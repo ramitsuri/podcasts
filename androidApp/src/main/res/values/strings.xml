@@ -245,6 +245,7 @@
     <string name="backup_restore_restore">Restore</string>
 
     <!-- Trending -->
+    <string name="trending_two_languages">Select up to 2 languages</string>
     <string name="trending_five_categories">Select up to 5 categories</string>
     <string name="trending_podcasts_unavailable">No podcasts available.\nAdjust settings and try again!</string>
 </resources>

@@ -145,7 +145,7 @@ private fun ExploreContent(
     }
     LanguageCategoriesSelector(
         show = showLanguageCategoriesSelector,
-        selectedLanguage = state.selectedLanguage,
+        selectedLanguages = state.selectedLanguages,
         selectedCategories = state.selectedCategories,
         onDismissRequest = { showLanguageCategoriesSelector = false },
         onLanguageSelectorClicked = {
@@ -159,10 +159,9 @@ private fun ExploreContent(
     )
     LanguageSelector(
         show = showLanguageSelector,
-        selectedLanguage = state.selectedLanguage,
+        selectedLanguages = state.selectedLanguages,
         languages = state.languages,
         onLanguageClicked = {
-            showLanguageSelector = false
             onLanguageClicked(it)
         },
         onDismissRequest = { showLanguageSelector = false },
@@ -325,7 +324,7 @@ private fun TrendingPodcastItem(
 @Composable
 private fun LanguageCategoriesSelector(
     show: Boolean,
-    selectedLanguage: String,
+    selectedLanguages: List<String>,
     selectedCategories: List<String>,
     onDismissRequest: () -> Unit,
     onLanguageSelectorClicked: () -> Unit,
@@ -337,7 +336,7 @@ private fun LanguageCategoriesSelector(
         content = {
             BottomSheetDialogMenuItem(
                 text = stringResource(id = R.string.language),
-                subtitle = selectedLanguage,
+                subtitle = selectedLanguages.joinToString(", "),
                 endIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 onClick = onLanguageSelectorClicked,
             )
@@ -354,40 +353,18 @@ private fun LanguageCategoriesSelector(
 @Composable
 private fun LanguageSelector(
     show: Boolean,
-    selectedLanguage: String,
+    selectedLanguages: List<String>,
     languages: List<String>,
     onLanguageClicked: (String) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
-    BottomSheetDialog(
+    Selector(
         show = show,
+        helperText = stringResource(id = R.string.trending_two_languages),
+        selectedItems = selectedLanguages,
+        allItems = languages,
+        onItemClicked = onLanguageClicked,
         onDismissRequest = onDismissRequest,
-        content = {
-            var searchText by remember { mutableStateOf("") }
-            SearchTextInput(
-                term = searchText,
-                onSearchTermUpdated = { searchText = it },
-                onSearchCleared = { searchText = "" },
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            LazyColumn {
-                items(
-                    items = languages.filter { it.lowercase().startsWith(searchText.lowercase()) },
-                    key = { it },
-                ) { language ->
-                    BottomSheetDialogMenuItem(
-                        text = language,
-                        endIcon =
-                            if (selectedLanguage == language) {
-                                Icons.Default.Check
-                            } else {
-                                null
-                            },
-                        onClick = { onLanguageClicked(language) },
-                    )
-                }
-            }
-        },
     )
 }
 
@@ -399,36 +376,72 @@ private fun CategoriesSelector(
     onCategoryClicked: (String) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
+    Selector(
+        show = show,
+        helperText = stringResource(id = R.string.trending_five_categories),
+        selectedItems = selectedCategories,
+        allItems = categories,
+        onItemClicked = onCategoryClicked,
+        onDismissRequest = onDismissRequest,
+    )
+}
+
+@Composable
+private fun Selector(
+    show: Boolean,
+    helperText: String,
+    selectedItems: List<String>,
+    allItems: List<String>,
+    onItemClicked: (String) -> Unit,
+    onDismissRequest: () -> Unit,
+) {
     BottomSheetDialog(
         show = show,
         onDismissRequest = onDismissRequest,
         content = {
             var searchText by remember { mutableStateOf("") }
+            val itemsToShow =
+                if (searchText.isBlank() && selectedItems.isNotEmpty()) {
+                    selectedItems + null + allItems // null is for divider
+                } else {
+                    allItems.filter { it.lowercase().startsWith(searchText.lowercase()) }
+                }
             SearchTextInput(
                 term = searchText,
                 onSearchTermUpdated = { searchText = it },
                 onSearchCleared = { searchText = "" },
             )
             Text(
-                text = stringResource(R.string.trending_five_categories),
+                text = helperText,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(16.dp),
             )
             LazyColumn {
                 items(
-                    items = categories.filter { it.lowercase().startsWith(searchText.lowercase()) },
-                    key = { it },
-                ) { category ->
-                    BottomSheetDialogMenuItem(
-                        text = category,
-                        endIcon =
-                            if (selectedCategories.contains(category)) {
-                                Icons.Default.Check
-                            } else {
-                                null
-                            },
-                        onClick = { onCategoryClicked(category) },
-                    )
+                    items = itemsToShow,
+                ) { item ->
+                    if (item == null) {
+                        Row(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 64.dp, vertical = 16.dp),
+                            horizontalArrangement = Arrangement.Center,
+                        ) {
+                            ColoredHorizontalDivider()
+                        }
+                    } else {
+                        BottomSheetDialogMenuItem(
+                            text = item,
+                            endIcon =
+                                if (selectedItems.contains(item)) {
+                                    Icons.Default.Check
+                                } else {
+                                    null
+                                },
+                            onClick = { onItemClicked(item) },
+                        )
+                    }
                 }
             }
         },
@@ -524,7 +537,7 @@ private fun PreviewExploreScreen() {
                                 ),
                         ),
                     languages = listOf(),
-                    selectedLanguage = "English",
+                    selectedLanguages = listOf("English"),
                 ),
             onSearchClicked = {},
             onSettingsClicked = {},
@@ -547,7 +560,7 @@ private fun PreviewExploreScreenPodcastsEmpty() {
                     podcastsByCategory =
                         mapOf(),
                     languages = listOf(),
-                    selectedLanguage = "English",
+                    selectedLanguages = listOf("English", "Spanish"),
                 ),
             onSearchClicked = {},
             onSettingsClicked = {},

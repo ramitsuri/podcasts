@@ -32,10 +32,10 @@ class ExploreViewModel(
             trendingPodcastsRepository.getAllFlow(),
             episodesRepository.getCurrentEpisode(),
             settings.getPlayingStateFlow(),
-            settings.getTrendingPodcastsLanguage(),
+            settings.getTrendingPodcastsLanguages(languageHelper.getDefaultLanguages()),
             settings.getTrendingPodcastsCategories(categoryHelper.defaultCategories),
             isRefreshing,
-        ) { podcasts, currentlyPlayingEpisode, playingState, selectedLanguage, selectedCategories, isRefreshing ->
+        ) { podcasts, currentlyPlayingEpisode, playingState, selectedLanguages, selectedCategories, isRefreshing ->
             val podcastsByCategory =
                 selectedCategories
                     .sorted()
@@ -55,7 +55,7 @@ class ExploreViewModel(
                 isRefreshing = isRefreshing,
                 podcastsByCategory = podcastsByCategory,
                 languages = languageHelper.getAvailableLanguages(),
-                selectedLanguage = selectedLanguage,
+                selectedLanguages = selectedLanguages,
                 categories = categoryHelper.categories,
                 selectedCategories = selectedCategories.sorted(),
                 currentlyPlayingEpisodeArtworkUrl = currentlyPlaying?.podcastImageUrl,
@@ -71,7 +71,18 @@ class ExploreViewModel(
     fun onLanguageClicked(language: String) {
         LogHelper.d(TAG, "onLanguageClicked: $language")
         viewModelScope.launch {
-            settings.setTrendingPodcastsLanguage(language)
+            val currentLanguages = state.value.selectedLanguages
+            val newLanguages =
+                if (language in currentLanguages) {
+                    currentLanguages - language
+                } else {
+                    if (currentLanguages.size == MAX_LANGUAGES) {
+                        return@launch
+                    }
+                    currentLanguages + language
+                }
+            LogHelper.d(TAG, "New languages: $newLanguages")
+            settings.setTrendingPodcastsLanguages(newLanguages)
         }
     }
 
@@ -102,8 +113,8 @@ class ExploreViewModel(
     private suspend fun refreshIfNecessary(forced: Boolean = false) {
         isRefreshing.value = true
         if (hasCacheExpired() || forced) {
-            val language = state.value.selectedLanguage
-            val languages = languageHelper.getLanguageCodesForLanguage(language)
+            val selectedLanguages = state.value.selectedLanguages
+            val languages = languageHelper.getLanguageCodesForLanguages(selectedLanguages)
             val categories = state.value.selectedCategories
             trendingPodcastsRepository
                 .refresh(languages = languages, categories = categories)
@@ -128,5 +139,6 @@ class ExploreViewModel(
         private const val TAG = "ExploreViewModel"
         private const val CACHE_EXPIRATION_IN_HOURS = 3 * 24 // 3 days
         private const val MAX_CATEGORIES = 5
+        private const val MAX_LANGUAGES = 2
     }
 }
