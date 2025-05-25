@@ -247,4 +247,5 @@
     <!-- Trending -->
     <string name="trending_five_categories">Select up to 5 categories</string>
     <string name="trending_podcasts_unavailable">No podcasts available.\nAdjust settings and try again!</string>
+    <string name="trending_podcasts_no_podcasts_for_category">No trending podcasts in this category!</string>
 </resources>
