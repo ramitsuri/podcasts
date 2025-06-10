@@ -60,6 +60,7 @@ import com.composables.core.SheetDetent.Companion.FullyExpanded
 import com.composables.core.rememberBottomSheetState
 import com.ramitsuri.podcasts.android.ui.backuprestore.BackupRestoreScreen
 import com.ramitsuri.podcasts.android.ui.backuprestore.BackupRestoreViewModel
+import com.ramitsuri.podcasts.android.ui.components.ScreenEventListener
 import com.ramitsuri.podcasts.android.ui.downloads.DownloadsScreen
 import com.ramitsuri.podcasts.android.ui.episode.EpisodeDetailsScreen
 import com.ramitsuri.podcasts.android.ui.explore.ExploreScreen
@@ -254,8 +255,6 @@ fun NavGraph(
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         onNextPageRequested = viewModel::onNextPageRequested,
                         onYearEndReviewClicked = {
-                            canShowPlayer = false
-                            canShowBottomNav = false
                             navController.navigate(Route.YEAR_END_REVIEW.value)
                         },
                         onRefresh = viewModel::onRefresh,
@@ -723,8 +722,6 @@ fun NavGraph(
                         onRemoveUnfinishedAfterSelected = viewModel::setRemoveUnfinishedAfter,
                         onVersionClicked = viewModel::onVersionClicked,
                         onBackupRestoreClicked = {
-                            canShowBottomNav = false
-                            canShowPlayer = false
                             navController.navigate(Route.BACKUP_RESTORE.value)
                         },
                         toggleShouldDownloadOnWifiOnly = viewModel::toggleShouldDownloadOnWifiOnly,
@@ -749,14 +746,22 @@ fun NavGraph(
                     popEnterTransition = { popEnterTransition() },
                     popExitTransition = { popExitTransition() },
                 ) {
+                    ScreenEventListener(
+                        onStart = {
+                            canShowPlayer = false
+                            canShowBottomNav = false
+                        },
+                        onStop = {
+                            canShowPlayer = true
+                            canShowBottomNav = true
+                        },
+                    )
                     val viewmodel = koinViewModel<YearEndReviewViewModel>()
                     val state by viewmodel.state.collectAsStateWithLifecycle()
 
                     YearEndReviewScreen(
                         state = state,
                         onBack = {
-                            canShowPlayer = true
-                            canShowBottomNav = true
                             navController.popBackStack()
                         },
                         onNextPage = viewmodel::onNextPage,
@@ -771,6 +776,16 @@ fun NavGraph(
                     popEnterTransition = { popEnterTransition() },
                     popExitTransition = { popExitTransition() },
                 ) {
+                    ScreenEventListener(
+                        onStart = {
+                            canShowPlayer = false
+                            canShowBottomNav = false
+                        },
+                        onStop = {
+                            canShowPlayer = true
+                            canShowBottomNav = true
+                        },
+                    )
                     val viewmodel =
                         viewModel<BackupRestoreViewModel>(
                             factory = BackupRestoreViewModel.factory(),
@@ -781,11 +796,7 @@ fun NavGraph(
                         state = state,
                         onRestoreFilePicked = viewmodel::onRestoreFilePicked,
                         onBackupFilePicked = viewmodel::onBackupFilePicked,
-                        onBack = {
-                            canShowBottomNav = true
-                            canShowPlayer = true
-                            navController.popBackStack()
-                        },
+                        onBack = navController::popBackStack,
                     )
                 }
             }
