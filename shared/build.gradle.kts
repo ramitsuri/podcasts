@@ -23,17 +23,6 @@ kotlin {
         }
     }
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach {
-        it.binaries.framework {
-            baseName = "shared"
-            isStatic = true
-        }
-    }
-
     sourceSets {
         androidMain.dependencies {
             implementation(project.dependencies.platform(libs.firebase.bom))
@@ -75,7 +64,7 @@ kotlin {
 
 android {
     namespace = "com.ramitsuri.podcasts"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         minSdk = 26
     }
