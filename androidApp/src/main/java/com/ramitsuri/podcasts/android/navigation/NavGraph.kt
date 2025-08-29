@@ -971,8 +971,11 @@ private fun NavHostController.navigateToMainDestination(to: BottomNavItem): Bool
     }
     navigate(to.route.value) {
         // So that pressing back from any main bottom tab item leads user to home tab first
-        popUpTo(BottomNavItem.HOME.route.value)
+        popUpTo(BottomNavItem.HOME.route.value) {
+            saveState = true
+        }
         launchSingleTop = true
+        restoreState = true
     }
     return true
 }
