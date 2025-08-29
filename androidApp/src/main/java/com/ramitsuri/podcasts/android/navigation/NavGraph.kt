@@ -972,10 +972,12 @@ private fun NavHostController.navigateToMainDestination(to: BottomNavItem): Bool
     navigate(to.route.value) {
         // So that pressing back from any main bottom tab item leads user to home tab first
         popUpTo(BottomNavItem.HOME.route.value) {
-            saveState = true
+            // Popup inclusive of home as well if navigating to home. This fixes a bug where if the app is launched via
+            // episode details deeplink and then home tab button is tapped, the home screen state is not loaded for some
+            // reason.
+            inclusive = to == BottomNavItem.HOME
         }
         launchSingleTop = true
-        restoreState = true
     }
     return true
 }
