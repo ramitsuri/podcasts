@@ -582,28 +582,26 @@ private fun PodcastHeader(
                 toggleAutoDownloadClicked = toggleAutoDownloadClicked,
                 toggleAutoAddToQueueClicked = toggleAutoAddToQueueClicked,
             )
-            if (count > 0) {
-                EpisodesMenu(
-                    showMenu = showMenu,
-                    onToggleMenu = { showMenu = !showMenu },
-                    showSortOrder = selectedCount == 0,
-                    sortOrder = sortOrder,
-                    showSelectAll = selectedCount > 0 && selectedCount != count,
-                    showUnselectAll = selectedCount != 0,
-                    showMarkAsPlayed = selectedCount != 0,
-                    showMarkAsNotPlayed = selectedCount != 0,
-                    showCompletedEpisodes = showCompletedEpisodes,
-                    showCompletedEpisodesMenuItem = selectedCount == 0,
-                    showSearchEpisodes = selectedCount == 0,
-                    onSortOrderClicked = onSortOrderClicked,
-                    onSelectAllClicked = onSelectAllClicked,
-                    onUnselectAllClicked = onUnselectAllClicked,
-                    onMarkSelectedAsPlayed = onMarkSelectedAsPlayed,
-                    onMarkSelectedAsNotPlayed = onMarkSelectedAsNotPlayed,
-                    toggleShowCompletedEpisodesClicked = toggleShowCompletedEpisodesClicked,
-                    onSearchEpisodes = { showSearch = true },
-                )
-            }
+            EpisodesMenu(
+                showMenu = showMenu,
+                onToggleMenu = { showMenu = !showMenu },
+                showSortOrder = selectedCount == 0,
+                sortOrder = sortOrder,
+                showSelectAll = selectedCount > 0 && selectedCount != count,
+                showUnselectAll = selectedCount != 0,
+                showMarkAsPlayed = selectedCount != 0,
+                showMarkAsNotPlayed = selectedCount != 0,
+                showCompletedEpisodes = showCompletedEpisodes,
+                showCompletedEpisodesMenuItem = selectedCount == 0,
+                showSearchEpisodes = selectedCount == 0,
+                onSortOrderClicked = onSortOrderClicked,
+                onSelectAllClicked = onSelectAllClicked,
+                onUnselectAllClicked = onUnselectAllClicked,
+                onMarkSelectedAsPlayed = onMarkSelectedAsPlayed,
+                onMarkSelectedAsNotPlayed = onMarkSelectedAsNotPlayed,
+                toggleShowCompletedEpisodesClicked = toggleShowCompletedEpisodesClicked,
+                onSearchEpisodes = { showSearch = true },
+            )
         }
         Spacer(modifier = Modifier.height(16.dp))
         Box(
