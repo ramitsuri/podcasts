@@ -45,6 +45,8 @@ internal interface KeyValueStore {
 
     suspend fun removeInt(key: Key)
 
+    suspend fun removeBoolean(key: Key)
+
     suspend fun removeAll()
 
     suspend fun getAll(): Map<String, Any>

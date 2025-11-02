@@ -63,7 +63,6 @@ datastore-preferences = { module = "androidx.datastore:datastore-preferences-cor
 
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
-firebase-database = { group = "com.google.firebase", name = "firebase-database-ktx" }
 
 glance = { module = "androidx.glance:glance", version.ref = "glance" }
 glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }

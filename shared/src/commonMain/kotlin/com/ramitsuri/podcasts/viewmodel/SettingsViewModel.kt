@@ -4,12 +4,10 @@ import com.ramitsuri.podcasts.model.RemoveDownloadsAfter
 import com.ramitsuri.podcasts.model.ui.SettingsViewState
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.EpisodeFetcher
-import com.ramitsuri.podcasts.utils.LogHelper
 import com.ramitsuri.podcasts.utils.combine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -105,9 +103,6 @@ class SettingsViewModel internal constructor(
         clickCount++
         if (clickCount >= 7) {
             longLivingScope.launch {
-                val remoteLoggingEnabled = settings.isRemoteLoggingEnabled().first()
-                settings.setIsRemoteLoggingEnabled(!remoteLoggingEnabled)
-                LogHelper.toggleRemoteLogging(!remoteLoggingEnabled)
             }
         }
     }

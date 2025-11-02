@@ -1,7 +1,6 @@
 package com.ramitsuri.podcasts.android
 
 import android.app.Application
-import android.os.Build
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.DatabaseProvider
 import androidx.media3.database.StandaloneDatabaseProvider
@@ -28,13 +27,11 @@ import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.AndroidLogger
 import com.ramitsuri.podcasts.utils.EpisodeFetcher
 import com.ramitsuri.podcasts.utils.LanguageHelper
-import com.ramitsuri.podcasts.utils.LogHelper
 import com.ramitsuri.podcasts.utils.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asExecutor
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.workmanager.dsl.worker
@@ -57,8 +54,6 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
         EpisodeFetchWorker.enqueuePeriodic(this)
         longLivingScope.launch {
             settings.removeLegacySettings()
-            val remoteLoggingEnabled = settings.isRemoteLoggingEnabled().first()
-            LogHelper.toggleRemoteLogging(remoteLoggingEnabled)
         }
         playerController.initializePlayer()
     }
@@ -134,8 +129,6 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
                 single<Logger> {
                     AndroidLogger(
                         isDebug = BuildConfig.DEBUG,
-                        enableRemote = false,
-                        deviceModel = Build.MODEL,
                     )
                 }
 
