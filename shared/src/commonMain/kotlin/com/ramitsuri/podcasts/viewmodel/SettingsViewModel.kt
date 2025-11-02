@@ -6,6 +6,7 @@ import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.EpisodeFetcher
 import com.ramitsuri.podcasts.utils.combine
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -21,6 +22,7 @@ class SettingsViewModel internal constructor(
     private val clock: Clock,
 ) : ViewModel() {
     private val fetching = MutableStateFlow(false)
+    private val clipboardContent = MutableStateFlow("")
 
     val state =
         combine(
@@ -31,8 +33,16 @@ class SettingsViewModel internal constructor(
             settings.shouldDownloadOnWifiOnly(),
             settings.hasSeenWidgetItem(),
             fetching,
-        ) { autoPlayNextInQueue, lastFetchTime, removeCompletedAfter, removeUnfinishedAfter, shouldDownloadOnWifiOnly,
-            hasSeenWidgetItem, fetching,
+            clipboardContent,
+        ) {
+                autoPlayNextInQueue,
+                lastFetchTime,
+                removeCompletedAfter,
+                removeUnfinishedAfter,
+                shouldDownloadOnWifiOnly,
+                hasSeenWidgetItem,
+                fetching,
+                clipboardContent,
             ->
             SettingsViewState(
                 autoPlayNextInQueue = autoPlayNextInQueue,
@@ -42,6 +52,7 @@ class SettingsViewModel internal constructor(
                 shouldDownloadOnWifiOnly = shouldDownloadOnWifiOnly,
                 showWidgetNewBadge = !hasSeenWidgetItem,
                 fetching = fetching,
+                clipboardContent = clipboardContent,
             )
         }.stateIn(
             viewModelScope,
@@ -103,6 +114,9 @@ class SettingsViewModel internal constructor(
         clickCount++
         if (clickCount >= 7) {
             longLivingScope.launch {
+                clipboardContent.value = settings.getDeviceId()
+                delay(1000)
+                clipboardContent.value = ""
             }
         }
     }

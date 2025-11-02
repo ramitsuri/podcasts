@@ -12,4 +12,5 @@ data class SettingsViewState(
     val removeUnfinishedAfter: RemoveDownloadsAfter = RemoveDownloadsAfter.THIRTY_DAYS,
     val shouldDownloadOnWifiOnly: Boolean = false,
     val showWidgetNewBadge: Boolean = false,
+    val clipboardContent: String = "",
 )
