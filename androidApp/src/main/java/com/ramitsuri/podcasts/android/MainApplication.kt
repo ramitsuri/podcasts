@@ -28,6 +28,7 @@ import com.ramitsuri.podcasts.utils.AndroidLogger
 import com.ramitsuri.podcasts.utils.EpisodeFetcher
 import com.ramitsuri.podcasts.utils.LanguageHelper
 import com.ramitsuri.podcasts.utils.Logger
+import com.ramitsuri.podcasts.utils.RemoteConfigHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,10 +47,14 @@ class MainApplication : Application(), ImageLoaderFactory, KoinComponent {
     private val settings by inject<Settings>()
     private val longLivingScope by inject<CoroutineScope>()
     private val playerController by inject<PlayerController>()
+    private val remoteConfigHelper by inject<RemoteConfigHelper>()
 
     override fun onCreate() {
         super.onCreate()
         initDependencyInjection()
+        longLivingScope.launch {
+            remoteConfigHelper.initialize()
+        }
         episodeFetcher.startForegroundStateBasedFetcher()
         EpisodeFetchWorker.enqueuePeriodic(this)
         longLivingScope.launch {

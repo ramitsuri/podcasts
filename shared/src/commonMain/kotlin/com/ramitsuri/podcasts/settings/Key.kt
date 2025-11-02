@@ -18,6 +18,7 @@ internal enum class Key(val value: String) {
     LAST_TRENDING_PODCASTS_FETCH_TIME("last_trending_podcasts_fetch_time"),
     TRENDING_PODCASTS_LANGUAGES("trending_podcasts_languages"),
     TRENDING_PODCASTS_CATEGORIES("trending_podcasts_categories"),
+    DEVICE_ID("device_id"),
     ;
 
     companion object {

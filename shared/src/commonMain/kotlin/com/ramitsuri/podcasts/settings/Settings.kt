@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import java.util.UUID
 
 class Settings internal constructor(private val keyValueStore: KeyValueStore) {
     private val playingState: MutableStateFlow<PlayingState> = MutableStateFlow(PlayingState.NOT_PLAYING)
@@ -210,5 +211,20 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
 
     suspend fun setTrendingPodcastsCategories(categories: List<String>) {
         keyValueStore.putString(Key.TRENDING_PODCASTS_CATEGORIES, categories.joinToString(";;;"))
+    }
+
+    suspend fun getDeviceId(): String {
+        return keyValueStore
+            .getStringFlow(Key.DEVICE_ID, null)
+            .map { existingDeviceId ->
+                if (existingDeviceId == null) {
+                    val deviceId = UUID.randomUUID().toString()
+                    keyValueStore.putString(Key.DEVICE_ID, deviceId)
+                    deviceId
+                } else {
+                    existingDeviceId
+                }
+            }
+            .first()
     }
 }

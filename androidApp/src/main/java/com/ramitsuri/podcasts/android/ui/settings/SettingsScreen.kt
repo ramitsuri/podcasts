@@ -1,5 +1,6 @@
 package com.ramitsuri.podcasts.android.ui.settings
 
+import android.content.ClipData
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,8 +44,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.Clipboard
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -83,10 +87,18 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     var markWidgetItemSeen by remember { mutableStateOf(false) }
+    val clipboardManager: Clipboard = LocalClipboard.current
     LaunchedEffect(markWidgetItemSeen) {
         if (markWidgetItemSeen) {
             delay(2000)
             onWidgetItemSeen()
+        }
+    }
+    LaunchedEffect(state.clipboardContent) {
+        if (state.clipboardContent.isNotBlank()) {
+            clipboardManager.setClipEntry(
+                ClipData.newPlainText("", state.clipboardContent).toClipEntry(),
+            )
         }
     }
     Column(
