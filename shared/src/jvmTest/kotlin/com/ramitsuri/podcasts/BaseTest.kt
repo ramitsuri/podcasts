@@ -149,10 +149,6 @@ open class BaseTest(
 
                 single<Logger> {
                     object : Logger {
-                        override fun toggleRemoteLogging(enable: Boolean) {
-                            println("Toggle remote logging $enable")
-                        }
-
                         override fun d(
                             tag: String,
                             message: String,

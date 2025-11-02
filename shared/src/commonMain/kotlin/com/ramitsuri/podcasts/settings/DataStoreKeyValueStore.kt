@@ -107,6 +107,10 @@ internal class DataStoreKeyValueStore(
         remove(intPreferencesKey(key.value))
     }
 
+    override suspend fun removeBoolean(key: Key) {
+        remove(booleanPreferencesKey(key.value))
+    }
+
     override suspend fun getAll(): Map<String, Any> {
         return dataStore.data.firstOrNull()?.asMap()?.mapKeys { it.key.name } ?: mapOf()
     }

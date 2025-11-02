@@ -27,7 +27,6 @@ kotlin {
         androidMain.dependencies {
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.androidx.lifecycle)
-            implementation(libs.firebase.database)
             implementation(libs.koin.android)
             implementation(libs.ktor.okhttp)
             implementation(libs.ktor.client.android)
