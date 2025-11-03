@@ -44,15 +44,18 @@ import com.ramitsuri.podcasts.android.ui.PreviewTheme
 import com.ramitsuri.podcasts.android.ui.ThemePreview
 import com.ramitsuri.podcasts.android.ui.greenColor
 import com.ramitsuri.podcasts.android.utils.sharePodcast
+import com.ramitsuri.podcasts.android.utils.sharePodcastWithNotificationJournal
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
-import com.ramitsuri.podcasts.navigation.shareText
+import com.ramitsuri.podcasts.model.SharePodcastInfo
+import com.ramitsuri.podcasts.navigation.sharePodcastInfo
 
 @Composable
 fun EpisodeControls(
     episode: Episode,
     playingState: PlayingState,
+    allowSharingToNotificationJournal: Boolean,
     onPlayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
     onAddToQueueClicked: () -> Unit,
@@ -107,9 +110,10 @@ fun EpisodeControls(
         Spacer(modifier = Modifier.weight(1f))
         EpisodeMenu(
             showMenu = showMenu,
+            allowSharingToNotificationJournal = allowSharingToNotificationJournal,
             onToggleMenu = { showMenu = !showMenu },
             episodeCompleted = episode.isCompleted,
-            shareText = episode.shareText(),
+            shareInfo = episode.sharePodcastInfo(),
             isFavorite = episode.isFavorite,
             onFavoriteClicked = onFavoriteClicked,
             onNotFavoriteClicked = onNotFavoriteClicked,
@@ -199,10 +203,11 @@ private fun DownloadButton(
 @Composable
 private fun EpisodeMenu(
     showMenu: Boolean,
+    allowSharingToNotificationJournal: Boolean,
     onToggleMenu: () -> Unit,
     episodeCompleted: Boolean,
     isFavorite: Boolean,
-    shareText: String,
+    shareInfo: SharePodcastInfo?,
     onFavoriteClicked: () -> Unit,
     onNotFavoriteClicked: () -> Unit,
     onPlayedClicked: () -> Unit,
@@ -263,14 +268,26 @@ private fun EpisodeMenu(
                     },
                 )
             }
-            BottomSheetDialogMenuItem(
-                startIcon = Icons.Filled.Share,
-                text = stringResource(id = R.string.episode_controller_share),
-                onClick = {
-                    onToggleMenu()
-                    context.sharePodcast(shareText)
-                },
-            )
+            if (shareInfo != null) {
+                BottomSheetDialogMenuItem(
+                    startIcon = Icons.Filled.Share,
+                    text = stringResource(id = R.string.episode_controller_share),
+                    onClick = {
+                        onToggleMenu()
+                        context.sharePodcast(shareInfo)
+                    },
+                )
+            }
+            if (allowSharingToNotificationJournal && shareInfo != null) {
+                BottomSheetDialogMenuItem(
+                    startIcon = Icons.Filled.Share,
+                    text = stringResource(id = R.string.episode_controller_share_notification_journal),
+                    onClick = {
+                        onToggleMenu()
+                        context.sharePodcastWithNotificationJournal(shareInfo)
+                    },
+                )
+            }
         }
     }
 }
@@ -312,6 +329,7 @@ private fun EpisodeControlsPreview_IsPlaying() {
         EpisodeControls(
             episode(),
             playingState = PlayingState.PLAYING,
+            allowSharingToNotificationJournal = false,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -334,6 +352,7 @@ private fun EpisodeControlsPreview_IsNotPlaying() {
         EpisodeControls(
             episode(),
             playingState = PlayingState.NOT_PLAYING,
+            allowSharingToNotificationJournal = false,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -356,6 +375,7 @@ private fun EpisodeControlsPreview_IsLoading() {
         EpisodeControls(
             episode(),
             playingState = PlayingState.LOADING,
+            allowSharingToNotificationJournal = false,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -378,6 +398,7 @@ private fun EpisodeControlsPreview_IsInQueue() {
         EpisodeControls(
             episode(queuePosition = 1),
             playingState = PlayingState.NOT_PLAYING,
+            allowSharingToNotificationJournal = false,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -400,6 +421,7 @@ private fun EpisodeControlsPreview_IsNotInQueue() {
         EpisodeControls(
             episode(queuePosition = Episode.NOT_IN_QUEUE),
             playingState = PlayingState.NOT_PLAYING,
+            allowSharingToNotificationJournal = false,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -422,6 +444,7 @@ private fun EpisodeControlsPreview_IsDownloaded() {
         EpisodeControls(
             episode(downloadStatus = DownloadStatus.DOWNLOADED),
             playingState = PlayingState.NOT_PLAYING,
+            allowSharingToNotificationJournal = false,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -444,6 +467,7 @@ private fun EpisodeControlsPreview_IsNotNotDownloaded() {
         EpisodeControls(
             episode(downloadStatus = DownloadStatus.NOT_DOWNLOADED),
             playingState = PlayingState.NOT_PLAYING,
+            allowSharingToNotificationJournal = false,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -466,6 +490,7 @@ private fun EpisodeControlsPreview_IsDownloading() {
         EpisodeControls(
             episode(downloadStatus = DownloadStatus.DOWNLOADING, downloadProgress = 0.5),
             playingState = PlayingState.NOT_PLAYING,
+            allowSharingToNotificationJournal = false,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -488,6 +513,7 @@ private fun EpisodeControlsPreview_IsFavorite() {
         EpisodeControls(
             episode(isFavorite = true),
             playingState = PlayingState.NOT_PLAYING,
+            allowSharingToNotificationJournal = false,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },
@@ -510,6 +536,7 @@ private fun EpisodeControlsPreview_IsNotFavorite() {
         EpisodeControls(
             episode(isFavorite = false),
             playingState = PlayingState.NOT_PLAYING,
+            allowSharingToNotificationJournal = false,
             onPlayClicked = { },
             onPauseClicked = { },
             onAddToQueueClicked = { },

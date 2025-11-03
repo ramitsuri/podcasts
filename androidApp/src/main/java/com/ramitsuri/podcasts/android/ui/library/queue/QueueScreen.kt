@@ -301,6 +301,7 @@ private fun LazyItemScope.EpisodeItem(
                 EpisodeControls(
                     episode = episode,
                     playingState = playingState,
+                    allowSharingToNotificationJournal = false,
                     onPlayClicked = onPlayClicked,
                     onPauseClicked = onPauseClicked,
                     onAddToQueueClicked = { },

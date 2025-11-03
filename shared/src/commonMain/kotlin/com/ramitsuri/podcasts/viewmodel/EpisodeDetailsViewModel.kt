@@ -7,6 +7,7 @@ import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.EpisodeController
 import com.ramitsuri.podcasts.utils.LogHelper
+import com.ramitsuri.podcasts.utils.RemoteConfigHelper
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -18,6 +19,7 @@ class EpisodeDetailsViewModel internal constructor(
     podcastsAndEpisodesRepository: PodcastsAndEpisodesRepository,
     episodeController: EpisodeController,
     settings: Settings,
+    remoteConfigHelper: RemoteConfigHelper,
 ) : ViewModel(), EpisodeController by episodeController {
     private var alreadyAttemptedToLoadMissing: Boolean = false
     val state =
@@ -47,6 +49,7 @@ class EpisodeDetailsViewModel internal constructor(
                 loading = !alreadyAttemptedToLoadMissing,
                 episode = episode,
                 playingState = currentlyPlaying,
+                allowSharingToNotificationJournal = remoteConfigHelper.isDevicePrivileged(),
             )
         }.stateIn(
             viewModelScope,

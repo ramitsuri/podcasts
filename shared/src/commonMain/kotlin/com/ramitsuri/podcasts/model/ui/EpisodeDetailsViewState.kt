@@ -7,4 +7,5 @@ data class EpisodeDetailsViewState(
     val loading: Boolean = true,
     val episode: Episode? = null,
     val playingState: PlayingState = PlayingState.NOT_PLAYING,
+    val allowSharingToNotificationJournal: Boolean = false,
 )

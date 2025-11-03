@@ -98,6 +98,7 @@ actual val platformModule =
                 settings = get<Settings>(),
                 podcastsAndEpisodesRepository = get<PodcastsAndEpisodesRepository>(),
                 podcastId = parameters.get(),
+                remoteConfigHelper = get<RemoteConfigHelper>(),
             )
         }
 

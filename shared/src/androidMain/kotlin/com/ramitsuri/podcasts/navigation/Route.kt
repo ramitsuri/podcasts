@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.navigation
 
 import android.net.Uri
 import com.ramitsuri.podcasts.model.Episode
+import com.ramitsuri.podcasts.model.SharePodcastInfo
 
 enum class Route(val value: String) {
     HOME("home"),
@@ -103,9 +104,9 @@ enum class Route(val value: String) {
     }
 }
 
-fun Episode?.shareText(): String {
+fun Episode?.sharePodcastInfo(): SharePodcastInfo? {
     if (this == null) {
-        return ""
+        return null
     }
     val url =
         Route.EPISODE_DETAILS.deepLinkWithValue(
@@ -113,6 +114,10 @@ fun Episode?.shareText(): String {
                 RouteArgs.EPISODE_ID to Uri.encode(id),
                 RouteArgs.PODCAST_ID to podcastId.toString(),
             ),
-        )
-    return "$podcastName: ${title}\n$url"
+        ) ?: return null
+    return SharePodcastInfo(
+        podcastName = podcastName,
+        episodeTitle = title,
+        url = url,
+    )
 }
