@@ -75,9 +75,10 @@ import com.ramitsuri.podcasts.android.ui.components.SpeedControl
 import com.ramitsuri.podcasts.android.ui.components.SquigglySlider
 import com.ramitsuri.podcasts.android.utils.sharePodcast
 import com.ramitsuri.podcasts.model.PlayingState
+import com.ramitsuri.podcasts.model.SharePodcastInfo
 import com.ramitsuri.podcasts.model.ui.PlayerViewState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
-import com.ramitsuri.podcasts.navigation.shareText
+import com.ramitsuri.podcasts.navigation.sharePodcastInfo
 import java.util.Locale
 import kotlin.time.Duration
 
@@ -134,7 +135,7 @@ fun PlayerScreen(
                         .padding(16.dp)
                         .alpha(expandProgress),
                 isCollapsed = expandProgress == 0f,
-                shareText = state.episode.shareText(),
+                shareInfo = state.episode.sharePodcastInfo(),
                 episodeTitle = state.episodeTitle,
                 episodeArtwork = state.episodeArtworkUrl,
                 podcastName = state.podcastName,
@@ -173,7 +174,7 @@ fun PlayerScreen(
 @Composable
 private fun PlayerScreenExpanded(
     modifier: Modifier = Modifier,
-    shareText: String,
+    shareInfo: SharePodcastInfo?,
     isCollapsed: Boolean,
     episodeTitle: String,
     episodeArtwork: String,
@@ -253,7 +254,7 @@ private fun PlayerScreenExpanded(
             playbackSpeed = playbackSpeed,
             isCasting = isCasting,
             isFavorite = isFavorite,
-            shareText = shareText,
+            shareInfo = shareInfo,
             onEpisodeTitleClicked = onEpisodeTitleClicked,
             onPodcastNameClicked = onPodcastNameClicked,
             onGoToQueueClicked = onGoToQueueClicked,
@@ -399,7 +400,7 @@ private fun Player(
     playbackSpeed: Int,
     isCasting: Boolean,
     isFavorite: Boolean,
-    shareText: String,
+    shareInfo: SharePodcastInfo?,
     onEpisodeTitleClicked: () -> Unit,
     onPodcastNameClicked: () -> Unit,
     onGoToQueueClicked: () -> Unit,
@@ -494,7 +495,7 @@ private fun Player(
                 sleepTimer = sleepTimer,
                 sleepTimerDuration = sleepTimerDuration,
                 isCasting = isCasting,
-                shareText = shareText,
+                shareInfo = shareInfo,
                 onShowSleepControl = onShowSleepControl,
                 onShowSpeedControl = onShowSpeedControl,
             )
@@ -633,7 +634,7 @@ private fun SecondaryControls(
     sleepTimer: SleepTimer,
     sleepTimerDuration: Duration?,
     isCasting: Boolean,
-    shareText: String,
+    shareInfo: SharePodcastInfo?,
     onShowSpeedControl: (Boolean) -> Unit,
     onShowSleepControl: (Boolean) -> Unit,
 ) {
@@ -655,7 +656,7 @@ private fun SecondaryControls(
                 onShowSleepControl(true)
             },
         )
-        ShareButton(shareText)
+        ShareButton(shareInfo)
 
         // TODO Hidden until implemented
         if (false) {
@@ -689,16 +690,18 @@ private fun SecondaryControls(
 }
 
 @Composable
-private fun ShareButton(shareText: String) {
+private fun ShareButton(shareInfo: SharePodcastInfo?) {
     val context = LocalContext.current
-    IconButton(onClick = { context.sharePodcast(shareText) }) {
-        Icon(
-            imageVector = Icons.Filled.Share,
-            modifier =
-                Modifier
-                    .size(24.dp),
-            contentDescription = stringResource(id = R.string.episode_controller_share),
-        )
+    if (shareInfo != null) {
+        IconButton(onClick = { context.sharePodcast(shareInfo) }) {
+            Icon(
+                imageVector = Icons.Filled.Share,
+                modifier =
+                    Modifier
+                        .size(24.dp),
+                contentDescription = stringResource(id = R.string.episode_controller_share),
+            )
+        }
     }
 }
 

@@ -83,6 +83,7 @@ fun EpisodeDetailsScreen(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 episode = episode,
                 playingState = state.playingState,
+                allowSharingToNotificationJournal = state.allowSharingToNotificationJournal,
                 onPodcastNameClicked = { onPodcastNameClicked(episode.podcastId) },
                 onPlayClicked = { onEpisodePlayClicked(episode) },
                 onPauseClicked = onEpisodePauseClicked,
@@ -134,6 +135,7 @@ private fun EpisodeDetails(
     modifier: Modifier = Modifier,
     episode: Episode,
     playingState: PlayingState,
+    allowSharingToNotificationJournal: Boolean,
     onPodcastNameClicked: () -> Unit,
     onPlayClicked: () -> Unit,
     onPauseClicked: () -> Unit,
@@ -201,6 +203,7 @@ private fun EpisodeDetails(
         EpisodeControls(
             episode = episode,
             playingState = playingState,
+            allowSharingToNotificationJournal = allowSharingToNotificationJournal,
             onPlayClicked = onPlayClicked,
             onPauseClicked = onPauseClicked,
             onAddToQueueClicked = onAddToQueueClicked,

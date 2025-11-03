@@ -105,6 +105,7 @@
     <string name="episode_controller_mark_not_favorite">Mark not favorite</string>
     <string name="episode_controller_mark_favorite">Mark favorite</string>
     <string name="episode_controller_share">Share</string>
+    <string name="episode_controller_share_notification_journal">Share With Notification Journal</string>
 
     <!-- Publish date time -->
     <string name="one_hour_ago">1 hour ago</string>
