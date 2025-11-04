@@ -17,10 +17,10 @@ fun Context.sharePodcast(info: SharePodcastInfo) {
 fun Context.sharePodcastWithNotificationJournal(info: SharePodcastInfo) {
     Intent("com.ramitsuri.notificationjournal.intent.SHARE")
         .apply {
-            putExtra("com.ramitsuri.notificationjournal.intent.TEXT", info.episodeTitle)
+            putExtra("com.ramitsuri.notificationjournal.intent.TEXT", info.podcastAndEpisode)
             putExtra("com.ramitsuri.notificationjournal.intent.TAG", "Listened")
             type = "text/plain"
         }.let { intent ->
-            startActivity(Intent.createChooser(intent, null))
+            startActivity(intent)
         }
 }
