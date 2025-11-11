@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalContentColor
@@ -40,6 +40,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import be.digitalia.compose.htmlconverter.HtmlStyle
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import com.ramitsuri.podcasts.android.R
@@ -107,22 +108,29 @@ fun EpisodeDetailsScreen(
             }
         }
     }
+    LaunchedEffect(Unit) {
+        showErrorDialog = true
+    }
     if (showErrorDialog) {
-        BasicAlertDialog(
+        Dialog(
             onDismissRequest = {
                 showErrorDialog = false
                 onBack()
             },
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(text = stringResource(R.string.generic_error))
-                Spacer(modifier = Modifier.height(32.dp))
-                TextButton(onClick = onBack) {
-                    Text(text = stringResource(R.string.ok))
+            Card {
+                Column(
+                    modifier =
+                        Modifier
+                            .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(text = stringResource(R.string.generic_error))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    TextButton(onClick = onBack) {
+                        Text(text = stringResource(R.string.ok))
+                    }
                 }
             }
         }
