@@ -22,7 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.ramitsuri.podcasts.android.R
 import com.ramitsuri.podcasts.android.ui.components.Image
 import com.ramitsuri.podcasts.android.utils.dateFormatted
@@ -128,20 +129,24 @@ fun YearEndReviewScreen(
         }
     }
     if (showError) {
-        BasicAlertDialog(
+        Dialog(
             onDismissRequest = {
                 showError = false
             },
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(text = stringResource(R.string.generic_error))
-                Spacer(modifier = Modifier.height(32.dp))
-                TextButton(onClick = onBack) {
-                    Text(text = stringResource(R.string.ok))
+            Card {
+                Column(
+                    modifier =
+                        Modifier
+                            .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(text = stringResource(R.string.generic_error))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    TextButton(onClick = onBack) {
+                        Text(text = stringResource(R.string.ok))
+                    }
                 }
             }
         }
