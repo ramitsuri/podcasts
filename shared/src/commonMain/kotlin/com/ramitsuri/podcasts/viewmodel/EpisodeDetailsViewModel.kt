@@ -6,7 +6,6 @@ import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.EpisodeController
-import com.ramitsuri.podcasts.utils.LogHelper
 import com.ramitsuri.podcasts.utils.RemoteConfigHelper
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -21,24 +20,12 @@ class EpisodeDetailsViewModel internal constructor(
     settings: Settings,
     remoteConfigHelper: RemoteConfigHelper,
 ) : ViewModel(), EpisodeController by episodeController {
-    private var alreadyAttemptedToLoadMissing: Boolean = false
     val state =
         combine(
-            repository.getEpisodeFlow(episodeId),
+            podcastsAndEpisodesRepository.getEpisodeFlow(podcastId, episodeId),
             repository.getCurrentEpisode(),
             settings.getPlayingStateFlow(),
         ) { episode, currentlyPlayingEpisode, playingState ->
-            if (episode == null) {
-                LogHelper.v(TAG, "Episode is null")
-                if (alreadyAttemptedToLoadMissing) {
-                    // do nothing
-                    LogHelper.v(TAG, "Already attempted to load missing episode once")
-                } else {
-                    LogHelper.v(TAG, "Loading missing episode")
-                    podcastsAndEpisodesRepository.loadMissingEpisode(podcastId = podcastId, episodeId = episodeId)
-                    alreadyAttemptedToLoadMissing = true
-                }
-            }
             val currentlyPlaying =
                 if (episode != null && episode.id == currentlyPlayingEpisode?.id) {
                     playingState
@@ -46,7 +33,7 @@ class EpisodeDetailsViewModel internal constructor(
                     PlayingState.NOT_PLAYING
                 }
             EpisodeDetailsViewState(
-                loading = !alreadyAttemptedToLoadMissing,
+                loading = false,
                 episode = episode,
                 playingState = currentlyPlaying,
                 allowSharingToNotificationJournal = remoteConfigHelper.isDevicePrivileged(),

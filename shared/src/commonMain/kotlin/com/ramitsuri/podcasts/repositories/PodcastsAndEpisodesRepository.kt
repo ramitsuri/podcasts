@@ -11,11 +11,11 @@ import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -171,14 +171,29 @@ class PodcastsAndEpisodesRepository internal constructor(
             }
     }
 
-    suspend fun loadMissingEpisode(
+    fun getEpisodeFlow(
+        podcastId: Long,
+        episodeId: String,
+    ): Flow<Episode?> {
+        return episodesRepository
+            .getEpisodeFlow(episodeId)
+            .map { episode ->
+                if (episode == null) {
+                    LogHelper.v(TAG, "Episode is null, loading")
+                    loadMissingEpisode(podcastId, episodeId)
+                } else {
+                    LogHelper.v(TAG, "Episode is available")
+                    episode
+                }
+            }
+    }
+
+    private suspend fun loadMissingEpisode(
         podcastId: Long,
         episodeId: String,
     ) = coroutineScope {
-        listOf(
-            async { podcastsRepository.load(podcastId) },
-            async { episodesRepository.load(episodeId, podcastId) },
-        ).awaitAll()
+        async { podcastsRepository.load(podcastId) }
+        async { episodesRepository.load(episodeId, podcastId) }.await()
     }
 
     suspend fun getEpisodeCountForSubscribedPodcasts(): Long {

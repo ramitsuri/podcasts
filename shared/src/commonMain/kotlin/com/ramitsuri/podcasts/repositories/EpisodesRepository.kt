@@ -349,15 +349,19 @@ class EpisodesRepository internal constructor(
     suspend fun load(
         id: String,
         podcastId: Long,
-    ) {
-        if (episodesDao.getEpisode(id) == null) {
-            LogHelper.v(TAG, "Episode not available in db, loading episode with id: $id")
+    ): Episode? {
+        val dbEpisode = episodesDao.getEpisode(id)
+        if (dbEpisode != null) {
+            return Episode(dbEpisode)
+        }
+        LogHelper.v(TAG, "Episode not available in db, loading episode with id: $id")
+        val networkResponse =
             (episodesApi.getById(id = id, podcastId = podcastId) as? PodcastResult.Success)
                 ?.data
-                ?.let {
-                    episodesDao.insert(listOf(Episode(it.episode)))
-                }
+        if (networkResponse == null) {
+            return null
         }
+        return episodesDao.insert(listOf(Episode(networkResponse.episode))).firstOrNull()
     }
 
     companion object {
