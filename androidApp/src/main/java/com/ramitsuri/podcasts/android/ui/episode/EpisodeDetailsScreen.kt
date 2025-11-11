@@ -108,9 +108,6 @@ fun EpisodeDetailsScreen(
             }
         }
     }
-    LaunchedEffect(Unit) {
-        showErrorDialog = true
-    }
     if (showErrorDialog) {
         Dialog(
             onDismissRequest = {
