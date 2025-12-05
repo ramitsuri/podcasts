@@ -3,11 +3,15 @@ package com.ramitsuri.podcasts.android.ui.explore
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -89,9 +94,9 @@ fun ExploreScreen(
         CenteredTitleTopAppBar(
             currentlyPlayingArtworkUrl = state.currentlyPlayingEpisodeArtworkUrl,
             scrollBehavior = scrollBehavior,
-            onSearchClicked = onSearchClicked,
             onSettingsClicked = onSettingsClicked,
         )
+        SearchRow(onSearchClicked = onSearchClicked)
         ExploreContent(
             state = state,
             scrollBehavior = scrollBehavior,
@@ -99,6 +104,45 @@ fun ExploreScreen(
             onLanguageClicked = onLanguageClicked,
             onCategoryClicked = onCategoryClicked,
             onRefresh = onRefresh,
+        )
+    }
+}
+
+@Composable
+private fun SearchRow(onSearchClicked: () -> Unit) {
+    Box(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .height(IntrinsicSize.Min),
+    ) {
+        OutlinedTextField(
+            value = TextFieldValue(text = ""),
+            onValueChange = {},
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = stringResource(id = R.string.search),
+                )
+            },
+            singleLine = true,
+            label = { Text(stringResource(id = R.string.search)) },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .focusProperties { canFocus = false },
+        )
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .clickable(
+                        onClick = onSearchClicked,
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                    ),
         )
     }
 }
