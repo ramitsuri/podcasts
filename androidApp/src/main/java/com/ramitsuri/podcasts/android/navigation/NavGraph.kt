@@ -440,7 +440,7 @@ fun NavGraph(
                                 navOptions {
                                     popUpTo(
                                         Route.EPISODE_DETAILS.routeWithArgName(),
-                                        popUpToBuilder = { inclusive = true },
+                                        popUpToBuilder = { inclusive = false },
                                     )
                                 },
                             )
@@ -493,7 +493,7 @@ fun NavGraph(
                                 navOptions {
                                     popUpTo(
                                         Route.PODCAST_DETAILS.routeWithArgName(),
-                                        popUpToBuilder = { inclusive = true },
+                                        popUpToBuilder = { inclusive = false },
                                     )
                                 },
                             )
