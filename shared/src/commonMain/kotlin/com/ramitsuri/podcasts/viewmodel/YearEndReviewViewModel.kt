@@ -63,6 +63,6 @@ class YearEndReviewViewModel internal constructor(
 
     companion object {
         private const val TAG = "YearEndReviewViewModel"
-        private const val YEAR = 2024
+        private const val YEAR = 2025
     }
 }

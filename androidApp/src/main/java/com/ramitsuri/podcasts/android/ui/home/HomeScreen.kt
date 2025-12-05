@@ -359,7 +359,7 @@ private fun YearEndReviewItem(onClicked: () -> Unit) {
             Text(
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Bold,
-                text = stringResource(R.string.year_end_review_2024),
+                text = stringResource(R.string.year_end_review_2025),
                 textAlign = TextAlign.Center,
             )
         }
