@@ -83,7 +83,6 @@ fun SearchScreen(
             scrollBehavior = scrollBehavior,
         )
         if (state.result !is SearchResult.Searching) {
-            Spacer(modifier = Modifier.height(16.dp))
             SearchInput(
                 term = state.term,
                 showKeyboardAutomatically = state.result == SearchResult.Default,
@@ -125,7 +124,7 @@ private fun SearchInput(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 16.dp),
     ) {
         OutlinedTextField(
             value = TextFieldValue(text = term, selection = selection),
