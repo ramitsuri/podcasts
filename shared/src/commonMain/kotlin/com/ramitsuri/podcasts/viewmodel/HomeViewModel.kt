@@ -107,6 +107,6 @@ class HomeViewModel internal constructor(
 
     companion object {
         private const val TAG = "HomeViewModel"
-        private const val SHOW_REVIEW_UNTIL = "2025-01-10T12:00:00Z"
+        private const val SHOW_REVIEW_UNTIL = "2026-01-10T12:00:00Z"
     }
 }
