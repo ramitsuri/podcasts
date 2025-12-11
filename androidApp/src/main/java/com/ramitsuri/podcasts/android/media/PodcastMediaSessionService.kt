@@ -2,7 +2,6 @@ package com.ramitsuri.podcasts.android.media
 
 import android.app.PendingIntent
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.annotation.OptIn
@@ -37,7 +36,7 @@ import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.ui.SleepTimer
 import com.ramitsuri.podcasts.navigation.Route
-import com.ramitsuri.podcasts.navigation.RouteArgs
+import com.ramitsuri.podcasts.navigation.deepLinkWithArgValue
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.SessionHistoryRepository
 import com.ramitsuri.podcasts.settings.Settings
@@ -538,12 +537,10 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
 
     private fun getEpisodeDeepLinkIntent(episode: Episode): PendingIntent? {
         val navDeepLink =
-            Route.EPISODE_DETAILS.deepLinkWithValue(
-                mapOf(
-                    RouteArgs.EPISODE_ID to Uri.encode(episode.id),
-                    RouteArgs.PODCAST_ID to episode.podcastId.toString(),
-                ),
-            ) ?: return null
+            Route.EpisodeDetails(
+                episodeId = episode.id,
+                podcastId = episode.podcastId,
+            ).deepLinkWithArgValue ?: return null
         return getEpisodeDeepLinkIntent(navDeepLink)
     }
 
