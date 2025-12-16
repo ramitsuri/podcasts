@@ -18,14 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import androidx.navigation3.runtime.NavKey
 import com.ramitsuri.podcasts.android.navigation.NavGraph
 import com.ramitsuri.podcasts.android.navigation.Navigator
 import com.ramitsuri.podcasts.android.navigation.deeplink.DeepLinkMatcher
 import com.ramitsuri.podcasts.android.navigation.deeplink.DeepLinkPattern
 import com.ramitsuri.podcasts.android.navigation.deeplink.DeepLinkRequest
 import com.ramitsuri.podcasts.android.navigation.deeplink.KeyDecoder
-import com.ramitsuri.podcasts.android.navigation.rememberNavigationState
 import com.ramitsuri.podcasts.android.ui.AppTheme
 import com.ramitsuri.podcasts.navigation.Route
 import com.ramitsuri.podcasts.navigation.deepLinkWithArgName
@@ -33,7 +31,7 @@ import com.ramitsuri.podcasts.navigation.deepLinkWithArgValue
 
 class MainActivity : ComponentActivity() {
     private lateinit var navigator: Navigator
-    private val deepLinkPatterns: List<DeepLinkPattern<out NavKey>> = listOf(
+    private val deepLinkPatterns: List<DeepLinkPattern<out Route>> = listOf(
         DeepLinkPattern(Route.EpisodeDetails.serializer(), (Route.EpisodeDetails.deepLinkWithArgName.toUri()))
     )
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,8 +41,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         val uri: Uri? = intent.data
+        intent.data = null
         // associate the target with the correct backstack key
-        val key: NavKey = uri?.let {
+        val key: Route? = uri?.let {
             /** STEP 2. Parse requested deeplink */
             val request = DeepLinkRequest(uri)
             /** STEP 3. Compared requested with supported deeplink to find match*/
@@ -58,7 +57,7 @@ class MainActivity : ComponentActivity() {
                 KeyDecoder(match.args)
                     .decodeSerializableValue(match.serializer)
             }
-        } ?: Route.Home
+        }
 
         setContent {
             val darkTheme = isSystemInDarkTheme()
@@ -77,12 +76,8 @@ class MainActivity : ComponentActivity() {
                 )
                 onDispose {}
             }
-            val navigationState = rememberNavigationState(
-                startRoute = Route.Home,
-                topLevelRoutes = setOf(Route.Home, Route.Explore, Route.Library),
-            )
 
-            navigator = remember { Navigator(navigationState) }
+            navigator = remember { Navigator(startRoute = key) }
 
             AppTheme {
                 Surface(

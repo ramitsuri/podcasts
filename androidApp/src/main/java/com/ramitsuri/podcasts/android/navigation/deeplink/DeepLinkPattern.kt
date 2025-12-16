@@ -1,7 +1,7 @@
 package com.ramitsuri.podcasts.android.navigation.deeplink
 
 import android.net.Uri
-import androidx.navigation3.runtime.NavKey
+import com.ramitsuri.podcasts.navigation.Route
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.SerialKind
@@ -36,7 +36,7 @@ import java.io.Serializable
  * @param serializer the serializer of [T]
  * @param uriPattern the supported deeplink's uri pattern, i.e. "abc.com/home/{pathArg}"
  */
-internal class DeepLinkPattern<T : NavKey>(
+internal class DeepLinkPattern<T : Route>(
     val serializer: KSerializer<T>,
     val uriPattern: Uri
 ) {

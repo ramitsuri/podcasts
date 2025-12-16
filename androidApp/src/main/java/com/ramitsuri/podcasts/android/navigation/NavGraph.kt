@@ -48,9 +48,10 @@ import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.composables.core.BottomSheet
 import com.composables.core.SheetDetent
@@ -202,7 +203,7 @@ fun NavGraph(
                 0.dp
             }
 
-        val entryProvider: (NavKey) -> NavEntry<NavKey> = entryProvider {
+        val entryProvider: (Route) -> NavEntry<Route> = entryProvider {
             entry<Home>(
                 metadata = topLevelAnimationMetaData,
             ) {
@@ -636,8 +637,13 @@ fun NavGraph(
 
         Box(modifier = modifier.fillMaxSize()) {
             NavDisplay(
-                entries = navigator.entries(entryProvider),
+                backStack = navigator.backstack,
+                entryProvider = entryProvider,
                 onBack = { navigator.goBack() },
+                entryDecorators = listOf(
+                    rememberSaveableStateHolderNavEntryDecorator(),
+                    rememberViewModelStoreNavEntryDecorator(),
+                ),
                 modifier =
                     modifier
                         .padding(
@@ -749,7 +755,7 @@ fun NavGraph(
 
 @Composable
 private fun BottomNavBar(
-    selectedNavDestination: NavKey?,
+    selectedNavDestination: Route?,
     onHomeTabClicked: () -> Unit,
     onExploreClicked: () -> Unit,
     onLibraryClicked: () -> Unit,

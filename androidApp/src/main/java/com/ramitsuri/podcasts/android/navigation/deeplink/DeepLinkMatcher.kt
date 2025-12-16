@@ -1,10 +1,10 @@
 package com.ramitsuri.podcasts.android.navigation.deeplink
 
 import android.util.Log
-import androidx.navigation3.runtime.NavKey
+import com.ramitsuri.podcasts.navigation.Route
 import kotlinx.serialization.KSerializer
 
-internal class DeepLinkMatcher<T : NavKey>(
+internal class DeepLinkMatcher<T : Route>(
     val request: DeepLinkRequest,
     val deepLinkPattern: DeepLinkPattern<T>
 ) {
@@ -72,7 +72,7 @@ internal class DeepLinkMatcher<T : NavKey>(
  * been parsed from the raw url string back into its proper KType as declared in [T].
  * Includes arguments for all parts of the uri - path, query, etc.
  * */
-internal data class DeepLinkMatchResult<T : NavKey>(
+internal data class DeepLinkMatchResult<T : Route>(
     val serializer: KSerializer<T>,
     val args: Map<String, Any>
 )
