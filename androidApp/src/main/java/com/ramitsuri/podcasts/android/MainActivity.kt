@@ -19,7 +19,7 @@ import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.ramitsuri.podcasts.android.navigation.NavGraph
-import com.ramitsuri.podcasts.android.navigation.Navigator
+import com.ramitsuri.podcasts.navigation.Navigator
 import com.ramitsuri.podcasts.android.navigation.deeplink.DeepLinkMatcher
 import com.ramitsuri.podcasts.android.navigation.deeplink.DeepLinkPattern
 import com.ramitsuri.podcasts.android.navigation.deeplink.DeepLinkRequest

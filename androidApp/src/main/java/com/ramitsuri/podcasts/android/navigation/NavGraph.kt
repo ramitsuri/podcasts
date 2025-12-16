@@ -77,6 +77,7 @@ import com.ramitsuri.podcasts.android.ui.review.YearEndReviewScreen
 import com.ramitsuri.podcasts.android.ui.search.SearchScreen
 import com.ramitsuri.podcasts.android.ui.settings.SettingsScreen
 import com.ramitsuri.podcasts.android.ui.subscriptions.SubscriptionsScreen
+import com.ramitsuri.podcasts.navigation.Navigator
 import com.ramitsuri.podcasts.navigation.Route
 import com.ramitsuri.podcasts.navigation.Route.BackupRestore
 import com.ramitsuri.podcasts.navigation.Route.Downloads
@@ -93,7 +94,6 @@ import com.ramitsuri.podcasts.navigation.Route.Search
 import com.ramitsuri.podcasts.navigation.Route.Settings
 import com.ramitsuri.podcasts.navigation.Route.Subscriptions
 import com.ramitsuri.podcasts.navigation.Route.YearEndReview
-import com.ramitsuri.podcasts.navigation.deepLinkWithArgValue
 import com.ramitsuri.podcasts.viewmodel.DownloadsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeHistoryViewModel
