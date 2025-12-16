@@ -558,14 +558,17 @@ private fun PodcastHeader(
 
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         AnimatedVisibility(showSearch) {
-            SearchRow(
-                term = searchTerm,
-                onSearchTermUpdated = onSearchTermUpdated,
-                onSearchCleared = { onSearchTermUpdated("") },
-                onSearchCanceled = { showSearch = false },
-            )
+            Column {
+                SearchRow(
+                    term = searchTerm,
+                    onSearchTermUpdated = onSearchTermUpdated,
+                    onSearchCleared = { onSearchTermUpdated("") },
+                    onSearchCanceled = { showSearch = false },
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         TitleAndImage(podcast = podcast)
         Spacer(modifier = Modifier.height(16.dp))
         Row(

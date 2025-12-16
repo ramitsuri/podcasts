@@ -48,4 +48,5 @@ dependencies {
     implementation(libs.glance.appwidget)
     implementation(libs.glance.material3)
     implementation(libs.kotlin.serialization)
+    implementation(libs.androidx.navigation3.runtime)
 }

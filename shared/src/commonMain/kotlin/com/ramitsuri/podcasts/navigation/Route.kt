@@ -1,21 +1,24 @@
 package com.ramitsuri.podcasts.navigation
 
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+sealed interface TopLevelRoute
+
 @Serializable
-sealed interface Route {
+sealed interface Route : NavKey {
     @Serializable
-    object Home : Route
+    object Home : Route, TopLevelRoute
 
     @Serializable
     object ImportSubscriptions : Route
 
     @Serializable
-    object Explore : Route
+    object Explore : Route, TopLevelRoute
 
     @Serializable
-    object Library : Route
+    object Library : Route, TopLevelRoute
 
     @Serializable
     data class EpisodeDetails(

@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.ramitsuri.podcasts.android"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.ramitsuri.podcasts.android"
         minSdk = 26
@@ -66,7 +66,6 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
-    implementation(libs.compose.navigation)
     implementation(libs.compose.icons)
     implementation(libs.compose.icons.extended)
     implementation(libs.compose.lifecycle.viewmodel)
@@ -91,6 +90,9 @@ dependencies {
     implementation(libs.work)
     implementation(libs.composables)
     implementation(libs.androidx.palette.ktx)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     debugImplementation(libs.compose.ui.tooling)
 }
 

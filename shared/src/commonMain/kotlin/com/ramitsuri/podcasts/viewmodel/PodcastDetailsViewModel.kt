@@ -269,6 +269,11 @@ class PodcastDetailsViewModel(
         this.searchTerm.update { searchTerm }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        LogHelper.d(TAG, "Cleared")
+    }
+
     companion object {
         private const val TAG = "PodcastDetails"
     }
