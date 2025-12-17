@@ -3,7 +3,6 @@ package com.ramitsuri.podcasts.widget
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceId
@@ -15,7 +14,7 @@ import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.currentState
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.navigation.Route
-import com.ramitsuri.podcasts.navigation.RouteArgs
+import com.ramitsuri.podcasts.navigation.deepLinkWithArgValue
 import com.ramitsuri.podcasts.utils.LogHelper
 import com.ramitsuri.podcasts.widget.data.WidgetDefinition
 import com.ramitsuri.podcasts.widget.data.WidgetState
@@ -89,12 +88,10 @@ class AppWidget : GlanceAppWidget() {
         ) {
             val appWidgetManager = GlanceAppWidgetManager(this)
             val url =
-                Route.EPISODE_DETAILS.deepLinkWithValue(
-                    mapOf(
-                        RouteArgs.EPISODE_ID to Uri.encode(episode.id),
-                        RouteArgs.PODCAST_ID to episode.podcastId.toString(),
-                    ),
-                ) ?: return
+                Route.EpisodeDetails(
+                    episodeId = episode.id,
+                    podcastId = episode.podcastId,
+                ).deepLinkWithArgValue ?: return
             appWidgetManager.getGlanceIds(AppWidget::class.java).forEach { glanceId ->
                 updateAppWidgetState(
                     context = this,

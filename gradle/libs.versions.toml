@@ -10,7 +10,6 @@ android-material3 = "1.13.0-alpha14"
 build-konfig = "0.15.1"
 coil = "2.7.0"
 composables = "1.20.1"
-compose-navigation = "2.9.0"
 compose-lifecycle = "2.8.3"
 coroutines-guava = "1.10.1"
 datastore-preferences = "1.1.7"
@@ -33,6 +32,8 @@ sqldelight = "2.0.1"
 touchlab-log = "2.0.4"
 viewmodel = "2.9.1"
 work = "2.10.1"
+nav3Core = "1.0.0"
+lifecycleViewmodelNav3 = "2.10.0-rc01"
 
 [libraries]
 androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "paletteKtx" }
@@ -54,7 +55,6 @@ compose-icons-extended = { module = "androidx.compose.material:material-icons-co
 compose-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "compose-lifecycle" }
 compose-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "compose-lifecycle" }
 
-compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
 
 coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version.ref = "coroutines-guava" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-guava" }
@@ -108,6 +108,10 @@ kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serial
 viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "viewmodel" }
 
 work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
+
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

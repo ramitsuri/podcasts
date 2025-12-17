@@ -53,6 +53,7 @@ kotlin {
             implementation(libs.kotlin.datetime)
             implementation(libs.sqldelight.common)
             implementation(libs.touchlab.log)
+            implementation(libs.androidx.navigation3.runtime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -64,7 +65,7 @@ kotlin {
 
 android {
     namespace = "com.ramitsuri.podcasts"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         minSdk = 26
     }

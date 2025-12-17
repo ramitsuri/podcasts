@@ -25,10 +25,7 @@ class WidgetAddedReceiver : BroadcastReceiver(), KoinComponent {
     ) {
         LogHelper.d(TAG, "Widget added")
         coroutineScope.launch {
-            val episode = episodesRepository.getCurrentEpisode().first()
-            if (episode == null) {
-                return@launch
-            }
+            val episode = episodesRepository.getCurrentEpisode().first() ?: return@launch
             val isPlaying = settings.getPlayingStateFlow().first() == PlayingState.PLAYING
             context.updateWidget(episode, isPlaying)
         }

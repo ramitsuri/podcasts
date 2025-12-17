@@ -2,6 +2,7 @@ package com.ramitsuri.podcasts.android
 
 import android.app.assist.AssistContent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -12,24 +13,37 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.ramitsuri.podcasts.android.navigation.NavGraph
-import com.ramitsuri.podcasts.android.navigation.episodeDetailsDeepLink
+import com.ramitsuri.podcasts.android.navigation.deeplink.DeepLinkMatcher
+import com.ramitsuri.podcasts.android.navigation.deeplink.DeepLinkPattern
+import com.ramitsuri.podcasts.android.navigation.deeplink.DeepLinkRequest
+import com.ramitsuri.podcasts.android.navigation.deeplink.KeyDecoder
 import com.ramitsuri.podcasts.android.ui.AppTheme
+import com.ramitsuri.podcasts.navigation.Navigator
+import com.ramitsuri.podcasts.navigation.Route
+import com.ramitsuri.podcasts.navigation.deepLinkWithArgName
+import com.ramitsuri.podcasts.navigation.deepLinkWithArgValue
 
 class MainActivity : ComponentActivity() {
-    private lateinit var navController: NavHostController
+    private lateinit var navigator: Navigator
+    private val deepLinkPatterns: List<DeepLinkPattern<out Route>> =
+        listOf(
+            DeepLinkPattern(Route.EpisodeDetails.serializer(), (Route.EpisodeDetails.deepLinkWithArgName.toUri())),
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
+
+        val deepLinkRoute = routeFromDeepLink()
+
         setContent {
             val darkTheme = isSystemInDarkTheme()
             DisposableEffect(darkTheme) {
@@ -47,21 +61,41 @@ class MainActivity : ComponentActivity() {
                 )
                 onDispose {}
             }
+
             AppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    navController = rememberNavController()
-                    NavGraph(navController = navController)
+                    navigator = remember { Navigator(startRoute = deepLinkRoute) }
+                    NavGraph(navigator = navigator)
                 }
+            }
+        }
+    }
+
+    private fun routeFromDeepLink(): Route? {
+        val uri: Uri? = intent.data
+        intent.data = null
+        return uri?.let {
+            val request = DeepLinkRequest(uri)
+
+            val match =
+                deepLinkPatterns.firstNotNullOfOrNull { pattern ->
+                    DeepLinkMatcher(request, pattern).match()
+                }
+
+            match?.let {
+                KeyDecoder(match.args)
+                    .decodeSerializableValue(match.serializer)
             }
         }
     }
 
     override fun onProvideAssistContent(outContent: AssistContent) {
         super.onProvideAssistContent(outContent)
-        outContent.webUri = navController.episodeDetailsDeepLink()?.toUri()
+        val current = navigator.currentDestination as? Route.EpisodeDetails
+        outContent.webUri = current?.deepLinkWithArgValue?.toUri()
     }
 }
 

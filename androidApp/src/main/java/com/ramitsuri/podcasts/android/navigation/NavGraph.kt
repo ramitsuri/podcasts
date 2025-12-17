@@ -1,12 +1,14 @@
 package com.ramitsuri.podcasts.android.navigation
 
-import android.net.Uri
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -46,14 +48,11 @@ import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navDeepLink
-import androidx.navigation.navOptions
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
 import com.composables.core.BottomSheet
 import com.composables.core.SheetDetent
 import com.composables.core.SheetDetent.Companion.FullyExpanded
@@ -78,8 +77,23 @@ import com.ramitsuri.podcasts.android.ui.review.YearEndReviewScreen
 import com.ramitsuri.podcasts.android.ui.search.SearchScreen
 import com.ramitsuri.podcasts.android.ui.settings.SettingsScreen
 import com.ramitsuri.podcasts.android.ui.subscriptions.SubscriptionsScreen
+import com.ramitsuri.podcasts.navigation.Navigator
 import com.ramitsuri.podcasts.navigation.Route
-import com.ramitsuri.podcasts.navigation.RouteArgs
+import com.ramitsuri.podcasts.navigation.Route.BackupRestore
+import com.ramitsuri.podcasts.navigation.Route.Downloads
+import com.ramitsuri.podcasts.navigation.Route.EpisodeDetails
+import com.ramitsuri.podcasts.navigation.Route.EpisodeHistory
+import com.ramitsuri.podcasts.navigation.Route.Explore
+import com.ramitsuri.podcasts.navigation.Route.Favorites
+import com.ramitsuri.podcasts.navigation.Route.Home
+import com.ramitsuri.podcasts.navigation.Route.ImportSubscriptions
+import com.ramitsuri.podcasts.navigation.Route.Library
+import com.ramitsuri.podcasts.navigation.Route.PodcastDetails
+import com.ramitsuri.podcasts.navigation.Route.Queue
+import com.ramitsuri.podcasts.navigation.Route.Search
+import com.ramitsuri.podcasts.navigation.Route.Settings
+import com.ramitsuri.podcasts.navigation.Route.Subscriptions
+import com.ramitsuri.podcasts.navigation.Route.YearEndReview
 import com.ramitsuri.podcasts.viewmodel.DownloadsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeDetailsViewModel
 import com.ramitsuri.podcasts.viewmodel.EpisodeHistoryViewModel
@@ -101,10 +115,9 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun NavGraph(
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController(),
+    navigator: Navigator,
 ) {
     val context = LocalContext.current
-    val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
     var bottomPadding by remember { mutableStateOf(0.dp) }
     val bottomSheetDetentPeek =
         SheetDetent(identifier = "peek") { _, _ ->
@@ -156,18 +169,19 @@ fun NavGraph(
                         Modifier
                             .onGloballyPositioned {
                                 navBarHeight = it.size.height
-                            }.offset { IntOffset(x = 0, navBarHeight.times(sheetExpandProgress).toInt()) },
-                    selectedTabRoute = currentDestination,
+                            }
+                            .offset { IntOffset(x = 0, navBarHeight.times(sheetExpandProgress).toInt()) },
+                    selectedNavDestination = navigator.currentDestination,
                     onHomeTabClicked = {
-                        if (!navController.navigateToMainDestination(BottomNavItem.HOME)) {
+                        if (!navigator.navigateToMainDestination(BottomNavItem.HOME)) {
                             scrollToTop = true
                         }
                     },
                     onExploreClicked = {
-                        navController.navigateToMainDestination(BottomNavItem.EXPLORE)
+                        navigator.navigateToMainDestination(BottomNavItem.EXPLORE)
                     },
                     onLibraryClicked = {
-                        navController.navigateToMainDestination(BottomNavItem.LIBRARY)
+                        navigator.navigateToMainDestination(BottomNavItem.LIBRARY)
                     },
                 )
             }
@@ -188,25 +202,12 @@ fun NavGraph(
             } else {
                 0.dp
             }
-        Box(modifier = modifier.fillMaxSize()) {
-            NavHost(
-                navController = navController,
-                startDestination = BottomNavItem.HOME.route.value,
-                modifier =
-                    modifier
-                        .padding(
-                            top = innerPadding.calculateTopPadding(),
-                            bottom =
-                                if (bottomSheetVisible) {
-                                    with(LocalDensity.current) {
-                                        peekHeightPx.toDp()
-                                    }
-                                } else {
-                                    innerPadding.calculateBottomPadding()
-                                },
-                        ),
-            ) {
-                composable(route = BottomNavItem.HOME.route.value) {
+
+        val entryProvider: (Route) -> NavEntry<Route> =
+            entryProvider {
+                entry<Home>(
+                    metadata = topLevelAnimationMetaData,
+                ) {
                     val viewModel = koinViewModel<HomeViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -215,31 +216,25 @@ fun NavGraph(
                         scrollToTop = scrollToTop,
                         onScrolledToTop = { scrollToTop = false },
                         onSettingsClicked = {
-                            navController.navigate(Route.SETTINGS.value)
+                            navigator.navigate(Settings)
                         },
                         onImportSubscriptionsClicked = {
-                            navController.navigate(Route.IMPORT_SUBSCRIPTIONS.value)
+                            navigator.navigate(ImportSubscriptions)
                         },
-                        onPodcastClicked = {
-                            navController.navigate(
-                                Route.podcastDetails(
-                                    podcastId = it,
-                                    refreshPodcast = false,
-                                ),
-                                navOptions { popUpTo(BottomNavItem.HOME.route.value) },
+                        onPodcastClicked = { podcastId ->
+                            navigator.navigate(
+                                PodcastDetails(podcastId, false),
                             )
                         },
                         onPodcastHasNewSeen = viewModel::markPodcastHasNewSeen,
                         onMorePodcastsClicked = {
-                            navController.navigate(
-                                Route.SUBSCRIPTIONS.value,
-                                navOptions { popUpTo(BottomNavItem.HOME.route.value) },
+                            navigator.navigate(
+                                Subscriptions,
                             )
                         },
                         onEpisodeClicked = { episodeId, podcastId ->
-                            navController.navigate(
-                                Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
-                                navOptions { popUpTo(BottomNavItem.HOME.route.value) },
+                            navigator.navigate(
+                                EpisodeDetails(episodeId, podcastId),
                             )
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
@@ -255,118 +250,69 @@ fun NavGraph(
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         onNextPageRequested = viewModel::onNextPageRequested,
                         onYearEndReviewClicked = {
-                            navController.navigate(Route.YEAR_END_REVIEW.value)
+                            navigator.navigate(YearEndReview)
                         },
                         onRefresh = viewModel::onRefresh,
                         modifier =
                             Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                                .screen(),
                     )
                 }
 
-                composable(route = BottomNavItem.EXPLORE.route.value) {
+                entry<Explore>(
+                    metadata = topLevelAnimationMetaData,
+                ) {
                     val viewModel = koinViewModel<ExploreViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     ExploreScreen(
                         state = state,
-                        onSettingsClicked = {
-                            navController.navigate(
-                                Route.SETTINGS.value,
-                                navOptions { popUpTo(BottomNavItem.EXPLORE.route.value) },
+                        onSettingsClicked = { navigator.navigate(Settings) },
+                        onPodcastClicked = { podcastId ->
+                            navigator.navigate(
+                                PodcastDetails(podcastId, true),
                             )
                         },
-                        onPodcastClicked = {
-                            navController.navigate(
-                                Route.podcastDetails(
-                                    podcastId = it,
-                                    refreshPodcast = true,
-                                ),
-                                navOptions { popUpTo(BottomNavItem.EXPLORE.route.value) },
-                            )
-                        },
-                        onSearchClicked = {
-                            navController.navigate(
-                                Route.SEARCH.value,
-                                navOptions { popUpTo(BottomNavItem.EXPLORE.route.value) },
-                            )
-                        },
+                        onSearchClicked = { navigator.navigate(Search) },
                         onLanguageClicked = viewModel::onLanguageClicked,
                         onCategoryClicked = viewModel::onCategoryClicked,
                         onRefresh = viewModel::onRefresh,
                         modifier =
                             Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                                .screen(),
                     )
                 }
 
-                composable(route = BottomNavItem.LIBRARY.route.value) {
+                entry<Library>(
+                    metadata = topLevelAnimationMetaData,
+                ) {
                     val viewModel = koinViewModel<LibraryViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     LibraryScreen(
                         state = state,
-                        onSettingsClicked = {
-                            navController.navigate(
-                                Route.SETTINGS.value,
-                                navOptions { popUpTo(BottomNavItem.LIBRARY.route.value) },
-                            )
-                        },
-                        onSubscriptionsClicked = {
-                            navController.navigate(
-                                Route.SUBSCRIPTIONS.value,
-                                navOptions { popUpTo(BottomNavItem.LIBRARY.route.value) },
-                            )
-                        },
-                        onQueueClicked = {
-                            navController.navigate(
-                                Route.QUEUE.value,
-                                navOptions { popUpTo(BottomNavItem.LIBRARY.route.value) },
-                            )
-                        },
-                        onDownloadsClicked = {
-                            navController.navigate(
-                                Route.DOWNLOADS.value,
-                                navOptions { popUpTo(BottomNavItem.LIBRARY.route.value) },
-                            )
-                        },
-                        onHistoryClicked = {
-                            navController.navigate(
-                                Route.EPISODE_HISTORY.value,
-                                navOptions { popUpTo(BottomNavItem.LIBRARY.route.value) },
-                            )
-                        },
-                        onFavoritesClicked = {
-                            navController.navigate(
-                                Route.FAVORITES.value,
-                                navOptions { popUpTo(BottomNavItem.LIBRARY.route.value) },
-                            )
-                        },
+                        onSettingsClicked = { navigator.navigate(Settings) },
+                        onSubscriptionsClicked = { navigator.navigate(Subscriptions) },
+                        onQueueClicked = { navigator.navigate(Queue) },
+                        onDownloadsClicked = { navigator.navigate(Downloads) },
+                        onHistoryClicked = { navigator.navigate(EpisodeHistory) },
+                        onFavoritesClicked = { navigator.navigate(Favorites) },
                         modifier =
                             Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                                .screen(),
                     )
                 }
 
-                composable(route = Route.SEARCH.value) {
+                entry<Search> {
                     val viewModel = koinViewModel<SearchViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     SearchScreen(
                         state = state,
-                        onBack = {
-                            navController.navigateUp()
-                        },
-                        onPodcastClicked = {
-                            navController.navigate(
-                                Route.podcastDetails(
-                                    podcastId = it,
-                                    refreshPodcast = true,
-                                ),
-                                navOptions { popUpTo(Route.SEARCH.value) },
+                        onBack = { navigator.goBack() },
+                        onPodcastClicked = { podcastId ->
+                            navigator.navigate(
+                                PodcastDetails(podcastId, true),
                             )
                         },
                         onSearchTermUpdated = viewModel::onSearchTermUpdated,
@@ -374,18 +320,11 @@ fun NavGraph(
                         onSearchCleared = viewModel::clearSearch,
                         modifier =
                             Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                                .screen(),
                     )
                 }
 
-                composable(
-                    route = Route.IMPORT_SUBSCRIPTIONS.value,
-                    enterTransition = { enterTransition() },
-                    exitTransition = { exitTransition() },
-                    popEnterTransition = { popEnterTransition() },
-                    popExitTransition = { popExitTransition() },
-                ) {
+                entry<ImportSubscriptions> {
                     val viewModel =
                         viewModel<ImportSubscriptionsViewModel>(
                             factory = ImportSubscriptionsViewModel.factory(),
@@ -397,52 +336,25 @@ fun NavGraph(
                         onSubscriptionsDataFilePicked = viewModel::onSubscriptionDataFilePicked,
                         onSubscribeAllPodcasts = viewModel::subscribeAllPodcasts,
                         onSuggestionAccepted = viewModel::onSuggestionAccepted,
-                        onBack = { navController.popBackStack() },
+                        onBack = { navigator.goBack() },
                         modifier =
                             Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                                .screen(),
                     )
                 }
 
-                composable(
-                    route = Route.EPISODE_DETAILS.routeWithArgName(),
-                    arguments = Route.EPISODE_DETAILS.navArgs(),
-                    enterTransition = { enterTransition() },
-                    exitTransition = { exitTransition() },
-                    popEnterTransition = { popEnterTransition() },
-                    popExitTransition = { popExitTransition() },
-                    deepLinks =
-                        listOf(
-                            navDeepLink {
-                                uriPattern = Route.EPISODE_DETAILS.deepLinkWithArgName()
-                            },
-                        ),
-                ) { backStackEntry ->
+                entry<EpisodeDetails> { args ->
                     val viewModel =
-                        backStackEntry.arguments.let { arg ->
-                            val episodeId = arg?.getString(RouteArgs.EPISODE_ID.value)?.let { Uri.decode(it) }
-                            val podcastId = arg?.getString(RouteArgs.PODCAST_ID.value)?.toLong()
-                            koinViewModel<EpisodeDetailsViewModel>(
-                                parameters = { parametersOf(episodeId, podcastId) },
-                            )
-                        }
+                        koinViewModel<EpisodeDetailsViewModel>(
+                            parameters = { parametersOf(args.episodeId, args.podcastId) },
+                        )
                     val state by viewModel.state.collectAsStateWithLifecycle()
                     EpisodeDetailsScreen(
                         state = state,
-                        onBack = { navController.navigateUp() },
+                        onBack = { navigator.goBack() },
                         onPodcastNameClicked = { podcastId ->
-                            navController.navigate(
-                                Route.podcastDetails(
-                                    podcastId = podcastId,
-                                    refreshPodcast = false,
-                                ),
-                                navOptions {
-                                    popUpTo(
-                                        Route.EPISODE_DETAILS.routeWithArgName(),
-                                        popUpToBuilder = { inclusive = false },
-                                    )
-                                },
+                            navigator.navigate(
+                                PodcastDetails(podcastId, false),
                             )
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
@@ -458,44 +370,28 @@ fun NavGraph(
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
                             Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                                .screen(),
                     )
                 }
 
-                composable(
-                    route = Route.PODCAST_DETAILS.routeWithArgName(),
-                    arguments = Route.PODCAST_DETAILS.navArgs(),
-                    enterTransition = { enterTransition() },
-                    exitTransition = { exitTransition() },
-                    popEnterTransition = { popEnterTransition() },
-                    popExitTransition = { popExitTransition() },
-                ) { backStackEntry ->
-                    val podcastId = backStackEntry.arguments?.getLong(RouteArgs.PODCAST_ID.value)
-                    val refreshPodcast = backStackEntry.arguments?.getBoolean(RouteArgs.REFRESH_PODCAST.value)
+                entry<PodcastDetails> { args ->
                     val viewModel =
                         koinViewModel<PodcastDetailsViewModel>(
-                            parameters = { parametersOf(refreshPodcast, podcastId) },
+                            parameters = { parametersOf(args.refreshPodcast, args.podcastId) },
                         )
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     PodcastDetailsScreen(
                         state = state,
-                        onBack = { navController.navigateUp() },
+                        onBack = { navigator.goBack() },
                         onSubscribeClicked = viewModel::onSubscribeClicked,
                         onUnsubscribeClicked = viewModel::onUnsubscribeClicked,
                         toggleAutoDownloadClicked = viewModel::toggleAutoDownloadClicked,
                         toggleAutoAddToQueueClicked = viewModel::toggleAutoAddToQueueClicked,
                         toggleShowCompletedEpisodesClicked = viewModel::toggleShowCompletedEpisodes,
                         onEpisodeClicked = { episodeId, podcastId ->
-                            navController.navigate(
-                                Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
-                                navOptions {
-                                    popUpTo(
-                                        Route.PODCAST_DETAILS.routeWithArgName(),
-                                        popUpToBuilder = { inclusive = false },
-                                    )
-                                },
+                            navigator.navigate(
+                                EpisodeDetails(episodeId, podcastId),
                             )
                         },
                         onEpisodeSelectionChanged = viewModel::onEpisodeSelectionChanged,
@@ -520,29 +416,21 @@ fun NavGraph(
                         onSearchTermUpdated = viewModel::onSearchTermUpdated,
                         modifier =
                             Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                                .screen(),
                     )
                 }
 
-                composable(
-                    route = Route.QUEUE.value,
-                    enterTransition = { enterTransition() },
-                    exitTransition = { exitTransition() },
-                    popEnterTransition = { popEnterTransition() },
-                    popExitTransition = { popExitTransition() },
-                ) {
+                entry<Queue> {
                     val viewModel = koinViewModel<QueueViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     QueueScreen(
                         state = state,
-                        onBack = { navController.popBackStack() },
+                        onBack = { navigator.goBack() },
                         onEpisodesRearranged = viewModel::onEpisodeRearrangementRequested,
                         onEpisodeClicked = { episodeId, podcastId ->
-                            navController.navigate(
-                                Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
-                                navOptions { popUpTo(Route.QUEUE.value) },
+                            navigator.navigate(
+                                EpisodeDetails(episodeId, podcastId),
                             )
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
@@ -558,57 +446,38 @@ fun NavGraph(
                         onEpisodesSortRequested = viewModel::onEpisodesSortRequested,
                         modifier =
                             Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                                .screen(),
                     )
                 }
 
-                composable(
-                    route = Route.SUBSCRIPTIONS.value,
-                    enterTransition = { enterTransition() },
-                    exitTransition = { exitTransition() },
-                    popEnterTransition = { popEnterTransition() },
-                    popExitTransition = { popExitTransition() },
-                ) {
+                entry<Subscriptions> {
                     val viewModel = koinViewModel<SubscriptionsViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     SubscriptionsScreen(
                         state = state,
-                        onBack = { navController.popBackStack() },
-                        onPodcastClicked = {
-                            navController.navigate(
-                                Route.podcastDetails(
-                                    podcastId = it,
-                                    refreshPodcast = false,
-                                ),
-                                navOptions { popUpTo(Route.SUBSCRIPTIONS.value) },
+                        onBack = { navigator.goBack() },
+                        onPodcastClicked = { podcastId ->
+                            navigator.navigate(
+                                PodcastDetails(podcastId, false),
                             )
                         },
                         modifier =
                             Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                                .screen(),
                     )
                 }
 
-                composable(
-                    route = Route.DOWNLOADS.value,
-                    enterTransition = { enterTransition() },
-                    exitTransition = { exitTransition() },
-                    popEnterTransition = { popEnterTransition() },
-                    popExitTransition = { popExitTransition() },
-                ) {
+                entry<Downloads> {
                     val viewModel = koinViewModel<DownloadsViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     DownloadsScreen(
                         state = state,
-                        onBack = { navController.popBackStack() },
+                        onBack = { navigator.goBack() },
                         onEpisodeClicked = { episodeId, podcastId ->
-                            navController.navigate(
-                                Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
-                                navOptions { popUpTo(Route.DOWNLOADS.value) },
+                            navigator.navigate(
+                                EpisodeDetails(episodeId, podcastId),
                             )
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
@@ -624,28 +493,20 @@ fun NavGraph(
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
                             Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                                .screen(),
                     )
                 }
 
-                composable(
-                    route = Route.FAVORITES.value,
-                    enterTransition = { enterTransition() },
-                    exitTransition = { exitTransition() },
-                    popEnterTransition = { popEnterTransition() },
-                    popExitTransition = { popExitTransition() },
-                ) {
+                entry<Favorites> {
                     val viewModel = koinViewModel<FavoritesViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     FavoritesScreen(
                         state = state,
-                        onBack = { navController.popBackStack() },
+                        onBack = { navigator.goBack() },
                         onEpisodeClicked = { episodeId, podcastId ->
-                            navController.navigate(
-                                Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
-                                navOptions { popUpTo(Route.FAVORITES.value) },
+                            navigator.navigate(
+                                EpisodeDetails(episodeId, podcastId),
                             )
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
@@ -661,28 +522,20 @@ fun NavGraph(
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
                             Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                                .screen(),
                     )
                 }
 
-                composable(
-                    route = Route.EPISODE_HISTORY.value,
-                    enterTransition = { enterTransition() },
-                    exitTransition = { exitTransition() },
-                    popEnterTransition = { popEnterTransition() },
-                    popExitTransition = { popExitTransition() },
-                ) {
+                entry<EpisodeHistory> {
                     val viewModel = koinViewModel<EpisodeHistoryViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     EpisodeHistoryScreen(
                         state = state,
-                        onBack = { navController.popBackStack() },
+                        onBack = { navigator.goBack() },
                         onEpisodeClicked = { episodeId, podcastId ->
-                            navController.navigate(
-                                Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
-                                navOptions { popUpTo(Route.EPISODE_HISTORY.value) },
+                            navigator.navigate(
+                                EpisodeDetails(episodeId, podcastId),
                             )
                         },
                         onEpisodePlayClicked = viewModel::onEpisodePlayClicked,
@@ -698,32 +551,23 @@ fun NavGraph(
                         onEpisodeNotFavoriteClicked = viewModel::onEpisodeMarkNotFavorite,
                         modifier =
                             Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                                .screen(),
                     )
                 }
 
-                composable(
-                    route = Route.SETTINGS.value,
-                    enterTransition = { enterTransition() },
-                    exitTransition = { exitTransition() },
-                    popEnterTransition = { popEnterTransition() },
-                    popExitTransition = { popExitTransition() },
-                ) {
+                entry<Settings> {
                     val viewModel = koinViewModel<SettingsViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     SettingsScreen(
                         state = state,
-                        onBack = { navController.popBackStack() },
+                        onBack = { navigator.goBack() },
                         toggleAutoPlayNextInQueue = viewModel::toggleAutoPlayNextInQueue,
                         onFetchRequested = viewModel::fetch,
                         onRemoveCompletedAfterSelected = viewModel::setRemoveCompletedAfter,
                         onRemoveUnfinishedAfterSelected = viewModel::setRemoveUnfinishedAfter,
                         onVersionClicked = viewModel::onVersionClicked,
-                        onBackupRestoreClicked = {
-                            navController.navigate(Route.BACKUP_RESTORE.value)
-                        },
+                        onBackupRestoreClicked = { navigator.navigate(BackupRestore) },
                         toggleShouldDownloadOnWifiOnly = viewModel::toggleShouldDownloadOnWifiOnly,
                         onAddWidgetClicked = {
                             coroutineScope.launch {
@@ -734,18 +578,11 @@ fun NavGraph(
                         onWidgetItemSeen = viewModel::onWidgetItemSeen,
                         modifier =
                             Modifier
-                                .statusBarsPadding()
-                                .displayCutoutPadding(),
+                                .screen(),
                     )
                 }
 
-                composable(
-                    route = Route.YEAR_END_REVIEW.value,
-                    enterTransition = { enterTransition() },
-                    exitTransition = { exitTransition() },
-                    popEnterTransition = { popEnterTransition() },
-                    popExitTransition = { popExitTransition() },
-                ) {
+                entry<YearEndReview> {
                     ScreenEventListener(
                         onStart = {
                             canShowPlayer = false
@@ -761,21 +598,16 @@ fun NavGraph(
 
                     YearEndReviewScreen(
                         state = state,
-                        onBack = {
-                            navController.popBackStack()
-                        },
+                        onBack = { navigator.goBack() },
                         onNextPage = viewmodel::onNextPage,
                         onPreviousPage = viewmodel::onPreviousPage,
+                        modifier =
+                            Modifier
+                                .screen(),
                     )
                 }
 
-                composable(
-                    route = Route.BACKUP_RESTORE.value,
-                    enterTransition = { enterTransition() },
-                    exitTransition = { exitTransition() },
-                    popEnterTransition = { popEnterTransition() },
-                    popExitTransition = { popExitTransition() },
-                ) {
+                entry<BackupRestore> {
                     ScreenEventListener(
                         onStart = {
                             canShowPlayer = false
@@ -796,10 +628,38 @@ fun NavGraph(
                         state = state,
                         onRestoreFilePicked = viewmodel::onRestoreFilePicked,
                         onBackupFilePicked = viewmodel::onBackupFilePicked,
-                        onBack = navController::popBackStack,
+                        onBack = navigator::goBack,
+                        modifier =
+                            Modifier
+                                .screen(),
                     )
                 }
             }
+
+        Box(modifier = modifier.fillMaxSize()) {
+            NavDisplay(
+                backStack = navigator.backstack,
+                entryProvider = entryProvider,
+                onBack = { navigator.goBack() },
+                entryDecorators =
+                    listOf(
+                        rememberSaveableStateHolderNavEntryDecorator(),
+                        rememberViewModelStoreNavEntryDecorator(),
+                    ),
+                modifier =
+                    Modifier
+                        .padding(
+                            top = innerPadding.calculateTopPadding(),
+                            bottom =
+                                if (bottomSheetVisible) {
+                                    with(LocalDensity.current) {
+                                        peekHeightPx.toDp()
+                                    }
+                                } else {
+                                    innerPadding.calculateBottomPadding()
+                                },
+                        ),
+            )
 
             if (sheetExpandProgress != 0f) {
                 Box(
@@ -847,9 +707,8 @@ fun NavGraph(
                                 val episodeId = playerState.episodeId
                                 val podcastId = playerState.podcastId
                                 if (episodeId != null && podcastId != null) {
-                                    navController.navigate(
-                                        Route.episodeDetails(episodeId = episodeId, podcastId = podcastId),
-                                        navOptions { popUpTo(BottomNavItem.HOME.route.value) },
+                                    navigator.navigate(
+                                        EpisodeDetails(episodeId, podcastId),
                                     )
                                 }
                             },
@@ -857,20 +716,15 @@ fun NavGraph(
                                 expandOrCollapsePlayer(expand = false)
                                 val id = playerState.podcastId
                                 if (id != null) {
-                                    navController.navigate(
-                                        Route.podcastDetails(
-                                            podcastId = id,
-                                            refreshPodcast = false,
-                                        ),
-                                        navOptions { popUpTo(BottomNavItem.HOME.route.value) },
+                                    navigator.navigate(
+                                        PodcastDetails(id, false),
                                     )
                                 }
                             },
                             onGoToQueueClicked = {
                                 expandOrCollapsePlayer(expand = false)
-                                navController.navigate(
-                                    Route.QUEUE.value,
-                                    navOptions { popUpTo(BottomNavItem.HOME.route.value) },
+                                navigator.navigate(
+                                    Queue,
                                 )
                             },
                             onReplayClicked = playerViewModel::onReplayRequested,
@@ -901,33 +755,9 @@ fun NavGraph(
     }
 }
 
-private fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition() =
-    slideIntoContainer(
-        AnimatedContentTransitionScope.SlideDirection.Start,
-        tween(300),
-    )
-
-private fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() =
-    slideOutOfContainer(
-        AnimatedContentTransitionScope.SlideDirection.Start,
-        tween(300),
-    )
-
-private fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition() =
-    slideIntoContainer(
-        AnimatedContentTransitionScope.SlideDirection.End,
-        tween(300),
-    )
-
-private fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition() =
-    slideOutOfContainer(
-        AnimatedContentTransitionScope.SlideDirection.End,
-        tween(300),
-    )
-
 @Composable
 private fun BottomNavBar(
-    selectedTabRoute: String?,
+    selectedNavDestination: Route?,
     onHomeTabClicked: () -> Unit,
     onExploreClicked: () -> Unit,
     onLibraryClicked: () -> Unit,
@@ -937,7 +767,7 @@ private fun BottomNavBar(
         modifier = modifier,
     ) {
         BottomNavItem.entries.forEach { item ->
-            val selected = item.route.value == selectedTabRoute
+            val selected = selectedNavDestination == item.route
             NavBarItem(
                 icon = {
                     Icon(
@@ -964,32 +794,30 @@ private fun BottomNavBar(
     }
 }
 
-private fun NavHostController.navigateToMainDestination(to: BottomNavItem): Boolean {
-    val currentDestination = currentBackStackEntry?.destination?.route
-    if (currentDestination == to.route.value) {
+@Composable
+private fun Modifier.screen() =
+    background(MaterialTheme.colorScheme.background)
+        .statusBarsPadding()
+        .displayCutoutPadding()
+
+private fun Navigator.navigateToMainDestination(to: BottomNavItem): Boolean {
+    if (currentDestination == to.route) {
         return false
     }
-    navigate(to.route.value) {
-        // So that pressing back from any main bottom tab item leads user to home tab first
-        popUpTo(BottomNavItem.HOME.route.value) {
-            // Popup inclusive of home as well if navigating to home. This fixes a bug where if the app is launched via
-            // episode details deeplink and then home tab button is tapped, the home screen state is not loaded for some
-            // reason.
-            inclusive = to == BottomNavItem.HOME
-        }
-        launchSingleTop = true
-    }
+    navigate(to.route)
     return true
 }
 
-fun NavHostController.episodeDetailsDeepLink(): String? {
-    val args = currentBackStackEntry?.arguments ?: return null
-    val episodeId = args.getString(RouteArgs.EPISODE_ID.value) ?: return null
-    val podcastId = args.getString(RouteArgs.PODCAST_ID.value) ?: return null
-    return Route.EPISODE_DETAILS.deepLinkWithValue(
-        mapOf(
-            RouteArgs.EPISODE_ID to Uri.decode(episodeId),
-            RouteArgs.PODCAST_ID to podcastId,
-        ),
-    )
-}
+private val topLevelAnimationMetaData: Map<String, Any>
+    get() =
+        NavDisplay.transitionSpec {
+            EnterTransition.None togetherWith ExitTransition.KeepUntilTransitionsFinished
+        } +
+            NavDisplay.popTransitionSpec {
+                EnterTransition.None togetherWith
+                    fadeOut(tween(300))
+            } +
+            NavDisplay.predictivePopTransitionSpec {
+                EnterTransition.None togetherWith
+                    fadeOut(tween(300))
+            }

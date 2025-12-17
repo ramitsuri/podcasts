@@ -20,19 +20,19 @@ enum class BottomNavItem(
     val labelRes: Int,
 ) {
     HOME(
-        route = Route.HOME,
+        route = Route.Home,
         icon = Icons.Outlined.Home,
         selectedIcon = Icons.Filled.Home,
         labelRes = R.string.nav_home,
     ),
     EXPLORE(
-        route = Route.EXPLORE,
+        route = Route.Explore,
         icon = Icons.Outlined.Search,
         selectedIcon = Icons.Filled.Search,
         labelRes = R.string.nav_explore,
     ),
     LIBRARY(
-        route = Route.LIBRARY,
+        route = Route.Library,
         icon = Icons.Outlined.VideoLibrary,
         selectedIcon = Icons.Filled.VideoLibrary,
         labelRes = R.string.nav_library,

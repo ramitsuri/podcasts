@@ -1,6 +1,7 @@
 package com.ramitsuri.podcasts.android.ui.episode
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -161,7 +162,16 @@ private fun EpisodeDetails(
                 .verticalScroll(rememberScrollState()),
     ) {
         Spacer(modifier = Modifier.height(8.dp))
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        onClick = onPodcastNameClicked,
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                    ),
+        ) {
             Image(
                 url = episode.podcastImageUrl,
                 contentDescription = episode.title,
@@ -175,8 +185,7 @@ private fun EpisodeDetails(
                 Row(
                     modifier =
                         Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = onPodcastNameClicked),
+                            .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Start,
                 ) {
                     Text(
