@@ -17,7 +17,13 @@ internal class AndroidRemoteConfigHelper(
                 minimumFetchIntervalInSeconds = 3600
             }
         remoteConfig.setConfigSettingsAsync(configSettings)
-        val fetched = remoteConfig.fetchAndActivate().await()
+        val fetched =
+            try {
+                remoteConfig.fetchAndActivate().await()
+            } catch (e: Exception) {
+                LogHelper.v(TAG, "Remote config fetch failed: $e")
+                false
+            }
         LogHelper.v(TAG, "Remote config fetched: $fetched")
     }
 
