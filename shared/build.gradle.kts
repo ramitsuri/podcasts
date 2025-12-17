@@ -1,5 +1,4 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
-import org.gradle.kotlin.dsl.implementation
 import java.io.FileInputStream
 import java.util.Properties
 

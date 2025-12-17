@@ -6,7 +6,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class NavigatorTest {
-
     private lateinit var navigator: Navigator
 
     @Test
@@ -122,8 +121,8 @@ class NavigatorTest {
     }
 
     @Test
-    fun `navigate to an existing TopLevelRoute deep in stack`() {
-        // Navigate to a TopLevelRoute that is already in the backstack but not at the top. 
+    fun `navigate to an existing route deep in stack`() {
+        // Navigate to a TopLevelRoute that is already in the backstack but not at the top.
         navigator = Navigator()
 
         navigator.navigate(Route.Library)
@@ -160,43 +159,66 @@ class NavigatorTest {
 
     @Test
     fun `goBack from a multi entry backstack`() {
-        // Call goBack() when there are multiple routes in the stack. 
-        // Verify the last route is removed and the previous one becomes the current destination.
-        // TODO implement test
+        navigator = Navigator()
+
+        navigator.navigate(Route.Home)
+        navigator.navigate(Route.Library)
+        navigator.navigate(Route.Downloads)
+        navigator.navigate(Route.Settings)
+        navigator.navigate(Route.EpisodeHistory)
+        navigator.navigate(Route.BackupRestore)
+
+        navigator.goBack()
+        assertEquals(Route.EpisodeHistory, navigator.currentDestination)
+        navigator.goBack()
+        assertEquals(Route.Settings, navigator.currentDestination)
+        navigator.goBack()
+        assertEquals(Route.Downloads, navigator.currentDestination)
+        navigator.goBack()
+        assertEquals(Route.Library, navigator.currentDestination)
+        navigator.goBack()
+        assertEquals(Route.Home, navigator.currentDestination)
     }
 
     @Test
     fun `goBack when backstack has one entry`() {
-        // Call goBack() when only Route.Home is in the backstack. 
-        // Verify the backstack becomes empty.
-        // TODO implement test
+        navigator = Navigator()
+
+        navigator.goBack()
+        assertTrue(navigator.backstack.isEmpty())
     }
 
     @Test
     fun `goBack on an empty backstack`() {
-        // Call goBack() on a navigator that has an empty backstack. 
-        // Verify the app does not crash and the backstack remains empty.
-        // TODO implement test
+        navigator = Navigator()
+
+        navigator.goBack()
+        navigator.goBack()
+        assertTrue(navigator.backstack.isEmpty())
     }
 
     @Test
     fun `Chained navigations and goBack calls`() {
-        // Perform a series of navigate and goBack calls to simulate user flow. 
-        // Verify the backstack state is correct after each operation.
-        // TODO implement test
-    }
+        navigator = Navigator()
 
-    @Test
-    fun `Navigate to route at index 0`() {
-        // Navigate to a non-TopLevelRoute that is at the beginning of the backstack. 
-        // Verify all other routes are popped off the stack.
-        // TODO implement test
-    }
+        navigator.navigate(Route.Library)
+        navigator.navigate(Route.Downloads)
+        navigator.navigate(Route.Explore)
+        navigator.navigate(Route.Search)
+        navigator.goBack()
+        navigator.navigate(Route.Settings)
+        navigator.goBack()
+        navigator.navigate(Route.EpisodeDetails("episodeId", 1))
+        navigator.navigate(Route.PodcastDetails(1, false))
 
-    @Test
-    fun `Large backstack handling`() {
-        // Add a large number of routes to the backstack and then perform navigation and goBack operations. 
-        // Check for performance issues or unexpected behavior.
-        // TODO implement test
+        assertEquals(
+            listOf(
+                Route.Home,
+                Route.Explore,
+                Route.EpisodeDetails("episodeId", 1),
+                Route.PodcastDetails(1, false),
+            ),
+            navigator.backstack,
+        )
     }
 }

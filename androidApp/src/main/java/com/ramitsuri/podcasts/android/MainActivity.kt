@@ -19,45 +19,30 @@ import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.ramitsuri.podcasts.android.navigation.NavGraph
-import com.ramitsuri.podcasts.navigation.Navigator
 import com.ramitsuri.podcasts.android.navigation.deeplink.DeepLinkMatcher
 import com.ramitsuri.podcasts.android.navigation.deeplink.DeepLinkPattern
 import com.ramitsuri.podcasts.android.navigation.deeplink.DeepLinkRequest
 import com.ramitsuri.podcasts.android.navigation.deeplink.KeyDecoder
 import com.ramitsuri.podcasts.android.ui.AppTheme
+import com.ramitsuri.podcasts.navigation.Navigator
 import com.ramitsuri.podcasts.navigation.Route
 import com.ramitsuri.podcasts.navigation.deepLinkWithArgName
 import com.ramitsuri.podcasts.navigation.deepLinkWithArgValue
 
 class MainActivity : ComponentActivity() {
     private lateinit var navigator: Navigator
-    private val deepLinkPatterns: List<DeepLinkPattern<out Route>> = listOf(
-        DeepLinkPattern(Route.EpisodeDetails.serializer(), (Route.EpisodeDetails.deepLinkWithArgName.toUri()))
-    )
+    private val deepLinkPatterns: List<DeepLinkPattern<out Route>> =
+        listOf(
+            DeepLinkPattern(Route.EpisodeDetails.serializer(), (Route.EpisodeDetails.deepLinkWithArgName.toUri())),
+        )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
 
-        val uri: Uri? = intent.data
-        intent.data = null
-        // associate the target with the correct backstack key
-        val key: Route? = uri?.let {
-            /** STEP 2. Parse requested deeplink */
-            val request = DeepLinkRequest(uri)
-            /** STEP 3. Compared requested with supported deeplink to find match*/
-            val match = deepLinkPatterns.firstNotNullOfOrNull { pattern ->
-                DeepLinkMatcher(request, pattern).match()
-            }
-            /** STEP 4. If match is found, associate match to the correct key*/
-            match?.let {
-                //leverage kotlinx.serialization's Decoder to decode
-                // match result into a backstack key
-                KeyDecoder(match.args)
-                    .decodeSerializableValue(match.serializer)
-            }
-        }
+        val deepLinkRoute = routeFromDeepLink()
 
         setContent {
             val darkTheme = isSystemInDarkTheme()
@@ -77,15 +62,32 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
 
-            navigator = remember { Navigator(startRoute = key) }
-
             AppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
+                    navigator = remember { Navigator(startRoute = deepLinkRoute) }
                     NavGraph(navigator = navigator)
                 }
+            }
+        }
+    }
+
+    private fun routeFromDeepLink(): Route? {
+        val uri: Uri? = intent.data
+        intent.data = null
+        return uri?.let {
+            val request = DeepLinkRequest(uri)
+
+            val match =
+                deepLinkPatterns.firstNotNullOfOrNull { pattern ->
+                    DeepLinkMatcher(request, pattern).match()
+                }
+
+            match?.let {
+                KeyDecoder(match.args)
+                    .decodeSerializableValue(match.serializer)
             }
         }
     }

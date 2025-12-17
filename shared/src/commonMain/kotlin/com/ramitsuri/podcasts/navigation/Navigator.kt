@@ -25,10 +25,10 @@ class Navigator(startRoute: Route? = null) {
         } else {
             val index = _backstack.indexOf(route)
             if (index == -1) {
-                // doesn't exist in backstack, add it
+                // Doesn't exist in backstack, add it
                 _backstack.add(route)
             } else {
-                // Entry exists in backstack, remove all entries after it
+                // Entry exists in backstack, remove all entries after it. Essentially, pop back to excluding
                 for (i in (index + 1).._backstack.lastIndex) {
                     _backstack.removeAt(i)
                 }
@@ -41,4 +41,3 @@ class Navigator(startRoute: Route? = null) {
         _backstack.removeLastOrNull()
     }
 }
-

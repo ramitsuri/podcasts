@@ -163,13 +163,14 @@ private fun EpisodeDetails(
     ) {
         Spacer(modifier = Modifier.height(8.dp))
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    onClick = onPodcastNameClicked,
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                ),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        onClick = onPodcastNameClicked,
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                    ),
         ) {
             Image(
                 url = episode.podcastImageUrl,

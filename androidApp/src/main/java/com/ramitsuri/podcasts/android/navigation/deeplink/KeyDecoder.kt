@@ -16,7 +16,6 @@ import kotlinx.serialization.modules.SerializersModule
 internal class KeyDecoder(
     private val arguments: Map<String, Any>,
 ) : AbstractDecoder() {
-
     override val serializersModule: SerializersModule = EmptySerializersModule()
     private var elementIndex: Int = -1
     private var elementName: String = ""

@@ -6,7 +6,7 @@ import kotlinx.serialization.KSerializer
 
 internal class DeepLinkMatcher<T : Route>(
     val request: DeepLinkRequest,
-    val deepLinkPattern: DeepLinkPattern<T>
+    val deepLinkPattern: DeepLinkPattern<T>,
 ) {
     /**
      * Match a [DeepLinkRequest] to a [DeepLinkPattern].
@@ -16,8 +16,9 @@ internal class DeepLinkMatcher<T : Route>(
     fun match(): DeepLinkMatchResult<T>? {
         if (request.pathSegments.size != deepLinkPattern.pathSegments.size) return null
         // exact match (url does not contain any arguments)
-        if (request.uri == deepLinkPattern.uriPattern)
+        if (request.uri == deepLinkPattern.uriPattern) {
             return DeepLinkMatchResult(deepLinkPattern.serializer, mapOf())
+        }
 
         val args = mutableMapOf<String, Any>()
         // match the path
@@ -33,14 +34,15 @@ internal class DeepLinkMatcher<T : Route>(
                 // if the potential match expects a path arg for this segment, try to parse the
                 // requested segment into the expected type
                 if (candidateSegment.isParamArg) {
-                    val parsedValue = try {
-                        candidateSegment.typeParser.invoke(requestedSegment)
-                    } catch (e: IllegalArgumentException) {
-                        Log.e(TAG_LOG_ERROR, "Failed to parse path value:[$requestedSegment].", e)
-                        return null
-                    }
+                    val parsedValue =
+                        try {
+                            candidateSegment.typeParser.invoke(requestedSegment)
+                        } catch (e: IllegalArgumentException) {
+                            Log.e(TAG_LOG_ERROR, "Failed to parse path value:[$requestedSegment].", e)
+                            return null
+                        }
                     args[candidateSegment.stringValue] = parsedValue
-                } else if(requestedSegment != candidateSegment.stringValue){
+                } else if (requestedSegment != candidateSegment.stringValue) {
                     // if it's path arg is not the expected type, its not a match
                     return null
                 }
@@ -49,19 +51,19 @@ internal class DeepLinkMatcher<T : Route>(
         request.queries.forEach { query ->
             val name = query.key
             val queryStringParser = deepLinkPattern.queryValueParsers[name]
-            val queryParsedValue = try {
-                queryStringParser!!.invoke(query.value)
-            } catch (e: IllegalArgumentException) {
-                Log.e(TAG_LOG_ERROR, "Failed to parse query name:[$name] value:[${query.value}].", e)
-                return null
-            }
+            val queryParsedValue =
+                try {
+                    queryStringParser!!.invoke(query.value)
+                } catch (e: IllegalArgumentException) {
+                    Log.e(TAG_LOG_ERROR, "Failed to parse query name:[$name] value:[${query.value}].", e)
+                    return null
+                }
             args[name] = queryParsedValue
         }
         // provide the serializer of the matching key and map of arg names to parsed arg values
         return DeepLinkMatchResult(deepLinkPattern.serializer, args)
     }
 }
-
 
 /**
  * Created when a requested deeplink matches with a supported deeplink
@@ -74,7 +76,7 @@ internal class DeepLinkMatcher<T : Route>(
  * */
 internal data class DeepLinkMatchResult<T : Route>(
     val serializer: KSerializer<T>,
-    val args: Map<String, Any>
+    val args: Map<String, Any>,
 )
 
 const val TAG_LOG_ERROR = "Nav3RecipesDeepLink"

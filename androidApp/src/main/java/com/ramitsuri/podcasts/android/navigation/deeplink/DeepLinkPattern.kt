@@ -38,51 +38,52 @@ import java.io.Serializable
  */
 internal class DeepLinkPattern<T : Route>(
     val serializer: KSerializer<T>,
-    val uriPattern: Uri
+    val uriPattern: Uri,
 ) {
     /**
      * Help differentiate if a path segment is an argument or a static value
      */
     private val regexPatternFillIn = Regex("\\{(.+?)\\}")
 
-    // TODO make these lazy
     /**
      * parse the path into a list of [PathSegment]
      *
      * order matters here - path segments need to match in value and order when matching
      * requested deeplink to supported deeplink
      */
-    val pathSegments: List<PathSegment>  = buildList {
-        uriPattern.pathSegments.forEach { segment ->
-            // first, check if it is a path arg
-            var result = regexPatternFillIn.find(segment)
-            if (result != null) {
-                // if so, extract the path arg name (the string value within the curly braces)
-                val argName = result.groups[1]!!.value
-                // from [T], read the primitive type of this argument to get the correct type parser
-                val elementIndex = serializer.descriptor.getElementIndex(argName)
-                val elementDescriptor = serializer.descriptor.getElementDescriptor(elementIndex)
-                // finally, add the arg name and its respective type parser to the map
-                add(PathSegment(argName, true,getTypeParser(elementDescriptor.kind)))
-            } else {
-                // if its not a path arg, then its just a static string path segment
-                add(PathSegment(segment,false, getTypeParser(PrimitiveKind.STRING)))
+    val pathSegments: List<PathSegment> =
+        buildList {
+            uriPattern.pathSegments.forEach { segment ->
+                // first, check if it is a path arg
+                var result = regexPatternFillIn.find(segment)
+                if (result != null) {
+                    // if so, extract the path arg name (the string value within the curly braces)
+                    val argName = result.groups[1]!!.value
+                    // from [T], read the primitive type of this argument to get the correct type parser
+                    val elementIndex = serializer.descriptor.getElementIndex(argName)
+                    val elementDescriptor = serializer.descriptor.getElementDescriptor(elementIndex)
+                    // finally, add the arg name and its respective type parser to the map
+                    add(PathSegment(argName, true, getTypeParser(elementDescriptor.kind)))
+                } else {
+                    // if its not a path arg, then its just a static string path segment
+                    add(PathSegment(segment, false, getTypeParser(PrimitiveKind.STRING)))
+                }
             }
         }
-    }
 
     /**
      * Parse supported queries into a map of queryParameterNames to [TypeParser]
      *
      * This will be used later on to parse a provided query value into the correct KType
      */
-    val queryValueParsers: Map<String, TypeParser> = buildMap {
-        uriPattern.queryParameterNames.forEach { paramName ->
-            val elementIndex = serializer.descriptor.getElementIndex(paramName)
-            val elementDescriptor = serializer.descriptor.getElementDescriptor(elementIndex)
-            this[paramName] = getTypeParser(elementDescriptor.kind)
+    val queryValueParsers: Map<String, TypeParser> =
+        buildMap {
+            uriPattern.queryParameterNames.forEach { paramName ->
+                val elementIndex = serializer.descriptor.getElementIndex(paramName)
+                val elementDescriptor = serializer.descriptor.getElementDescriptor(elementIndex)
+                this[paramName] = getTypeParser(elementDescriptor.kind)
+            }
         }
-    }
 
     /**
      * Metadata about a supported path segment
@@ -90,7 +91,7 @@ internal class DeepLinkPattern<T : Route>(
     class PathSegment(
         val stringValue: String,
         val isParamArg: Boolean,
-        val typeParser: TypeParser
+        val typeParser: TypeParser,
     )
 }
 
@@ -111,7 +112,7 @@ private fun getTypeParser(kind: SerialKind): TypeParser {
         PrimitiveKind.LONG -> String::toLong
         PrimitiveKind.SHORT -> String::toShort
         else -> throw IllegalArgumentException(
-            "Unsupported argument type of SerialKind:$kind. The argument type must be a Primitive."
+            "Unsupported argument type of SerialKind:$kind. The argument type must be a Primitive.",
         )
     }
 }
