@@ -56,7 +56,10 @@ internal class SessionActionDaoImpl(
     ): List<EpisodeAndPodcastId> {
         return withContext(ioDispatcher) {
             sessionHistoryQueries
-                .getEpisodes(episodeIds = episodeIds, podcastIds = podcastIds)
+                .getEpisodes(
+                    episodeIds = episodeIds.take(SQLITE_MAX_VARIABLE_NUMBER),
+                    podcastIds = podcastIds.take(SQLITE_MAX_VARIABLE_NUMBER),
+                )
                 .executeAsList()
                 .map {
                     EpisodeAndPodcastId(
@@ -81,5 +84,10 @@ internal class SessionActionDaoImpl(
             .asFlow()
             .mapToOne(ioDispatcher)
             .map { it > 0 }
+    }
+
+    companion object {
+        // Limit max vars otherwise causes exception - too many SQL variables (Sqlite code 1 SQLITE_ERROR)
+        private const val SQLITE_MAX_VARIABLE_NUMBER = 999
     }
 }
