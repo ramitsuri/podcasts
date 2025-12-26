@@ -51,12 +51,16 @@ class EpisodeHistoryViewModel internal constructor(
         }.mapValues { (_, sessionEpisodes) ->
             sessionEpisodes
                 .sortedByDescending { it.time }
-                .map { sessionEpisode ->
-                    EpisodeHistory(
-                        episodes.first { it.id == sessionEpisode.episodeId },
-                        sessionEpisode.sessionId,
-                        sessionEpisode.time,
-                    )
+                .mapNotNull { sessionEpisode ->
+                    episodes
+                        .firstOrNull { it.id == sessionEpisode.episodeId }
+                        ?.let { episode ->
+                            EpisodeHistory(
+                                episode,
+                                sessionEpisode.sessionId,
+                                sessionEpisode.time,
+                            )
+                        }
                 }
         }
     }
