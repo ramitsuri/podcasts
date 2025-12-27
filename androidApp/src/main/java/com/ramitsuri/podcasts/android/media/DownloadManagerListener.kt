@@ -33,26 +33,53 @@ class DownloadManagerListener(
         download: Download,
         finalException: Exception?,
     ) {
-        LogHelper.d(TAG, "onDownloadChanged: $download")
         val (state, needsDownload) =
             when (download.state) {
-                Download.STATE_QUEUED -> Pair(DownloadStatus.QUEUED, null)
-                Download.STATE_DOWNLOADING -> Pair(DownloadStatus.DOWNLOADING, null)
-                Download.STATE_COMPLETED -> Pair(DownloadStatus.DOWNLOADED, false)
+                Download.STATE_QUEUED -> {
+                    LogHelper.d(TAG, "${download.request.id} queued")
+                    Pair(DownloadStatus.QUEUED, null)
+                }
+
+                Download.STATE_DOWNLOADING -> {
+                    LogHelper.d(TAG, "${download.request.id} downloading")
+                    Pair(DownloadStatus.DOWNLOADING, null)
+                }
+
+                Download.STATE_COMPLETED -> {
+                    LogHelper.d(TAG, "${download.request.id} downloaded")
+                    Pair(DownloadStatus.DOWNLOADED, false)
+                }
+
                 Download.STATE_STOPPED -> {
                     if (download.stopReason == Constants.DOWNLOAD_CANCELED_REASON) {
+                        LogHelper.d(TAG, "${download.request.id} cancelled")
                         Pair(DownloadStatus.NOT_DOWNLOADED, false)
                     } else {
+                        LogHelper.d(TAG, "${download.request.id} stopped")
                         Pair(DownloadStatus.PAUSED, null)
                     }
                 }
 
                 Download.STATE_FAILED -> {
                     // TODO log the final exception
+                    LogHelper.d(TAG, "${download.request.id} failed")
                     Pair(DownloadStatus.NOT_DOWNLOADED, null)
                 }
 
-                else -> Pair(null, null)
+                else -> {
+                    when (download.state) {
+                        Download.STATE_REMOVING -> {
+                            LogHelper.d(TAG, "${download.request.id} removing")
+                        }
+                        Download.STATE_RESTARTING -> {
+                            LogHelper.d(TAG, "${download.request.id} restarting")
+                        }
+                        else -> {
+                            LogHelper.d(TAG, "${download.request.id} unknown download state")
+                        }
+                    }
+                    Pair(null, null)
+                }
             }
 
         longLivingScope.launch {
