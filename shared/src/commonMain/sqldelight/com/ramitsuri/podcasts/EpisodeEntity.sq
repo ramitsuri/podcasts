@@ -73,9 +73,9 @@ SELECT * FROM dbEpisode
 WHERE queuePosition != -1
 ORDER BY queuePosition ASC;
 
-getDownloadedEpisodes:
+getEpisodesForDownloadStatus:
 SELECT * FROM dbEpisode
-WHERE downloadStatus == "downloaded"
+WHERE downloadStatus == :status
 ORDER BY downloadedAt DESC;
 
 getFavoriteEpisodes:

@@ -17,16 +17,21 @@ class DownloadsViewModel internal constructor(
     val state =
         combine(
             episodesRepository.getDownloadedFlow(),
+            episodesRepository.getDownloadingFlow(),
             episodesRepository.getCurrentEpisode(),
             settings.getPlayingStateFlow(),
-        ) { subscribedEpisodes, currentlyPlayingEpisode, playingState ->
+        ) { downloadedEpisodes, downloadingEpisodes, currentlyPlayingEpisode, playingState ->
             val currentlyPlaying =
                 if (playingState == PlayingState.PLAYING || playingState == PlayingState.LOADING) {
                     currentlyPlayingEpisode
                 } else {
                     null
                 }
-            DownloadsViewState(subscribedEpisodes, currentlyPlaying?.id, playingState)
+            DownloadsViewState(
+                episodes = downloadedEpisodes + downloadingEpisodes,
+                currentlyPlayingEpisodeId = currentlyPlaying?.id,
+                currentlyPlayingEpisodeState = playingState,
+            )
         }.stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
