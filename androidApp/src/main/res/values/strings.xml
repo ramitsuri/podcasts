@@ -97,7 +97,8 @@
     <string name="episode_controller_add_to_queue">Add to queue</string>
     <string name="episode_controller_remove_from_queue">Remove from queue</string>
     <string name="episode_controller_download">Download</string>
-    <string name="episode_controller_downloading">Downloading</string>
+    <string name="episode_controller_downloading">Downloading %1$s%%</string>
+    <string name="episode_controller_queued">Queued</string>
     <string name="episode_controller_cancel_download">Cancel download</string>
     <string name="episode_controller_remove_download">Remove download</string>
     <string name="episode_controller_mark_played">Mark played</string>
