@@ -1,6 +1,9 @@
 package com.ramitsuri.podcasts.android.ui.components
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,8 +17,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.outlined.ArrowCircleDown
-import androidx.compose.material.icons.outlined.Downloading
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,14 +27,19 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -103,6 +109,7 @@ fun EpisodeControls(
         )
         DownloadButton(
             downloadStatus = episode.downloadStatus,
+            downloadProgress = episode.downloadProgress,
             onDownloadClicked = onDownloadClicked,
             onCancelDownloadClicked = onCancelDownloadClicked,
             onRemoveDownloadClicked = onRemoveDownloadClicked,
@@ -155,48 +162,54 @@ private fun QueueButton(
 @Composable
 private fun DownloadButton(
     downloadStatus: DownloadStatus,
+    downloadProgress: Double,
     onDownloadClicked: () -> Unit,
     onCancelDownloadClicked: () -> Unit,
     onRemoveDownloadClicked: () -> Unit,
 ) {
     val view = LocalView.current
-    when (downloadStatus) {
-        DownloadStatus.NOT_DOWNLOADED -> {
-            ControlWithTooltip(
-                icon = Icons.Outlined.ArrowCircleDown,
-                toolTipLabelRes = R.string.episode_controller_download,
-                onClicked = {
-                    onDownloadClicked()
-                    view.performHapticFeedback(HapticFeedbackConstantsCompat.CONFIRM)
-                },
-            )
-        }
+    val (toolTipLabel, onClick) =
+        when (downloadStatus) {
+            DownloadStatus.NOT_DOWNLOADED -> {
+                stringResource(R.string.episode_controller_download) to
+                    {
+                        onDownloadClicked()
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.CONFIRM)
+                    }
+            }
 
-        DownloadStatus.PAUSED,
-        DownloadStatus.DOWNLOADING,
-        DownloadStatus.QUEUED,
-        -> {
-            ControlWithTooltip(
-                icon = Icons.Outlined.Downloading,
-                toolTipLabelRes = R.string.episode_controller_downloading,
-                onClicked = {
-                    onCancelDownloadClicked()
-                    view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
-                },
-            )
-        }
+            DownloadStatus.PAUSED,
+            DownloadStatus.QUEUED,
+            -> {
+                stringResource(R.string.episode_controller_queued) to
+                    {
+                        onCancelDownloadClicked()
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
+                    }
+            }
 
-        DownloadStatus.DOWNLOADED -> {
-            ControlWithTooltip(
-                icon = ImageVector.vectorResource(R.drawable.ic_arrow_circle_down),
-                toolTipLabelRes = R.string.episode_controller_remove_download,
-                onClicked = {
-                    onRemoveDownloadClicked()
-                    view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
-                },
-                useTint = true,
-            )
+            DownloadStatus.DOWNLOADING -> {
+                val downloadPercent = downloadProgress.times(100).toInt().toString()
+                stringResource(R.string.episode_controller_downloading, downloadPercent) to
+                    {
+                        onCancelDownloadClicked()
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
+                    }
+            }
+
+            DownloadStatus.DOWNLOADED -> {
+                stringResource(R.string.episode_controller_remove_download) to
+                    {
+                        onRemoveDownloadClicked()
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
+                    }
+            }
         }
+    ControlWithTooltip(
+        toolTipLabel = toolTipLabel,
+        onClicked = { onClick() },
+    ) {
+        DownloadingIcon(downloadStatus = downloadStatus, progress = downloadProgress)
     }
 }
 
@@ -292,6 +305,116 @@ private fun EpisodeMenu(
     }
 }
 
+@Composable
+private fun DownloadingIcon(
+    downloadStatus: DownloadStatus,
+    progress: Double,
+    modifier: Modifier = Modifier,
+) {
+    val strokeColor =
+        if (downloadStatus == DownloadStatus.DOWNLOADING || downloadStatus == DownloadStatus.DOWNLOADED) {
+            greenColor
+        } else {
+            MaterialTheme.colorScheme.primary
+        }
+    val strokeWidth =
+        with(LocalDensity.current) {
+            2.dp.toPx()
+        }
+    Box(
+        modifier =
+            modifier
+                .size(24.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (downloadStatus == DownloadStatus.DOWNLOADING || downloadStatus == DownloadStatus.DOWNLOADED) {
+            val fillColor = greenColor
+            val sweepAngle = remember(Unit) { Animatable(0f) }
+            LaunchedEffect(progress) {
+                sweepAngle.animateTo(
+                    targetValue = (360 * progress).toFloat(),
+                    animationSpec =
+                        tween(
+                            durationMillis = 200,
+                            easing = LinearEasing,
+                        ),
+                )
+            }
+            Box(
+                modifier =
+                    modifier
+                        .size(20.dp)
+                        .drawBehind {
+                            drawArc(
+                                color = fillColor,
+                                startAngle = -90f,
+                                sweepAngle = sweepAngle.value,
+                                useCenter = true,
+                                size = size,
+                            )
+                        },
+            )
+        }
+        if (downloadStatus == DownloadStatus.NOT_DOWNLOADED ||
+            downloadStatus == DownloadStatus.DOWNLOADING ||
+            downloadStatus == DownloadStatus.DOWNLOADED
+        ) {
+            Box(
+                modifier =
+                    modifier
+                        .size(18.dp)
+                        .drawBehind {
+                            drawCircle(
+                                color = strokeColor,
+                                style = Stroke(width = strokeWidth),
+                            )
+                        },
+            )
+        }
+        if (downloadStatus == DownloadStatus.QUEUED || downloadStatus == DownloadStatus.PAUSED) {
+            val gapColor = MaterialTheme.colorScheme.background
+
+            fun DrawScope.arc(startAngle: Float) =
+                drawArc(
+                    color = gapColor,
+                    startAngle = startAngle,
+                    sweepAngle = 1f,
+                    useCenter = true,
+                    size = size,
+                    // Adding 1f to width because otherwise there's a thin circle that appears throughout
+                    style = Stroke(width = strokeWidth + 1f),
+                )
+            Box(
+                modifier =
+                    modifier
+                        .size(18.dp)
+                        .drawBehind {
+                            drawCircle(
+                                color = strokeColor,
+                                style = Stroke(width = strokeWidth),
+                            )
+                            arc(startAngle = -90f)
+                            arc(startAngle = -44.5f)
+                            arc(startAngle = -1f)
+                            arc(startAngle = 44.5f)
+                            arc(startAngle = 89f)
+                        },
+            )
+        }
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_down_inverse),
+            contentDescription = null,
+            tint =
+                if (downloadStatus == DownloadStatus.DOWNLOADED || downloadStatus == DownloadStatus.DOWNLOADING) {
+                    MaterialTheme.colorScheme.background
+                } else {
+                    MaterialTheme.colorScheme.primary
+                },
+            modifier = Modifier.size(24.dp),
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ControlWithTooltip(
@@ -300,24 +423,39 @@ private fun ControlWithTooltip(
     useTint: Boolean = false,
     onClicked: () -> Unit,
 ) {
+    ControlWithTooltip(
+        toolTipLabel = stringResource(toolTipLabelRes),
+        onClicked = onClicked,
+    ) {
+        val color =
+            if (useTint) {
+                greenColor
+            } else {
+                MaterialTheme.colorScheme.primary
+            }
+        Icon(imageVector = icon, contentDescription = "", tint = color, modifier = Modifier.size(24.dp))
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ControlWithTooltip(
+    toolTipLabel: String,
+    onClicked: () -> Unit,
+    icon: @Composable () -> Unit,
+) {
     val state = rememberTooltipState()
     TooltipBox(
         positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
         tooltip = {
             PlainTooltip {
-                Text(stringResource(id = toolTipLabelRes))
+                Text(toolTipLabel)
             }
         },
         state = state,
     ) {
         IconButton(onClick = onClicked) {
-            val color =
-                if (useTint) {
-                    greenColor
-                } else {
-                    MaterialTheme.colorScheme.primary
-                }
-            Icon(imageVector = icon, contentDescription = "", tint = color)
+            icon()
         }
     }
 }
@@ -442,7 +580,7 @@ private fun EpisodeControlsPreview_IsNotInQueue() {
 private fun EpisodeControlsPreview_IsDownloaded() {
     PreviewTheme {
         EpisodeControls(
-            episode(downloadStatus = DownloadStatus.DOWNLOADED),
+            episode(downloadStatus = DownloadStatus.DOWNLOADED, downloadProgress = 1.0),
             playingState = PlayingState.NOT_PLAYING,
             allowSharingToNotificationJournal = false,
             onPlayClicked = { },

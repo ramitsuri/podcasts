@@ -158,6 +158,16 @@ class EpisodesRepository internal constructor(
             }
     }
 
+    fun getDownloadingFlow(): Flow<List<Episode>> {
+        return episodesDao
+            .getDownloadingFlow()
+            .map { list ->
+                list.map { dbEpisode ->
+                    Episode(dbEpisode)
+                }
+            }
+    }
+
     fun getFavoritesFlow(): Flow<List<Episode>> {
         return episodesDao
             .getFavoritesFlow()

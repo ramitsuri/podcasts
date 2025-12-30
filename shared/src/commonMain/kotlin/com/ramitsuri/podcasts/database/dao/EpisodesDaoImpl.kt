@@ -130,7 +130,14 @@ internal class EpisodesDaoImpl(
 
     override fun getDownloadedFlow(): Flow<List<DbEpisode>> {
         return episodeEntityQueries
-            .getDownloadedEpisodes()
+            .getEpisodesForDownloadStatus(DownloadStatus.DOWNLOADED)
+            .asFlow()
+            .mapToList(ioDispatcher)
+    }
+
+    override fun getDownloadingFlow(): Flow<List<DbEpisode>> {
+        return episodeEntityQueries
+            .getEpisodesForDownloadStatus(DownloadStatus.DOWNLOADING)
             .asFlow()
             .mapToList(ioDispatcher)
     }
@@ -138,7 +145,7 @@ internal class EpisodesDaoImpl(
     override suspend fun getDownloaded(): List<DbEpisode> {
         return withContext(ioDispatcher) {
             episodeEntityQueries
-                .getDownloadedEpisodes()
+                .getEpisodesForDownloadStatus(DownloadStatus.DOWNLOADED)
                 .executeAsList()
         }
     }
