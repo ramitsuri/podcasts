@@ -35,30 +35,5 @@ jobs:
       - name: 'Setup Android SDK'
         uses: android-actions/setup-android@v2
 
-      #- name: 'Formatting and Tests'
-      #  run: ./scripts/verify.sh
-
-
-      - name: Generate Release Apk
-        run: ./gradlew androidApp:assembleRelease
-
-      - name: Sign phone Apk
-        uses: r0adkll/sign-android-release@v1
-        id: sign_phone_apk
-        with:
-          releaseDirectory: androidApp/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ secrets.ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: "34.0.0"
-
-      - name: Create github release
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: false
-          automatic_release_tag: ${{ github.ref_name }}
-          files: |
-            ${{steps.sign_phone_apk.outputs.signedReleaseFile}}
+      - name: 'Formatting and Tests'
+        run: ./scripts/verify.sh
