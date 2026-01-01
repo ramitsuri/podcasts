@@ -28,7 +28,7 @@ class DownloadsViewModel internal constructor(
                     null
                 }
             DownloadsViewState(
-                episodes = downloadedEpisodes + downloadingEpisodes,
+                episodes = (downloadedEpisodes + downloadingEpisodes).distinctBy { it.id },
                 currentlyPlayingEpisodeId = currentlyPlaying?.id,
                 currentlyPlayingEpisodeState = playingState,
             )
