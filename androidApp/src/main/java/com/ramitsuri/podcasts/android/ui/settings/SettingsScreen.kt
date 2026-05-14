@@ -77,6 +77,7 @@ fun SettingsScreen(
     onBack: () -> Unit,
     toggleAutoPlayNextInQueue: () -> Unit,
     toggleShouldDownloadOnWifiOnly: () -> Unit,
+    toggleRemoveFavoritesWhenAutoRemoving: () -> Unit,
     onFetchRequested: () -> Unit,
     onRemoveCompletedAfterSelected: (RemoveDownloadsAfter) -> Unit,
     onRemoveUnfinishedAfterSelected: (RemoveDownloadsAfter) -> Unit,
@@ -125,8 +126,10 @@ fun SettingsScreen(
                 lastFetchTime = state.lastFetchTime,
                 removeCompletedAfter = state.removeCompletedAfter,
                 removeUnfinishedAfter = state.removeUnfinishedAfter,
+                removeFavoritesWhenAutoRemoving = state.removeFavoritesWhenAutoRemoving,
                 onFetchRequested = onFetchRequested,
                 toggleShouldDownloadOnWifiOnly = toggleShouldDownloadOnWifiOnly,
+                toggleRemoveFavoritesWhenAutoRemoving = toggleRemoveFavoritesWhenAutoRemoving,
                 onRemoveCompletedAfterSelected = onRemoveCompletedAfterSelected,
                 onRemoveUnfinishedAfterSelected = onRemoveUnfinishedAfterSelected,
             )
@@ -173,7 +176,9 @@ private fun FetchSettings(
     lastFetchTime: Instant,
     removeCompletedAfter: RemoveDownloadsAfter,
     removeUnfinishedAfter: RemoveDownloadsAfter,
+    removeFavoritesWhenAutoRemoving: Boolean,
     toggleShouldDownloadOnWifiOnly: () -> Unit,
+    toggleRemoveFavoritesWhenAutoRemoving: () -> Unit,
     onFetchRequested: () -> Unit,
     onRemoveCompletedAfterSelected: (RemoveDownloadsAfter) -> Unit,
     onRemoveUnfinishedAfterSelected: (RemoveDownloadsAfter) -> Unit,
@@ -213,6 +218,13 @@ private fun FetchSettings(
             title = stringResource(id = R.string.settings_remove_unfinished),
             subtitle = removeUnfinishedAfter.text(),
             onClick = { showRemoveUnfinishedDialog = true },
+        )
+
+        // Remove favorites when auto removing
+        TitleSwitchRow(
+            title = stringResource(id = R.string.settings_remove_favorites_when_auto_removing),
+            switchChecked = removeFavoritesWhenAutoRemoving,
+            onClick = toggleRemoveFavoritesWhenAutoRemoving,
         )
 
         // Download on Wifi only
@@ -556,6 +568,7 @@ private fun SettingsPreview_LastFetchTimeNever() {
             onVersionClicked = { },
             onBackupRestoreClicked = { },
             toggleShouldDownloadOnWifiOnly = { },
+            toggleRemoveFavoritesWhenAutoRemoving = { },
             onAddWidgetClicked = { },
             onWidgetItemSeen = { },
         )
@@ -576,6 +589,7 @@ private fun SettingsPreview_LastFetchTimeMinutesAgo() {
             onVersionClicked = { },
             onBackupRestoreClicked = { },
             toggleShouldDownloadOnWifiOnly = { },
+            toggleRemoveFavoritesWhenAutoRemoving = { },
             onAddWidgetClicked = { },
             onWidgetItemSeen = { },
         )
@@ -596,6 +610,7 @@ private fun SettingsPreview_Fetching() {
             onVersionClicked = { },
             onBackupRestoreClicked = { },
             toggleShouldDownloadOnWifiOnly = { },
+            toggleRemoveFavoritesWhenAutoRemoving = { },
             onAddWidgetClicked = { },
             onWidgetItemSeen = { },
         )
