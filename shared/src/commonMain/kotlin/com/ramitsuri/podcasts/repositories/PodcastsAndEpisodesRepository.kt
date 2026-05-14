@@ -60,6 +60,7 @@ class PodcastsAndEpisodesRepository internal constructor(
         now: Instant,
         removeCompletedAfter: RemoveDownloadsAfter,
         removeUnfinishedAfter: RemoveDownloadsAfter,
+        removeFavorites: Boolean,
     ): PodcastResult<Unit> {
         return withContext(ioDispatcher) {
             val failures = mutableListOf<PodcastResult.Failure>()
@@ -92,6 +93,7 @@ class PodcastsAndEpisodesRepository internal constructor(
                     .getEpisodesEligibleForDownloadRemoval(
                         removeCompletedAfter = removeCompletedAfter,
                         removeUnfinishedAfter = removeUnfinishedAfter,
+                        removeFavorites = removeFavorites,
                         now = now,
                     )
                     .forEach { episode ->

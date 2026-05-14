@@ -569,6 +569,7 @@ fun NavGraph(
                         onVersionClicked = viewModel::onVersionClicked,
                         onBackupRestoreClicked = { navigator.navigate(BackupRestore) },
                         toggleShouldDownloadOnWifiOnly = viewModel::toggleShouldDownloadOnWifiOnly,
+                        toggleRemoveFavoritesWhenAutoRemoving = viewModel::toggleRemoveFavoritesWhenAutoRemoving,
                         onAddWidgetClicked = {
                             coroutineScope.launch {
                                 context.addWidget()

@@ -227,4 +227,12 @@ class Settings internal constructor(private val keyValueStore: KeyValueStore) {
             }
             .first()
     }
+
+    fun removeFavoritesWhenAutoRemoving(): Flow<Boolean> {
+        return keyValueStore.getBooleanFlow(Key.REMOVE_FAVORITES_WHEN_AUTO_REMOVING, true)
+    }
+
+    suspend fun setRemoveFavoritesWhenAutoRemoving(removeFavoritesWhenAutoRemoving: Boolean) {
+        keyValueStore.putBoolean(Key.REMOVE_FAVORITES_WHEN_AUTO_REMOVING, removeFavoritesWhenAutoRemoving)
+    }
 }

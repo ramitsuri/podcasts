@@ -187,6 +187,7 @@
     <string name="settings_last_fetched_at_time_format">Last downloaded %1$s</string>
     <string name="settings_remove_completed">Remove completed episodes</string>
     <string name="settings_remove_unfinished">Remove unfinished episodes</string>
+    <string name="settings_remove_favorites_when_auto_removing">Remove favorites</string>
     <string name="settings_remove_after_24_hours">After 24 hours</string>
     <string name="settings_remove_after_7_days">After 7 days</string>
     <string name="settings_remove_after_30_days">After 30 days</string>

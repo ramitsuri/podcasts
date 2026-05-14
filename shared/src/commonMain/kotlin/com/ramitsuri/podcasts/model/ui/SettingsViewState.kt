@@ -13,4 +13,5 @@ data class SettingsViewState(
     val shouldDownloadOnWifiOnly: Boolean = false,
     val showWidgetNewBadge: Boolean = false,
     val clipboardContent: String = "",
+    val removeFavoritesWhenAutoRemoving: Boolean = true,
 )

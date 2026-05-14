@@ -189,6 +189,7 @@ class EpisodesRepository internal constructor(
     suspend fun getEpisodesEligibleForDownloadRemoval(
         removeCompletedAfter: RemoveDownloadsAfter,
         removeUnfinishedAfter: RemoveDownloadsAfter,
+        removeFavorites: Boolean,
         now: Instant,
     ): List<Episode> {
         return episodesDao
@@ -197,7 +198,9 @@ class EpisodesRepository internal constructor(
                 Episode(dbEpisode)
             }
             .filter { episode ->
-                if (episode.completedAt != null) { // Completed episode
+                if (!removeFavorites && episode.isFavorite) {
+                    false
+                } else if (episode.completedAt != null) { // Completed episode
                     now.minus(episode.completedAt) >= removeCompletedAfter.duration
                 } else { // Not completed episode
                     val downloadAtTime = episode.downloadedAt ?: return@filter false

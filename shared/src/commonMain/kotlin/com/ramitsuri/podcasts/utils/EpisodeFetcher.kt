@@ -60,6 +60,7 @@ class EpisodeFetcher(
                     now = clock.now(),
                     removeCompletedAfter = settings.getRemoveCompletedEpisodesAfter().first(),
                     removeUnfinishedAfter = settings.getRemoveUnfinishedEpisodesAfter().first(),
+                    removeFavorites = settings.removeFavoritesWhenAutoRemoving().first(),
                 )
             if (result is PodcastResult.Failure) {
                 LogHelper.v(TAG, "Failed to fetch podcasts: ${result.error}")

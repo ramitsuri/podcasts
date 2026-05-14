@@ -19,6 +19,7 @@ internal enum class Key(val value: String) {
     TRENDING_PODCASTS_LANGUAGES("trending_podcasts_languages"),
     TRENDING_PODCASTS_CATEGORIES("trending_podcasts_categories"),
     DEVICE_ID("device_id"),
+    REMOVE_FAVORITES_WHEN_AUTO_REMOVING("remove_favorites_when_auto_removing"),
     ;
 
     companion object {

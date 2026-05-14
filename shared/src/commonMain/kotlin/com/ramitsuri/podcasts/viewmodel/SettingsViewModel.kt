@@ -32,6 +32,7 @@ class SettingsViewModel internal constructor(
             settings.getRemoveUnfinishedEpisodesAfter(),
             settings.shouldDownloadOnWifiOnly(),
             settings.hasSeenWidgetItem(),
+            settings.removeFavoritesWhenAutoRemoving(),
             fetching,
             clipboardContent,
         ) {
@@ -41,6 +42,7 @@ class SettingsViewModel internal constructor(
                 removeUnfinishedAfter,
                 shouldDownloadOnWifiOnly,
                 hasSeenWidgetItem,
+                removeFavoritesWhenAutoRemoving,
                 fetching,
                 clipboardContent,
             ->
@@ -53,6 +55,7 @@ class SettingsViewModel internal constructor(
                 showWidgetNewBadge = !hasSeenWidgetItem,
                 fetching = fetching,
                 clipboardContent = clipboardContent,
+                removeFavoritesWhenAutoRemoving = removeFavoritesWhenAutoRemoving,
             )
         }.stateIn(
             viewModelScope,
@@ -118,6 +121,13 @@ class SettingsViewModel internal constructor(
                 delay(1000)
                 clipboardContent.value = ""
             }
+        }
+    }
+
+    fun toggleRemoveFavoritesWhenAutoRemoving() {
+        val currentRemoveFavoritesWhenAutoRemoving = state.value.removeFavoritesWhenAutoRemoving
+        longLivingScope.launch {
+            settings.setRemoveFavoritesWhenAutoRemoving(!currentRemoveFavoritesWhenAutoRemoving)
         }
     }
 }
