@@ -135,6 +135,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             MediaSession.Builder(this, player)
                 .setId(UUID.randomUUID().toString())
                 .setCallback(MediaSessionCallback())
+                .setBitmapLoader(CoilMediaBitmapLoader(this, coroutineScope))
                 .setCustomLayout(customLayout)
                 .build()
 
