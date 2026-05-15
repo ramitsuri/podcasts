@@ -3,7 +3,6 @@ package com.ramitsuri.podcasts.widget.ui
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,7 +42,7 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
-import coil.ImageLoader
+import coil.imageLoader
 import coil.request.ErrorResult
 import com.ramitsuri.podcasts.utils.LogHelper
 import com.ramitsuri.podcasts.utils.imageRequest
@@ -340,13 +339,17 @@ private fun WidgetAsyncImage(
             context
                 .imageRequest(url)
                 .size(600, 600)
-                .target { data: Drawable ->
-                    bitmap = (data as BitmapDrawable).bitmap
-                }
+                .allowHardware(false)
                 .build()
 
-        val result = ImageLoader(context).execute(request)
-        if (result is ErrorResult) {
+        val result = context.imageLoader.execute(request)
+        if (result is coil.request.SuccessResult) {
+            LogHelper.v("WidgetAsyncImage", "Loaded image")
+            val drawable = result.drawable
+            if (drawable is BitmapDrawable) {
+                bitmap = drawable.bitmap
+            }
+        } else if (result is ErrorResult) {
             val t = result.throwable
             LogHelper.v("WidgetAsyncImage", "Error loading image: $t")
         }
