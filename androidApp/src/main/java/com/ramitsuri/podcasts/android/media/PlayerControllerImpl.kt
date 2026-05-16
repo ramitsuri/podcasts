@@ -14,9 +14,11 @@ import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -31,8 +33,6 @@ class PlayerControllerImpl(
     private var controller: MediaController? = null
     private var controllerFuture: ListenableFuture<MediaController>? = null
 
-    private var updateQueueJob: Job? = null
-
     override fun initializePlayer() {
         LogHelper.d(TAG, "Initialize player")
         val sessionToken = SessionToken(appContext, ComponentName(appContext, PodcastMediaSessionService::class.java))
@@ -41,24 +41,21 @@ class PlayerControllerImpl(
             ?.addListener(
                 {
                     controller = controllerFuture?.get()
+                    updateQueue()
                 },
                 MoreExecutors.directExecutor(),
             )
     }
 
     override fun play(episode: Episode) {
-        if (controller?.currentMediaItem?.mediaId == episode.id) {
-            controller?.play()
-            updateQueue()
-            return
-        }
-        controller?.setMediaItemForEpisode(episode)
-        controller?.prepare()
-        if (episode.progressInSeconds != 0) {
-            controller?.seekTo(episode.progressInSeconds * 1000L)
+        if (controller?.currentMediaItem?.mediaId != episode.id) {
+            controller?.setMediaItemForEpisode(episode)
+            controller?.prepare()
+            if (episode.progressInSeconds != 0) {
+                controller?.seekTo(episode.progressInSeconds * 1000L)
+            }
         }
         controller?.play()
-        updateQueue()
     }
 
     override fun playCurrentEpisode() {
@@ -75,56 +72,67 @@ class PlayerControllerImpl(
         }
     }
 
-    override fun updateQueue() {
-        updateQueueJob?.cancel()
-        updateQueueJob =
-            coroutineScope.launch {
-                delay(300)
-                val currentEpisode = episodesRepository.getCurrentEpisode().first()
-                val playerQueue =
-                    if (currentEpisode == null ||
-                        currentEpisode.queuePosition == Episode.NOT_IN_QUEUE ||
-                        settings.autoPlayNextInQueue().first().not() ||
-                        settings.getSleepTimerFlow().first() is SleepTimer.EndOfEpisode
-                    ) {
-                        emptyList()
+    private fun updateQueue() {
+        coroutineScope.launch {
+            combine(
+                episodesRepository.getCurrentEpisode().distinctUntilChangedBy { it?.id },
+                settings.autoPlayNextInQueue(),
+                settings.getSleepTimerFlow().map { it is SleepTimer.EndOfEpisode }.distinctUntilChanged(),
+                episodesRepository.getQueueFlow().distinctUntilChangedBy { queue -> queue.map { it.id } },
+            ) { currentEpisode, isAutoPlayOn, isEndOfEpisodeTimer, appQueue ->
+                val appQueueIds = appQueue.map { it.id }
+                val restOfTheQueue =
+                    when {
+                        !isAutoPlayOn || isEndOfEpisodeTimer -> {
+                            emptyList()
+                        }
+
+                        currentEpisode == null -> {
+                            appQueue
+                        }
+
+                        currentEpisode.id in appQueueIds -> {
+                            // Use current episode from queue because currentEpisode flow provides updates here only
+                            // if id changes
+                            val currentEpisodeFromQueue = appQueue.first { it.id == currentEpisode.id }
+                            appQueue.filter { it.queuePosition > currentEpisodeFromQueue.queuePosition }
+                        }
+
+                        else -> {
+                            emptyList()
+                        }
+                    }.sortedBy { it.queuePosition }
+                currentEpisode to restOfTheQueue
+            }.collect { (currentEpisode, appQueue) ->
+                controller?.let { controller ->
+                    if (currentEpisode != null) {
+                        if (controller.currentMediaItem == null) {
+                            controller.setMediaItemForEpisode(currentEpisode)
+                        } else {
+                            val currentIndex = controller.currentMediaItemIndex
+                            if (controller.mediaItemCount > currentIndex + 1) {
+                                controller.removeMediaItems(currentIndex + 1, controller.mediaItemCount)
+                            }
+                        }
                     } else {
-                        episodesRepository.getQueue().filter { it.queuePosition > currentEpisode.queuePosition }
+                        controller.clearMediaItems()
                     }
-                removeEverythingButCurrentEpisode()
-                addEpisodes(playerQueue)
+                    controller.addMediaItems(appQueue.map { it.asMediaItem() })
+                }
                 logQueue()
             }
+        }
     }
 
-    override fun logQueue(): List<String> {
-        return (
+    private fun logQueue() {
+        (
             controller?.let {
-                (0 until it.mediaItemCount).map { index ->
-                    "$index: ${it.getMediaItemAt(index).mediaMetadata.title}\n"
+                (0 until it.mediaItemCount).joinToString("\n") { index ->
+                    "$index: ${it.getMediaItemAt(index).mediaMetadata.title}"
                 }
-            } ?: listOf("Controller is null")
-        ).also {
-            LogHelper.d(TAG, "$it")
-        }
-    }
-
-    private fun removeEverythingButCurrentEpisode() {
-        controller?.let {
-            val currentIndex = it.currentMediaItemIndex
-            for (index in (it.mediaItemCount - 1) downTo 0) {
-                if (index != currentIndex) {
-                    it.removeMediaItem(index)
-                }
-            }
-        }
-    }
-
-    private fun addEpisodes(episodes: List<Episode>) {
-        controller?.let {
-            for (queueEpisode in episodes) {
-                it.addMediaItem(queueEpisode.asMediaItem())
-            }
+            } ?: "Controller is null"
+        ).let {
+            LogHelper.d(TAG, it)
         }
     }
 

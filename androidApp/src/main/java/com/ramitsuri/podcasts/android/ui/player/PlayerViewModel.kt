@@ -15,7 +15,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -36,7 +35,6 @@ class PlayerViewModel(
 
     private var updateEpisodeStateJob: Job? = null
     private var updateSeekJob: Job? = null
-    private var updateQueueJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -201,39 +199,6 @@ class PlayerViewModel(
         }
     }
 
-    fun viewStarted() {
-        startUpdatingQueue()
-    }
-
-    fun viewStopped() {
-        stopUpdatingQueue()
-    }
-
-    private fun startUpdatingQueue() {
-        updateQueueJob =
-            longLivingScope.launch {
-                launch {
-                    settings
-                        .autoPlayNextInQueue()
-                        .collect {
-                            playerController.updateQueue()
-                        }
-                }
-                launch {
-                    settings
-                        .getSleepTimerFlow()
-                        .filter { it is SleepTimer.EndOfEpisode }
-                        .collect {
-                            playerController.updateQueue()
-                        }
-                }
-            }
-    }
-
-    private fun stopUpdatingQueue() {
-        updateQueueJob?.cancel()
-    }
-
     private fun updateSleepTimerDuration() {
         when (val sleepTimer = _state.value.sleepTimer) {
             is SleepTimer.Custom -> {
@@ -273,8 +238,6 @@ class PlayerViewModel(
     )
 
     companion object {
-        private const val TAG = "PlayerViewModel"
-
         fun factory(): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory, KoinComponent {
                 @Suppress("UNCHECKED_CAST")

@@ -27,14 +27,12 @@ internal class EpisodeControllerImpl(
     override fun onEpisodeAddToQueueClicked(episode: Episode) {
         longLivingScope.launch {
             episodesRepository.addToQueue(episode.id)
-            playerController.updateQueue()
         }
     }
 
     override fun onEpisodeRemoveFromQueueClicked(episode: Episode) {
         longLivingScope.launch {
             episodesRepository.removeFromQueue(episode.id)
-            playerController.updateQueue()
         }
     }
 
@@ -61,7 +59,6 @@ internal class EpisodeControllerImpl(
                 }
             }
             episodesRepository.markPlayed(episodeId)
-            playerController.updateQueue()
         }
     }
 
