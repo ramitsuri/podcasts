@@ -9,13 +9,13 @@ import com.ramitsuri.podcasts.model.ui.SleepTimer
 import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
+import com.ramitsuri.podcasts.utils.combine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -202,32 +202,10 @@ class PlayerViewModel(
     }
 
     fun viewStarted() {
-        startUpdatingQueue()
     }
 
     fun viewStopped() {
         stopUpdatingQueue()
-    }
-
-    private fun startUpdatingQueue() {
-        updateQueueJob =
-            longLivingScope.launch {
-                launch {
-                    settings
-                        .autoPlayNextInQueue()
-                        .collect {
-                            playerController.updateQueue()
-                        }
-                }
-                launch {
-                    settings
-                        .getSleepTimerFlow()
-                        .filter { it is SleepTimer.EndOfEpisode }
-                        .collect {
-                            playerController.updateQueue()
-                        }
-                }
-            }
     }
 
     private fun stopUpdatingQueue() {

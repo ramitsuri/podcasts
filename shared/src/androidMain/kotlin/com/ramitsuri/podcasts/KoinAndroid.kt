@@ -3,7 +3,6 @@ package com.ramitsuri.podcasts
 import android.app.Application
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsAndEpisodesRepository
 import com.ramitsuri.podcasts.repositories.PodcastsRepository
@@ -86,7 +85,6 @@ actual val platformModule =
                 episodeController = get<EpisodeController>(),
                 episodesRepository = get<EpisodesRepository>(),
                 settings = get<Settings>(),
-                playerController = get<PlayerController>(),
             )
         }
 

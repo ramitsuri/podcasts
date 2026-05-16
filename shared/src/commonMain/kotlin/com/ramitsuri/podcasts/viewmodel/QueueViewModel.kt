@@ -3,7 +3,6 @@ package com.ramitsuri.podcasts.viewmodel
 import com.ramitsuri.podcasts.model.PlayingState
 import com.ramitsuri.podcasts.model.QueueSort
 import com.ramitsuri.podcasts.model.ui.QueueViewState
-import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
 import com.ramitsuri.podcasts.utils.EpisodeController
@@ -17,10 +16,9 @@ class QueueViewModel internal constructor(
     episodeController: EpisodeController,
     settings: Settings,
     private val episodesRepository: EpisodesRepository,
-    private val playerController: PlayerController,
 ) : ViewModel(), EpisodeController by episodeController {
     private val queueRearrangementHelper =
-        QueueRearrangementHelper(viewModelScope, episodesRepository, playerController)
+        QueueRearrangementHelper(viewModelScope, episodesRepository)
 
     init {
         viewModelScope.launch {
@@ -92,7 +90,6 @@ class QueueViewModel internal constructor(
             }.forEachIndexed { index, episode ->
                 episodesRepository.updateQueuePosition(episode.id, index)
             }
-            playerController.updateQueue()
         }
     }
 }
