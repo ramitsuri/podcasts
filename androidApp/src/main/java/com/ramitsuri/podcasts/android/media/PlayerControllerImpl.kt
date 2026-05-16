@@ -114,6 +114,8 @@ class PlayerControllerImpl(
                                 controller.removeMediaItems(currentIndex + 1, controller.mediaItemCount)
                             }
                         }
+                    } else {
+                        controller.clearMediaItems()
                     }
                     controller.addMediaItems(appQueue.map { it.asMediaItem() })
                 }

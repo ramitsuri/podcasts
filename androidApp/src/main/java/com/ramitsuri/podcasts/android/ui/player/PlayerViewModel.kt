@@ -9,7 +9,6 @@ import com.ramitsuri.podcasts.model.ui.SleepTimer
 import com.ramitsuri.podcasts.player.PlayerController
 import com.ramitsuri.podcasts.repositories.EpisodesRepository
 import com.ramitsuri.podcasts.settings.Settings
-import com.ramitsuri.podcasts.utils.combine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -36,7 +35,6 @@ class PlayerViewModel(
 
     private var updateEpisodeStateJob: Job? = null
     private var updateSeekJob: Job? = null
-    private var updateQueueJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -201,17 +199,6 @@ class PlayerViewModel(
         }
     }
 
-    fun viewStarted() {
-    }
-
-    fun viewStopped() {
-        stopUpdatingQueue()
-    }
-
-    private fun stopUpdatingQueue() {
-        updateQueueJob?.cancel()
-    }
-
     private fun updateSleepTimerDuration() {
         when (val sleepTimer = _state.value.sleepTimer) {
             is SleepTimer.Custom -> {
@@ -251,8 +238,6 @@ class PlayerViewModel(
     )
 
     companion object {
-        private const val TAG = "PlayerViewModel"
-
         fun factory(): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory, KoinComponent {
                 @Suppress("UNCHECKED_CAST")

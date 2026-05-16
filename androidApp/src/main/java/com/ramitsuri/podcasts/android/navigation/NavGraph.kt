@@ -44,8 +44,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.LifecycleStartEffect
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -690,13 +688,6 @@ fun NavGraph(
                                 .fillMaxWidth()
                                 .background(MaterialTheme.colorScheme.surfaceContainerLow),
                     ) {
-                        LifecycleStartEffect(Unit, LocalLifecycleOwner.current) {
-                            playerViewModel.viewStarted()
-
-                            onStopOrDispose {
-                                playerViewModel.viewStopped()
-                            }
-                        }
                         PlayerScreen(
                             expandProgress = sheetExpandProgress,
                             state = playerState,
