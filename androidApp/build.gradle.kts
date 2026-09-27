@@ -10,11 +10,11 @@ plugins {
 
 android {
     namespace = "com.ramitsuri.podcasts.android"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "com.ramitsuri.podcasts.android"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 37
         versionCode = 57
         versionName = "5.7"
     }
