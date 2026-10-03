@@ -49,4 +49,6 @@ dependencies {
     implementation(libs.glance.material3)
     implementation(libs.kotlin.serialization)
     implementation(libs.androidx.navigation3.runtime)
+
+    testImplementation(libs.kotlin.test)
 }

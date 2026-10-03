@@ -36,6 +36,7 @@ import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
+import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
@@ -46,10 +47,6 @@ import coil.imageLoader
 import coil.request.ErrorResult
 import com.ramitsuri.podcasts.utils.LogHelper
 import com.ramitsuri.podcasts.utils.imageRequest
-import com.ramitsuri.podcasts.widget.AppWidget.Companion.BIG_RECTANGLE
-import com.ramitsuri.podcasts.widget.AppWidget.Companion.BIG_SQUARE
-import com.ramitsuri.podcasts.widget.AppWidget.Companion.SMALL_RECTANGLE
-import com.ramitsuri.podcasts.widget.AppWidget.Companion.SMALL_SQUARE
 import com.ramitsuri.podcasts.widget.R
 import com.ramitsuri.podcasts.widget.action.WidgetAction
 import com.ramitsuri.podcasts.widget.data.WidgetState
@@ -59,7 +56,7 @@ internal fun AppWidgetUi(state: WidgetState) {
     val size = LocalSize.current
 
     GlanceTheme {
-        Scaffold {
+        Scaffold(horizontalPadding = 0.dp) {
             when (state) {
                 is WidgetState.CurrentlyPlaying -> {
                     CurrentlyPlayingUi(state, size)
@@ -106,119 +103,174 @@ private fun CurrentlyPlayingUi(
     state: WidgetState.CurrentlyPlaying,
     size: DpSize,
 ) {
-    val artUri = state.albumArtUri
     val uri = state.deepLinkUrl.toUri()
     val intent = Intent(Intent.ACTION_VIEW, uri)
+    val fontScale = LocalContext.current.resources.configuration.fontScale
+    val layout = WidgetLayout.compute(width = size.width, height = size.height, fontScale = fontScale)
     Column(
         modifier =
-            GlanceModifier.fillMaxSize()
+            GlanceModifier
+                .fillMaxSize()
+                .padding(
+                    horizontal = layout.horizontalPadding,
+                    vertical = WidgetLayout.VERTICAL_PADDING,
+                )
                 .clickable(actionStartActivity(intent)),
         verticalAlignment = Alignment.CenterVertically,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        when (size) {
-            BIG_SQUARE -> {
-                Row(
-                    modifier = GlanceModifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    AlbumArt(imageUrl = artUri, size = 100.dp)
-                    Spacer(GlanceModifier.width(8.dp))
-                    Title(
-                        text = state.episodeTitle,
-                        size = 14.sp,
-                        maxLines = 3,
-                    )
-                }
-                Spacer(GlanceModifier.height(16.dp))
-                Row(
-                    modifier = GlanceModifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    ReplayButton(size = 48.dp)
-                    Spacer(GlanceModifier.width(8.dp))
-                    PlayPauseButton(
-                        size = 64.dp,
-                        playing = state.isPlaying,
-                    )
-                    Spacer(GlanceModifier.width(8.dp))
-                    SkipButton(size = 48.dp)
-                }
-            }
+        when (layout.arrangement) {
+            WidgetLayout.Arrangement.ArtBesideTitle -> ArtBesideTitleUi(state, layout)
+            WidgetLayout.Arrangement.SingleRow -> SingleRowUi(state, layout)
+            WidgetLayout.Arrangement.SingleColumn -> SingleColumnUi(state, layout)
+            WidgetLayout.Arrangement.TwoRows -> TwoRowsUi(state, layout)
+        }
+    }
+}
 
-            BIG_RECTANGLE -> {
-                Title(
-                    text = state.episodeTitle,
-                    size = 14.sp,
-                    maxLines = 1,
-                )
-                Spacer(GlanceModifier.height(8.dp))
-                Row(
-                    modifier = GlanceModifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    AlbumArt(imageUrl = artUri, size = 56.dp)
-                    Spacer(GlanceModifier.defaultWeight())
-                    ReplayButton(size = 48.dp)
-                    Spacer(GlanceModifier.width(8.dp))
-                    PlayPauseButton(
-                        size = 56.dp,
-                        playing = state.isPlaying,
-                    )
-                    Spacer(GlanceModifier.width(8.dp))
-                    SkipButton(size = 48.dp)
-                }
-            }
+@Composable
+private fun ArtBesideTitleUi(
+    state: WidgetState.CurrentlyPlaying,
+    layout: WidgetLayout,
+) {
+    Row(
+        modifier = GlanceModifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        layout.artSize?.let { artSize ->
+            AlbumArt(imageUrl = state.albumArtUri, size = artSize)
+            Spacer(GlanceModifier.width(WidgetLayout.GAP))
+        }
+        Title(
+            text = state.episodeTitle,
+            size = 14.sp,
+            maxLines = layout.titleLines,
+            textAlign = TextAlign.Start,
+            modifier = GlanceModifier.defaultWeight(),
+        )
+    }
+    Spacer(GlanceModifier.height(WidgetLayout.GAP))
+    Row(
+        modifier = GlanceModifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Controls(state, layout)
+    }
+}
 
-            SMALL_SQUARE -> {
-                Title(
-                    text = state.episodeTitle,
-                    size = 14.sp,
-                    maxLines = 3,
-                )
-                Spacer(GlanceModifier.height(8.dp))
-                Row(
-                    modifier = GlanceModifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    AlbumArt(imageUrl = artUri, size = 64.dp)
-                    Spacer(GlanceModifier.defaultWeight())
-                    PlayPauseButton(size = 64.dp, state.isPlaying)
-                }
-                Spacer(GlanceModifier.height(8.dp))
-                Row(
-                    modifier = GlanceModifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    ReplayButton(size = 48.dp)
-                    Spacer(GlanceModifier.width(16.dp))
-                    SkipButton(size = 48.dp)
-                }
-            }
-
-            SMALL_RECTANGLE -> {
-                Title(
-                    text = state.episodeTitle,
-                    size = 12.sp,
-                    maxLines = 1,
-                )
-                Spacer(GlanceModifier.height(8.dp))
-                Row(
-                    modifier = GlanceModifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    AlbumArt(imageUrl = artUri, size = 48.dp)
-                    Spacer(GlanceModifier.width(8.dp))
-                    PlayPauseButton(size = 48.dp, state.isPlaying)
-                }
+@Composable
+private fun SingleRowUi(
+    state: WidgetState.CurrentlyPlaying,
+    layout: WidgetLayout,
+) {
+    if (layout.titleLines > 0) {
+        Title(
+            text = state.episodeTitle,
+            size = 14.sp,
+            maxLines = layout.titleLines,
+        )
+        Spacer(GlanceModifier.height(WidgetLayout.TITLE_GAP))
+    }
+    Row(
+        modifier = GlanceModifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        layout.artSize?.let { artSize ->
+            AlbumArt(imageUrl = state.albumArtUri, size = artSize)
+            if (layout.secondarySize != null) {
+                // Push controls to the end when the full row is shown
+                Spacer(GlanceModifier.defaultWeight())
+            } else {
+                Spacer(GlanceModifier.width(WidgetLayout.GAP))
             }
         }
+        Controls(state, layout)
+    }
+}
+
+@Composable
+private fun TwoRowsUi(
+    state: WidgetState.CurrentlyPlaying,
+    layout: WidgetLayout,
+) {
+    if (layout.titleLines > 0) {
+        Title(
+            text = state.episodeTitle,
+            size = 14.sp,
+            maxLines = layout.titleLines,
+        )
+        Spacer(GlanceModifier.height(WidgetLayout.TITLE_GAP))
+    }
+    Row(
+        modifier = GlanceModifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        layout.artSize?.let { artSize ->
+            AlbumArt(imageUrl = state.albumArtUri, size = artSize)
+            Spacer(GlanceModifier.width(WidgetLayout.GAP))
+        }
+        PlayPauseButton(size = layout.playSize, playing = state.isPlaying)
+    }
+    layout.secondarySize?.let { secondarySize ->
+        Spacer(GlanceModifier.height(WidgetLayout.GAP))
+        Row(
+            modifier = GlanceModifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ReplayButton(size = secondarySize)
+            Spacer(GlanceModifier.width(WidgetLayout.GAP))
+            SkipButton(size = secondarySize)
+        }
+    }
+}
+
+@Composable
+private fun SingleColumnUi(
+    state: WidgetState.CurrentlyPlaying,
+    layout: WidgetLayout,
+) {
+    layout.artSize?.let { artSize ->
+        AlbumArt(imageUrl = state.albumArtUri, size = artSize)
+        Spacer(GlanceModifier.height(WidgetLayout.GAP))
+    }
+    if (layout.titleLines > 0) {
+        Title(
+            text = state.episodeTitle,
+            size = 14.sp,
+            maxLines = layout.titleLines,
+        )
+        Spacer(GlanceModifier.height(WidgetLayout.TITLE_GAP))
+    }
+    val secondarySize = layout.secondarySize
+    if (secondarySize != null) {
+        ReplayButton(size = secondarySize)
+        Spacer(GlanceModifier.height(WidgetLayout.GAP))
+    }
+    PlayPauseButton(size = layout.playSize, playing = state.isPlaying)
+    if (secondarySize != null) {
+        Spacer(GlanceModifier.height(WidgetLayout.GAP))
+        SkipButton(size = secondarySize)
+    }
+}
+
+@Composable
+private fun Controls(
+    state: WidgetState.CurrentlyPlaying,
+    layout: WidgetLayout,
+) {
+    val secondarySize = layout.secondarySize
+    if (secondarySize != null) {
+        ReplayButton(size = secondarySize)
+        Spacer(GlanceModifier.width(WidgetLayout.GAP))
+    }
+    PlayPauseButton(size = layout.playSize, playing = state.isPlaying)
+    if (secondarySize != null) {
+        Spacer(GlanceModifier.width(WidgetLayout.GAP))
+        SkipButton(size = secondarySize)
     }
 }
 
@@ -235,15 +287,18 @@ fun Title(
     text: String,
     size: TextUnit,
     maxLines: Int,
+    textAlign: TextAlign = TextAlign.Center,
+    modifier: GlanceModifier = GlanceModifier,
 ) {
     Text(
         text = text,
+        modifier = modifier,
         style =
             TextStyle(
                 fontSize = size,
                 fontWeight = FontWeight.Medium,
                 color = GlanceTheme.colors.onPrimaryContainer,
-                textAlign = TextAlign.Center,
+                textAlign = textAlign,
             ),
         maxLines = maxLines,
     )
