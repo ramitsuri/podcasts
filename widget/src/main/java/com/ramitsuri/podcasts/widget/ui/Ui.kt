@@ -44,7 +44,9 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import coil.imageLoader
+import coil.memory.MemoryCache
 import coil.request.ErrorResult
+import coil.request.SuccessResult
 import com.ramitsuri.podcasts.utils.LogHelper
 import com.ramitsuri.podcasts.utils.imageRequest
 import com.ramitsuri.podcasts.widget.R
@@ -103,6 +105,7 @@ private fun CurrentlyPlayingUi(
     state: WidgetState.CurrentlyPlaying,
     size: DpSize,
 ) {
+    val albumArtBitmap = rememberAlbumArtBitmap(state.albumArtUri)
     val uri = state.deepLinkUrl.toUri()
     val intent = Intent(Intent.ACTION_VIEW, uri)
     val fontScale = LocalContext.current.resources.configuration.fontScale
@@ -120,10 +123,10 @@ private fun CurrentlyPlayingUi(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         when (layout.arrangement) {
-            WidgetLayout.Arrangement.ArtBesideTitle -> ArtBesideTitleUi(state, layout)
-            WidgetLayout.Arrangement.SingleRow -> SingleRowUi(state, layout)
-            WidgetLayout.Arrangement.SingleColumn -> SingleColumnUi(state, layout)
-            WidgetLayout.Arrangement.TwoRows -> TwoRowsUi(state, layout)
+            WidgetLayout.Arrangement.ArtBesideTitle -> ArtBesideTitleUi(state, layout, albumArtBitmap)
+            WidgetLayout.Arrangement.SingleRow -> SingleRowUi(state, layout, albumArtBitmap)
+            WidgetLayout.Arrangement.SingleColumn -> SingleColumnUi(state, layout, albumArtBitmap)
+            WidgetLayout.Arrangement.TwoRows -> TwoRowsUi(state, layout, albumArtBitmap)
         }
     }
 }
@@ -132,13 +135,14 @@ private fun CurrentlyPlayingUi(
 private fun ArtBesideTitleUi(
     state: WidgetState.CurrentlyPlaying,
     layout: WidgetLayout,
+    albumArtBitmap: Bitmap?,
 ) {
     Row(
         modifier = GlanceModifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         layout.artSize?.let { artSize ->
-            AlbumArt(imageUrl = state.albumArtUri, size = artSize)
+            AlbumArt(bitmap = albumArtBitmap, size = artSize)
             Spacer(GlanceModifier.width(WidgetLayout.GAP))
         }
         Title(
@@ -163,6 +167,7 @@ private fun ArtBesideTitleUi(
 private fun SingleRowUi(
     state: WidgetState.CurrentlyPlaying,
     layout: WidgetLayout,
+    albumArtBitmap: Bitmap?,
 ) {
     if (layout.titleLines > 0) {
         Title(
@@ -178,7 +183,7 @@ private fun SingleRowUi(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         layout.artSize?.let { artSize ->
-            AlbumArt(imageUrl = state.albumArtUri, size = artSize)
+            AlbumArt(bitmap = albumArtBitmap, size = artSize)
             if (layout.secondarySize != null) {
                 // Push controls to the end when the full row is shown
                 Spacer(GlanceModifier.defaultWeight())
@@ -194,6 +199,7 @@ private fun SingleRowUi(
 private fun TwoRowsUi(
     state: WidgetState.CurrentlyPlaying,
     layout: WidgetLayout,
+    albumArtBitmap: Bitmap?,
 ) {
     if (layout.titleLines > 0) {
         Title(
@@ -209,7 +215,7 @@ private fun TwoRowsUi(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         layout.artSize?.let { artSize ->
-            AlbumArt(imageUrl = state.albumArtUri, size = artSize)
+            AlbumArt(bitmap = albumArtBitmap, size = artSize)
             Spacer(GlanceModifier.width(WidgetLayout.GAP))
         }
         PlayPauseButton(size = layout.playSize, playing = state.isPlaying)
@@ -232,9 +238,10 @@ private fun TwoRowsUi(
 private fun SingleColumnUi(
     state: WidgetState.CurrentlyPlaying,
     layout: WidgetLayout,
+    albumArtBitmap: Bitmap?,
 ) {
     layout.artSize?.let { artSize ->
-        AlbumArt(imageUrl = state.albumArtUri, size = artSize)
+        AlbumArt(bitmap = albumArtBitmap, size = artSize)
         Spacer(GlanceModifier.height(WidgetLayout.GAP))
     }
     if (layout.titleLines > 0) {
@@ -276,10 +283,19 @@ private fun Controls(
 
 @Composable
 private fun AlbumArt(
-    imageUrl: String,
+    bitmap: Bitmap?,
     size: Dp,
 ) {
-    WidgetAsyncImage(url = imageUrl, modifier = GlanceModifier.size(size))
+    if (bitmap != null) {
+        Image(
+            provider = ImageProvider(bitmap),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = GlanceModifier.size(size).cornerRadius(12.dp),
+        )
+    } else {
+        Spacer(GlanceModifier.size(size))
+    }
 }
 
 @Composable
@@ -382,40 +398,37 @@ private fun SecondaryButton(
 }
 
 @Composable
-private fun WidgetAsyncImage(
-    url: String,
-    modifier: GlanceModifier = GlanceModifier,
-) {
-    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+private fun rememberAlbumArtBitmap(url: String): Bitmap? {
+    if (url.isEmpty()) return null
     val context = LocalContext.current
+    val cached = remember(url) {
+        context.imageLoader.memoryCache?.get(MemoryCache.Key(url))?.bitmap
+    }
+    var bitmap by remember(url) { mutableStateOf<Bitmap?>(cached) }
+
     LaunchedEffect(key1 = url) {
-        LogHelper.d("WidgetAsyncImage", "Fetching new image: $url")
+        if (bitmap != null) return@LaunchedEffect
+        LogHelper.d("rememberAlbumArtBitmap", "Fetching new image: $url")
         val request =
             context
                 .imageRequest(url)
-                .size(600, 600)
+                .memoryCacheKey(url)
+                .size(256, 256)
+                .bitmapConfig(Bitmap.Config.RGB_565)
                 .allowHardware(false)
                 .build()
 
         val result = context.imageLoader.execute(request)
-        if (result is coil.request.SuccessResult) {
-            LogHelper.v("WidgetAsyncImage", "Loaded image")
+        if (result is SuccessResult) {
+            LogHelper.v("rememberAlbumArtBitmap", "Loaded image")
             val drawable = result.drawable
             if (drawable is BitmapDrawable) {
                 bitmap = drawable.bitmap
             }
         } else if (result is ErrorResult) {
             val t = result.throwable
-            LogHelper.v("WidgetAsyncImage", "Error loading image: $t")
+            LogHelper.v("rememberAlbumArtBitmap", "Error loading image: $t")
         }
     }
-
-    bitmap?.let { bmp ->
-        Image(
-            provider = ImageProvider(bmp),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = modifier.cornerRadius(12.dp),
-        )
-    }
+    return bitmap
 }

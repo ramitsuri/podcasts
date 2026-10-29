@@ -92,24 +92,16 @@ internal data class WidgetLayout(
                 // 1 column: stacked vertically
                 DpSize(50.dp, 115.dp), // + art
                 DpSize(50.dp, 185.dp), // + replay/skip
-                DpSize(70.dp, 140.dp), // full size play + art
                 // Counterparts of the 1 column sizes, so 2+ columns never stack vertically
                 DpSize(100.dp, 115.dp),
-                DpSize(100.dp, 140.dp),
                 DpSize(100.dp, 185.dp),
-                // 1 row tall: play + art, then + replay/skip
-                DpSize(90.dp, 50.dp),
-                DpSize(180.dp, 50.dp),
                 // Title above a single row
                 DpSize(120.dp, 80.dp), // art + play
                 DpSize(200.dp, 80.dp), // + replay/skip
-                DpSize(150.dp, 90.dp), // bigger art + play
-                DpSize(240.dp, 90.dp), // + replay/skip
                 // 2 columns, taller: two rows
                 DpSize(140.dp, 180.dp),
                 // 3+ columns, taller: art beside title
                 DpSize(200.dp, 160.dp),
-                DpSize(220.dp, 190.dp), // max art
             )
 
         fun compute(
