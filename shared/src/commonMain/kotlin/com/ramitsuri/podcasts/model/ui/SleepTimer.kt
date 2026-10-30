@@ -1,6 +1,6 @@
 package com.ramitsuri.podcasts.model.ui
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 sealed interface SleepTimer {
     data object None : SleepTimer

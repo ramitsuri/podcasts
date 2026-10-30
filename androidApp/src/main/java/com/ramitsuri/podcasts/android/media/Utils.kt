@@ -30,10 +30,8 @@ fun Episode.asMediaItem(artworkUriOverride: Uri? = null): MediaItem {
         .build()
 }
 
-context(Context)
 @OptIn(ExperimentalCoilApi::class)
-val Episode.cachedArtworkUri: Uri?
-    get() =
-        imageLoader.diskCache?.openSnapshot(podcastImageUrl)?.use { snapshot ->
-            snapshot.data.toFile().toUri()
-        }
+fun Episode.cachedArtworkUri(context: Context): Uri? =
+    context.imageLoader.diskCache?.openSnapshot(podcastImageUrl)?.use { snapshot ->
+        snapshot.data.toFile().toUri()
+    }

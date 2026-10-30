@@ -2,7 +2,7 @@ package com.ramitsuri.podcasts.model
 
 import com.ramitsuri.podcasts.DbPodcast
 import com.ramitsuri.podcasts.network.model.PodcastDto
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 data class Podcast(
     val id: Long,

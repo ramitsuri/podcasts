@@ -2,7 +2,7 @@ package com.ramitsuri.podcasts.model.ui
 
 import com.ramitsuri.podcasts.model.RemoveDownloadsAfter
 import com.ramitsuri.podcasts.utils.Constants
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 data class SettingsViewState(
     val autoPlayNextInQueue: Boolean = true,

@@ -3,9 +3,9 @@ package com.ramitsuri.podcasts.android.utils
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.ramitsuri.podcasts.android.R
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -165,19 +165,19 @@ fun monthFormatted(
     month: Month,
     useShortMonthNames: Boolean = true,
 ): String {
-    return monthNames(useShortMonthNames).names[month.value - 1]
+    return monthNames(useShortMonthNames).names[month.ordinal]
 }
 
 @Composable
 fun dayOfWeekFormatted(dayOfWeek: DayOfWeek): String {
     return when (dayOfWeek) {
-        java.time.DayOfWeek.MONDAY -> stringResource(R.string.mondays)
-        java.time.DayOfWeek.TUESDAY -> stringResource(R.string.tuesdays)
-        java.time.DayOfWeek.WEDNESDAY -> stringResource(R.string.wednesdays)
-        java.time.DayOfWeek.THURSDAY -> stringResource(R.string.thursdays)
-        java.time.DayOfWeek.FRIDAY -> stringResource(R.string.fridays)
-        java.time.DayOfWeek.SATURDAY -> stringResource(R.string.saturdays)
-        java.time.DayOfWeek.SUNDAY -> stringResource(R.string.sundays)
+        DayOfWeek.MONDAY -> stringResource(R.string.mondays)
+        DayOfWeek.TUESDAY -> stringResource(R.string.tuesdays)
+        DayOfWeek.WEDNESDAY -> stringResource(R.string.wednesdays)
+        DayOfWeek.THURSDAY -> stringResource(R.string.thursdays)
+        DayOfWeek.FRIDAY -> stringResource(R.string.fridays)
+        DayOfWeek.SATURDAY -> stringResource(R.string.saturdays)
+        DayOfWeek.SUNDAY -> stringResource(R.string.sundays)
     }
 }
 

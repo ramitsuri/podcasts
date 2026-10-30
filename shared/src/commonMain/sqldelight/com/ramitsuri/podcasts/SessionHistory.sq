@@ -1,6 +1,6 @@
 import com.ramitsuri.podcasts.model.Action;
 import kotlin.Float;
-import kotlinx.datetime.Instant;
+import kotlin.time.Instant;
 
 CREATE TABLE IF NOT EXISTS SessionActionEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,

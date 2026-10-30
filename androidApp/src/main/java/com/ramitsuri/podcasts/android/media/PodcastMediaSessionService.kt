@@ -320,7 +320,7 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                     val startingPosition = currentEpisode.progressInSeconds.times(1000).toLong()
                     MediaSession.MediaItemsWithStartPosition(
                         listOf(
-                            currentEpisode.asMediaItem(artworkUriOverride = currentEpisode.cachedArtworkUri),
+                            currentEpisode.asMediaItem(artworkUriOverride = currentEpisode.cachedArtworkUri(this@PodcastMediaSessionService)),
                         ),
                         C.INDEX_UNSET,
                         startingPosition,

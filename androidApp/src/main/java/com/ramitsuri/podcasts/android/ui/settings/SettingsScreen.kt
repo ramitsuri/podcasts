@@ -65,7 +65,7 @@ import com.ramitsuri.podcasts.model.RemoveDownloadsAfter
 import com.ramitsuri.podcasts.model.ui.SettingsViewState
 import com.ramitsuri.podcasts.utils.Constants
 import kotlinx.coroutines.delay
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.Instant
 import kotlin.time.Duration.Companion.minutes
 import com.ramitsuri.podcasts.android.utils.Constants as AppConstants

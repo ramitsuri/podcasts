@@ -1,6 +1,6 @@
 package com.ramitsuri.podcasts.model
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 data class SessionEpisode(
     val episodeId: String,

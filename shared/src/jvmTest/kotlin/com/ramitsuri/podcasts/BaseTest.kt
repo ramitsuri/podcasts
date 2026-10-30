@@ -11,7 +11,7 @@ import com.ramitsuri.podcasts.utils.TestClock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.setMain
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import okio.Path
 import okio.Path.Companion.toOkioPath

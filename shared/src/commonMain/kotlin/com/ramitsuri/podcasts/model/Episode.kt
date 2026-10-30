@@ -2,7 +2,7 @@ package com.ramitsuri.podcasts.model
 
 import com.ramitsuri.podcasts.DbEpisode
 import com.ramitsuri.podcasts.network.model.EpisodeDto
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 

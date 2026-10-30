@@ -2,7 +2,7 @@ package com.ramitsuri.podcasts.model.ui
 
 import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.PlayingState
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 
 data class EpisodeHistoryViewState(

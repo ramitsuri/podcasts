@@ -6,7 +6,7 @@ import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.EpisodeAndPodcastId
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 internal interface EpisodesDao {
     /**

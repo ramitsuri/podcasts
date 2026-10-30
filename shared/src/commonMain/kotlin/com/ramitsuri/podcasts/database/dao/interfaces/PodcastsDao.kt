@@ -4,8 +4,8 @@ import com.ramitsuri.podcasts.DbPodcast
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
 import com.ramitsuri.podcasts.model.Podcast
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 internal interface PodcastsDao {
     fun getAll(): Flow<List<DbPodcast>>

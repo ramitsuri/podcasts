@@ -1,10 +1,11 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import java.io.FileInputStream
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.build.konfig)
     alias(libs.plugins.detekt)
     alias(libs.plugins.ktlint)
@@ -13,20 +14,25 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain(11)
     jvm()
 
-    androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
-            }
+    android {
+        namespace = "com.ramitsuri.podcasts"
+        compileSdk = 37
+        minSdk = 26
+
+        withJava()
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
         }
     }
 
     sourceSets {
         androidMain.dependencies {
-            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(project.dependencies.enforcedPlatform(libs.firebase.bom.get()))
             implementation(libs.androidx.lifecycle)
+            implementation(libs.coil)
             implementation(libs.firebase.config)
             implementation(libs.koin.android)
             implementation(libs.ktor.okhttp)
@@ -43,7 +49,6 @@ kotlin {
 
         commonMain.dependencies {
             implementation(libs.datastore.preferences)
-            implementation(libs.coil)
             implementation(libs.koin.core)
             implementation(libs.ktor.core)
             implementation(libs.ktor.content.negotation)
@@ -60,22 +65,6 @@ kotlin {
             implementation(libs.ktor.mock)
             implementation(libs.coroutines.test)
         }
-    }
-}
-
-android {
-    namespace = "com.ramitsuri.podcasts"
-    compileSdk = 37
-    defaultConfig {
-        minSdk = 26
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    buildFeatures {
-        buildConfig = true
     }
 }
 

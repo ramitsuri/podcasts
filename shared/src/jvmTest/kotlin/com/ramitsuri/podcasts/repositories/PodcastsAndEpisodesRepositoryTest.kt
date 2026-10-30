@@ -10,7 +10,7 @@ import com.ramitsuri.podcasts.model.Episode
 import com.ramitsuri.podcasts.model.SessionAction
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import org.koin.test.get
 import kotlin.test.Test
 import kotlin.test.assertEquals

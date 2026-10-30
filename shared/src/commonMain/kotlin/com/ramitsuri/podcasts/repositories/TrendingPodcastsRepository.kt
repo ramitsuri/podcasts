@@ -9,7 +9,7 @@ import com.ramitsuri.podcasts.utils.CategoryHelper
 import com.ramitsuri.podcasts.utils.LogHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 class TrendingPodcastsRepository internal constructor(
     private val podcastsApi: PodcastsApi,

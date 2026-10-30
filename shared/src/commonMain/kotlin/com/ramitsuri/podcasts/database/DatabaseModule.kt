@@ -13,7 +13,7 @@ import com.ramitsuri.podcasts.TrendingPodcastEntity
 import com.ramitsuri.podcasts.model.Action
 import com.ramitsuri.podcasts.model.DownloadStatus
 import com.ramitsuri.podcasts.model.EpisodeSortOrder
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 internal fun provideDatabase(driver: SqlDriver): PodcastsDatabase {
     val intToLongAdapter = IntToLongAdapter()

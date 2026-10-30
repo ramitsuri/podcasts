@@ -1,6 +1,7 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.detekt)
     alias(libs.plugins.ktlint)
@@ -9,11 +10,10 @@ plugins {
 
 android {
     namespace = "com.ramitsuri.podcasts.widget"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 35
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,16 +28,19 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
     }
 }
 
 dependencies {
     implementation(projects.shared)
+    implementation(platform(libs.compose.bom))
     implementation(libs.koin.android)
     implementation(libs.android.material3)
     implementation(libs.compose.ui)
@@ -50,5 +53,5 @@ dependencies {
     implementation(libs.kotlin.serialization)
     implementation(libs.androidx.navigation3.runtime)
 
-    testImplementation(libs.kotlin.test)
+    testImplementation(kotlin("test-junit"))
 }

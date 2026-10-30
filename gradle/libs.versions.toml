@@ -1,37 +1,37 @@
 [versions]
-agp = "8.10.1"
-kotlin = "2.1.10"
+agp = "9.4.1"
+kotlin = "2.4.20"
 
-compose-bom = "2025.06.00"
+compose-bom = "2026.09.00"
 
-androidx-activityCompose = "1.10.1"
-androidx-lifecycle = "2.8.3"
-android-material3 = "1.13.0-alpha14"
+androidx-activityCompose = "1.13.0"
+androidx-lifecycle = "2.11.0"
+android-material3 = "1.14.0"
 build-konfig = "0.15.1"
 coil = "2.7.0"
 composables = "1.20.1"
-compose-lifecycle = "2.8.3"
-coroutines-guava = "1.10.1"
+compose-lifecycle = "2.11.0"
+coroutines-guava = "1.11.0"
 datastore-preferences = "1.1.7"
 detekt = "1.23.3"
-firebase-bom = "33.15.0"
-firebase-crashlytics = "3.0.4"
-google-services = "4.4.2"
+firebase-bom = "34.19.0"
+firebase-crashlytics = "3.0.8"
+google-services = "4.5.0"
 glance = "1.1.1"
 html-converter = "0.9.5"
-koin = "4.0.3"
-kotlin-datetime = "0.6.2"
-kotlin-serialization = "1.8.0"
+koin = "4.2.2"
+kotlin-datetime = "0.8.0"
+kotlin-serialization = "1.11.0"
 ktlint = "12.1.0"
-ktor = "3.1.2"
+ktor = "3.6.0"
 media3 = "1.7.1"
 paletteKtx = "1.0.0"
 reorderable = "2.5.1"
-splash = "1.0.1"
-sqldelight = "2.0.1"
-touchlab-log = "2.0.4"
-viewmodel = "2.9.1"
-work = "2.10.1"
+splash = "1.2.0"
+sqldelight = "2.4.0"
+touchlab-log = "2.2.0"
+viewmodel = "2.11.0"
+work = "2.12.0"
 nav3Core = "1.0.0"
 lifecycleViewmodelNav3 = "2.10.0-rc01"
 
@@ -63,7 +63,7 @@ datastore-preferences = { module = "androidx.datastore:datastore-preferences-cor
 
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
-firebase-config = { group = "com.google.firebase", name = "firebase-config-ktx" }
+firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 
 glance = { module = "androidx.glance:glance", version.ref = "glance" }
 glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
@@ -116,6 +116,7 @@ androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecy
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+android-kmp-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 
 build-konfig = { id = "com.codingfeline.buildkonfig", version.ref = "build-konfig" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

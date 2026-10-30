@@ -244,6 +244,7 @@ object SquigglySlider {
                         )
                         path.rewind()
                         path.buildSquigglesFor(
+                            drawScope = this,
                             squigglesSpec = squigglesSpec.copy(amplitude = animatedAmplitude),
                             startOffset = sliderStart,
                             endOffset = sliderValueEnd,
@@ -284,30 +285,32 @@ object SquigglySlider {
     /**
      * Maths copied from [squigglyspans](https://github.com/samruston/squigglyspans).
      */
-    context(DrawScope)
     private fun Path.buildSquigglesFor(
+        drawScope: DrawScope,
         squigglesSpec: SquigglesSpec,
         startOffset: Offset,
         endOffset: Offset,
         animationProgress: State<Float>,
     ) {
-        val waveStartOffset = startOffset.x + (squigglesSpec.strokeWidth.toPx() / 2)
-        val waveEndOffset = (endOffset.x - (squigglesSpec.strokeWidth.toPx() / 2)).coerceAtLeast(waveStartOffset)
+        with(drawScope) {
+            val waveStartOffset = startOffset.x + (squigglesSpec.strokeWidth.toPx() / 2)
+            val waveEndOffset = (endOffset.x - (squigglesSpec.strokeWidth.toPx() / 2)).coerceAtLeast(waveStartOffset)
 
-        val segmentWidth = squigglesSpec.wavelength.toPx() / SEGMENTS_PER_WAVELENGTH
-        val numOfPoints = ceil((waveEndOffset - waveStartOffset) / segmentWidth).toInt() + 1
+            val segmentWidth = squigglesSpec.wavelength.toPx() / SEGMENTS_PER_WAVELENGTH
+            val numOfPoints = ceil((waveEndOffset - waveStartOffset) / segmentWidth).toInt() + 1
 
-        var pointX = waveStartOffset
-        fastMapRange(start = 0, end = numOfPoints) { point ->
-            val proportionOfWavelength = (pointX - waveStartOffset) / squigglesSpec.wavelength.toPx()
-            val radiansX = proportionOfWavelength * TWO_PI + (TWO_PI * animationProgress.value)
-            val offsetY = center.y + (sin(radiansX) * squigglesSpec.amplitude.toPx())
+            var pointX = waveStartOffset
+            fastMapRange(start = 0, end = numOfPoints) { point ->
+                val proportionOfWavelength = (pointX - waveStartOffset) / squigglesSpec.wavelength.toPx()
+                val radiansX = proportionOfWavelength * TWO_PI + (TWO_PI * animationProgress.value)
+                val offsetY = center.y + (sin(radiansX) * squigglesSpec.amplitude.toPx())
 
-            when (point) {
-                0 -> moveTo(pointX, offsetY)
-                else -> lineTo(pointX, offsetY)
+                when (point) {
+                    0 -> moveTo(pointX, offsetY)
+                    else -> lineTo(pointX, offsetY)
+                }
+                pointX = (pointX + segmentWidth).coerceAtMost(waveEndOffset)
             }
-            pointX = (pointX + segmentWidth).coerceAtMost(waveEndOffset)
         }
     }
 }

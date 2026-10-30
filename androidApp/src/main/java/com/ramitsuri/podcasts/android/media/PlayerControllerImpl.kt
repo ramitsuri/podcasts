@@ -199,7 +199,7 @@ class PlayerControllerImpl(
 
     private fun MediaController.setMediaItemForEpisode(episode: Episode) {
         setMediaItem(
-            episode.asMediaItem(artworkUriOverride = with(appContext) { episode.cachedArtworkUri }),
+            episode.asMediaItem(artworkUriOverride = episode.cachedArtworkUri(appContext)),
             episode.progressInSeconds.times(1000).toLong(),
         )
     }

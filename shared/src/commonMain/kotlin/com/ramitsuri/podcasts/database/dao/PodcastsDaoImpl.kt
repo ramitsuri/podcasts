@@ -14,7 +14,7 @@ import com.ramitsuri.podcasts.model.Podcast
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 internal class PodcastsDaoImpl(
     private val podcastEntityQueries: PodcastEntityQueries,
