@@ -198,11 +198,9 @@ class PodcastDetailsViewModel(
     fun onMarkSelectedAsPlayed() {
         val selected = state.value.podcastWithEpisodes?.episodes?.filter { it.selected } ?: return
         longLivingScope.launch {
-            selected.map { selectableEpisode ->
-                launch {
-                    episodesRepository.markPlayed(selectableEpisode.episode.id)
-                }
-            }.joinAll()
+            selected.forEach { selectableEpisode ->
+                onEpisodePlayedClicked(selectableEpisode.episode.id)
+            }
             onUnselectAllEpisodes()
         }
     }

@@ -79,7 +79,6 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val currentlyPlayingEpisode = MutableStateFlow<Episode?>(null)
     private val onMediaEndedRunning = AtomicBoolean(false)
-    private val onMediaItemTransitionRunning = AtomicBoolean(false)
 
     private var insertStartActionJob: Job? = null
     private var insertStopActionJob: Job? = null
@@ -489,16 +488,10 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
             mediaItem: MediaItem?,
             reason: Int,
         ) {
-            if (onMediaItemTransitionRunning.get()) {
-                LogHelper.d(TAG, "onMediaItemTransition already running")
-                return
-            }
-            onMediaItemTransitionRunning.getAndSet(true)
+            val previousEpisode = currentlyPlayingEpisode.value
             launchSuspend {
-                if (reason == MEDIA_ITEM_TRANSITION_REASON_AUTO) {
-                    currentlyPlayingEpisode.value?.let { currentEpisode ->
-                        episodesRepository.markPlayed(currentEpisode.id)
-                    }
+                if (reason == MEDIA_ITEM_TRANSITION_REASON_AUTO && previousEpisode != null) {
+                    episodesRepository.markPlayed(previousEpisode.id)
                 }
 
                 if (mediaItem != null) {
@@ -508,7 +501,6 @@ class PodcastMediaSessionService : MediaSessionService(), KoinComponent {
                         player.seekTo(position)
                     }
                 }
-                onMediaItemTransitionRunning.set(false)
             }
         }
     }

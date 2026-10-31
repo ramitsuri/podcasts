@@ -99,7 +99,7 @@ class PlayerControllerImpl(
                         }
 
                         else -> {
-                            emptyList()
+                            appQueue
                         }
                     }.sortedBy { it.queuePosition }
                 currentEpisode to restOfTheQueue

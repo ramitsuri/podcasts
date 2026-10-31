@@ -51,14 +51,30 @@ internal class EpisodeControllerImpl(
     override fun onEpisodePlayedClicked(episodeId: String) {
         longLivingScope.launch {
             val currentlyPlayingEpisode = episodesRepository.getCurrentEpisode().firstOrNull()
-            if (currentlyPlayingEpisode?.id == episodeId) {
-                if (playerController.hasNext()) {
-                    playerController.playNext()
+            val isPlayingThisEpisode = currentlyPlayingEpisode?.id == episodeId
+            if (isPlayingThisEpisode) {
+                val queue = episodesRepository.getQueue()
+                val nextEpisode =
+                    if (currentlyPlayingEpisode.id in queue.map { it.id }) {
+                        val currentInQueue = queue.first { it.id == currentlyPlayingEpisode.id }
+                        queue
+                            .filter { it.queuePosition > currentInQueue.queuePosition }
+                            .minByOrNull { it.queuePosition }
+                    } else {
+                        queue
+                            .filter { it.id != episodeId }
+                            .minByOrNull { it.queuePosition }
+                    }
+
+                episodesRepository.markPlayed(episodeId)
+                if (nextEpisode != null) {
+                    playEpisode(nextEpisode)
                 } else {
                     playerController.pause()
                 }
+            } else {
+                episodesRepository.markPlayed(episodeId)
             }
-            episodesRepository.markPlayed(episodeId)
         }
     }
 
