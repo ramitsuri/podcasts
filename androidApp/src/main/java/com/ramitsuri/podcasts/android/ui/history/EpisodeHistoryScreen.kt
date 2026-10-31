@@ -75,43 +75,44 @@ fun EpisodeHistoryScreen(
             label = stringResource(id = R.string.library_history),
             scrollBehavior = scrollBehavior,
         )
-        LazyColumn(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)) {
-            state.episodesByDate.forEach { (date, episodes) ->
-                stickyHeader {
-                    HeaderItem(text = dateFormatted(date))
-                }
-                items(items = episodes, key = { date.toString() + it.episode.id + it.sessionId }) {
-                    val episode = it.episode
-                    ColoredHorizontalDivider()
-                    EpisodeItem(
-                        episode = episode,
-                        playingState =
-                            if (state.currentlyPlayingEpisodeId == episode.id) {
-                                state.currentlyPlayingEpisodeState
-                            } else {
-                                PlayingState.NOT_PLAYING
-                            },
-                        onClicked = { onEpisodeClicked(episode.id, episode.podcastId) },
-                        onPlayClicked = { onEpisodePlayClicked(episode) },
-                        onPauseClicked = onEpisodePauseClicked,
-                        onAddToQueueClicked = { onEpisodeAddToQueueClicked(episode) },
-                        onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(episode) },
-                        onDownloadClicked = { onEpisodeDownloadClicked(episode) },
-                        onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(episode) },
-                        onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(episode) },
-                        onPlayedClicked = { onEpisodePlayedClicked(episode.id) },
-                        onNotPlayedClicked = { onEpisodeNotPlayedClicked(episode.id) },
-                        onFavoriteClicked = { onEpisodeFavoriteClicked(episode.id) },
-                        onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(episode.id) },
-                    )
-                }
-            }
-            item {
-                Spacer(modifier = Modifier.height(128.dp))
-            }
-        }
         if (state.episodesByDate.isEmpty()) {
             EpisodeHistoryEmpty()
+        } else {
+            LazyColumn(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)) {
+                state.episodesByDate.forEach { (date, episodes) ->
+                    stickyHeader {
+                        HeaderItem(text = dateFormatted(date))
+                    }
+                    items(items = episodes, key = { date.toString() + it.episode.id + it.sessionId }) {
+                        val episode = it.episode
+                        ColoredHorizontalDivider()
+                        EpisodeItem(
+                            episode = episode,
+                            playingState =
+                                if (state.currentlyPlayingEpisodeId == episode.id) {
+                                    state.currentlyPlayingEpisodeState
+                                } else {
+                                    PlayingState.NOT_PLAYING
+                                },
+                            onClicked = { onEpisodeClicked(episode.id, episode.podcastId) },
+                            onPlayClicked = { onEpisodePlayClicked(episode) },
+                            onPauseClicked = onEpisodePauseClicked,
+                            onAddToQueueClicked = { onEpisodeAddToQueueClicked(episode) },
+                            onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(episode) },
+                            onDownloadClicked = { onEpisodeDownloadClicked(episode) },
+                            onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(episode) },
+                            onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(episode) },
+                            onPlayedClicked = { onEpisodePlayedClicked(episode.id) },
+                            onNotPlayedClicked = { onEpisodeNotPlayedClicked(episode.id) },
+                            onFavoriteClicked = { onEpisodeFavoriteClicked(episode.id) },
+                            onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(episode.id) },
+                        )
+                    }
+                }
+                item {
+                    Spacer(modifier = Modifier.height(128.dp))
+                }
+            }
         }
     }
 }

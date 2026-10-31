@@ -133,52 +133,53 @@ fun QueueScreen(
                 showQueueSize = false
             }
         }
-        Box(
-            modifier =
-                Modifier.pullToRefresh(
-                    isRefreshing = false,
-                    state = pullToRefreshState,
-                    threshold = 200.dp,
-                    onRefresh = {
-                        showQueueSize = true
-                    },
-                ),
-        ) {
-            LazyColumn(
-                state = lazyListState,
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            ) {
-                items(state.episodes, key = { it.id }) {
-                    ColoredHorizontalDivider()
-                    EpisodeItem(
-                        reorderableLazyColumnState = reorderableLazyColumnState,
-                        episode = it,
-                        playingState =
-                            if (state.currentlyPlayingEpisodeId == it.id) {
-                                state.currentlyPlayingEpisodeState
-                            } else {
-                                PlayingState.NOT_PLAYING
-                            },
-                        onClicked = { onEpisodeClicked(it.id, it.podcastId) },
-                        onPlayClicked = { onEpisodePlayClicked(it) },
-                        onPauseClicked = onEpisodePauseClicked,
-                        onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(it) },
-                        onDownloadClicked = { onEpisodeDownloadClicked(it) },
-                        onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(it) },
-                        onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(it) },
-                        onPlayedClicked = { onEpisodePlayedClicked(it.id) },
-                        onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
-                        onFavoriteClicked = { onEpisodeFavoriteClicked(it.id) },
-                        onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(it.id) },
-                    )
-                }
-                item {
-                    Spacer(modifier = Modifier.height(128.dp))
-                }
-            }
-        }
         if (state.episodes.isEmpty()) {
             QueueEmpty()
+        } else {
+            Box(
+                modifier =
+                    Modifier.pullToRefresh(
+                        isRefreshing = false,
+                        state = pullToRefreshState,
+                        threshold = 200.dp,
+                        onRefresh = {
+                            showQueueSize = true
+                        },
+                    ),
+            ) {
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                ) {
+                    items(state.episodes, key = { it.id }) {
+                        ColoredHorizontalDivider()
+                        EpisodeItem(
+                            reorderableLazyColumnState = reorderableLazyColumnState,
+                            episode = it,
+                            playingState =
+                                if (state.currentlyPlayingEpisodeId == it.id) {
+                                    state.currentlyPlayingEpisodeState
+                                } else {
+                                    PlayingState.NOT_PLAYING
+                                },
+                            onClicked = { onEpisodeClicked(it.id, it.podcastId) },
+                            onPlayClicked = { onEpisodePlayClicked(it) },
+                            onPauseClicked = onEpisodePauseClicked,
+                            onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(it) },
+                            onDownloadClicked = { onEpisodeDownloadClicked(it) },
+                            onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(it) },
+                            onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(it) },
+                            onPlayedClicked = { onEpisodePlayedClicked(it.id) },
+                            onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
+                            onFavoriteClicked = { onEpisodeFavoriteClicked(it.id) },
+                            onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(it.id) },
+                        )
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(128.dp))
+                    }
+                }
+            }
         }
     }
     QueueSortMenu(

@@ -59,21 +59,22 @@ fun SubscriptionsScreen(
             label = stringResource(id = R.string.subscriptions),
             scrollBehavior = scrollBehavior,
         )
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 112.dp),
-            modifier =
-                Modifier
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
-                    .padding(horizontal = 16.dp),
-        ) {
-            fullWidthSpacer()
-            items(items = state.subscribedPodcasts, key = { it.id }) { podcast ->
-                SubscribedPodcastItem(podcast = podcast, onClicked = { onPodcastClicked(it.id) })
-            }
-            fullWidthSpacer(height = 128.dp)
-        }
         if (state.subscribedPodcasts.isEmpty()) {
             SubscriptionsEmpty()
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 112.dp),
+                modifier =
+                    Modifier
+                        .nestedScroll(scrollBehavior.nestedScrollConnection)
+                        .padding(horizontal = 16.dp),
+            ) {
+                fullWidthSpacer()
+                items(items = state.subscribedPodcasts, key = { it.id }) { podcast ->
+                    SubscribedPodcastItem(podcast = podcast, onClicked = { onPodcastClicked(it.id) })
+                }
+                fullWidthSpacer(height = 128.dp)
+            }
         }
     }
 }

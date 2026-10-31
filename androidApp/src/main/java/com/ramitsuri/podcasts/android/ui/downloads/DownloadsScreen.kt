@@ -63,37 +63,38 @@ fun DownloadsScreen(
             label = stringResource(id = R.string.library_downloads),
             scrollBehavior = scrollBehavior,
         )
-        LazyColumn(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)) {
-            items(state.episodes, key = { it.id }) {
-                ColoredHorizontalDivider()
-                EpisodeItem(
-                    episode = it,
-                    playingState =
-                        if (state.currentlyPlayingEpisodeId == it.id) {
-                            state.currentlyPlayingEpisodeState
-                        } else {
-                            PlayingState.NOT_PLAYING
-                        },
-                    onClicked = { onEpisodeClicked(it.id, it.podcastId) },
-                    onPlayClicked = { onEpisodePlayClicked(it) },
-                    onPauseClicked = onEpisodePauseClicked,
-                    onAddToQueueClicked = { onEpisodeAddToQueueClicked(it) },
-                    onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(it) },
-                    onDownloadClicked = { onEpisodeDownloadClicked(it) },
-                    onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(it) },
-                    onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(it) },
-                    onPlayedClicked = { onEpisodePlayedClicked(it.id) },
-                    onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
-                    onFavoriteClicked = { onEpisodeFavoriteClicked(it.id) },
-                    onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(it.id) },
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(128.dp))
-            }
-        }
         if (state.episodes.isEmpty()) {
             DownloadsEmpty()
+        } else {
+            LazyColumn(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)) {
+                items(state.episodes, key = { it.id }) {
+                    ColoredHorizontalDivider()
+                    EpisodeItem(
+                        episode = it,
+                        playingState =
+                            if (state.currentlyPlayingEpisodeId == it.id) {
+                                state.currentlyPlayingEpisodeState
+                            } else {
+                                PlayingState.NOT_PLAYING
+                            },
+                        onClicked = { onEpisodeClicked(it.id, it.podcastId) },
+                        onPlayClicked = { onEpisodePlayClicked(it) },
+                        onPauseClicked = onEpisodePauseClicked,
+                        onAddToQueueClicked = { onEpisodeAddToQueueClicked(it) },
+                        onRemoveFromQueueClicked = { onEpisodeRemoveFromQueueClicked(it) },
+                        onDownloadClicked = { onEpisodeDownloadClicked(it) },
+                        onRemoveDownloadClicked = { onEpisodeRemoveDownloadClicked(it) },
+                        onCancelDownloadClicked = { onEpisodeCancelDownloadClicked(it) },
+                        onPlayedClicked = { onEpisodePlayedClicked(it.id) },
+                        onNotPlayedClicked = { onEpisodeNotPlayedClicked(it.id) },
+                        onFavoriteClicked = { onEpisodeFavoriteClicked(it.id) },
+                        onNotFavoriteClicked = { onEpisodeNotFavoriteClicked(it.id) },
+                    )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(128.dp))
+                }
+            }
         }
     }
 }
