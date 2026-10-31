@@ -1,0 +1,22 @@
+<journey name="Mark Episode as Played">
+    <description>
+        Verifies marking an unplayed episode as played from the episode options menu.
+    </description>
+    <actions>
+        <action>
+            Verify that the app is on the Home screen and episodes are visible.
+        </action>
+        <action>
+            Tap the three-dots menu icon on an episode in the list.
+        </action>
+        <action>
+            Verify that the episode options bottom sheet is open.
+        </action>
+        <action>
+            Tap on "Mark played".
+        </action>
+        <action>
+            Verify that the episode is marked as played and removed from the active unplayed list.
+        </action>
+    </actions>
+</journey>

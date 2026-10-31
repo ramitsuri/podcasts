@@ -1,0 +1,43 @@
+<journey name="Sleep Timer End of Episode">
+    <description>
+        Verifies that when multiple episodes are in the queue and an "End of episode" sleep timer is set, playback stops when the current episode ends and does not play the next queued episode.
+    </description>
+    <actions>
+        <action>
+            Tap on "Explore" in the bottom navigation bar.
+        </action>
+        <action>
+            Tap on the first podcast in the explore list to view its episodes.
+        </action>
+        <action>
+            Tap the "Add to queue" button on the first episode and the second episode to queue multiple episodes.
+        </action>
+        <action>
+            Tap on "Library" in the bottom navigation bar and select "Queue".
+        </action>
+        <action>
+            Verify that multiple episodes are listed in the queue.
+        </action>
+        <action>
+            Tap the "Play" button on the first episode in the queue to start playback.
+        </action>
+        <action>
+            Tap on the mini-player bar at the bottom to expand the full player screen.
+        </action>
+        <action>
+            Tap the "Sleep timer" button to open the sleep timer controls.
+        </action>
+        <action>
+            Tap the "End of episode" button to set the sleep timer to end at the completion of the current episode.
+        </action>
+        <action>
+            Drag or tap the playback seekbar near the very end of the episode track so only a few seconds remain.
+        </action>
+        <action>
+            Wait for the current episode to complete playback.
+        </action>
+        <action>
+            Verify that playback has stopped and the next queued episode does not start playing.
+        </action>
+    </actions>
+</journey>

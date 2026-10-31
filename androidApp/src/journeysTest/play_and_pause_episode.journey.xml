@@ -1,0 +1,25 @@
+<journey name="Play and Pause Episode">
+    <description>
+        Verifies that tapping Play on an episode begins playback and updates the UI, and tapping Pause pauses playback.
+    </description>
+    <actions>
+        <action>
+            Verify that the app is on the Home screen and episodes are visible.
+        </action>
+        <action>
+            Tap the "Play" button on the first episode in the list.
+        </action>
+        <action>
+            Verify that the mini-player bar appears at the bottom of the screen showing the playing episode title.
+        </action>
+        <action>
+            Verify that the mini-player play button displays a "Pause" icon.
+        </action>
+        <action>
+            Tap the "Pause" button on the mini-player bar.
+        </action>
+        <action>
+            Verify that the episode is paused and the mini-player button displays a "Play" icon.
+        </action>
+    </actions>
+</journey>

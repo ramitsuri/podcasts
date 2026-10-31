@@ -1,0 +1,28 @@
+<journey name="Sleep Timer Duration">
+    <description>
+        Verifies that setting a sleep timer based on duration pauses playback when the timer completes.
+    </description>
+    <actions>
+        <action>
+            Verify that the app is on the Home screen and episodes are visible.
+        </action>
+        <action>
+            Tap the "Play" button on an episode to start playback.
+        </action>
+        <action>
+            Tap on the mini-player bar at the bottom to expand the full player screen.
+        </action>
+        <action>
+            Tap the "Sleep timer" button to open the sleep timer controls.
+        </action>
+        <action>
+            Set the sleep timer duration and tap the "Start" button to activate the timer.
+        </action>
+        <action>
+            Wait for the sleep timer duration to expire.
+        </action>
+        <action>
+            Verify that episode playback has paused and the play button is displayed.
+        </action>
+    </actions>
+</journey>

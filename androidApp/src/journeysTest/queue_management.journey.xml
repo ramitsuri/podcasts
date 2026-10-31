@@ -1,0 +1,43 @@
+<journey name="Queue Management and Reordering">
+    <description>
+        Verifies adding multiple episodes to the queue, starting playback, rearranging the queue order, and verifying that the next episode that plays matches the new queue order upon completion.
+    </description>
+    <actions>
+        <action>
+            Tap on "Explore" in the bottom navigation bar.
+        </action>
+        <action>
+            Tap on the first podcast in the explore list to view its episodes.
+        </action>
+        <action>
+            Tap the "Add to queue" button on three consecutive episodes to build a queue of multiple episodes.
+        </action>
+        <action>
+            Tap on "Library" in the bottom navigation bar and select "Queue".
+        </action>
+        <action>
+            Verify that the queued episodes are visible in the queue list.
+        </action>
+        <action>
+            Tap the "Play" button on the first episode in the queue to begin playback.
+        </action>
+        <action>
+            Drag the reorder handle of an episode in the queue to rearrange the playback order.
+        </action>
+        <action>
+            Note the title of the next episode now positioned immediately following the playing episode.
+        </action>
+        <action>
+            Tap on the mini-player bar at the bottom to expand the full player screen.
+        </action>
+        <action>
+            Drag or tap the playback seekbar near the very end of the episode so only a few seconds remain.
+        </action>
+        <action>
+            Wait for the current episode to finish playback.
+        </action>
+        <action>
+            Verify that playback transitions to the newly reordered next episode from the queue.
+        </action>
+    </actions>
+</journey>

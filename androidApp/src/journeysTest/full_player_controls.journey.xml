@@ -1,0 +1,37 @@
+<journey name="Full Player Controls">
+    <description>
+        Verifies expanding the full player screen from the mini-player and testing play, pause, skip, and replay controls.
+    </description>
+    <actions>
+        <action>
+            Verify that the app is on the Home screen and episodes are visible.
+        </action>
+        <action>
+            Tap the "Play" button on the first episode to start playback.
+        </action>
+        <action>
+            Tap on the mini-player bar at the bottom of the screen to expand the full player screen.
+        </action>
+        <action>
+            Verify that the full player screen is displayed with the episode title, podcast title, playback progress slider, and playback controls.
+        </action>
+        <action>
+            Tap the "Pause" button in the center of the player screen.
+        </action>
+        <action>
+            Verify that playback is paused and the center button changes to "Play".
+        </action>
+        <action>
+            Tap the "Play" button in the center of the player screen.
+        </action>
+        <action>
+            Verify that playback resumes and the center button changes to "Pause".
+        </action>
+        <action>
+            Tap the "Skip 30 seconds" button.
+        </action>
+        <action>
+            Tap the "Replay 10 seconds" button.
+        </action>
+    </actions>
+</journey>

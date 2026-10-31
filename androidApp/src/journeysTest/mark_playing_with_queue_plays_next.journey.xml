@@ -1,0 +1,28 @@
+<journey name="Mark Playing Episode as Played with Queued Items">
+    <description>
+        Verifies that when an episode is actively playing and another episode is in the queue, marking the playing episode as played advances playback to the next episode in the queue.
+    </description>
+    <actions>
+        <action>
+            Verify that the app is on the Home screen and episodes are visible.
+        </action>
+        <action>
+            Tap the "Add to queue" button on the second episode in the list.
+        </action>
+        <action>
+            Tap the "Play" button on the first episode in the list to start playback.
+        </action>
+        <action>
+            Verify that the mini-player bar at the bottom is visible and actively playing the first episode.
+        </action>
+        <action>
+            Tap the three-dots menu icon on the first episode.
+        </action>
+        <action>
+            Tap on "Mark played".
+        </action>
+        <action>
+            Verify that the first episode stops playing and the mini-player advances to actively playing the second (queued) episode.
+        </action>
+    </actions>
+</journey>

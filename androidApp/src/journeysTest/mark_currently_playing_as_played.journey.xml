@@ -1,0 +1,25 @@
+<journey name="Mark Currently Playing Episode as Played">
+    <description>
+        Verifies that when a currently playing episode is marked as played, playback stops and the player reflects the completion.
+    </description>
+    <actions>
+        <action>
+            Verify that the app is on the Home screen and episodes are visible.
+        </action>
+        <action>
+            Tap the "Play" button on the first episode to start playback.
+        </action>
+        <action>
+            Verify that the mini-player bar at the bottom is visible and playing.
+        </action>
+        <action>
+            Tap the three-dots menu icon on the currently playing episode.
+        </action>
+        <action>
+            Tap on "Mark played".
+        </action>
+        <action>
+            Verify that audio playback has stopped and the mini-player is no longer actively playing that episode.
+        </action>
+    </actions>
+</journey>
