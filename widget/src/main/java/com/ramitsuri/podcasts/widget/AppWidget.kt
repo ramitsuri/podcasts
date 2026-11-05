@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import androidx.core.graphics.scale
 import androidx.glance.GlanceId
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
@@ -39,7 +40,7 @@ class AppWidget : GlanceAppWidget() {
         appWidgetId: Int,
         throwable: Throwable,
     ) {
-        LogHelper.v(TAG, "Composition error: $throwable")
+        LogHelper.d(TAG, "Composition error: $throwable")
     }
 
     override suspend fun onDelete(
@@ -67,7 +68,7 @@ class AppWidget : GlanceAppWidget() {
         provideContent {
             val currentState = currentState<WidgetState>()
             val uri = (currentState as? WidgetState.CurrentlyPlaying)?.albumArtUri.orEmpty()
-            if (uri != cachedUri) {
+            if (uri != cachedUri || (cachedBitmap == null && uri.isNotEmpty())) {
                 cachedUri = uri
                 cachedBitmap =
                     if (uri.isNotEmpty()) {
@@ -85,15 +86,22 @@ class AppWidget : GlanceAppWidget() {
         url: String,
     ): Bitmap? {
         if (url.isEmpty()) return null
-        val cached = context.imageLoader.memoryCache?.get(MemoryCache.Key(url))?.bitmap
-        if (cached != null) {
-            return cached
+        val cachedWidget = context.imageLoader.memoryCache?.get(MemoryCache.Key(cacheKey(url)))?.bitmap
+        if (cachedWidget != null) {
+            return prepareWidgetBitmap(cachedWidget)
+        }
+        val cachedFull = context.imageLoader.memoryCache?.get(MemoryCache.Key(url))?.bitmap
+        if (cachedFull != null) {
+            val scaled = prepareWidgetBitmap(cachedFull)
+            context.imageLoader.memoryCache?.set(
+                MemoryCache.Key(cacheKey(url)),
+                MemoryCache.Value(bitmap = scaled),
+            )
+            saveBitmapToFile(context, scaled)
+            return scaled
         }
         val artFile = File(context.filesDir, ALBUM_ART_FILE)
-        if (artFile.exists()) {
-            return runCatching { BitmapFactory.decodeFile(artFile.absolutePath) }.getOrNull()
-        }
-        return null
+        return decodeFileSafely(artFile)
     }
 
     private suspend fun loadAlbumArt(
@@ -101,49 +109,100 @@ class AppWidget : GlanceAppWidget() {
         url: String,
     ): Bitmap? {
         if (url.isEmpty()) return null
-        val cached = context.imageLoader.memoryCache?.get(MemoryCache.Key(url))?.bitmap
-        if (cached != null) {
-            saveBitmapToFile(context, cached)
-            return cached
+        val cachedWidget = context.imageLoader.memoryCache?.get(MemoryCache.Key(cacheKey(url)))?.bitmap
+        if (cachedWidget != null) {
+            val prepared = prepareWidgetBitmap(cachedWidget)
+            saveBitmapToFile(context, prepared)
+            return prepared
+        }
+        val cachedFull = context.imageLoader.memoryCache?.get(MemoryCache.Key(url))?.bitmap
+        if (cachedFull != null) {
+            val scaled = prepareWidgetBitmap(cachedFull)
+            context.imageLoader.memoryCache?.set(
+                MemoryCache.Key(cacheKey(url)),
+                MemoryCache.Value(bitmap = scaled),
+            )
+            saveBitmapToFile(context, scaled)
+            return scaled
         }
         val request =
             context
                 .imageRequest(url)
-                .memoryCacheKey(url)
-                .size(256, 256)
+                .memoryCacheKey(cacheKey(url))
+                .size(MAX_BITMAP_SIZE, MAX_BITMAP_SIZE)
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .allowHardware(enable = false)
                 .build()
         val result = context.imageLoader.execute(request)
         val bitmap =
             if (result is SuccessResult) {
-                (result.drawable as? BitmapDrawable)?.bitmap
+                (result.drawable as? BitmapDrawable)?.bitmap?.let { prepareWidgetBitmap(it) }
             } else {
                 null
             }
         if (bitmap != null) {
             saveBitmapToFile(context, bitmap)
-        } else {
-            val artFile = File(context.filesDir, ALBUM_ART_FILE)
-            if (artFile.exists()) {
-                return runCatching { BitmapFactory.decodeFile(artFile.absolutePath) }.getOrNull()
-            }
+            return bitmap
         }
-        return bitmap
+        val artFile = File(context.filesDir, ALBUM_ART_FILE)
+        return decodeFileSafely(artFile)
     }
 
     companion object {
         private const val TAG = "AppWidget"
         private const val ALBUM_ART_FILE = "widget_album_art.png"
+        private const val MAX_BITMAP_SIZE = 256
+        private const val WIDGET_CACHE_PREFIX = "widget_"
+
+        private fun cacheKey(url: String) = "$WIDGET_CACHE_PREFIX$url"
+
+        private fun prepareWidgetBitmap(bitmap: Bitmap): Bitmap {
+            val maxDimension = maxOf(bitmap.width, bitmap.height)
+            val scaled =
+                if (maxDimension > MAX_BITMAP_SIZE) {
+                    val scale = MAX_BITMAP_SIZE.toFloat() / maxDimension
+                    val targetWidth = (bitmap.width * scale).toInt().coerceAtLeast(1)
+                    val targetHeight = (bitmap.height * scale).toInt().coerceAtLeast(1)
+                    bitmap.scale(targetWidth, targetHeight)
+                } else {
+                    bitmap
+                }
+            return if (scaled.config != Bitmap.Config.RGB_565) {
+                scaled.copy(Bitmap.Config.RGB_565, false) ?: scaled
+            } else {
+                scaled
+            }
+        }
+
+        private fun decodeFileSafely(file: File): Bitmap? {
+            if (!file.exists()) return null
+            return runCatching {
+                val boundsOptions = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                BitmapFactory.decodeFile(file.absolutePath, boundsOptions)
+                val maxDim = maxOf(boundsOptions.outWidth, boundsOptions.outHeight)
+                var sampleSize = 1
+                while (maxDim / (sampleSize * 2) >= MAX_BITMAP_SIZE) {
+                    sampleSize *= 2
+                }
+                val decodeOptions =
+                    BitmapFactory.Options().apply {
+                        inSampleSize = sampleSize
+                        inPreferredConfig = Bitmap.Config.RGB_565
+                    }
+                val decoded = BitmapFactory.decodeFile(file.absolutePath, decodeOptions) ?: return null
+                prepareWidgetBitmap(decoded)
+            }.getOrNull()
+        }
 
         private fun saveBitmapToFile(
             context: Context,
             bitmap: Bitmap,
         ) {
             runCatching {
+                val prepared = prepareWidgetBitmap(bitmap)
                 val file = File(context.filesDir, ALBUM_ART_FILE)
                 FileOutputStream(file).use { out ->
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                    prepared.compress(Bitmap.CompressFormat.PNG, 100, out)
                 }
             }
         }
