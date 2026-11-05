@@ -1,8 +1,6 @@
 package com.ramitsuri.podcasts.widget
 
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
@@ -24,7 +22,6 @@ import com.ramitsuri.podcasts.utils.LogHelper
 import com.ramitsuri.podcasts.utils.imageRequest
 import com.ramitsuri.podcasts.widget.data.WidgetDefinition
 import com.ramitsuri.podcasts.widget.data.WidgetState
-import com.ramitsuri.podcasts.widget.receiver.WidgetAddedReceiver
 import com.ramitsuri.podcasts.widget.receiver.WidgetReceiver
 import com.ramitsuri.podcasts.widget.ui.AppWidgetUi
 import com.ramitsuri.podcasts.widget.ui.WidgetLayout
@@ -57,8 +54,8 @@ class AppWidget : GlanceAppWidget() {
         context: Context,
         id: GlanceId,
     ) {
-        val initialState = getAppWidgetState<WidgetState>(context, id)
-        val initialUri = (initialState as? WidgetState.CurrentlyPlaying)?.albumArtUri.orEmpty()
+        val state = getAppWidgetState<WidgetState>(context, id)
+        val initialUri = (state as? WidgetState.CurrentlyPlaying)?.albumArtUri.orEmpty()
         var cachedUri: String? = initialUri
         var cachedBitmap: Bitmap? =
             if (initialUri.isNotEmpty()) {
@@ -152,15 +149,8 @@ class AppWidget : GlanceAppWidget() {
         }
 
         suspend fun Context.addWidget() {
-            val addedPendingIntent =
-                PendingIntent.getBroadcast(
-                    this,
-                    0,
-                    Intent(this, WidgetAddedReceiver::class.java),
-                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-                )
             GlanceAppWidgetManager(applicationContext)
-                .requestPinGlanceAppWidget(receiver = WidgetReceiver::class.java, successCallback = addedPendingIntent)
+                .requestPinGlanceAppWidget(receiver = WidgetReceiver::class.java)
         }
 
         suspend fun Context.updateWidget(
