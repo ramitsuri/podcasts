@@ -2,14 +2,8 @@ package com.ramitsuri.podcasts.widget.ui
 
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
@@ -43,25 +37,22 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
-import coil.imageLoader
-import coil.memory.MemoryCache
-import coil.request.ErrorResult
-import coil.request.SuccessResult
-import com.ramitsuri.podcasts.utils.LogHelper
-import com.ramitsuri.podcasts.utils.imageRequest
 import com.ramitsuri.podcasts.widget.R
 import com.ramitsuri.podcasts.widget.action.WidgetAction
 import com.ramitsuri.podcasts.widget.data.WidgetState
 
 @Composable
-internal fun AppWidgetUi(state: WidgetState) {
+internal fun AppWidgetUi(
+    state: WidgetState,
+    albumArtBitmap: Bitmap?,
+) {
     val size = LocalSize.current
 
     GlanceTheme {
         Scaffold(horizontalPadding = 0.dp) {
             when (state) {
                 is WidgetState.CurrentlyPlaying -> {
-                    CurrentlyPlayingUi(state, size)
+                    CurrentlyPlayingUi(state, size, albumArtBitmap)
                 }
 
                 is WidgetState.NeverPlayed -> {
@@ -104,8 +95,8 @@ private fun NeverPlayedUi() {
 private fun CurrentlyPlayingUi(
     state: WidgetState.CurrentlyPlaying,
     size: DpSize,
+    albumArtBitmap: Bitmap?,
 ) {
-    val albumArtBitmap = rememberAlbumArtBitmap(state.albumArtUri)
     val uri = state.deepLinkUrl.toUri()
     val intent = Intent(Intent.ACTION_VIEW, uri)
     val fontScale = LocalContext.current.resources.configuration.fontScale
@@ -395,40 +386,4 @@ private fun SecondaryButton(
         backgroundColor = GlanceTheme.colors.secondary,
         contentColor = GlanceTheme.colors.onSecondary,
     )
-}
-
-@Composable
-private fun rememberAlbumArtBitmap(url: String): Bitmap? {
-    if (url.isEmpty()) return null
-    val context = LocalContext.current
-    val cached = remember(url) {
-        context.imageLoader.memoryCache?.get(MemoryCache.Key(url))?.bitmap
-    }
-    var bitmap by remember(url) { mutableStateOf<Bitmap?>(cached) }
-
-    LaunchedEffect(key1 = url) {
-        if (bitmap != null) return@LaunchedEffect
-        LogHelper.d("rememberAlbumArtBitmap", "Fetching new image: $url")
-        val request =
-            context
-                .imageRequest(url)
-                .memoryCacheKey(url)
-                .size(256, 256)
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .allowHardware(false)
-                .build()
-
-        val result = context.imageLoader.execute(request)
-        if (result is SuccessResult) {
-            LogHelper.v("rememberAlbumArtBitmap", "Loaded image")
-            val drawable = result.drawable
-            if (drawable is BitmapDrawable) {
-                bitmap = drawable.bitmap
-            }
-        } else if (result is ErrorResult) {
-            val t = result.throwable
-            LogHelper.v("rememberAlbumArtBitmap", "Error loading image: $t")
-        }
-    }
-    return bitmap
 }
